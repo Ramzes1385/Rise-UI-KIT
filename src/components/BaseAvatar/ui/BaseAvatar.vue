@@ -1,80 +1,98 @@
 <template>
 	<div
-		class="base-avatar"
-		:class="[`base-avatar--${shape}`, variantClass, classes.root]"
+		:class="[
+			ui('root'),
+			`base-avatar--${shape}`,
+			ringClass,
+			variantClass,
+			{ 'base-avatar--clickable': isClickable, 'base-avatar--disabled': isDisabled },
+			classes.root,
+		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		@click="handleClick">
-		<div class="base-avatar__content" :class="classes.content">
+		v-bind="clickableAttributes"
+		:aria-label="buttonLabel"
+		@click="handleClick"
+		@keydown="handleKeydown">
+		<div :class="[ui('content'), classes.content]">
 			<slot>
-				<BaseImage
-					v-if="src && !hasImageError"
+				<AvatarMascot
+					v-if="mascot !== 'none'"
+					:mascot="mascot"
+					:label="alt"
+					:mood="currentMood"
+					:is-eyes-closed="isEyesClosed"
+					:is-blinking="isBlinking"
+					:class="[ui('mascot'), classes.mascot]" />
+				<img
+					v-else-if="src && !hasImageError"
+					ref="imgRef"
 					:src="src"
 					:alt="alt"
-					class="base-avatar__img"
-					:custom-class="classes.img"
+					:class="[ui('img'), { 'base-avatar__img--loaded': isImageLoaded }, classes.img]"
+					loading="lazy"
+					decoding="async"
+					@load="handleImageLoad"
 					@error="handleImageError" />
-				<BaseText
-					v-else
-					tag="span"
-					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:size-scale="sizeScale"
-					class="base-avatar__initials"
-					:custom-class="classes.initials">
-					{{ initials }}
-				</BaseText>
+				<span v-else :class="[ui('initials'), classes.initials]">{{ initials }}</span>
 			</slot>
 		</div>
-		<span v-if="isOnline" class="base-avatar__online" :class="classes.online"></span>
+		<Transition name="base-avatar-online">
+			<span v-if="isOnline" :class="[ui('online'), classes.online]" role="img" :aria-label="UI_CHAT_TEXT.ONLINE"></span>
+		</Transition>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import BaseImage from '@components/BaseImage/ui/BaseImage.vue'
-import BaseText from '@components/BaseText/ui/BaseText.vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseAvatar.style.scss'
-import type { BaseAvatarEmits, BaseAvatarProps, BaseAvatarSlots } from '../model/BaseAvatar.types'
+import AvatarMascot from './AvatarMascot.vue'
+import { UI_CHAT_TEXT } from '@/locales/messages'
+import { useBaseAvatar } from '../model/useBaseAvatar'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseAvatarEmits, BaseAvatarExpose, BaseAvatarProps, BaseAvatarSlots } from '../types/BaseAvatar.types'
 
-const props = withDefaults(defineProps<BaseAvatarProps>(), {
-	alt: '',
-	shape: 'circle',
-	isOnline: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseAvatarProps>(),
+	kitDefaults('BaseAvatar', {
+		variant: DEFAULT_VARIANT,
+		alt: '',
+		shape: 'square',
+		isOnline: false,
+		ring: 'none',
+		mascot: 'none',
+		isEyesClosed: false,
+		isBlinking: true,
+		mood: 'idle',
+		isDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAvatarEmits>()
 defineSlots<BaseAvatarSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-avatar', props, ['root', 'content', 'img', 'initials', 'online'])
+const {
+	ui,
+	sizeScaleStyle,
+	ringClass,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	imgRef,
+	hasImageError,
+	isImageLoaded,
+	initials,
+	handleImageError,
+	handleImageLoad,
+	isClickable,
+	clickableAttributes,
+	buttonLabel,
+	handleClick,
+	handleKeydown,
+	currentMood,
+	react,
+} = useBaseAvatar(props, emit)
 
-const hasImageError = ref(false)
-
-// Сбрасываем ошибку при изменении src
-watch(
-	() => props.src,
-	() => {
-		hasImageError.value = false
-	},
-)
-
-const initials = computed(() => {
-	if (!props.name) return '?'
-	return props.name
-		.split(' ')
-		.map(n => n[0] ?? '')
-		.filter(Boolean)
-		.slice(0, 2)
-		.join('')
-		.toUpperCase() || '?'
-})
-
-function handleImageError(): void {
-	hasImageError.value = true
-}
-
-function handleClick(event: MouseEvent): void {
-	emit('click', event)
-}
+defineExpose<BaseAvatarExpose>({ react })
 </script>

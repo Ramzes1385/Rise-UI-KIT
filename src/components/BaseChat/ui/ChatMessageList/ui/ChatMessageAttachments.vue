@@ -1,6 +1,5 @@
 <template>
 	<div v-if="attachments.length > 0" class="base-chat-message-list__attachments">
-		<!-- Коллаж изображений -->
 		<div
 			v-if="images.length > 0"
 			class="base-chat-message-list__collage"
@@ -10,64 +9,51 @@
 					:src="img.url"
 					:alt="img.name"
 					:gallery="gallery"
-					:has-zoom="true"
+					:zoom-config="{ hasZoom: true }"
 					class="base-chat-message-list__attached-image" />
-				<BaseButton
-					variant="ghost"
-					:padding="1"
-				:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
-				class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_IMAGE} ${img.name}`"
-					@click.stop="handleDownload(img)">
-					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
-					</template>
-				</BaseButton>
-				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay">
-					<BaseText
-						:weight="UI_FONT_WEIGHT.SEMIBOLD"
-						:size-scale="sizeScale * UI_CHAT_SCALE.FILE_ICON"
-						class="base-chat-message-list__collage-overlay-text">
-						+{{ images.length - 3 }}
-					</BaseText>
+				<div v-if="index === 3 && images.length > 4" class="base-chat-message-list__collage-overlay" aria-hidden="true">
+					<span class="base-chat-message-list__collage-overlay-text">+{{ images.length - 3 }}</span>
 				</div>
+				<BaseButton
+					variant="outline"
+					:size-scale="sizeScale"
+					class="base-chat-message-list__download-btn"
+					:aria-label="formatMessage(UI_CHAT_TEXT.DOWNLOAD_IMAGE_NAMED, { name: img.name })"
+					@click.stop="handleDownload(img)">
+					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+				</BaseButton>
 			</div>
 		</div>
 
-		<!-- Список файлов -->
+		<BaseAudioPlayer
+			v-for="audio in audios"
+			:key="audio.id"
+			class="base-chat-message-list__voice"
+			:src="audio.url"
+			:title="UI_AUDIO.VOICE_MESSAGE"
+			:peaks="audio.peaks"
+			:duration="audio.duration"
+			variant="ghost"
+			:size-scale="sizeScale" />
+
 		<div v-if="files.length > 0" class="base-chat-message-list__files-list">
-			<div
-				v-for="file in files"
-				:key="file.id"
-				class="base-chat-message-list__attached-file"
-				@click.stop="handleFileClick(file)">
-				<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale * UI_CHAT_SCALE.MEMBER" class="base-chat-message-list__file-icon" />
-				<div class="base-chat-message-list__attached-file-info">
-					<BaseText
-						tag="span"
-						:size-scale="sizeScale * UI_SCALE.AUTOCOMPLETE"
-						:weight="UI_FONT_WEIGHT.SEMIBOLD"
-						class="base-chat-message-list__attached-file-name">
-						{{ file.name }}
-					</BaseText>
-					<BaseText
-						v-if="file.size"
-						tag="span"
-						:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
-						class="base-chat-message-list__attached-file-size">
-						{{ file.size }}
-					</BaseText>
-				</div>
+			<div v-for="file in files" :key="file.id" class="base-chat-message-list__attached-file">
+				<button type="button" class="base-chat-message-list__attached-file-main" @click.stop="handleFileClick(file)">
+					<span class="base-chat-message-list__file-icon" aria-hidden="true">
+						<BaseIcon :name="getFileIconName(file.name)" :size-scale="sizeScale" />
+					</span>
+					<span class="base-chat-message-list__attached-file-info">
+						<span class="base-chat-message-list__attached-file-name">{{ file.name }}</span>
+						<span v-if="file.size" class="base-chat-message-list__attached-file-size">{{ file.size }}</span>
+					</span>
+				</button>
 				<BaseButton
 					variant="ghost"
-					:padding="1"
-:size-scale="sizeScale * UI_CHAT_SCALE.ICON"
-				class="base-chat-message-list__download-btn"
-					:aria-label="`${UI_CHAT_TEXT.DOWNLOAD_FILE} ${file.name}`"
+					:size-scale="sizeScale"
+					class="base-chat-message-list__download-btn"
+					:aria-label="formatMessage(UI_CHAT_TEXT.DOWNLOAD_FILE_NAMED, { name: file.name })"
 					@click.stop="handleDownload(file)">
-					<template #left>
-						<BaseIcon name="download" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
-					</template>
+					<BaseIcon name="download" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 				</BaseButton>
 			</div>
 		</div>
@@ -75,32 +61,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
-import { BaseText } from '@components/BaseText'
-import {
-	UI_CHAT_SCALE,
-	UI_CHAT_TEXT,
-	UI_FONT_WEIGHT,
-	UI_SCALE,
-} from '@constants'
-import { getFileIconName } from '@utils/fileUtils'
-import type { ChatMessageAttachment } from '../../../model/BaseChat.types'
-import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../model/ChatMessageAttachments.types'
+import { BaseButton } from '@components/BaseButton'
+import { CHAT_SCALE } from '../../../model/chatScale'
+import { getFileIconName } from '@utils/media/fileUtils'
+import { UI_AUDIO, UI_CHAT_TEXT } from '@/locales/messages'
+import { BaseAudioPlayer } from '@components/BaseAudioPlayer'
+import { useChatMessageAttachments } from '../model/useChatMessageAttachments'
+import type { ChatMessageAttachmentsEmits, ChatMessageAttachmentsProps } from '../types/ChatMessageAttachments.types'
 
 const props = defineProps<ChatMessageAttachmentsProps>()
 const emit = defineEmits<ChatMessageAttachmentsEmits>()
 
-const images = computed(() => props.attachments.filter(attachment => attachment.type === 'image'))
-const files = computed(() => props.attachments.filter(attachment => attachment.type !== 'image'))
-
-function handleDownload(file: ChatMessageAttachment): void {
-	emit('download', file)
-}
-
-function handleFileClick(file: ChatMessageAttachment): void {
-	emit('file-click', file)
-}
+const { images, files, audios, handleDownload, handleFileClick } = useChatMessageAttachments(props, emit)
 </script>

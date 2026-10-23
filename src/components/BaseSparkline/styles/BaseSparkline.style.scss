@@ -1,0 +1,93 @@
+$sparkline-dot-inset: 4px;
+$sparkline-x: calc(#{$sparkline-dot-inset} + (100% - #{$sparkline-dot-inset * 2}) * var(--sparkline-x, 0) / 100);
+$sparkline-mark: var(--sparkline-color, #{ct(sparkline-mark, bg, var(--rise-primary))});
+
+.base-sparkline {
+	@include ltr-surface;
+
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: sz(48px);
+	color: var(--rise-text);
+	@include text-size(xs);
+
+	&__svg {
+		display: block;
+		width: calc(100% - #{$sparkline-dot-inset * 2});
+		height: 100%;
+		margin-inline: $sparkline-dot-inset;
+		overflow: visible;
+	}
+
+	&__line {
+		fill: none;
+		stroke: $sparkline-mark;
+		stroke-width: 2px;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		vector-effect: non-scaling-stroke;
+	}
+
+	&__area {
+		fill: $sparkline-mark;
+		fill-opacity: 0.1;
+		stroke: none;
+	}
+
+	&__dot {
+		position: absolute;
+		inset-inline-start: $sparkline-x;
+		width: 8px;
+		height: 8px;
+		border-radius: var(--rise-radius-xs);
+		background-color: $sparkline-mark;
+		box-shadow: 0 0 0 2px ct(sparkline-dot, border, var(--rise-bg));
+		transform: translate(-50%, -50%);
+		pointer-events: none;
+	}
+
+	&__bars {
+		display: flex;
+		align-items: flex-end;
+		gap: ct(sparkline-bars, gap, 2px);
+		height: 100%;
+	}
+
+	&__bar {
+		flex: 1 1 0;
+		max-width: 24px;
+		border-radius: ct(sparkline-bar, radius, 2px) ct(sparkline-bar, radius, 2px) 0 0;
+		background-color: $sparkline-mark;
+		opacity: 0.85;
+	}
+
+	&__bar--active {
+		opacity: 1;
+	}
+
+	&__tooltip {
+		position: absolute;
+		bottom: calc(100% + 6px);
+		inset-inline-start: $sparkline-x;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: space(ct(sparkline-tooltip, padding-y, 4px) ct(sparkline-tooltip, padding-x, 8px));
+		@include floating-surface(null);
+		border: 1px solid ct(sparkline-tooltip, border, transparent);
+		border-radius: sz(ct(sparkline-tooltip, radius, var(--rise-radius-md)));
+		background-color: ct(sparkline-tooltip, bg, var(--rise-surface-floating));
+		box-shadow: ct(sparkline-tooltip, shadow, var(--rise-shadow-lg));
+		color: ct(sparkline-tooltip, text, var(--rise-text-muted));
+		white-space: nowrap;
+		transform: translateX(-50%);
+		pointer-events: none;
+
+		strong {
+			color: var(--rise-text-highlighted);
+			font-weight: var(--rise-font-weight-semibold);
+		}
+	}
+}

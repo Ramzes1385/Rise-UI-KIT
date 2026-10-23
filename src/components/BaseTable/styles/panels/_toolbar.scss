@@ -1,0 +1,53 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+		padding: space(12px 16px);
+		border-bottom: 1px solid var(--tbl-border);
+	}
+
+	&__search {
+		flex: 1 1 sz(160px);
+		min-width: sz(160px);
+		max-width: sz(320px);
+	}
+
+	&__search-icon {
+		display: flex;
+		align-items: center;
+		padding-inline-start: sz(var(--rise-control-padding-x));
+		color: var(--rise-text-muted);
+	}
+
+	&__filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+	}
+
+	&__filters &__filter-field {
+		width: sz(144px);
+	}
+
+	&__filters &__filter-field--operator {
+		width: sz(120px);
+	}
+
+	&__filters &__filter-field--value {
+		width: sz(136px);
+	}
+
+	&__active-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: space(6px);
+		width: 100%;
+	}
+}

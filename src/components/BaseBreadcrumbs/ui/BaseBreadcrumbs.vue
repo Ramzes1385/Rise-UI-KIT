@@ -1,38 +1,24 @@
 <template>
-	<div
-		class="base-breadcrumbs"
-		:class="[variantClass, classes.root]"
+	<nav
+		ref="rootRef"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		:aria-label="UI_ARIA.BREADCRUMBS">
-		<!-- Schema.org JSON-LD для SEO. v-html безопасен: schemaJson экранирует </script> (см. schemaUtils). -->
-		<!-- eslint-disable-next-line vue/no-v-text-v-html-on-component -->
-		<component :is="'script'" type="application/ld+json" v-html="schemaJson" />
+		:aria-label="UI_ARIA.BREADCRUMBS_NAV">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
-		<ol class="base-breadcrumbs__list" :class="classes.list" itemscope itemtype="https://schema.org/BreadcrumbList">
-			<!-- Иконка дома -->
-			<li
-				v-if="showHome && items.length"
-				class="base-breadcrumbs__item base-breadcrumbs__item--home"
-				:class="classes.item"
-				itemprop="itemListElement"
-				itemscope
-				itemtype="https://schema.org/ListItem">
+		<TransitionGroup tag="ol" :name="revealName" :css="isRevealAnimated" :class="[ui('list'), classes.list]" @leave="leaveAtOnce">
+			<li v-if="showHome && items.length" key="home" :class="[ui('item'), 'base-breadcrumbs__item--home', classes.item]">
 				<slot name="home">
-					<BaseButton
-						variant="ghost"
-						:padding="2"
-						class="base-breadcrumbs__link"
-						:custom-class="classes.link"
-						:size-scale="sizeScale"
-						@click="handleHomeClick">
-						<BaseIcon
-							:name="homeIcon"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							:custom-class="classes.homeIcon" />
-					</BaseButton>
+					<component
+						:is="getLink(items[0]!).is"
+						v-bind="getLink(items[0]!).attrs"
+						:class="[ui('link'), 'base-breadcrumbs__link--home', classes.link]"
+						:aria-label="items[0]?.label"
+						@click="handleItemClick(items[0]!)">
+						<BaseIcon :name="homeIcon" :size-scale="iconScale" :custom-class="classes.homeIcon" />
+					</component>
 				</slot>
-				<meta itemprop="position" content="1" />
-				<span class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
+				<span :class="[ui('sep'), classes.separator]" aria-hidden="true">
 					<slot name="separator" :index="-1">
 						<BreadcrumbsSeparator
 							:separator="separator"
@@ -43,21 +29,25 @@
 				</span>
 			</li>
 
-			<!-- Скрытые элементы (многоточие) -->
-			<template v-if="collapsedItems.length > 0">
-				<li class="base-breadcrumbs__item base-breadcrumbs__item--ellipsis" :class="classes.item">
-					<BaseButton
-						variant="ghost"
-						:padding="2"
-						class="base-breadcrumbs__ellipsis-btn"
-						:custom-class="classes.ellipsisBtn"
-						:size-scale="sizeScale"
-						@click="isExpanded = true">
-						…
-					</BaseButton>
+			<template v-if="canCollapse">
+				<li key="ellipsis" :class="[ui('item'), 'base-breadcrumbs__item--ellipsis', classes.item]">
+					<button
+						type="button"
+						:class="[
+							ui('link'),
+							ui('ellipsis-btn'),
+							{ 'base-breadcrumbs__ellipsis-btn--expanded': isExpanded },
+							classes.ellipsisBtn,
+						]"
+						:aria-label="toggleLabel"
+						:aria-expanded="isExpanded"
+						@click="toggleExpanded">
+						<BaseIcon v-if="isExpanded" name="chevron-left" :size-scale="iconScale" />
+						<template v-else>…</template>
+					</button>
 				</li>
-				<li class="base-breadcrumbs__item" :class="classes.item" aria-hidden="true">
-					<span class="base-breadcrumbs__sep" :class="classes.separator">
+				<li v-if="!isExpanded" key="ellipsis-sep" :class="[ui('item'), classes.item]" aria-hidden="true">
+					<span :class="[ui('sep'), classes.separator]">
 						<slot name="separator" :index="0">
 							<BreadcrumbsSeparator
 								:separator="separator"
@@ -69,59 +59,37 @@
 				</li>
 			</template>
 
-			<!-- Видимые элементы -->
 			<li
 				v-for="(item, index) in visibleItems"
-				:key="`${item?.label ?? ''}-${index}`"
-				class="base-breadcrumbs__item"
-				:class="[{ 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]"
-				itemprop="itemListElement"
-				itemscope
-				itemtype="https://schema.org/ListItem">
+				:key="`${realIndex(index)}-${item?.label ?? ''}`"
+				:class="[ui('item'), { 'base-breadcrumbs__item--current': isCurrent(index) }, classes.item]">
 				<slot name="item" :item="item" :index="realIndex(index)">
-					<BaseButton
+					<component
+						:is="getLink(item).is"
 						v-if="!isCurrent(index)"
-						variant="ghost"
-						:padding="4"
-						class="base-breadcrumbs__link"
-						:custom-class="classes.link"
-						:size-scale="sizeScale"
+						v-bind="getLink(item).attrs"
+						:class="[ui('link'), classes.link]"
 						@click="handleItemClick(item)">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							class="base-breadcrumbs__icon"
+							:size-scale="iconScale"
+							:class="ui('icon')"
 							:custom-class="classes.itemIcon" />
-						<BaseText
-							tag="span"
-							:size-scale="calcIconScale('sm', sizeScale)"
-							itemprop="name"
-							:custom-class="classes.itemText"
-							>{{ item.label }}</BaseText
-						>
-					</BaseButton>
-					<span v-else class="base-breadcrumbs__current" :class="classes.current" aria-current="page">
+						<span :class="[ui('text'), classes.itemText]">{{ item.label }}</span>
+					</component>
+					<span v-else :class="[ui('current'), classes.current]" aria-current="page">
 						<BaseIcon
 							v-if="item.icon"
 							:name="item.icon"
-							:size-scale="calcIconScale('xs', sizeScale)"
-							class="base-breadcrumbs__icon"
+							:size-scale="iconScale"
+							:class="ui('icon')"
 							:custom-class="classes.currentIcon" />
-						<BaseText
-							tag="span"
-							:weight="UI_FONT_WEIGHT.SEMIBOLD"
-							:size-scale="calcIconScale('sm', sizeScale)"
-							itemprop="name"
-							:custom-class="classes.currentText"
-							>{{ item.label }}</BaseText
-						>
+						<span :class="[ui('text'), classes.currentText]">{{ item.label }}</span>
 					</span>
 				</slot>
-				<meta :itemprop="'url'" :content="item.to || item.href || ''" />
-				<meta :itemprop="'position'" :content="String(realIndex(index) + 1)" />
 
-				<span v-if="!isCurrent(index)" class="base-breadcrumbs__sep" :class="classes.separator" aria-hidden="true">
+				<span v-if="!isCurrent(index)" :class="[ui('sep'), classes.separator]" aria-hidden="true">
 					<slot name="separator" :index="realIndex(index)">
 						<BreadcrumbsSeparator
 							:separator="separator"
@@ -131,90 +99,57 @@
 					</slot>
 				</span>
 			</li>
-		</ol>
-	</div>
+		</TransitionGroup>
+	</nav>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_ARIA, UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import { navigateAndEmit } from '@utils/navigationUtils'
-import { buildBreadcrumbsSchema } from '@utils/schemaUtils'
-import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
+import '@components/BaseLink/styles/BaseLink.style.scss'
 import '../styles/BaseBreadcrumbs.style.scss'
-import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots, BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import { UI_ARIA } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
+import { kitDefaults } from '@composables/base/useDefaults'
+import BreadcrumbsSeparator from './BreadcrumbsSeparator.vue'
+import { useBaseBreadcrumbs } from '../model/useBaseBreadcrumbs'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseBreadcrumbsEmits, BaseBreadcrumbsProps, BaseBreadcrumbsSlots } from '../types/BaseBreadcrumbs.types'
 
-const props = withDefaults(defineProps<BaseBreadcrumbsProps>(), {
-	separator: 'chevron',
-	maxItems: 0,
-	showHome: false,
-	homeIcon: 'home',
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-breadcrumbs', props, [
-		'root',
-		'list',
-		'item',
-		'ellipsisBtn',
-		'link',
-		'current',
-		'separator',
-		'separatorIcon',
-		'separatorText',
-		'homeIcon',
-		'itemIcon',
-		'itemText',
-		'currentIcon',
-		'currentText',
-	])
-
+const props = withDefaults(
+	defineProps<BaseBreadcrumbsProps>(),
+	kitDefaults('BaseBreadcrumbs', {
+		variant: DEFAULT_VARIANT,
+		separator: 'chevron',
+		maxItems: 0,
+		showHome: false,
+		seo: false,
+		homeIcon: 'home',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseBreadcrumbsEmits>()
 defineSlots<BaseBreadcrumbsSlots>()
 
-const isExpanded = ref(false)
-
-const visibleItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return props.items
-	if (props.items.length <= props.maxItems) return props.items
-	return props.items.slice(-props.maxItems)
-})
-
-const collapsedItems = computed<BreadcrumbItem[]>(() => {
-	if (props.maxItems <= 0 || isExpanded.value) return []
-	if (props.items.length <= props.maxItems) return []
-	return props.items.slice(0, -props.maxItems)
-})
-
-/** Schema.org JSON-LD для SEO */
-const schemaJson = computed((): string => buildBreadcrumbsSchema(props.items))
-
-function isCurrent(index: number): boolean {
-	return index === visibleItems.value.length - 1
-}
-
-function realIndex(visibleIdx: number): number {
-	return props.items.length - visibleItems.value.length + visibleIdx
-}
-
-function navigate(item: BreadcrumbItem): void {
-	navigateAndEmit({ to: item.to, href: item.href }, (url) => emit('navigate', url))
-}
-
-function handleItemClick(item: BreadcrumbItem): void {
-	emit('item-click', item)
-	navigate(item)
-}
-
-function handleHomeClick(): void {
-	/* istanbul ignore next — defensive: home-кнопка рендерится только при items.length > 0 */
-	if (props.items[0]) {
-		navigate(props.items[0])
-	}
-}
+const {
+	ui,
+	rootRef,
+	revealName,
+	isRevealAnimated,
+	leaveAtOnce,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	isExpanded,
+	canCollapse,
+	toggleLabel,
+	toggleExpanded,
+	visibleItems,
+	iconScale,
+	structuredData,
+	isCurrent,
+	realIndex,
+	getLink,
+	handleItemClick,
+} = useBaseBreadcrumbs(props, emit)
 </script>

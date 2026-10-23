@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseText.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['sizes', 'weights', 'custom-color', 'truncate', 'max-lines'] as const
 
-const COMPONENT = 'ui-basetext'
-const STORIES = ['default', 'size-scale', 'weights', 'custom-colors', 'nowrap', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseText — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-text--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseText · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-basetext--${story}`, { theme, height: 240 })
+				await expectStoryScreenshot(page, `base-text-${story}-${theme}.png`)
+			})
+		}
 	})
 }

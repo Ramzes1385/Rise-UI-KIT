@@ -1,0 +1,44 @@
+import { findPanel, dayName } from '../../shared'
+import type meta from '../../BaseDatePicker.stories'
+import type { StoryObj } from '@storybook/vue3-vite'
+import BaseDatePicker from '../../../ui/BaseDatePicker.vue'
+import { within, expect, waitFor, screen } from 'storybook/test'
+import { docsFrame, storyDate, storySource, useStorySetup } from '@/stories/helpers'
+
+const models = { dates: 'selectedDates' }
+
+const template = `
+	<div class="story-narrow">
+		<BaseDatePicker v-bind="args" v-model:selected-dates="dates" />
+	</div>
+`
+
+export const MultipleSelection: StoryObj<typeof meta> = {
+	args: {
+		label: 'Дни дежурства',
+		selectionMode: 'multiple',
+		selectedDates: [storyDate(-7, 0, 0), storyDate(0, 0, 0)],
+	},
+	parameters: {
+		docs: {
+			...docsFrame(420),
+			description: {
+				story: 'Несколько дат (`selectionMode="multiple"`): панель не закрывается после клика; до трёх дат видны в поле списком.',
+			},
+			source: storySource({ template, imports: ['BaseDatePicker'], models }),
+		},
+	},
+	render: args => ({
+		components: { BaseDatePicker },
+		setup: useStorySetup(args, { models, slots: [] }),
+		template,
+	}),
+	play: async ({ canvas, userEvent }) => {
+		const field = canvas.getByLabelText('Дни дежурства')
+		await userEvent.click(field)
+		const panel = within(await findPanel())
+		await userEvent.click(panel.getByRole('button', { name: dayName(7) }))
+		await expect(field).toHaveValue('08.05.2025, 15.05.2025, 22.05.2025')
+		await waitFor(() => expect(screen.getByRole('dialog')).toBeVisible())
+	},
+}

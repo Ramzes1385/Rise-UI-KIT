@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseText.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseText from '../ui/BaseText.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseText unit', () => {
 	describe('рендер', () => {
@@ -54,7 +49,7 @@ describe('BaseText unit', () => {
 				slots: { default: 'Текст' },
 			})
 
-			expect(container.querySelector('.base-text')?.getAttribute('style')).not.toContain('--size-scale')
+			expect(container.querySelector('.base-text')?.getAttribute('style') ?? '').not.toContain('--size-scale')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=150', () => {
@@ -68,12 +63,12 @@ describe('BaseText unit', () => {
 	})
 
 	describe('пропс weight', () => {
-		it('должен устанавливать font-weight: 400 по умолчанию', () => {
+		it('по умолчанию не пишет font-weight inline: вес берётся из тега и CSS', () => {
 			const { container } = render(BaseText, {
 				slots: { default: 'Текст' },
 			})
 
-			expect(container.querySelector('.base-text')?.getAttribute('style')).toContain('font-weight: 400')
+			expect(container.querySelector('.base-text')?.getAttribute('style') ?? '').not.toContain('font-weight')
 		})
 
 		it('должен устанавливать font-weight: 700 когда weight=700', () => {
@@ -141,7 +136,7 @@ describe('BaseText unit', () => {
 				slots: { default: 'Текст' },
 			})
 
-			const style = container.querySelector('.base-text')?.getAttribute('style')
+			const style = container.querySelector('.base-text')?.getAttribute('style') ?? ''
 			expect(style).not.toContain('-webkit-line-clamp')
 		})
 	})

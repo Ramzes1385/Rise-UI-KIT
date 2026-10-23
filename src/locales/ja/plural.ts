@@ -1,0 +1,33 @@
+/** Формы для чисел (японский): по CLDR только `other`, счётные слова — часть строки */
+export const jaPlural = {
+	DATES_SELECTED: { other: '{n} 件の日付を選択中' },
+	DAYS: { other: '{n} 日' },
+	PARTICIPANTS: { other: '{n} 人のメンバー' },
+	CARDS: { other: '{n} 枚のカード' },
+	COMMENTS: { other: '{n} 件のコメント' },
+	ATTACHMENTS: { other: '{n} 件の添付ファイル' },
+	JSON_KEYS: { other: '{n} 個のキー' },
+	MEGA_MENU_ITEMS: { other: '{n} 件' },
+	JSON_ITEMS: { other: '{n} 件' },
+	SIGNATURE_STROKES: { other: '{n} ストローク' },
+	NOTIFICATIONS_UNREAD: { other: '新着 {n} 件' },
+	CHAT_UNREAD: { other: '未読メッセージ {n} 件' },
+	CHAT_MAX_FILES: { other: '添付できるファイルは {n} 件までです' },
+	REPLIES: { other: '{n} 件の返信' },
+	BADGES_MORE: { other: '他に {n} 個のバッジ' },
+	BREADCRUMBS_HIDDEN: { other: 'さらに {n} 階層を表示' },
+	GANTT_DAYS: { other: '{n} 日' },
+	CRYPTOPRO_EXPIRES: { other: '{n} 日後に期限切れ' },
+	SEARCH_RESULTS: { other: '{n} 件の結果が見つかりました' },
+	FILE_MANAGER_ITEMS: { other: '{n} 件' },
+	TABLE_HIDDEN_SELECTED: { other: '選択した {n} 行は検索またはフィルターで非表示ですが、選択されたままです' },
+	FILE_MANAGER_SELECTED: { other: '{n} 件を選択中' },
+	ROADMAP_STAGES: { other: '{n} ステージ' },
+	ROADMAP_TOPICS: { other: '{n} 件のトピック' },
+	ROADMAP_OF_TOPICS: { other: '{n} 件のトピック' },
+	ROADMAP_OF_SUBTOPICS: { other: '{n} 件のサブトピック' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { other: '{n} 件' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { other: '{n} 本の接続' },
+}

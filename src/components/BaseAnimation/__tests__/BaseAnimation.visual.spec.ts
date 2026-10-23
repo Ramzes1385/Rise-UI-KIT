@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseAnimation.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['default', 'names', 'list'] as const
 
-const COMPONENT = 'ui-baseanimation'
-const STORIES = ['default', 'all-types', 'modes', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseAnimation — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-animation--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseAnimation · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseanimation--${story}`, { theme, height: 400 })
+				await expectStoryScreenshot(page, `base-animation-${story}-${theme}.png`)
+			})
+		}
 	})
 }

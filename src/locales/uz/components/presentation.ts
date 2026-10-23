@@ -1,0 +1,25 @@
+/** Ovoz yozuvli BasePresentationPlayer taqdimoti (lugʻatning `presentation` boʻlimi) */
+export const uzPresentation = {
+	presentation: {
+		PREVIOUS: 'Oldingi slayd',
+		NEXT: 'Keyingi slayd',
+		SLIDES: 'Slaydlar',
+		STATUS: '{total} tadan {n}-slayd: {title}',
+		SLIDE_HINT: '{n}. {title}',
+		REPLAY: 'Boshidan koʻrish',
+		LOCKED: '{n} s dan keyin mavjud',
+		LOCKED_AUDIO: 'Ovoz yozuvidan keyin mavjud',
+		RESUME: '{n}-slayddan davom ettirilsinmi?',
+		RESUME_YES: 'Davom ettirish',
+		RESUME_NO: 'Boshidan',
+		DONE: 'Oʻtildi',
+		FINISHED: 'Koʻrsatuv tugadi',
+		DONE_TEXT: 'Oʻtilgan slaydlar: {total} tadan {completed}',
+		LOCKED_QUIZ: 'Davom etish uchun savolga javob bering',
+		SLIDE_LIST: 'Slaydlar roʻyxati',
+		NOTES: 'Stenogramma',
+		NOTES_EMPTY: 'Bu slaydda stenogramma yoʻq',
+		SLIDE_DONE: 'Oʻtilgan',
+		SLIDE_LOCKED: 'Mavjud emas',
+	},
+}

@@ -1,0 +1,225 @@
+.base-card-input {
+	display: flex;
+	flex-direction: column;
+	gap: ct(card-input, gap, sz(6px));
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	&__legend {
+		margin-bottom: sz(4px);
+		padding: 0;
+		@include field-label;
+
+		&--hidden {
+			@include visually-hidden;
+		}
+	}
+
+	&__preview {
+		container-type: inline-size;
+		width: 100%;
+		max-width: sz(340px);
+		aspect-ratio: 85.6 / 53.98;
+		margin-bottom: sz(6px);
+		perspective: sz(1000px);
+		color: ct(card-input, face-text, var(--rise-color-neutral-50));
+		font-size: ct(card-input, face-font-size, sz(var(--rise-font-size-sm)));
+	}
+
+	&__preview-inner {
+		position: relative;
+		height: 100%;
+		transform-style: preserve-3d;
+
+		@include motion-safe {
+			transition: transform var(--rise-duration-slow) var(--rise-ease);
+		}
+	}
+
+	&__preview--flipped &__preview-inner {
+		transform: rotateY(180deg);
+	}
+
+	&__face {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		overflow: hidden;
+		padding: sz(16px 20px);
+		border-radius: ct(card-input, face-radius, sz(var(--rise-radius-xl)));
+		background: var(--base-card-input-face-custom-bg, #{ct(card-input, face-bg, var(--base-card-input-face-bg))});
+		box-shadow: ct(card-input, face-shadow, none);
+		backface-visibility: hidden;
+
+		&--front {
+			grid-template: 'chip brand' auto 'number number' 1fr 'holder expiry' auto / minmax(0, 1fr) auto;
+			column-gap: sz(12px);
+			align-items: center;
+		}
+
+		&--cover {
+			isolation: isolate;
+			text-shadow: 0 1px 2px var(--rise-media-scrim);
+		}
+
+		&--back {
+			align-content: start;
+			padding: sz(20px 0);
+			transform: rotateY(180deg);
+		}
+	}
+
+	&__chip {
+		grid-area: chip;
+		width: sz(40px);
+		height: sz(30px);
+		border-radius: sz(var(--rise-radius-md));
+		background: var(--rise-color-warning-300);
+	}
+
+	&__face-brand {
+		grid-area: brand;
+		justify-self: end;
+		font-size: sz(var(--rise-font-size-lg));
+	}
+
+	&__face-number {
+		grid-area: number;
+		font-family: var(--rise-font-mono);
+		font-size: min(#{sz(var(--rise-font-size-xl))}, 5.6cqi);
+		letter-spacing: 0.06em;
+		white-space: nowrap;
+	}
+
+	&__face-holder {
+		grid-area: holder;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-transform: uppercase;
+		white-space: nowrap;
+		@include caps-tracking(0.06em);
+	}
+
+	&__face-expiry {
+		display: flex;
+		grid-area: expiry;
+		flex-direction: column;
+		align-items: flex-end;
+		font-family: var(--rise-font-mono);
+	}
+
+	&__face-caption {
+		font-family: var(--rise-font-sans);
+		font-size: sz(var(--rise-font-size-2xs));
+		text-transform: uppercase;
+		opacity: 0.75;
+	}
+
+	&__stripe {
+		height: sz(40px);
+		background: var(--rise-color-neutral-950);
+	}
+
+	&__face-code {
+		justify-self: end;
+		min-width: sz(56px);
+		margin: sz(16px 20px 0);
+		padding: sz(4px 10px);
+		border-radius: sz(var(--rise-radius-sm));
+		background: var(--rise-color-neutral-50);
+		color: var(--rise-color-neutral-900);
+		font-family: var(--rise-font-mono);
+		text-align: end;
+	}
+
+	&__fields {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: ct(card-input, fields-gap, sz(12px));
+	}
+
+	&__number,
+	&__holder {
+		grid-column: 1 / -1;
+	}
+
+	&--inline &__fields {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		container-type: inline-size;
+	}
+
+	&--inline &__number {
+		flex: 1000 1 sz(256px);
+
+		@container (max-width: 503px) {
+			flex-basis: 100%;
+		}
+	}
+
+	&--inline &__expiry {
+		flex: 1 0 sz(128px);
+	}
+
+	&--inline &__code {
+		flex: 1 0 sz(96px);
+	}
+
+	&--inline &__holder {
+		flex: 1 0 100%;
+	}
+
+	&--inline .base-input__label {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.base-input__field {
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__brand {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		margin-inline-end: sz(8px);
+		color: ct(card-input, brand-text, var(--rise-text-muted));
+	}
+
+	&__brand-icon {
+		width: auto;
+		height: ct(card-input, brand-icon-size, sz(22px));
+	}
+
+	&__brand-image {
+		width: auto;
+		height: ct(card-input, brand-icon-size, sz(22px));
+	}
+
+	&__brand-name {
+		padding: sz(1px 6px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		white-space: nowrap;
+		@include caps-label(10px);
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+
+	&__error {
+		color: var(--rise-error-text);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+}
+
+@include enter-scale(base-card-input-brand);
+
+.base-card-input-brand-leave-active {
+	position: absolute;
+}

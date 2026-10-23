@@ -1,17 +1,19 @@
 <template>
-	<div ref="wrapperRef" class="base-dropdown" :class="classes.root">
+	<div ref="wrapperRef" :class="[ui('root'), classes.root]">
 		<slot />
 
-		<Teleport to="body">
-			<Transition name="dropdown">
+		<Teleport defer :to="teleportTarget">
+			<Transition name="base-dropdown">
 				<div
 					v-if="isOpen"
 					ref="dropdownRef"
-					class="base-dropdown__panel"
-					:class="[panelClass, variantClass, classes.panel]"
-					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
+					:class="[ui('panel'), animationClass, sideClass, panelClass, variantClass, arrowPanelClass, classes.panel]"
+					:style="[panelStyle, paddingStyle, sizeScaleStyle, variantStyle, customColorStyle, layerStyle]"
+					v-bind="inheritedTheme"
 					@mousedown="handlePanelMousedown"
-					@focusin="handlePanelFocusin">
+					@focusin="handlePanelFocusin"
+					@keydown="handlePanelKeydown">
+					<span v-if="showArrow" :class="[ui('arrow'), classes.arrow]" aria-hidden="true" />
 					<slot name="dropdown" />
 				</div>
 			</Transition>
@@ -20,105 +22,54 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useClickOutside } from '@composables/useClickOutside'
-import { useDropdownPosition } from '@composables/useDropdownPosition'
-import { useEscapeKey } from '@composables/useEscapeKey'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { usePadding } from '@composables/usePadding'
-import { UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
-import { getActiveElement } from '@utils/domUtils'
 import '../styles/BaseDropdown.style.scss'
-import type { BaseDropdownEmits, BaseDropdownProps, BaseDropdownSlots } from '../model/BaseDropdown.types'
+import { useBaseDropdown } from '../model/useBaseDropdown'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseDropdownEmits, BaseDropdownExpose, BaseDropdownProps, BaseDropdownSlots } from '../types/BaseDropdown.types'
 
-const props = withDefaults(defineProps<BaseDropdownProps>(), {
-	isOpen: false,
-	position: 'bottom-start',
-	gap: UI_SIZE.GAP.SM,
-	maxHeight: UI_SIZE.PANEL_MAX_HEIGHT,
-	matchWidth: false,
-	panelClass: '',
-	padding: 8,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-const { wasPropPassed } = useExplicitPropDetection()
-
-const closeOnEscape = computed(() =>
-	wasPropPassed('closeOnEscape') || wasPropPassed('close-on-escape') ? (props.closeOnEscape ?? true) : true,
+const props = withDefaults(
+	defineProps<BaseDropdownProps>(),
+	kitDefaults('BaseDropdown', {
+		variant: DEFAULT_VARIANT,
+		isOpen: false,
+		position: 'bottom-start',
+		gap: 4,
+		maxHeight: '320px',
+		matchWidth: false,
+		panelClass: '',
+		padding: undefined,
+		showArrow: false,
+		trapFocus: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
+	}),
 )
-const preventMousedown = computed(() =>
-	wasPropPassed('preventMousedown') || wasPropPassed('prevent-mousedown')
-		? (props.preventMousedown ?? true)
-		: true,
-)
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-dropdown__panel', props, ['root', 'panel'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--dd-pad', defaultPadding: UI_SIZE.PADDING.SM })
-
 const emit = defineEmits<BaseDropdownEmits>()
 defineSlots<BaseDropdownSlots>()
 
-const wrapperRef = ref<HTMLElement | null>(null)
-const dropdownRef = ref<HTMLElement | null>(null)
-
-/** Элемент с фокусом до открытия панели */
-const savedActiveElement = ref<HTMLElement | null>(null)
-
-/** Сохранение активного элемента при открытии */
-watch(
-	() => props.isOpen,
-	value => {
-		if (value) {
-			savedActiveElement.value = getActiveElement()
-		} else {
-			savedActiveElement.value = null
-		}
-	},
-)
-
-/** Позиционирование выпадающей панели */
-const { panelStyle, updatePosition } = useDropdownPosition({
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	teleportTarget,
 	wrapperRef,
+	inheritedTheme,
+	layerStyle,
 	dropdownRef,
-	position: () => props.position,
-	gap: () => props.gap,
-	matchWidth: () => props.matchWidth,
-	maxHeight: () => props.maxHeight,
-	isOpen: () => props.isOpen,
-})
+	panelStyle,
+	arrowPanelClass,
+	paddingStyle,
+	handlePanelMousedown,
+	handlePanelFocusin,
+	handlePanelKeydown,
+	exposed,
+	ui,
+	animationClass,
+	sideClass,
+} = useBaseDropdown(props, emit)
 
-/** Закрытие дропдауна: эмитит update:isOpen и close */
-function handleClose(): void {
-	emit('update:isOpen', false)
-	emit('close')
-}
-
-/** Закрытие по клику снаружи */
-useClickOutside({
-	targets: [wrapperRef, dropdownRef],
-	callback: handleClose,
-	isActive: () => props.isOpen,
-})
-
-/** Закрытие по Escape */
-useEscapeKey({
-	isActive: () => props.isOpen && closeOnEscape.value,
-	callback: handleClose,
-})
-
-/** Предотвратить mousedown внутри панели */
-function handlePanelMousedown(event: MouseEvent): void {
-	if (preventMousedown.value) {
-		event.preventDefault()
-	}
-}
-
-/** Вернуть фокус на триггер при фокусе внутри панели */
-function handlePanelFocusin(): void {
-	if (preventMousedown.value && savedActiveElement.value) {
-		savedActiveElement.value.focus()
-	}
-}
-
-defineExpose({ updatePosition })
+defineExpose<BaseDropdownExpose>(exposed)
 </script>

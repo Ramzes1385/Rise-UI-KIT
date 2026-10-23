@@ -1,14 +1,9 @@
-/**
- * Unit-тесты для BaseRating.
- * Проверяют рендер звёзд, дробную заливку, выбор по шагу, emits, клавиатуру и a11y.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { describe, expect, it, vi } from 'vitest'
+import { setLocale } from '@/locales/state'
 import BaseRating from '../ui/BaseRating.vue'
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Зафиксировать геометрию звезды для предсказуемого расчёта позиции клика */
 function mockStarRect(star: HTMLElement, width = 20): void {
 	vi.spyOn(star, 'getBoundingClientRect').mockReturnValue({
 		left: 0,
@@ -28,7 +23,7 @@ function getStars(container: ParentNode): HTMLElement[] {
 }
 
 function fillWidth(star: HTMLElement): string {
-	return star.querySelector<HTMLElement>('.base-rating__star-fill')!.style.width
+	return star.querySelector<HTMLElement>('.base-rating__star-fill')!.style.getPropertyValue('--rating-fill-size')
 }
 
 describe('BaseRating unit', () => {
@@ -83,19 +78,19 @@ describe('BaseRating unit', () => {
 		})
 	})
 
-	describe('точечный выбор по клику (isHoverSmooth по умолчанию)', () => {
-		it('должен фиксировать точное значение позиции при step=1', async () => {
+	describe('выбор по клику с привязкой к шагу (isHoverSmooth по умолчанию)', () => {
+		it('должен привязывать клик к шагу при step=1', async () => {
 			const { container, emitted } = render(BaseRating, { props: { step: 1 } })
 
 			const star = getStars(container)[2]
 			mockStarRect(star)
 			await fireEvent.click(star, { clientX: 13 })
 
-			expect(emitted()['update:modelValue']).toEqual([[2.65]])
-			expect(emitted().change).toEqual([[2.65]])
+			expect(emitted()['update:modelValue']).toEqual([[3]])
+			expect(emitted().change).toEqual([[3]])
 		})
 
-		it('должен фиксировать точную позицию совпадающую с предпросмотром hover', async () => {
+		it('должен привязывать клик к шагу, сохраняя плавный предпросмотр hover', async () => {
 			const { container, emitted } = render(BaseRating, { props: { step: 1 } })
 
 			const star = getStars(container)[3]
@@ -105,7 +100,28 @@ describe('BaseRating unit', () => {
 			await fireEvent.click(star, { clientX: 5 })
 
 			expect(hoverFill).toBe('25%')
-			expect(emitted()['update:modelValue']).toEqual([[3.25]])
+			expect(emitted()['update:modelValue']).toEqual([[4]])
+			expect(fillWidth(star)).toBe('100%')
+		})
+
+		it('должен записывать целую оценку при пропсах по умолчанию', async () => {
+			const { container, emitted } = render(BaseRating)
+
+			const star = getStars(container)[2]
+			mockStarRect(star)
+			await fireEvent.click(star, { clientX: 13 })
+
+			expect(emitted()['update:modelValue']).toEqual([[3]])
+		})
+
+		it('должен привязывать клик к половинкам при step=0.5', async () => {
+			const { container, emitted } = render(BaseRating, { props: { step: 0.5 } })
+
+			const star = getStars(container)[2]
+			mockStarRect(star)
+			await fireEvent.click(star, { clientX: 4 })
+
+			expect(emitted()['update:modelValue']).toEqual([[2.5]])
 		})
 	})
 
@@ -248,6 +264,31 @@ describe('BaseRating unit', () => {
 			expect(emitted()['update:modelValue']).toEqual([[5]])
 		})
 
+		it('должен ставить 0 по Home', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 3 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'Home' })
+
+			expect(emitted()['update:modelValue']).toEqual([[0]])
+			expect(emitted().change).toEqual([[0]])
+		})
+
+		it('должен ставить максимум по End', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 1, max: 7 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'End' })
+
+			expect(emitted()['update:modelValue']).toEqual([[7]])
+		})
+
+		it('не должен реагировать на Home и End при isDisabled=true', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 3, isDisabled: true } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'End' })
+
+			expect(emitted()['update:modelValue']).toBeUndefined()
+		})
+
 		it('должен игнорировать клавиши кроме стрелок', async () => {
 			const { container, emitted } = render(BaseRating, { props: { modelValue: 2 } })
 
@@ -331,10 +372,48 @@ describe('BaseRating unit', () => {
 			expect(slider).toHaveAttribute('aria-valuenow', '3')
 		})
 
-		it('должен убирать слайдер из таб-порядка при isReadonly', () => {
-			render(BaseRating, { props: { isReadonly: true } })
+		it('должен озвучивать значение текстом «N из max» (aria-valuetext)', () => {
+			render(BaseRating, { props: { max: 5, modelValue: 3.5 } })
 
-			expect(screen.getByRole('slider')).toHaveAttribute('tabindex', '-1')
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3,5 из 5')
+		})
+
+		it('должен показывать рейтинг только для чтения изображением с оценкой в имени, вне порядка Tab', () => {
+			render(BaseRating, { props: { isReadonly: true, modelValue: 4.5 } })
+
+			const rating = screen.getByRole('img', { name: 'Оценка 4,5 из 5' })
+			expect(rating).not.toHaveAttribute('tabindex')
+			expect(rating).not.toHaveAttribute('aria-valuenow')
+			expect(screen.queryByRole('slider')).not.toBeInTheDocument()
+		})
+
+		it('должен помечать отключённый слайдер aria-disabled и не давать ему фокус', () => {
+			const { container } = render(BaseRating, { props: { isDisabled: true, modelValue: 2 } })
+
+			const slider = screen.getByRole('slider')
+			expect(slider).toHaveAttribute('aria-disabled', 'true')
+			expect(slider).not.toHaveAttribute('tabindex')
+			expect(container.querySelector('.base-rating')).toHaveClass('base-rating--disabled')
+		})
+
+		it('должен оставаться отключённым слайдером при isReadonly и isDisabled одновременно', () => {
+			render(BaseRating, { props: { isReadonly: true, isDisabled: true } })
+
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-disabled', 'true')
+		})
+
+		it('должен помечать интерактивный рейтинг классом --interactive, а только для чтения — нет', async () => {
+			const { container, rerender } = render(BaseRating, { props: { modelValue: 2 } })
+			const root = container.querySelector('.base-rating')
+
+			expect(root).toHaveClass('base-rating--interactive')
+			expect(screen.getByRole('slider')).toHaveAttribute('tabindex', '0')
+
+			await rerender({ isReadonly: true })
+
+			expect(root).not.toHaveClass('base-rating--interactive')
+			expect(root).toHaveClass('base-rating--readonly')
+			expect(root).toHaveAttribute('role', 'img')
 		})
 	})
 
@@ -393,6 +472,14 @@ describe('BaseRating unit', () => {
 
 			const fillIcon = container.querySelector('.base-rating__star-fill use')
 			expect(fillIcon?.getAttribute('href')).toContain('heart')
+		})
+
+		it('для звезды по умолчанию заполняет сплошной иконкой star-filled: заполненные отличаются формой, а не только цветом', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1 } })
+
+			const star = container.querySelector('.base-rating__star')!
+			expect(star.querySelector(':scope > .base-icon use')?.getAttribute('href')).toMatch(/#star$/)
+			expect(star.querySelector('.base-rating__star-fill use')?.getAttribute('href')).toMatch(/#star-filled$/)
 		})
 
 		it('должен использовать отдельную иконку для заполненного состояния', () => {
@@ -461,7 +548,7 @@ describe('BaseRating unit', () => {
 		it('должен вызывать focus на корневом элементе через exposed.focus()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseRating)
-			const root = wrapper.find('.base-rating').element
+			const root = wrapper.find('.base-rating').element as HTMLElement
 			const focusSpy = vi.spyOn(root, 'focus')
 
 			const exposed = wrapper.vm as unknown as { focus: () => void }
@@ -474,7 +561,7 @@ describe('BaseRating unit', () => {
 		it('должен вызывать blur на корневом элементе через exposed.blur()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseRating)
-			const root = wrapper.find('.base-rating').element
+			const root = wrapper.find('.base-rating').element as HTMLElement
 			const blurSpy = vi.spyOn(root, 'blur')
 
 			const exposed = wrapper.vm as unknown as { blur: () => void }
@@ -506,6 +593,185 @@ describe('BaseRating unit', () => {
 
 			expect(() => exposed.reset()).not.toThrow()
 			wrapper.unmount()
+		})
+	})
+
+	describe('точный выбор (step=0.1)', () => {
+		function valueLabel(container: ParentNode): HTMLElement | null {
+			return container.querySelector<HTMLElement>('.base-rating__value')
+		}
+
+		it('PageUp и PageDown меняют оценку на целую звезду', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 2.3, step: 0.1 } })
+			const root = container.querySelector('.base-rating')!
+
+			await fireEvent.keyDown(root, { key: 'PageUp' })
+			await fireEvent.keyDown(root, { key: 'PageDown' })
+
+			expect(emitted()['update:modelValue']).toEqual([[3.3], [1.3]])
+		})
+
+		it('PageUp не выходит за max', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 4.6, step: 0.1 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'PageUp' })
+
+			expect(emitted()['update:modelValue']).toEqual([[5]])
+		})
+
+		it('стрелки меняют оценку на 0.1 без накопления погрешности', async () => {
+			const { container, emitted } = render(BaseRating, { props: { modelValue: 0.2, step: 0.1 } })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'ArrowRight' })
+
+			expect(emitted()['update:modelValue']).toEqual([[0.3]])
+		})
+
+		it('не показывает число без isValueShown', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 3 } })
+
+			expect(valueLabel(container)).toBeNull()
+		})
+
+		it('показывает текущую оценку со знаками как у step', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 3, step: 0.1, isValueShown: true } })
+
+			expect(valueLabel(container)).toHaveTextContent('3,0')
+			expect(valueLabel(container)).toHaveAttribute('aria-hidden', 'true')
+		})
+
+		it('при наведении показывает оценку, которую запишет клик, а не плавную заливку', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			expect(valueLabel(container)).toHaveTextContent('2,4')
+			expect(fillWidth(star)).toBe('35%')
+
+			await fireEvent.mouseLeave(container.querySelector('.base-rating')!)
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('клавиатура сбрасывает предпросмотр под курсором', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			await fireEvent.keyDown(container.querySelector('.base-rating')!, { key: 'ArrowRight' })
+
+			expect(fillWidth(star)).toBe('0%')
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('не меняет предпросмотр при isReadonly', async () => {
+			const { container } = render(BaseRating, { props: { modelValue: 1, step: 0.1, isValueShown: true, isReadonly: true } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.mouseMove(star, { clientX: 7 })
+
+			expect(valueLabel(container)).toHaveTextContent('1,0')
+		})
+
+		it('озвучивает десятые в формате языка', () => {
+			render(BaseRating, { props: { modelValue: 3.7, step: 0.1 } })
+
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3,7 из 5')
+		})
+
+		it('озвучивает десятые по-английски с точкой', () => {
+			setLocale('en')
+			try {
+				render(BaseRating, { props: { modelValue: 3.7, step: 0.1, isValueShown: true } })
+
+				expect(screen.getByRole('slider')).toHaveAttribute('aria-valuetext', '3.7 of 5')
+			} finally {
+				setLocale('ru')
+			}
+		})
+	})
+
+	describe('проверка max, step и оценки', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		it('оценка больше max: aria-valuenow = max, звёзды заполнены целиком', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 9, max: 5 } })
+			const slider = screen.getByRole('slider')
+
+			expect(slider).toHaveAttribute('aria-valuenow', '5')
+			expect(slider).toHaveAttribute('aria-valuetext', '5 из 5')
+			expect(getStars(container).map(fillWidth)).toEqual(['100%', '100%', '100%', '100%', '100%'])
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('отрицательная оценка показывается как 0', () => {
+			render(BaseRating, { props: { modelValue: -2 } })
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '0')
+		})
+
+		it('NaN в оценке — 0 с предупреждением', () => {
+			render(BaseRating, { props: { modelValue: Number.NaN } })
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '0')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `modelValue` = NaN'))
+		})
+
+		it.each([0, -1, Number.NaN])('step = %s заменяется на 1: стрелка даёт следующую целую оценку, а не NaN', async step => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 2, step } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowRight' })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `step`'))
+		})
+
+		it('step = 0: клик по звезде даёт число', async () => {
+			const { container, emitted } = render(BaseRating, { props: { step: 0 } })
+			const star = getStars(container)[2]
+			mockStarRect(star)
+
+			await fireEvent.click(star, { clientX: 5 })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+		})
+
+		it('дробный max округляется до целого числа звёзд', () => {
+			const { container } = render(BaseRating, { props: { modelValue: 4, max: 4.6 } })
+
+			expect(getStars(container)).toHaveLength(5)
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-valuemax', '5')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseRating: `max` = 4.6 — не целое число, используется 5'))
+		})
+
+		it('max = 0 заменяется на 5 звёзд', () => {
+			const { container } = render(BaseRating, { props: { max: 0 } })
+			expect(getStars(container)).toHaveLength(5)
+		})
+
+		it('End ставит проверенный max', async () => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 1, max: 2.8 } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'End' })
+
+			expect(emitted('update:modelValue')).toEqual([[3]])
+		})
+
+		it('PageDown от оценки больше max считает от max', async () => {
+			const { emitted } = render(BaseRating, { props: { modelValue: 12, max: 5 } })
+
+			await fireEvent.keyDown(screen.getByRole('slider'), { key: 'PageDown' })
+
+			expect(emitted('update:modelValue')).toEqual([[4]])
 		})
 	})
 })

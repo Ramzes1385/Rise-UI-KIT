@@ -1,11 +1,7 @@
-/**
- * Unit-тесты для BaseInput.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseInput from '../ui/BaseInput.vue'
+import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 describe('BaseInput unit', () => {
 	describe('рендер', () => {
@@ -39,6 +35,14 @@ describe('BaseInput unit', () => {
 			const { container } = render(BaseInput, { props: { modelValue: '' } })
 
 			expect(container.querySelector('.base-input__label')).not.toBeInTheDocument()
+		})
+
+		it('связывает label с полем: поле находится по тексту метки и получает её как доступное имя', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field.tagName).toBe('INPUT')
+			expect(field).toHaveAccessibleName('Email')
 		})
 	})
 
@@ -97,6 +101,22 @@ describe('BaseInput unit', () => {
 
 			expect(container.firstElementChild?.classList.contains('base-input--error')).toBe(true)
 		})
+
+		it('помечает поле aria-invalid и связывает с текстом ошибки через aria-describedby', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email', error: 'Неверный адрес' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field).toHaveAttribute('aria-invalid', 'true')
+			expect(field).toHaveAccessibleDescription('Неверный адрес')
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BaseInput, { props: { modelValue: '', label: 'Email' } })
+
+			const field = screen.getByLabelText('Email')
+			expect(field).not.toHaveAttribute('aria-invalid')
+			expect(field).not.toHaveAttribute('aria-describedby')
+		})
 	})
 
 	describe('пропс isRequired', () => {
@@ -154,6 +174,24 @@ describe('BaseInput unit', () => {
 			})
 
 			expect(container.firstElementChild?.getAttribute('style')).toContain('--size-scale: 1.5')
+		})
+
+		it('должен фиксировать размер иконки пароля при sizeScale=125: иконка 20px, а не 25px', () => {
+			const { container } = render(BaseInput, {
+				props: { modelValue: '', type: 'password', sizeScale: 125 },
+			})
+
+			const icon = container.querySelector('.base-input__password-toggle .base-icon') as HTMLElement
+			expect(icon.style.getPropertyValue('--size-scale')).toBe('1.0001')
+		})
+
+		it('должен оставлять иконку пароля наследующей масштаб при sizeScale=100', () => {
+			const { container } = render(BaseInput, {
+				props: { modelValue: '', type: 'password', sizeScale: 100 },
+			})
+
+			const icon = container.querySelector('.base-input__password-toggle .base-icon') as HTMLElement
+			expect(icon.style.getPropertyValue('--size-scale')).toBe('0.8')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=0.75', () => {
@@ -354,6 +392,17 @@ describe('BaseInput unit', () => {
 
 			expect(toggle.getAttribute('aria-label')).toBe('Скрыть пароль')
 		})
+
+		it('кнопка показа пароля доступна с клавиатуры: в порядке Tab, без tabindex=-1', async () => {
+			render(BaseInput, { props: { modelValue: 'secret', type: 'password', ariaLabel: 'Пароль' } })
+			const toggle = screen.getByRole('button', { name: 'Показать пароль' })
+			expect(toggle).not.toHaveAttribute('tabindex')
+			screen.getByLabelText('Пароль').focus()
+			await userEvent.tab()
+			expect(toggle).toHaveFocus()
+			await userEvent.keyboard('{Enter}')
+			expect(screen.getByRole('button', { name: 'Скрыть пароль' })).toHaveFocus()
+		})
 	})
 
 	describe('modelValue null/undefined', () => {
@@ -440,7 +489,7 @@ describe('BaseInput unit', () => {
 
 		it('не должен эмитить update при Delete когда valueIndex вне диапазона', async () => {
 			vi.resetModules()
-			vi.doMock('@composables/useInputMask', () => ({
+			vi.doMock('@composables/form/useInputMask', () => ({
 				useInputMask: () => ({
 					applyMask: (v: string) => v,
 					stripMask: (v: string) => v,
@@ -455,28 +504,28 @@ describe('BaseInput unit', () => {
 					cursorAfterDelete: () => ({ maskPos: 0, valueIndex: 999 }),
 				}),
 				useMaskedInputHandlers: (opts: any) => {
-					const maskFns = ({
+					const maskFns = {
 						applyMask: (v: string) => v,
 						stripMask: (v: string) => v,
 						limitValue: (v: string) => v,
 						cursorAfterInput: () => 0,
 						cursorAfterBackspace: () => ({ maskPos: 0, valueIndex: 0 }),
-					cursorAfterDelete: (_pos: number) => ({ maskPos: 0, valueIndex: 999 }),
-				})
-				return {
-					handleInput: (e: Event) => {
-						const target = e.target as HTMLInputElement
-						opts.emit('update:modelValue', target.value)
-					},
-					handleKeydown: (e: KeyboardEvent) => {
-						opts.onKeydown?.(e)
-						if (e.key === 'Delete') {
+						cursorAfterDelete: (_pos: number) => ({ maskPos: 0, valueIndex: 999 }),
+					}
+					return {
+						handleInput: (e: Event) => {
 							const target = e.target as HTMLInputElement
-							const cursorPos = target.selectionStart ?? 0
-							const current = opts.getValue() == null ? '' : String(opts.getValue())
-							e.preventDefault()
-							if (cursorPos >= current.length) return
-							const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
+							opts.emit('update:modelValue', target.value)
+						},
+						handleKeydown: (e: KeyboardEvent) => {
+							opts.onKeydown?.(e)
+							if (e.key === 'Delete') {
+								const target = e.target as HTMLInputElement
+								const cursorPos = target.selectionStart ?? 0
+								const current = opts.getValue() == null ? '' : String(opts.getValue())
+								e.preventDefault()
+								if (cursorPos >= current.length) return
+								const { valueIndex } = maskFns.cursorAfterDelete(cursorPos)
 								if (valueIndex < 0 || valueIndex >= current.length) return
 								const newValue = current.slice(0, valueIndex) + current.slice(valueIndex + 1)
 								opts.emit('update:modelValue', newValue)
@@ -496,112 +545,64 @@ describe('BaseInput unit', () => {
 			const updates = emitted()['update:modelValue']
 			expect(updates).toBeUndefined()
 
-			vi.doUnmock('@composables/useInputMask')
+			vi.doUnmock('@composables/form/useInputMask')
 		})
 	})
 
-	describe('requestAnimationFrame — синхронные вызовы для покрытия inputRef ветки', () => {
-		const originalRaf = globalThis.requestAnimationFrame
-
-		afterEach(() => {
-			globalThis.requestAnimationFrame = originalRaf
-		})
-
-		it('должен вызывать setSelectionRange после ввода с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '', mask: '##' } })
+	describe('позиция курсора после маски', () => {
+		it('ставит курсор сразу после ввода с маской', async () => {
+			render(BaseInput, { props: { modelValue: '', mask: '##-##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
-			await fireEvent.update(input, '12')
+			await fireEvent.update(input, '123')
 
-			expect(emitted()).toHaveProperty('update:modelValue')
+			expect(input.value).toBe('12-3')
+			expect(input.selectionStart).toBe(4)
 		})
 
-		it('должен вызывать setSelectionRange после Backspace с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
+		it('ставит курсор после Backspace и Delete с маской', async () => {
+			render(BaseInput, { props: { modelValue: '12', mask: '##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
 			input.setSelectionRange(2, 2)
 			await fireEvent.keyDown(input, { key: 'Backspace' })
-
-			expect(emitted()).toHaveProperty('update:modelValue')
-		})
-
-		it('должен вызывать setSelectionRange после Delete с маской', async () => {
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				cb(0)
-				return 0
-			}
-
-			const { emitted } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
+			expect(input.selectionStart).toBe(1)
 
 			input.setSelectionRange(0, 0)
 			await fireEvent.keyDown(input, { key: 'Delete' })
-
-			expect(emitted()).toHaveProperty('update:modelValue')
+			expect(input.selectionStart).toBe(0)
 		})
 
-		it('должен корректно работать когда inputRef стал null после ввода', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
+		it('не возвращает курсор, если значение изменилось до обновления DOM', async () => {
+			render(BaseInput, { props: { modelValue: '', mask: '####' } })
+			const input = screen.getByRole('textbox') as HTMLInputElement
 
+			const pending = fireEvent.update(input, '12')
+			input.value = '123'
+			input.setSelectionRange(3, 3)
+			await pending
+
+			expect(input.selectionStart).toBe(3)
+		})
+
+		it('не ставит курсор у типов без выделения текста', async () => {
+			const { emitted } = render(BaseInput, { props: { modelValue: '', type: 'email', allowedChars: 'letters' } })
+			const input = screen.getByRole('textbox') as HTMLInputElement
+
+			await fireEvent.update(input, 'ab1')
+
+			expect(input.value).toBe('ab')
+			expect(emitted()['update:modelValue']).toEqual([['ab']])
+		})
+
+		it('не падает, если поле размонтировали до обновления DOM', async () => {
 			const { unmount } = render(BaseInput, { props: { modelValue: '', mask: '##' } })
 			const input = screen.getByRole('textbox') as HTMLInputElement
 
-			await fireEvent.update(input, '12')
+			const pending = fireEvent.update(input, '12')
 			unmount()
-			callbacks.forEach(cb => cb(0))
 
-			expect(callbacks.length).toBeGreaterThan(0)
-		})
-
-		it('должен корректно работать когда inputRef стал null после Backspace', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
-
-			const { unmount } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
-
-			input.setSelectionRange(2, 2)
-			await fireEvent.keyDown(input, { key: 'Backspace' })
-			unmount()
-			callbacks.forEach(cb => cb(0))
-
-			expect(callbacks.length).toBeGreaterThan(0)
-		})
-
-		it('должен корректно работать когда inputRef стал null после Delete', async () => {
-			const callbacks: FrameRequestCallback[] = []
-			globalThis.requestAnimationFrame = function (cb: FrameRequestCallback): number {
-				callbacks.push(cb)
-				return 0
-			}
-
-			const { unmount } = render(BaseInput, { props: { modelValue: '12', mask: '##' } })
-			const input = screen.getByRole('textbox') as HTMLInputElement
-
-			input.setSelectionRange(0, 0)
-			await fireEvent.keyDown(input, { key: 'Delete' })
-			unmount()
-			callbacks.forEach(cb => cb(0))
-
-			expect(callbacks.length).toBeGreaterThan(0)
+			await expect(pending).resolves.not.toThrow()
 		})
 	})
 
@@ -705,6 +706,153 @@ describe('BaseInput unit', () => {
 			expect(container.querySelector('.base-input__password-rules')).toHaveClass('custom-input-rules')
 			expect(container.querySelector('.base-input__password-rule')).toHaveClass('custom-input-rule')
 			expect(container.querySelector('.base-input__error-text')).toHaveClass('custom-input-error')
+		})
+	})
+})
+
+describe('BaseInput: имя и атрибуты поля', () => {
+	it('ariaLabel — имя поля без видимой подписи', () => {
+		render(BaseInput, { props: { modelValue: '', ariaLabel: 'Поиск по заказам' } })
+
+		expect(screen.getByRole('textbox', { name: 'Поиск по заказам' })).toBeInTheDocument()
+	})
+
+	it('inputAttrs попадают на нативный input; свой id связывает подпись, описание добавляется к ошибке', () => {
+		render(BaseInput, {
+			props: {
+				modelValue: '',
+				label: 'E-mail',
+				error: 'Неверный адрес',
+				inputAttrs: {
+					id: 'email',
+					name: 'email',
+					autocomplete: 'email',
+					inputmode: 'email',
+					'data-testid': 'email-field',
+					'aria-describedby': 'email-hint',
+				},
+			},
+		})
+
+		const input = screen.getByRole('textbox', { name: 'E-mail' })
+		expect(input).toHaveAttribute('id', 'email')
+		expect(input).toHaveAttribute('name', 'email')
+		expect(input).toHaveAttribute('autocomplete', 'email')
+		expect(input).toHaveAttribute('inputmode', 'email')
+		expect(input).toHaveAttribute('data-testid', 'email-field')
+		expect(input.getAttribute('aria-describedby')).toMatch(/^v-\S+-error email-hint$/)
+	})
+
+	describe('type="search" и иконка', () => {
+		it('type="search" даёт поле поиска с иконкой лупы слева', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+
+			expect(screen.getByRole('searchbox', { name: 'Поиск' })).toHaveAttribute('type', 'search')
+			expect(container.querySelector('.base-input__icon')).toBeInTheDocument()
+			expect(container.querySelector('.base-input')).toHaveClass('base-input--has-icon')
+		})
+
+		it('у поиска enterkeyhint="search", у текстового поля его нет', () => {
+			const search = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.getByRole('searchbox')).toHaveAttribute('enterkeyhint', 'search')
+			search.unmount()
+			render(BaseInput, { props: { modelValue: '' } })
+			expect(screen.getByRole('textbox')).not.toHaveAttribute('enterkeyhint')
+		})
+
+		it('кнопка очистки есть только у поиска с текстом: сбрасывает значение и возвращает фокус в поле', async () => {
+			const { emitted, rerender } = render(BaseInput, { props: { modelValue: '', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+
+			await rerender({ modelValue: 'кот' })
+			await fireEvent.click(screen.getByRole('button', { name: 'Очистить' }))
+
+			expect(emitted()['update:modelValue']).toEqual([['']])
+			expect(screen.getByRole('searchbox')).toHaveFocus()
+		})
+
+		it('кнопка очистки доступна с клавиатуры: в порядке Tab, без tabindex=-1', async () => {
+			render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск' } })
+			expect(screen.getByRole('button', { name: 'Очистить' })).not.toHaveAttribute('tabindex')
+			screen.getByRole('searchbox').focus()
+			await userEvent.tab()
+			expect(screen.getByRole('button', { name: 'Очистить' })).toHaveFocus()
+		})
+
+		it('Esc в поиске с текстом очищает поле и не пускает Esc дальше к слою; в пустом поле Esc не трогают', async () => {
+			const onKeydown = vi.fn()
+			const { emitted, rerender } = render(BaseInput, {
+				props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск', onKeydown },
+			})
+			const field = screen.getByRole('searchbox')
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+			field.dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(true)
+			expect(emitted()['update:modelValue']).toEqual([['']])
+			expect(onKeydown).toHaveBeenCalledTimes(1)
+
+			await rerender({ modelValue: '' })
+			const second = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+			field.dispatchEvent(second)
+			expect(second.defaultPrevented).toBe(false)
+			expect(emitted()['update:modelValue']).toHaveLength(1)
+		})
+
+		it('Esc, перехваченный обработчиком keydown родителя, поле не очищает; в обычном поле Esc не очищает', async () => {
+			const prevent = (event: KeyboardEvent): void => event.preventDefault()
+			const guarded = render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск', onKeydown: prevent } })
+			await fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' })
+			expect(guarded.emitted()['update:modelValue']).toBeUndefined()
+			guarded.unmount()
+
+			const text = render(BaseInput, { props: { modelValue: 'кот', ariaLabel: 'Текст' } })
+			await fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Escape' })
+			expect(text.emitted()['update:modelValue']).toBeUndefined()
+		})
+
+		it('Esc во время IME-композиции поле не очищает', () => {
+			const { emitted } = render(BaseInput, { props: { modelValue: 'кот', type: 'search', ariaLabel: 'Поиск' } })
+			const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true })
+			screen.getByRole('searchbox').dispatchEvent(event)
+			expect(event.defaultPrevented).toBe(false)
+			expect(emitted()['update:modelValue']).toBeUndefined()
+		})
+
+		it('кнопки очистки нет у выключенного, только читаемого и обычного поля', () => {
+			render(BaseInput, { props: { modelValue: 'a', type: 'search', isDisabled: true } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+		})
+
+		it('кнопки очистки нет у текстового поля с текстом', () => {
+			render(BaseInput, { props: { modelValue: 'a' } })
+			expect(screen.queryByRole('button', { name: 'Очистить' })).not.toBeInTheDocument()
+		})
+
+		it('icon="" у поиска убирает иконку', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '', type: 'search', icon: '' } })
+
+			expect(container.querySelector('.base-input__icon')).not.toBeInTheDocument()
+		})
+
+		it('icon добавляет иконку слева у текстового поля, обычное поле без иконки', () => {
+			const { container, rerender } = render(BaseInput, { props: { modelValue: '' } })
+			expect(container.querySelector('.base-input__icon')).not.toBeInTheDocument()
+
+			return rerender({ modelValue: '', icon: 'mail' }).then(() => {
+				expect(container.querySelector('.base-input__icon')).toBeInTheDocument()
+			})
+		})
+
+		it('type="date" рендерит нативное поле даты', () => {
+			const { container } = render(BaseInput, { props: { modelValue: '2026-10-13', type: 'date' } })
+
+			expect(container.querySelector('input')).toHaveAttribute('type', 'date')
+		})
+
+		it('aria из inputAttrs не затирается пустыми значениями формы (aria-invalid остаётся)', () => {
+			render(BaseInput, { props: { modelValue: '', ariaLabel: 'Поле', inputAttrs: { 'aria-invalid': 'true' } } })
+
+			expect(screen.getByRole('textbox', { name: 'Поле' })).toHaveAttribute('aria-invalid', 'true')
 		})
 	})
 })

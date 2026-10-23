@@ -1,307 +1,237 @@
 .base-search {
+	@include custom-color-scope;
 	display: flex;
 	width: 100%;
-	@include transition(opacity);
+	@include custom-text(color, var(--rise-text-highlighted));
 
-	/* Dropdown занимает ширину поиска */
 	.base-dropdown {
 		width: 100%;
 	}
 
-	@include custom-text(color, var(--color-text));
-
-	/* ── Состояния ── */
-	&--disabled {
-		opacity: 0.5;
-		pointer-events: none;
+	&__field {
+		@include inherit-custom-color;
 	}
 
-	&--loading {
-		pointer-events: none;
+	&__field .base-input__label {
+		@include visually-hidden;
 	}
 
-	/* ── Иконка поиска ── */
 	&__icon {
 		flex-shrink: 0;
-		color: var(--color-text-muted);
-		margin-left: sz(10px);
+		padding-inline-start: sz(var(--rise-control-padding-x));
+		margin-inline-end: sz(2px);
+		color: ct(search, icon-text, var(--rise-text-muted));
 	}
 
-	/* ── Суффикс-контейнер (внутри BaseInput) ── */
-	.base-input__wrapper &__clear,
-	.base-input__wrapper &__loading,
-	.base-input__wrapper .base-loader {
-		align-self: center;
-		margin-right: sz(10px);
+	&--underline &__icon {
+		padding-inline-start: 0;
 	}
 
-	/* ── Кнопка очистки ── */
-	&__clear {
+	&__actions {
+		display: flex;
 		flex-shrink: 0;
-		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: sz(20px);
-		height: sz(20px);
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: var(--color-surface-muted);
-		color: var(--color-text-muted);
-		cursor: pointer;
-		@include transition(background-color, color);
-
-		&:hover {
-			background-color: var(--color-error);
-			color: var(--color-white);
-		}
+		gap: sz(4px);
+		padding-inline: sz(4px);
+		@include reset-custom-color;
 	}
 
-	/* ── Результат ── */
-	&__result {
-		display: flex;
-		align-items: center;
-		gap: sz(10px);
-		padding: sz(10px) sz(14px);
-		cursor: pointer;
-		@include transition(background-color);
+	&__loading {
+		width: sz(24px);
+		justify-content: center;
+	}
 
-		&--highlighted,
-		&:hover {
-			background-color: var(--color-surface-muted);
+	&__clear.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 3px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 3px;
+
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+	}
+
+	&--modal &__trigger .base-input__field,
+	&--sidebar &__trigger .base-input__field {
+		cursor: pointer;
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+
+	&__result {
+		@include menu-item;
+		gap: sz(ct(search, result-gap, 8px));
+		color: ct(search, result-text, var(--rise-text));
+
+		@include hover {
+			background-color: ct(search, result-bg-hover, var(--rise-surface-floating-hover));
+		}
+
+		&--highlighted {
+			background-color: ct(search, result-bg-selected, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
 		}
 	}
 
 	&__result-image {
 		flex-shrink: 0;
-		width: sz(36px);
-		height: sz(36px);
-		border-radius: var(--border-radius-base);
-		overflow: hidden;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(var(--rise-radius-sm));
 	}
 
 	&__result-icon {
 		flex-shrink: 0;
+		color: var(--rise-text-muted);
 	}
 
 	&__result-content {
+		display: flex;
 		flex: 1;
+		flex-direction: column;
 		min-width: 0;
 	}
 
-	&__result-title {
+	&__result-content &__result-title {
 		display: block;
-		font-size: sz(14px);
-		font-weight: 500;
-		color: var(--color-text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		color: inherit;
+		font: inherit;
+		@include truncate;
 	}
 
-	&__result-desc {
+	&__result-content &__result-desc {
 		display: block;
-		font-size: sz(12px);
-		color: var(--color-text-muted);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		@include truncate;
 	}
 
-	&__result-category {
+	&__result &__result-category {
 		flex-shrink: 0;
-		font-size: sz(11px);
-		padding: sz(2px) sz(8px);
-		border-radius: var(--border-radius-full);
-		background-color: var(--color-surface-muted);
-		color: var(--color-text-muted);
+		margin-inline-start: auto;
+		color: var(--rise-text-muted);
+		@include text-size(xs);
 	}
 
-	/* ── Пустой результат ── */
-	&__empty {
-		padding: sz(20px);
+	&__result--highlighted &__result-desc,
+	&__result--highlighted &__result-category {
+		color: var(--rise-text-toned);
+	}
+
+	@media (hover: hover) {
+		&__result:hover &__result-desc,
+		&__result:hover &__result-category {
+			color: var(--rise-text-toned);
+		}
+	}
+
+	&__match {
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: ct(search, match-bg, var(--rise-primary-soft));
+		color: var(--rise-text-highlighted);
+		text-decoration: none;
+	}
+
+	&__empty.base-empty {
+		padding: space(12px 8px);
+	}
+
+	&__status {
+		padding: space(12px 8px);
+		color: var(--rise-text-muted);
 		text-align: center;
-		color: var(--color-text-muted);
-		font-size: sz(14px);
-	}
+		@include text-size(sm);
 
-	/* ── Триггер (readonly BaseInput для modal/sidebar) ── */
-	&__trigger {
-		cursor: pointer;
-
-		input {
-			cursor: pointer;
+		.base-text {
+			color: inherit;
 		}
 	}
 
-	/* ── Модальное окно ── */
-	&__modal-overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 1000;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: flex-start;
-		justify-content: center;
-		padding-top: 10vh;
+	&__modal-overlay.base-modal,
+	&__sidebar-overlay.base-slideover {
+		background-color: ct(search, overlay-bg, var(--rise-overlay));
 	}
 
-	&__modal {
-		width: 90%;
-		max-width: 640px;
-		background-color: var(--color-surface);
-		border-radius: sz(var(--border-radius-lg));
-		box-shadow: var(--shadow-xl);
+	&__modal-overlay.base-modal {
+		align-items: flex-start;
+		padding: 10vh sz(16px) sz(16px);
+	}
+
+	&__modal.base-modal__content,
+	&__sidebar.base-slideover__panel {
+		border: 0;
+		background-color: ct(search, panel-bg, var(--rise-surface-dialog));
+		color: var(--rise-text);
+		box-shadow: ct(search, panel-shadow, var(--rise-shadow-xl));
+	}
+
+	&__modal.base-modal__content {
+		max-width: sz(640px);
+		border-radius: sz(ct(search, panel-radius, var(--rise-radius-xl)));
+	}
+
+	&__modal .base-modal__body,
+	&__sidebar .base-slideover__body {
+		display: flex;
+		flex-direction: column;
+		padding: 0;
 		overflow: hidden;
 	}
 
-	&__modal-header {
+	&__modal-header,
+	&__sidebar-header {
 		display: flex;
-		align-items: center;
+		flex: none;
+		align-items: flex-start;
 		gap: sz(8px);
-		padding: sz(16px);
-		border-bottom: sz(1px) solid var(--color-border);
+		padding: space(12px);
+		border-bottom: 1px solid ct(search, panel-border, var(--rise-border));
 	}
 
-	&__modal-close {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: sz(32px);
-		height: sz(32px);
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: var(--color-surface-muted);
-		color: var(--color-text-muted);
-		font-size: sz(14px);
-		cursor: pointer;
-		@include transition(background-color, color);
+	&__modal-close.base-button,
+	&__sidebar-close.base-button {
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
 
-		&:hover {
-			background-color: var(--color-error);
-			color: var(--color-white);
-		}
+		flex: none;
+		color: var(--rise-text-muted);
+	}
+
+	&__modal-results,
+	&__sidebar-results {
+		padding: space(ct(search, panel-padding, 4px));
+		overflow-y: auto;
+		@include scrollbar-thin;
 	}
 
 	&__modal-results {
 		max-height: sz(400px);
-		overflow-y: auto;
 	}
 
-	/* ── Боковая панель ── */
-	&__sidebar-overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 1000;
-		background-color: rgba(0, 0, 0, 0.5);
-	}
-
-	&__sidebar {
-		position: fixed;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		width: 380px;
+	&__sidebar.base-slideover__panel {
+		width: sz(380px);
 		max-width: 90vw;
-		background-color: var(--color-surface);
-		box-shadow: var(--shadow-xl);
-		display: flex;
-		flex-direction: column;
-	}
-
-	&__sidebar-header {
-		display: flex;
-		align-items: center;
-		gap: sz(8px);
-		padding: sz(16px);
-		border-bottom: sz(1px) solid var(--color-border);
-	}
-
-	&__sidebar-close {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: sz(32px);
-		height: sz(32px);
-		border: none;
-		border-radius: var(--border-radius-full);
-		background-color: var(--color-surface-muted);
-		color: var(--color-text-muted);
-		font-size: sz(14px);
-		cursor: pointer;
-		@include transition(background-color, color);
-
-		&:hover {
-			background-color: var(--color-error);
-			color: var(--color-white);
-		}
+		border-radius: 0;
 	}
 
 	&__sidebar-results {
 		flex: 1;
-		overflow-y: auto;
 	}
 }
 
-/* ── Анимация модального окна ── */
-.base-search-modal-enter-active,
-.base-search-modal-leave-active {
-	@include transition(opacity);
+.base-dropdown__panel.base-search__panel {
+	--dd-pad-top: #{ct(search, panel-padding, 4px)};
+	--dd-pad-right: #{ct(search, panel-padding, 4px)};
+	--dd-pad-bottom: #{ct(search, panel-padding, 4px)};
+	--dd-pad-left: #{ct(search, panel-padding, 4px)};
 
-	.base-search__modal {
-		@include transition(transform, opacity);
-	}
+	border-radius: sz(ct(search, panel-radius, var(--rise-radius-lg)));
+	background-color: ct(search, panel-bg, var(--dd-bg));
 }
 
-.base-search-modal-enter-from,
-.base-search-modal-leave-to {
-	opacity: 0;
-
-	.base-search__modal {
-		transform: translateY(-20px);
-		opacity: 0;
-	}
-}
-
-/* ── Анимация sidebar ── */
-.base-search-sidebar-enter-active,
-.base-search-sidebar-leave-active {
-	@include transition(opacity);
-
-	.base-search__sidebar {
-		@include transition(transform);
-	}
-}
-
-.base-search-sidebar-enter-from,
-.base-search-sidebar-leave-to {
-	opacity: 0;
-
-	.base-search__sidebar {
-		transform: translateX(100%);
-	}
-}
-
-/* ── Анимация появления результатов ── */
-.search-result-enter-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.search-result-leave-active {
-	transition:
-		opacity 0.15s ease,
-		transform 0.15s ease;
-}
-
-.search-result-enter-from {
-	opacity: 0;
-	transform: translateY(-8px);
-}
-
-.search-result-leave-to {
-	opacity: 0;
-	transform: translateY(8px);
-}
+@include enter-fade(base-search-results);
+@include enter-fade(base-search-state);

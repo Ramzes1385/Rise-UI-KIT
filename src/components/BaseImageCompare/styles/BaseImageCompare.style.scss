@@ -1,0 +1,115 @@
+.base-image-compare {
+	@include ltr-surface;
+	position: relative;
+	box-sizing: border-box;
+	max-width: 100%;
+	overflow: hidden;
+	border: 1px solid ct(image-compare, border, transparent);
+	border-radius: sz(ct(image-compare, radius, var(--rise-radius-lg)));
+	background-color: ct(image-compare, bg, var(--rise-bg-muted));
+	cursor: ew-resize;
+	user-select: none;
+	touch-action: pan-y;
+
+	&__image {
+		display: block;
+		width: 100%;
+		height: auto;
+		pointer-events: none;
+	}
+
+	&__before {
+		position: absolute;
+		inset: 0;
+		clip-path: inset(0 calc(100% - var(--compare-position)) 0 0);
+
+		.base-image-compare__image {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+
+	&__label {
+		position: absolute;
+		top: sz(10px);
+		padding: sz(2px) sz(8px);
+		border-radius: sz(ct(image-compare-label, radius, var(--rise-radius-sm)));
+		background-color: ct(image-compare-label, bg, color-mix(in srgb, var(--rise-media-shade) 65%, transparent));
+		@include caps-label(10px, 0.08em);
+		color: ct(image-compare-label, text, var(--rise-media-text));
+		font-weight: ct(image-compare-label, font-weight, var(--rise-font-weight-medium));
+		pointer-events: none;
+	}
+
+	&__label--before {
+		inset-inline-start: sz(10px);
+	}
+
+	&__label--after {
+		inset-inline-end: sz(10px);
+	}
+
+	&__track {
+		position: absolute;
+		inset: 0;
+		transform: translateX(var(--compare-position));
+		pointer-events: none;
+	}
+
+	&__divider {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		inset-inline-start: 0;
+		width: ct(image-compare-divider, width, 2px);
+		background-color: ct(image-compare-divider, bg, var(--rise-media-highlight));
+		box-shadow: 0 0 0 1px color-mix(in srgb, var(--rise-media-shade) 25%, transparent);
+		transform: translateX(-50%);
+	}
+
+	&__handle {
+		position: absolute;
+		top: 50%;
+		inset-inline-start: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(36px);
+		height: sz(36px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: ct(image-compare-handle, bg, var(--rise-media-highlight));
+		box-shadow: ct(image-compare-handle, shadow, 0 0 0 sz(3px) color-mix(in srgb, var(--rise-media-shade) 25%, transparent));
+		color: ct(image-compare-handle, text, var(--rise-media-text-inverted));
+		transform: translate(-50%, -50%);
+		cursor: ew-resize;
+		pointer-events: auto;
+		@include focus-ring(3px);
+
+		.base-icon {
+			width: sz(14px);
+			height: sz(14px);
+			margin: 0 sz(-2px);
+		}
+	}
+
+	&--ghost {
+		border: 0;
+		border-radius: 0;
+	}
+
+	@include motion-safe {
+		.base-image-compare__track {
+			transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized);
+		}
+
+		.base-image-compare__before {
+			transition: clip-path var(--rise-duration-slow) var(--rise-ease-emphasized);
+		}
+	}
+
+	&--dragging &__track,
+	&--dragging &__before {
+		transition: none;
+	}
+}

@@ -1,12 +1,7 @@
-/**
- * E2E smoke-тест для BaseDropdown.
- * Проверяет: открытие → выбор → клик вне.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('дропдаун: открывается по клику на триггер', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedropdown--default')
+	await page.goto('/iframe.html?id=overlay-basedropdown--default')
 	await page.waitForSelector('[data-testid="trigger"]', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -18,7 +13,7 @@ test('дропдаун: открывается по клику на тригге
 })
 
 test('дропдаун: закрывается при выборе опции', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedropdown--default')
+	await page.goto('/iframe.html?id=overlay-basedropdown--default')
 	await page.waitForSelector('[data-testid="trigger"]', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -35,7 +30,7 @@ test('дропдаун: закрывается при выборе опции', 
 })
 
 test('дропдаун: закрывается при клике вне', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedropdown--default')
+	await page.goto('/iframe.html?id=overlay-basedropdown--default')
 	await page.waitForSelector('[data-testid="trigger"]', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 
@@ -51,7 +46,7 @@ test('дропдаун: закрывается при клике вне', async 
 })
 
 test('дропдаун: закрывается по Escape', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basedropdown--default')
+	await page.goto('/iframe.html?id=overlay-basedropdown--default')
 	await page.waitForSelector('[data-testid="trigger"]', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 600 })
 

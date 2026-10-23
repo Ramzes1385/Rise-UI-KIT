@@ -1,0 +1,477 @@
+.base-kanban {
+	@include custom-color-scope;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+	--kanban-card-bg: var(--rise-surface-raised);
+
+	&__board {
+		display: flex;
+		align-items: flex-start;
+		gap: space(ct(kanban, gap, 12px));
+		min-width: 0;
+		padding-bottom: sz(4px);
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		@include scrollbar-thin;
+	}
+
+	&--dragging &__board {
+		scroll-snap-type: none;
+	}
+
+	&__column {
+		display: flex;
+		flex: 0 1 sz(272px);
+		flex-direction: column;
+		gap: space(8px);
+		box-sizing: border-box;
+		min-width: min(#{sz(200px)}, 100%);
+		max-width: 100%;
+		scroll-snap-align: start;
+		padding: space(ct(kanban, column-padding-y, 8px) ct(kanban, column-padding-x, 8px));
+		border-radius: sz(ct(kanban, column-radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-muted)));
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		min-height: sz(24px);
+		padding: 0 sz(4px);
+	}
+
+	&__title {
+		flex: 1 1 auto;
+		min-width: 0;
+		font-weight: ct(kanban, header-font-weight, var(--rise-font-weight-semibold));
+		@include custom-text(color, ct(kanban, header-text, var(--rise-text-highlighted)));
+		@include truncate;
+	}
+
+	&__count {
+		flex: none;
+		min-width: sz(20px);
+		padding: 0 sz(8px);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		background-color: var(--rise-bg-accented);
+		@include caps-label(10px);
+		color: var(--rise-text-toned);
+		text-align: center;
+	}
+
+	&__dot {
+		flex: none;
+		width: sz(8px);
+		height: sz(8px);
+		border-radius: var(--rise-radius-xs);
+		background-color: var(--kanban-column-color);
+	}
+
+	&__column--colored {
+		box-shadow: inset 0 sz(3px) 0 var(--kanban-column-color);
+	}
+
+	&__toggle.base-button,
+	&__add.base-button {
+		@include inherit-custom-color;
+		flex: none;
+		border-radius: sz(var(--rise-radius-sm));
+		@include custom-text(color, var(--rise-text-muted));
+
+		@include hover {
+			background-color: var(--rise-bg-accented);
+			color: var(--rise-text-highlighted);
+		}
+
+		.base-icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+	}
+
+	&__toggle.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		width: sz(24px);
+		height: sz(24px);
+	}
+
+	&__add.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 7px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 7px;
+
+		justify-content: flex-start;
+		min-height: sz(32px);
+		font-weight: var(--rise-font-weight-normal);
+
+		.base-button__content {
+			justify-content: flex-start;
+		}
+	}
+
+	&__editor {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+
+	&__field {
+		width: 100%;
+	}
+
+	&__editor-actions {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__column--collapsed {
+		flex: none;
+		align-items: center;
+		min-width: 0;
+		padding-inline: sz(4px);
+	}
+
+	&__column--collapsed &__header {
+		flex-direction: column;
+		padding: 0;
+	}
+
+	&__column--collapsed &__toggle {
+		order: -2;
+	}
+
+	&__column--collapsed &__count {
+		order: -1;
+	}
+
+	&__column--collapsed &__title {
+		max-height: sz(320px);
+		writing-mode: vertical-rl;
+	}
+
+	&__column--over &__count {
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__list {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: space(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@include enter-scale(base-kanban__item);
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	& &__item--moved {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+
+	& &__item--moved.base-kanban__item-leave-active {
+		visibility: hidden;
+	}
+
+	&__card,
+	&__ghost-card {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		box-sizing: border-box;
+		padding: space(10px 12px);
+		border: 1px solid ct(kanban, card-border, transparent);
+		border-radius: sz(ct(kanban, card-radius, var(--rise-radius-md)));
+		background-color: ct(kanban, card-bg, var(--kanban-card-bg));
+		color: var(--rise-text);
+		box-shadow: ct(kanban, card-shadow, none);
+		text-align: start;
+		user-select: none;
+	}
+
+	&__card {
+		cursor: grab;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include motion-safe {
+			transition:
+				border-color var(--rise-duration-fast) var(--rise-ease-out),
+				background-color var(--rise-duration-fast) var(--rise-ease-out),
+				box-shadow var(--rise-duration) var(--rise-ease-out),
+				scale var(--rise-duration) var(--rise-ease-out);
+		}
+
+		@include hover {
+			border-color: var(--rise-border-accented);
+		}
+	}
+
+	&__card--grabbed {
+		border-color: var(--rise-primary);
+		box-shadow:
+			0 0 0 1px var(--rise-primary),
+			var(--rise-shadow-lg);
+		scale: 1.02;
+	}
+
+	&__card--placeholder {
+		border-style: dashed;
+		border-color: var(--rise-border-accented);
+		background-color: transparent;
+		box-shadow: none;
+
+		> * {
+			visibility: hidden;
+		}
+	}
+
+	&__ghost {
+		position: fixed;
+		top: 0;
+		inset-inline-start: 0;
+		z-index: var(--rise-z-overlay);
+		box-sizing: border-box;
+		@include text-size(sm);
+		pointer-events: none;
+	}
+
+	&__ghost-card {
+		box-shadow: var(--rise-shadow-lg);
+
+		@include motion-safe {
+			rotate: 2deg;
+			transition: rotate var(--rise-duration-fast) var(--rise-ease-out);
+			animation: base-kanban-lift var(--rise-duration-fast) var(--rise-ease-out);
+		}
+	}
+
+	&__ghost--settling &__ghost-card {
+		rotate: 0deg;
+	}
+
+	&__card-title {
+		color: var(--rise-text-highlighted);
+		font-weight: var(--rise-font-weight-medium);
+		overflow-wrap: anywhere;
+	}
+
+	&__card-description {
+		display: -webkit-box;
+		overflow: hidden;
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+	}
+
+	&__cover {
+		display: block;
+		flex: none;
+		height: sz(32px);
+		margin: sz(-10px) sz(-12px) sz(2px);
+		border-radius: sz(var(--rise-radius-md)) sz(var(--rise-radius-md)) 0 0;
+		background-position: center;
+		background-size: cover;
+	}
+
+	&__cover--image {
+		height: sz(112px);
+	}
+
+	&__labels {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+	}
+
+	&__meta {
+		display: flex;
+		align-items: flex-end;
+		gap: sz(8px);
+		margin-top: sz(2px);
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		font-variant-numeric: tabular-nums;
+
+		.base-icon {
+			width: sz(14px);
+			height: sz(14px);
+		}
+	}
+
+	&__meta-info {
+		display: flex;
+		flex: 1 1 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		min-width: 0;
+		min-height: sz(24px);
+	}
+
+	&__meta-info &__priority-tooltip {
+		display: inline-flex;
+	}
+
+	&__key {
+		font-family: var(--rise-font-mono);
+	}
+
+	&__priority,
+	&__due,
+	&__stat {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(3px);
+	}
+
+	&__priority {
+		flex-direction: column;
+		gap: 0;
+
+		.base-icon + .base-icon {
+			margin-top: sz(-9px);
+		}
+	}
+
+	&__priority--highest,
+	&__priority--high {
+		color: var(--rise-error);
+	}
+
+	&__priority--medium {
+		color: var(--rise-warning);
+	}
+
+	&__priority--low,
+	&__priority--lowest {
+		color: var(--rise-info);
+	}
+
+	&__due {
+		padding: 0 sz(5px);
+		margin-inline: sz(-5px);
+		border-radius: sz(var(--rise-radius-sm));
+	}
+
+	&__due--overdue {
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__due--today,
+	&__due--tomorrow {
+		background-color: var(--rise-warning-soft);
+		color: var(--rise-warning-text);
+	}
+
+	&__due--done {
+		color: var(--rise-success-text);
+	}
+
+	&__stat--complete {
+		color: var(--rise-success-text);
+	}
+
+	&__estimate {
+		min-width: sz(18px);
+		padding: 0 sz(5px);
+		border-radius: calc(var(--rise-radius-sm) - 1px);
+		background-color: var(--rise-bg-accented);
+		color: var(--rise-text-toned);
+		text-align: center;
+	}
+
+	&__assignees {
+		flex: none;
+	}
+
+	&__summary {
+		@include visually-hidden;
+	}
+
+	&__empty {
+		margin: 0;
+		padding: sz(16px) sz(8px);
+		border: 1px dashed var(--rise-border-accented);
+		border-radius: sz(var(--rise-radius-md));
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+		text-align: center;
+
+		@include motion-safe {
+			animation: base-kanban-appear var(--rise-duration) var(--rise-ease-out);
+		}
+	}
+
+	&--dragging,
+	&--dragging &__card {
+		cursor: grabbing;
+	}
+
+	&--disabled &__card {
+		cursor: default;
+	}
+
+	&--soft &__column {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(kanban, column-bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline,
+	&--ghost {
+		--kanban-card-bg: var(--rise-bg-muted);
+	}
+
+	&--outline &__column {
+		border: 1px solid ct(kanban, column-border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
+	}
+
+	&--ghost &__column {
+		padding: 0;
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(kanban, column-bg, transparent));
+	}
+
+	&__hint,
+	&__status {
+		@include visually-hidden;
+	}
+}
+
+@keyframes base-kanban-lift {
+	from {
+		rotate: 0deg;
+		box-shadow: var(--rise-shadow-xs);
+	}
+}
+
+@keyframes base-kanban-appear {
+	from {
+		opacity: 0;
+	}
+}

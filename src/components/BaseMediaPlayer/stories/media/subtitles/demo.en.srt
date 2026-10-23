@@ -1,0 +1,16 @@
+1
+00:00:00,000 --> 00:00:03,000
+Rise UI Kit demo recording
+
+2
+00:00:03,000 --> 00:00:06,500
+Drag the subtitles <i>anywhere</i>
+in the frame
+
+3
+00:00:06,500 --> 00:00:09,500
+Size, color and background are in "Subtitle style"
+
+4
+00:00:09,500 --> 00:00:12,100
+Drop your own <b>.srt</b> or <b>.vtt</b> file onto the player

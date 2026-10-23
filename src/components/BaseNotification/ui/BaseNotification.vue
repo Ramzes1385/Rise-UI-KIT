@@ -1,57 +1,83 @@
 <template>
-	<Teleport to="body" :disabled="isContained">
+	<Teleport v-for="group in groups" :key="group.position" defer :to="teleportTarget" :disabled="isContained">
 		<div
-			class="base-notification"
+			ref="containerRef"
 			:class="[
-				`base-notification--${position}`,
-				{ 'base-notification--contained': isContained },
+				ui('root'),
+				`base-notification--${group.position}`,
+				{ 'base-notification--contained': isContained, 'base-notification--paused': isPaused },
 				classes.root,
 			]"
-			:style="sizeScaleStyle">
-			<TransitionGroup name="list" tag="div" class="base-notification-list">
+			:style="sizeScaleStyle"
+			v-bind="themeAttrs"
+			role="region"
+			:aria-label="getAreaLabel(group.position)"
+			@mouseenter="setHovered(group.position, true)"
+			@mouseleave="setHovered(group.position, false)"
+			@focusin="isFocusWithin = true"
+			@focusout="handleFocusOut">
+			<TransitionGroup name="base-notification" tag="div" :class="ui('list')">
 				<div
-					v-for="notification in notifications"
+					v-for="notification in group.items"
 					:key="notification.id"
-					class="base-notification-item"
-					:class="[`base-notification-item--${notification.type || 'info'}`, variantClass, classes.notification]"
-					:style="[variantStyle, customColorStyle]">
+					:class="[
+						ui('item'),
+						`base-notification-item--${notification.type || 'info'}`,
+						animationClass,
+						getVariantClass(notification),
+						getItemClass(notification),
+					]"
+					:style="[variantStyle, getItemStyle(notification)]"
+					:role="notification.type === 'error' ? 'alert' : 'status'">
 					<BaseIcon
 						:name="typeIconMap[notification.type || 'info']"
-						:size-scale="calcIconScale('md', sizeScale)"
-						class="base-notification-item__icon"
-						:custom-class="classes.icon" />
-					<div class="base-notification-item__content" :class="classes.content">
+						:size-scale="calcIconScale('md', getScale(notification))"
+						:class="ui('icon')"
+						:custom-class="getItemClasses(notification).icon" />
+					<div :class="[ui('content'), getItemClasses(notification).content]">
 						<BaseText
 							tag="h4"
-							:size-scale="sizeScale"
-							:weight="UI_FONT_WEIGHT.SEMIBOLD"
-							class="base-notification-item__title"
-							:custom-class="classes.title">
+							:size-scale="getScale(notification)"
+							:class="ui('title')"
+							:custom-class="getItemClasses(notification).title">
 							{{ notification.title }}
 						</BaseText>
 						<BaseText
 							v-if="notification.description"
 							tag="p"
-							:size-scale="sizeScale"
-							:color="{ text: { base: 'var(--color-text-muted)' } }"
-							class="base-notification-item__description"
-							:custom-class="classes.description">
+							:size-scale="getScale(notification)"
+							:class="ui('description')"
+							:custom-class="getItemClasses(notification).description">
 							{{ notification.description }}
 						</BaseText>
+						<div v-if="notification.actions?.length" :class="[ui('actions'), getItemClasses(notification).actions]">
+							<BaseButton
+								v-for="action in notification.actions"
+								:key="action.label"
+								variant="outline"
+								:size-scale="getActionScale(notification)"
+								@click="runAction(notification.id, action)">
+								{{ action.label }}
+							</BaseButton>
+						</div>
 					</div>
 					<BaseButton
 						variant="ghost"
-						:padding="2"
-						class="base-notification-item__close"
-						:size-scale="sizeScale"
-						:custom-class="classes.close"
+						:class="ui('close')"
+						:size-scale="getScale(notification)"
+						:custom-class="getItemClasses(notification).close"
+						:aria-label="UI_ARIA.CLOSE"
 						@click="remove(notification.id)">
-						<BaseIcon name="close" :size-scale="calcIconScale('sm', sizeScale)" />
+						<BaseIcon name="close" :size-scale="calcIconScale('sm', getScale(notification))" />
 					</BaseButton>
-					<div
-						class="base-notification-item__progress"
-						:class="classes.progress"
-						:style="{ animationDuration: `${notification.duration || UI_TIMING.NOTIFICATION_AUTO_CLOSE}ms` }"></div>
+					<BaseProgress
+						v-if="!notification.isPersistent"
+						:key="getTimerKey(notification)"
+						:class="[ui('progress'), getItemClasses(notification).progress]"
+						:value="100"
+						:countdown="getDuration(notification)"
+						:is-paused="isPaused"
+						aria-hidden="true" />
 				</div>
 			</TransitionGroup>
 		</div>
@@ -59,74 +85,64 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import '@components/BaseIcon/styles/BaseIcon.style.scss'
+import '../styles/BaseNotification.style.scss'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import '../styles/BaseNotification.style.scss'
-import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots, NotificationItem } from '../model/BaseNotification.types'
+import { BaseButton } from '@components/BaseButton'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseProgress } from '@components/BaseProgress'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import { DEFAULT_DURATION, useBaseNotification } from '../model/useBaseNotification'
+import type { BaseNotificationEmits, BaseNotificationProps, BaseNotificationSlots } from '../types/BaseNotification.types'
 
-const props = withDefaults(defineProps<BaseNotificationProps>(), {
-	title: '',
-	type: 'info',
-	position: 'top-right',
-	duration: UI_TIMING.NOTIFICATION_AUTO_CLOSE,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isContained: false,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-notification-item', props, ['root', 'notification', 'icon', 'content', 'title', 'description', 'close', 'progress'])
-
-const typeIconMap: Record<string, string> = {
-	success: 'check-circle',
-	error: 'x-circle',
-	warning: 'alert-triangle',
-	info: 'info',
-}
-
+const props = withDefaults(
+	defineProps<BaseNotificationProps>(),
+	kitDefaults('BaseNotification', {
+		title: '',
+		type: 'info',
+		position: 'top-right',
+		duration: DEFAULT_DURATION,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isContained: false,
+		isPersistent: false,
+		maxVisible: 0,
+		animation: 'scale',
+	}),
+)
 const emit = defineEmits<BaseNotificationEmits>()
-
 defineSlots<BaseNotificationSlots>()
 
-const notifications = ref<NotificationItem[]>([])
-let nextId = 0
+const {
+	sizeScaleStyle,
+	variantStyle,
+	classes,
+	teleportTarget,
+	containerRef,
+	groups,
+	typeIconMap,
+	getScale,
+	getActionScale,
+	getItemStyle,
+	getItemClasses,
+	getItemClass,
+	getDuration,
+	getTimerKey,
+	getVariantClass,
+	setHovered,
+	getAreaLabel,
+	isFocusWithin,
+	isPaused,
+	handleFocusOut,
+	remove,
+	runAction,
+	exposed,
+	ui,
+	animationClass,
+	themeAttrs,
+} = useBaseNotification(props, emit)
 
-/** Таймеры авто-закрытия по id уведомления — очищаются при размонтировании. */
-const autoCloseTimers = new Map<number, ReturnType<typeof setTimeout>>()
-
-function add(notification: BaseNotificationProps) {
-	const id = nextId++
-	notifications.value.unshift({ ...notification, id })
-
-	const timer = setTimeout(() => remove(id), notification.duration ?? UI_TIMING.NOTIFICATION_AUTO_CLOSE)
-	autoCloseTimers.set(id, timer)
-}
-
-function remove(id: number) {
-	const timer = autoCloseTimers.get(id)
-	if (timer) {
-		clearTimeout(timer)
-		autoCloseTimers.delete(id)
-	}
-	notifications.value = notifications.value.filter(n => n.id !== id)
-	if (notifications.value.length === 0) emit('close')
-}
-
-/** Очистка всех висящих таймеров авто-закрытия при размонтировании. */
-onBeforeUnmount(() => {
-	autoCloseTimers.forEach(clearTimeout)
-	autoCloseTimers.clear()
-})
-
-/** Декларативное использование (через v-if) */
-onMounted(() => {
-	if (props.title) {
-		add({ ...props, title: props.title, type: props.type, position: props.position, duration: props.duration })
-	}
-})
-
-defineExpose({ add, remove })
+defineExpose(exposed)
 </script>

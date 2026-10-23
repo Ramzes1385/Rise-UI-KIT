@@ -1,0 +1,165 @@
+.base-image-map {
+	&__route-layer {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	&__route-svg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		fill: none;
+		stroke-linecap: butt;
+		stroke-linejoin: round;
+	}
+
+	&__route-casing {
+		stroke: var(--rise-bg);
+		stroke-width: 8px;
+	}
+
+	&__route-path {
+		stroke: var(--rise-primary);
+		stroke-dasharray: 10px 8px;
+		stroke-width: 4px;
+
+		@include motion-safe {
+			animation: base-image-map-route calc(var(--rise-duration-loop) * 0.9) linear infinite;
+			@include loop-state;
+		}
+	}
+
+	&__route-marker {
+		position: absolute;
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 3px solid var(--rise-bg);
+		border-radius: var(--rise-radius-sm);
+		background-color: var(--rise-primary);
+		transform: translate(-50%, -50%) scale(calc(1 / var(--im-scale, 1)));
+
+		&--end {
+			width: sz(20px);
+			height: sz(20px);
+			background-color: var(--rise-success);
+		}
+
+		&--transition {
+			background-color: var(--rise-warning);
+		}
+	}
+
+	&__route {
+		display: flex;
+		flex-direction: column;
+		gap: space(8px);
+		min-width: 0;
+	}
+
+	&__route-title {
+		margin: 0;
+		font-weight: var(--rise-font-weight-semibold);
+		@include text-size(base);
+	}
+
+	&__route-fields {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: sz(8px);
+	}
+
+	&__route-field {
+		flex: 1 1 sz(180px);
+		min-width: 0;
+	}
+
+	&__route-options {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+	}
+
+	&__route-summary {
+		margin: 0;
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+
+		&--error {
+			color: var(--rise-error-text);
+		}
+	}
+
+	&__route-steps {
+		display: flex;
+		flex-direction: column;
+		gap: space(2px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: base-image-map-step;
+	}
+
+	&__route-step-row {
+		counter-increment: base-image-map-step;
+	}
+
+	&__route-step {
+		@include button-reset;
+		display: flex;
+		align-items: baseline;
+		gap: sz(8px);
+		box-sizing: border-box;
+		width: 100%;
+		padding: space(6px 8px);
+		border-radius: sz(ct(image-map, route-step-radius, var(--rise-radius-md)));
+		text-align: start;
+		@include text-size(sm);
+		@include transition-colors;
+		@include focus-ring;
+
+		&::before {
+			flex: none;
+			min-width: sz(18px);
+			color: var(--rise-text-muted);
+			font-family: var(--rise-font-mono);
+			font-variant-numeric: tabular-nums;
+			content: counter(base-image-map-step) '.';
+		}
+
+		&:hover {
+			background-color: ct(image-map, route-step-bg-hover, var(--rise-bg-elevated));
+		}
+
+		&--transition {
+			font-weight: var(--rise-font-weight-semibold);
+		}
+	}
+
+	&__route-step-text {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__route-sr {
+		@include visually-hidden;
+	}
+
+	&__route-step-meters {
+		flex: none;
+		color: var(--rise-text-muted);
+		white-space: nowrap;
+	}
+}
+
+@keyframes base-image-map-route {
+	to {
+		stroke-dashoffset: -18px;
+	}
+}

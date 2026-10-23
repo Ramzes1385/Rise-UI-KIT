@@ -1,118 +1,229 @@
 .base-avatar {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+	@include custom-color-scope;
 	position: relative;
-	width: sz(40px);
-	height: sz(40px);
-	font-size: sz(16px);
+	display: inline-flex;
 	flex-shrink: 0;
-	border-radius: var(--border-radius-full);
-	@include transition(transform, box-shadow);
+	width: sz(ct(avatar, width, 36px));
+	height: sz(ct(avatar, height, var(--rise-avatar-width, 36px)));
+	border-radius: sz(ct(avatar, radius, var(--rise-radius-md)));
+	vertical-align: middle;
+	@include focus-ring;
 
-	@include hover {
-		transform: scale(1.1);
-		z-index: 1;
-		box-shadow: var(--shadow-md);
-
-		.base-avatar__content {
-			border-color: var(--color-accent);
-		}
+	&--clickable {
+		cursor: pointer;
 	}
 
-	@include active {
-		transform: scale(0.95);
+	&--disabled {
+		@include disabled-state;
 	}
 
-	@include focus {
-		box-shadow:
-			0 0 0 2px var(--color-bg),
-			0 0 0 4px var(--color-accent);
+	&--circle {
+		border-radius: var(--rise-radius-full);
 	}
 
-	// --- Обертка для контента (чтобы overflow: hidden не резал статус) ---
 	&__content {
-		width: 100%;
-		height: 100%;
+		box-sizing: border-box;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		width: 100%;
+		height: 100%;
 		overflow: hidden;
-		border: sz(1px) solid var(--color-border);
-		border-radius: var(--border-radius-full);
-		@include custom-bg(background-color, var(--color-surface-muted));
-		@include custom-text(color, var(--color-text-muted));
-		font-weight: 600;
-		@include transition(border-color);
+		border-radius: inherit;
+		@include custom-bg(background-color, ct(avatar, bg, var(--rise-bg-accented)));
+		@include custom-text(color, ct(avatar, text, var(--rise-text-highlighted)));
+		font-size: sz(ct(avatar, font-size, 13px));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(avatar, font-weight, var(--rise-font-weight-semibold));
+		white-space: nowrap;
+		user-select: none;
 	}
-
-	// --- Формы ---
-
-	&--circle {
-		border-radius: var(--border-radius-full);
-
-		.base-avatar__content {
-			border-radius: var(--border-radius-full);
-		}
-	}
-
-	&--square {
-		border-radius: sz(var(--border-radius-base));
-
-		.base-avatar__content {
-			border-radius: sz(var(--border-radius-base));
-		}
-	}
-
-	// --- Варианты ---
-
-	&--ghost {
-		.base-avatar__content {
-			background-color: transparent;
-			border-color: transparent;
-		}
-	}
-
-	&--outline {
-		.base-avatar__content {
-			background-color: transparent;
-			border-color: var(--color-text-muted);
-		}
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-sm);
-	}
-
-	&--soft {
-		.base-avatar__content {
-			@include custom-bg(background-color, var(--color-surface-muted));
-			border-color: transparent;
-		}
-	}
-
-	// --- Элементы ---
 
 	&__img {
+		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		opacity: 0;
+
+		&--loaded {
+			opacity: 1;
+			animation: base-avatar-img-in var(--rise-duration) var(--rise-ease-out);
+		}
 	}
 
-	&__initials {
-		line-height: 1;
-		text-transform: uppercase;
+	&--soft &__content {
+		@include custom-bg(background-color, var(--rise-primary-soft));
+		@include custom-text(color, var(--rise-primary-text));
+	}
+
+	&--outline &__content {
+		border: 1px solid ct(avatar, border, var(--rise-border-accented));
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--ghost &__content {
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--shadow {
+		box-shadow: ct(avatar, shadow, var(--rise-shadow-sm));
+	}
+
+	&--shadow &__content {
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
 	&__online {
 		position: absolute;
-		bottom: sz(0px);
-		right: sz(0px);
-		width: sz(12px);
-		height: sz(12px);
-		background-color: var(--color-success);
-		border: sz(2px) solid var(--color-bg);
-		border-radius: sz(var(--border-radius-full));
-		z-index: 2;
+		inset-inline-end: 0;
+		bottom: 0;
+		box-sizing: border-box;
+		width: sz(10px);
+		height: sz(10px);
+		border: sz(2px) solid var(--rise-surface-bg);
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: ct(avatar, online-bg, var(--rise-success));
+	}
+}
+
+@include enter-pop('base-avatar-online');
+
+@keyframes base-avatar-img-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@property --base-avatar-ring-angle {
+	syntax: '<angle>';
+	inherits: false;
+	initial-value: 0deg;
+}
+
+.base-avatar {
+	&--ring-gradient,
+	&--ring-shimmer {
+		isolation: isolate;
+
+		&::before {
+			position: absolute;
+			z-index: -1;
+			border-radius: inherit;
+			background: conic-gradient(from var(--base-avatar-ring-angle), $rainbow-colors-loop);
+			content: '';
+			inset: sz(-3px);
+		}
+	}
+
+	&:not(&--circle)#{&}--ring-gradient::before,
+	&:not(&--circle)#{&}--ring-shimmer::before {
+		border-radius: calc(#{sz(ct(avatar, radius, var(--rise-radius-md)))} + #{sz(3px)});
+	}
+
+	&--ring-gradient &__content,
+	&--ring-shimmer &__content {
+		box-shadow: 0 0 0 sz(1.5px) var(--rise-surface-bg);
+	}
+
+	&--ring-shimmer::before {
+		@include motion-safe {
+			animation: base-avatar-ring-spin calc(var(--rise-duration-loop) * 3) linear infinite;
+			@include loop-state;
+		}
+	}
+
+	&__mascot {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	&__mascot-breath {
+		transform-box: fill-box;
+		transform-origin: 50% 100%;
+
+		@include motion-safe {
+			animation: base-avatar-mascot-breathe calc(var(--rise-duration-slow) * 12) var(--rise-ease) infinite alternate;
+			@include loop-state;
+		}
+
+		:where([data-rise-motion='none']) & {
+			animation: none;
+		}
+	}
+
+	&__mascot-body {
+		fill: var(--rise-primary);
+	}
+
+	&__mascot--cloud &__mascot-body {
+		fill: var(--rise-info);
+	}
+
+	&__mascot--droplet &__mascot-body {
+		fill: var(--rise-chart-1);
+	}
+
+	&__mascot--pebble &__mascot-body {
+		fill: var(--rise-text-muted);
+	}
+
+	&__mascot--spark &__mascot-body,
+	&__mascot-ray {
+		fill: var(--rise-warning);
+	}
+
+	&__mascot-ray {
+		opacity: 0.6;
+	}
+
+	&__mascot-stem {
+		fill: none;
+		stroke: var(--rise-chart-6);
+		stroke-linecap: round;
+		stroke-width: 2.5;
+	}
+
+	&__mascot-leaf {
+		fill: var(--rise-chart-6);
+	}
+
+	&__mascot-cheek {
+		opacity: 0.55;
+		fill: var(--rise-chart-5);
+	}
+
+	&__mascot-eye {
+		fill: var(--rise-bg);
+	}
+
+	&__mascot-pupil {
+		fill: var(--rise-text-highlighted);
+	}
+
+	&__mascot-lid,
+	&__mascot-brows path,
+	&__mascot-mouth {
+		fill: none;
+		stroke: var(--rise-bg);
+		stroke-linecap: round;
+		stroke-width: 2;
+	}
+}
+
+@keyframes base-avatar-mascot-breathe {
+	to {
+		transform: scale(1.015, 1.03);
+	}
+}
+
+@keyframes base-avatar-ring-spin {
+	to {
+		--base-avatar-ring-angle: 360deg;
 	}
 }

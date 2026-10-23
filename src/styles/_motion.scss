@@ -1,0 +1,106 @@
+// Токены движения и пресеты (docs/design/DESIGN_SYSTEM.md, «Движение»).
+// Пресет — атрибут `data-rise-motion` на <html> или любом контейнере: пресет переопределяет весь набор токенов,
+// потому что значение, вычисленное на :root, в поддереве не пересчитывается. `standard` — значения по умолчанию.
+// Системное «уменьшить движение» и `data-rise-reduced-motion="always"` на <html> (опция плагина `reducedMotion`)
+// главнее любого пресета: специфичность их правил выше, чем у `[data-rise-motion]` и у темы `[data-rise-theme]`.
+@use 'sass:map';
+
+$motion-spring: linear(
+	0,
+	0.026 2.5%,
+	0.092 5%,
+	0.183 7.5%,
+	0.51 15%,
+	0.612 17.5%,
+	0.705 20%,
+	0.787 22.5%,
+	0.856 25%,
+	0.913 27.5%,
+	0.958 30%,
+	0.993 32.5%,
+	1.035 37.5%,
+	1.052 42.5%,
+	1.048 50%,
+	1.005 72.5%,
+	1
+);
+$motion-emphasized: cubic-bezier(0.2, 0, 0, 1);
+$motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+$motion-presets: (
+	'none': (
+		'duration-fast': 0.01ms,
+		'duration': 0.01ms,
+		'duration-slow': 0.01ms,
+		'duration-xslow': 0.01ms,
+		'ease-emphasized': $motion-emphasized,
+		'ease-spring': $motion-emphasized,
+		'motion-distance': 0px,
+		'motion-scale-from': 1,
+		'motion-stagger': 0ms,
+		'motion-loop-state': paused,
+	),
+	'subtle': (
+		'duration-fast': 100ms,
+		'duration': 140ms,
+		'duration-slow': 200ms,
+		'duration-xslow': 300ms,
+		'ease-emphasized': $motion-ease-out,
+		'ease-spring': $motion-ease-out,
+		'motion-distance': 4px,
+		'motion-scale-from': 0.98,
+		'motion-stagger': 0ms,
+		'motion-loop-state': running,
+	),
+	'standard': (
+		'duration-fast': 140ms,
+		'duration': 200ms,
+		'duration-slow': 320ms,
+		'duration-xslow': 500ms,
+		'ease-emphasized': $motion-emphasized,
+		'ease-spring': $motion-emphasized,
+		'motion-distance': 8px,
+		'motion-scale-from': 0.95,
+		'motion-stagger': 30ms,
+		'motion-loop-state': running,
+	),
+	'expressive': (
+		'duration-fast': 180ms,
+		'duration': 260ms,
+		'duration-slow': 420ms,
+		'duration-xslow': 700ms,
+		'ease-emphasized': $motion-emphasized,
+		'ease-spring': $motion-spring,
+		'motion-distance': 16px,
+		'motion-scale-from': 0.9,
+		'motion-stagger': 50ms,
+		'motion-loop-state': running,
+	),
+);
+
+@mixin motion-tokens($preset) {
+	@each $name, $value in map.get($motion-presets, $preset) {
+		--rise-#{$name}: #{$value};
+	}
+}
+
+:root {
+	@include motion-tokens('standard');
+}
+
+@each $preset in map.keys($motion-presets) {
+	[data-rise-motion='#{$preset}'][data-rise-motion] {
+		@include motion-tokens($preset);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root,
+	[data-rise-motion][data-rise-motion][data-rise-motion] {
+		@include motion-tokens('none');
+	}
+}
+
+:root[data-rise-reduced-motion='always'][data-rise-reduced-motion],
+:root[data-rise-reduced-motion='always'][data-rise-reduced-motion] [data-rise-motion] {
+	@include motion-tokens('none');
+}

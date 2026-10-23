@@ -1,0 +1,170 @@
+.base-timeline {
+	--timeline-marker: #{ct(timeline, marker-height, 24px)};
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	&__item {
+		--timeline-color: var(--rise-primary);
+		--timeline-on: var(--rise-on-primary);
+		--timeline-text: var(--rise-primary-text);
+		position: relative;
+		display: flex;
+		gap: space(ct(timeline, item-gap, 12px));
+		padding-bottom: space(ct(timeline, gap, 24px));
+
+		&:last-child {
+			padding-bottom: 0;
+		}
+
+		&--success {
+			--timeline-color: var(--rise-success);
+			--timeline-on: var(--rise-on-success);
+			--timeline-text: var(--rise-success-text);
+		}
+
+		&--warning {
+			--timeline-color: var(--rise-warning);
+			--timeline-on: var(--rise-on-warning);
+			--timeline-text: var(--rise-warning-text);
+		}
+
+		&--error {
+			--timeline-color: var(--rise-error);
+			--timeline-on: var(--rise-on-error);
+			--timeline-text: var(--rise-error-text);
+		}
+
+		&--info {
+			--timeline-color: var(--rise-info);
+			--timeline-on: var(--rise-on-info);
+			--timeline-text: var(--rise-info-text);
+		}
+
+		&--neutral,
+		&--upcoming {
+			--timeline-color: var(--rise-border-accented);
+			--timeline-on: var(--rise-text-muted);
+			--timeline-text: var(--rise-text-muted);
+		}
+	}
+
+	&__marker {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(var(--timeline-marker));
+		height: sz(var(--timeline-marker));
+		border: 2px solid transparent;
+		border-radius: sz(ct(timeline, marker-radius, var(--rise-radius-sm)));
+		background-color: ct(timeline, marker-bg, var(--timeline-color));
+		color: ct(timeline, marker-text, var(--timeline-on));
+	}
+
+	&__dot {
+		width: sz(ct(timeline, dot-height, 8px));
+		height: sz(ct(timeline, dot-height, 8px));
+		border-radius: var(--rise-radius-xs);
+		background-color: currentcolor;
+	}
+
+	&__line {
+		position: absolute;
+		top: sz(var(--timeline-marker));
+		bottom: 0;
+		inset-inline-start: calc(var(--timeline-side-offset, 0px) + #{sz(calc(var(--timeline-marker) / 2))} - 1px);
+		width: 2px;
+		background-color: ct(timeline, line-bg, var(--rise-border));
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+		padding-top: sz(2px);
+	}
+
+	&__date {
+		@include caps-label(10px);
+	}
+
+	&__date--side {
+		flex-shrink: 0;
+		font-variant-numeric: tabular-nums;
+		width: sz(88px);
+		padding-top: sz(4px);
+		text-align: end;
+	}
+
+	&--date-side {
+		--timeline-side-offset: calc(#{sz(88px)} + #{space(ct(timeline, item-gap, 12px))});
+	}
+
+	&__day {
+		margin-bottom: sz(2px);
+		@include caps-label;
+		color: var(--rise-text-highlighted);
+	}
+
+	&__media {
+		width: 100%;
+		max-width: sz(280px);
+		margin-top: sz(6px);
+	}
+
+	&__title {
+		font-size: sz(ct(timeline, title-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(timeline, title-font-weight, var(--rise-font-weight-medium));
+		color: ct(timeline, title-text, var(--rise-text));
+	}
+
+	&__description {
+		@include text-size(sm);
+		color: ct(timeline, description-text, var(--rise-text-muted));
+	}
+
+	&__item--current &__title {
+		color: var(--rise-text-highlighted);
+	}
+
+	&__item--upcoming &__title {
+		color: var(--rise-text-muted);
+	}
+
+	&--soft &__marker {
+		background-color: ct(timeline, marker-bg, color-mix(in srgb, var(--timeline-color) 15%, var(--rise-surface-bg)));
+		color: ct(timeline, marker-text, var(--timeline-text));
+	}
+
+	&--outline &__marker {
+		border-color: var(--timeline-color);
+		background-color: ct(timeline, marker-bg, var(--rise-bg));
+		color: ct(timeline, marker-text, var(--timeline-text));
+	}
+
+	&--horizontal {
+		flex-direction: row;
+		overflow-x: auto;
+	}
+
+	&--horizontal &__item {
+		flex: 1 0 sz(160px);
+		flex-direction: column;
+		padding-inline-end: space(ct(timeline, gap, 16px));
+		padding-bottom: 0;
+	}
+
+	&--horizontal &__line {
+		top: calc(#{sz(calc(var(--timeline-marker) / 2))} - 1px);
+		inset-inline: sz(var(--timeline-marker)) 0;
+		width: auto;
+		height: 2px;
+	}
+}

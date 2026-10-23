@@ -1,0 +1,25 @@
+/** Презентация с озвучкой BasePresentationPlayer (китайский) */
+export const zhPresentation = {
+	presentation: {
+		PREVIOUS: '上一张幻灯片',
+		NEXT: '下一张幻灯片',
+		SLIDES: '幻灯片',
+		STATUS: '第 {n} 张，共 {total} 张：{title}',
+		SLIDE_HINT: '{n}. {title}',
+		REPLAY: '重新观看',
+		LOCKED: '{n} 秒后可用',
+		LOCKED_AUDIO: '旁白播放完后可用',
+		RESUME: '从第 {n} 张幻灯片继续？',
+		RESUME_YES: '继续',
+		RESUME_NO: '从头开始',
+		DONE: '已完成',
+		FINISHED: '演示已结束',
+		DONE_TEXT: '已完成的幻灯片：{completed}/{total}',
+		LOCKED_QUIZ: '回答问题后才能继续',
+		SLIDE_LIST: '幻灯片列表',
+		NOTES: '文字稿',
+		NOTES_EMPTY: '这张幻灯片没有文字稿',
+		SLIDE_DONE: '已完成',
+		SLIDE_LOCKED: '已锁定',
+	},
+}

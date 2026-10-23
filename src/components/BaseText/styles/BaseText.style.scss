@@ -1,18 +1,22 @@
 .base-text {
-	@include custom-text(color, var(--color-text));
-	font-family: var(--font-family-base);
-	font-size: sz(14px);
-	margin: 0;
+	@include custom-color-scope;
 
-	// Без переноса
+	margin: 0;
+	font-family: var(--rise-font-sans);
+	font-size: sz(ct(text, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(text, text, var(--rise-text)));
+
+	&:is(h1, h2, h3, h4, h5, h6) {
+		@include heading;
+		@include custom-text(color, ct(text, text, var(--rise-text-highlighted)));
+	}
+
 	&--nowrap {
 		white-space: nowrap;
 	}
 
-	// Обрезка с многоточием (одна строка)
 	&--truncate {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+		@include truncate;
 	}
 }

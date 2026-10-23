@@ -1,0 +1,308 @@
+.base-tree-select__dropdown {
+	width: 100%;
+}
+
+.base-tree-select {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	@include custom-text(color, ct(tree-select, text, var(--rise-text-highlighted)));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__required {
+		@include field-required;
+	}
+
+	&__error-text {
+		@include field-error;
+	}
+
+	&__trigger {
+		display: flex;
+		align-items: center;
+		gap: sz(var(--rise-control-gap));
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 0;
+		padding: sz(ct(tree-select, padding-y, var(--rise-control-padding-y))) sz(ct(tree-select, padding-x, var(--rise-control-padding-x)));
+		outline: none;
+		cursor: pointer;
+		@include control-text;
+		@include field-box(tree-select);
+	}
+
+	&__values {
+		display: flex;
+		flex: 1;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+		@include reset-custom-color;
+	}
+
+	&__values &__value-text {
+		min-width: 0;
+		color: inherit;
+		@include truncate;
+	}
+
+	&__values &__placeholder {
+		min-width: 0;
+		color: var(--rise-text-muted);
+		@include truncate;
+	}
+
+	&__arrow {
+		flex-shrink: 0;
+		margin-inline-start: auto;
+		color: var(--rise-text-muted);
+		@include transition(transform);
+	}
+
+	&--open &__arrow {
+		transform: rotate(180deg);
+	}
+
+	&--has-tags &__trigger {
+		padding-inline-start: sz(ct(tree-select, padding-y, var(--rise-control-padding-y)));
+	}
+
+	&__tag {
+		max-width: 100%;
+	}
+
+	&__more {
+		flex-shrink: 0;
+	}
+
+	&__tag &__tag-text {
+		min-width: 0;
+		color: inherit;
+		font: inherit;
+		@include truncate;
+	}
+
+	&__tag-close {
+		@include button-reset;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: sz(16px);
+		height: sz(16px);
+		margin-inline-end: sz(-4px);
+		border-radius: sz(var(--rise-radius-xs));
+		@include transition-colors;
+
+		@include hover {
+			background-color: var(--rise-primary-soft-hover);
+		}
+	}
+
+	&--soft &__trigger {
+		@include field-variant(tree-select, soft);
+	}
+
+	&--outline &__trigger {
+		@include field-variant(tree-select, outline);
+	}
+
+	&--ghost &__trigger {
+		@include field-variant(tree-select, ghost);
+	}
+
+	&--shadow &__trigger {
+		@include field-variant(tree-select, shadow);
+	}
+
+	&--underline &__trigger {
+		padding-inline: 0;
+		@include field-variant(tree-select, underline);
+	}
+
+	&--open &__trigger {
+		@include field-open(tree-select);
+	}
+
+	&--ghost.base-tree-select--open &__trigger {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--underline.base-tree-select--open &__trigger {
+		@include field-open(tree-select, true);
+	}
+
+	&--error &__trigger {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--error.base-tree-select--open &__trigger {
+		border-color: var(--rise-error);
+		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+
+	&--error.base-tree-select--underline &__trigger,
+	&--error.base-tree-select--underline &__trigger:focus-within,
+	&--error.base-tree-select--underline.base-tree-select--open &__trigger {
+		border-color: transparent transparent var(--rise-error);
+	}
+
+	&--error.base-tree-select--underline &__trigger:focus-within,
+	&--error.base-tree-select--underline.base-tree-select--open &__trigger {
+		box-shadow: 0 1px 0 0 var(--rise-error);
+	}
+
+	&--disabled &__trigger {
+		@include disabled-state;
+	}
+
+	&__panel {
+		display: flex;
+		flex-direction: column;
+		@include text-size(sm);
+	}
+
+	&__search {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: 0 space(10px);
+		border-bottom: 1px solid var(--rise-border);
+		color: var(--rise-text-muted);
+		@include transition-colors;
+
+		&:focus-within {
+			border-bottom-color: var(--rise-primary);
+		}
+	}
+
+	&__search-input {
+		@include field-reset;
+		flex: 1;
+		min-width: 0;
+		padding: sz(var(--rise-control-padding-y)) 0;
+		color: var(--rise-text-highlighted);
+		@include control-text;
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+	}
+
+	&__tree {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		max-height: sz(280px);
+		margin: 0;
+		padding: space(4px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+	}
+
+	&__node {
+		@include menu-item;
+		padding-inline-start: calc(var(--base-tree-select-depth, 0) * #{sz(20px)} + #{sz(4px)});
+		border-radius: sz(ct(tree-select, node-radius, var(--rise-radius-sm)));
+
+		&--active {
+			background-color: ct(tree-select, node-bg-active, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
+		}
+
+		&--selected {
+			color: var(--rise-text-highlighted);
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+	}
+
+	&__toggle {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+		@include transition(transform);
+
+		&--expanded {
+			transform: rotate(dir-angle(90deg));
+		}
+
+		&--leaf {
+			visibility: hidden;
+		}
+	}
+
+	&__checkbox {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: sz(1.5px) solid var(--rise-border-control);
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		background-color: transparent;
+		color: var(--rise-on-primary);
+		@include transition-colors;
+	}
+
+	&__node--selected &__checkbox,
+	&__checkbox--mixed {
+		border-color: ct(tree-select, checkbox-bg-checked, var(--rise-primary));
+		background-color: ct(tree-select, checkbox-bg-checked, var(--rise-primary));
+	}
+
+	&__icon {
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+	}
+
+	&__node-label {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__check {
+		flex-shrink: 0;
+		margin-inline-start: auto;
+		color: var(--rise-primary);
+	}
+
+	&__status {
+		padding: space(12px 8px);
+		color: var(--rise-text-muted);
+		text-align: center;
+		@include text-size(sm);
+
+		.base-text {
+			color: inherit;
+		}
+	}
+}
+
+@include enter-fade(base-tree-select-row);
+
+.base-tree-select-row-move {
+	transition: transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-tree-select-row-leave-active {
+	position: absolute;
+	box-sizing: border-box;
+}

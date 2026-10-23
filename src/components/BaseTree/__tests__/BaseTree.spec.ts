@@ -1,21 +1,14 @@
-/**
- * Unit-тесты для BaseTree.
- * Проверяют рендер, пропсы, CSS-модификаторы и слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
-import type { TreeNode } from '../model/BaseTree.types'
+import type { TreeNode } from '../types/BaseTree.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Простые узлы без вложенности */
 const FLAT_ITEMS: TreeNode[] = [
 	{ id: 'item-1', label: 'Первый' },
 	{ id: 'item-2', label: 'Второй' },
 	{ id: 'item-3', label: 'Третий' },
 ]
 
-/** Узлы с вложенностью */
 const NESTED_ITEMS: TreeNode[] = [
 	{
 		id: 'parent',
@@ -28,19 +21,16 @@ const NESTED_ITEMS: TreeNode[] = [
 	{ id: 'leaf', label: 'Лист' },
 ]
 
-/** Узлы с иконками */
 const ICON_ITEMS: TreeNode[] = [
 	{ id: 'home', label: 'Главная', icon: 'home' },
 	{ id: 'search', label: 'Поиск', icon: 'search' },
 ]
 
-/** Узлы с отключёнными элементами */
 const DISABLED_ITEMS: TreeNode[] = [
 	{ id: 'ok', label: 'Доступный' },
 	{ id: 'no', label: 'Отключённый', isDisabled: true },
 ]
 
-/** Слот для рендера текста узлов */
 const DEFAULT_SLOT = `<template #label="{ node }">{{ node.label }}</template>`
 
 describe('BaseTree unit', () => {
@@ -212,12 +202,34 @@ describe('BaseTree unit', () => {
 				slots: { label: DEFAULT_SLOT },
 			})
 
-			const disabledCheckbox = container.querySelector(
-				'.base-tree__node--disabled .base-tree__checkbox input',
-			) as HTMLElement
+			const disabledCheckbox = container.querySelector('.base-tree__node--disabled .base-tree__checkbox input') as HTMLElement
 			await fireEvent.click(disabledCheckbox)
 
 			expect(emitted()['update:selectedIds']).toBeFalsy()
+		})
+
+		it('в режиме multiple отметку несёт aria-checked узла; флажок отключённого узла заблокирован', () => {
+			const { container } = render(BaseTree, {
+				props: { items: DISABLED_ITEMS, selectionMode: 'multiple', isDefaultExpandAll: true },
+				slots: { label: DEFAULT_SLOT },
+			})
+
+			expect(screen.getByRole('treeitem', { name: 'Доступный' })).toHaveAttribute('aria-checked', 'false')
+			const disabled = screen.getByRole('treeitem', { name: 'Отключённый' })
+			expect(disabled).toHaveAttribute('aria-checked', 'false')
+			expect(disabled).toHaveAttribute('aria-disabled', 'true')
+			expect(container.querySelector('.base-tree__node--disabled .base-tree__checkbox input')).toBeDisabled()
+		})
+
+		it('заголовок отключённого узла помечен aria-disabled, у доступного атрибута нет', () => {
+			const { container } = render(BaseTree, {
+				props: { items: DISABLED_ITEMS },
+				slots: { label: DEFAULT_SLOT },
+			})
+
+			const [enabledHeader, disabledHeader] = container.querySelectorAll('.base-tree__header')
+			expect(enabledHeader).not.toHaveAttribute('aria-disabled')
+			expect(disabledHeader).toHaveAttribute('aria-disabled', 'true')
 		})
 	})
 

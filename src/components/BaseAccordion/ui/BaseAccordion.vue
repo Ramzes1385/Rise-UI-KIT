@@ -1,53 +1,64 @@
 <template>
-	<div
-		class="base-accordion"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+	<div :class="[ui('root'), variantClass, appearanceClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
+
 		<div
 			v-for="(item, index) in items"
-			:key="index"
-			class="base-accordion__item"
+			:key="itemKey(index)"
 			:class="[
+				ui('item'),
 				{
-					'base-accordion__item--open': openIndexes.includes(index),
+					'base-accordion__item--open': isOpen(index),
 					'base-accordion__item--disabled': item.isDisabled,
 				},
 				classes.item,
 			]">
-			<div
-				class="base-accordion__header"
-				:class="classes.header"
-				tabindex="0"
-				@click="toggleItem(index)"
-				@keydown.enter="toggleItem(index)">
-				<BaseIcon
-					v-if="item.icon"
-					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)"
-					class="base-accordion__icon"
-					:custom-class="classes.icon" />
-				<BaseText
-					tag="span"
-					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:size-scale="sizeScale"
-					class="base-accordion__label"
-					:custom-class="classes.label"
-					>{{ item.label }}</BaseText
-				>
-				<span class="base-accordion__arrow" :class="classes.arrow">
+			<component :is="`h${headingLevel}`" :class="[ui('heading'), classes.heading]">
+				<button
+					:id="getHeaderId(index)"
+					type="button"
+					:class="[ui('header'), classes.header]"
+					:aria-expanded="isOpen(index)"
+					:aria-controls="getPanelId(index)"
+					:aria-labelledby="`${getHeaderId(index)}-label`"
+					:aria-describedby="item.description ? `${getHeaderId(index)}-description` : undefined"
+					:aria-disabled="item.isDisabled || undefined"
+					@click="toggleItem(index)"
+					@keydown="handleHeaderKeydown">
 					<BaseIcon
-						name="chevron-down"
-						:size-scale="calcIconScale('md', sizeScale)"
-						:custom-class="classes.arrowIcon" />
-				</span>
-			</div>
+						v-if="item.icon"
+						:name="item.icon"
+						:size-scale="calcIconScale('sm', sizeScale)"
+						:class="ui('icon')"
+						:custom-class="classes.icon" />
+					<span :class="ui('title')">
+						<span :id="`${getHeaderId(index)}-label`" :class="[ui('label'), classes.label]">{{ item.label }}</span>
+						<span
+							v-if="item.description"
+							:id="`${getHeaderId(index)}-description`"
+							:class="[ui('description'), classes.description]"
+							>{{ item.description }}</span
+						>
+					</span>
+					<span v-if="hasArrow" :class="[ui('arrow'), classes.arrow]">
+						<BaseIcon
+							:name="arrowIconName(isOpen(index))"
+							:size-scale="calcIconScale('md', sizeScale)"
+							:custom-class="classes.arrowIcon" />
+					</span>
+				</button>
+			</component>
 
 			<div
-				class="base-accordion__collapse"
-				:class="[{ 'base-accordion__collapse--open': openIndexes.includes(index) }, classes.collapse]">
-				<div class="base-accordion__content" :class="classes.content">
+				:id="getPanelId(index)"
+				:class="[ui('collapse'), { 'base-accordion__collapse--open': isOpen(index) }, classes.collapse]"
+				role="region"
+				:aria-labelledby="`${getHeaderId(index)}-label`"
+				:aria-hidden="isOpen(index) ? undefined : true"
+				:inert="isOpen(index) ? undefined : true">
+				<div :class="[ui('content'), classes.content]">
 					<slot :name="item.slot || 'default'" :item="item">
-						<BaseText :size-scale="sizeScale" :custom-class="classes.contentText">{{ item.content }}</BaseText>
+						<p :class="[ui('text'), classes.contentText]">{{ item.content }}</p>
 					</slot>
 				</div>
 			</div>
@@ -56,49 +67,50 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAccordion.style.scss'
-import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../model/BaseAccordion.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBaseAccordion } from '../model/useBaseAccordion'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseAccordionEmits, BaseAccordionProps, BaseAccordionSlots } from '../types/BaseAccordion.types'
 
-const props = withDefaults(defineProps<BaseAccordionProps>(), {
-	isMultiple: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseAccordionProps>(),
+	kitDefaults('BaseAccordion', {
+		items: () => [],
+		variant: DEFAULT_VARIANT,
+		isMultiple: false,
+		headingLevel: 3,
+		arrowPosition: 'end',
+		showArrow: true,
+		expandIcon: 'chevron-down',
+		density: 'default',
+		isAccented: false,
+		seo: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAccordionEmits>()
 defineSlots<BaseAccordionSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-accordion', props, ['root', 'item', 'header', 'icon', 'label', 'arrow', 'arrowIcon', 'collapse', 'content', 'contentText'])
-
-const openIndexes = ref<number[]>([])
-
-onMounted(() => {
-	props.items.forEach((item, index) => {
-		if (item.defaultOpen) {
-			openIndexes.value.push(index)
-		}
-	})
-})
-
-function toggleItem(index: number): void {
-	if (props.items[index].isDisabled) return
-
-	const pos = openIndexes.value.indexOf(index)
-	if (pos > -1) {
-		openIndexes.value.splice(pos, 1)
-		emit('toggle', index, false)
-	} else {
-		if (props.isMultiple) {
-			openIndexes.value.push(index)
-		} else {
-			openIndexes.value = [index]
-		}
-		emit('toggle', index, true)
-	}
-}
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	appearanceClass,
+	hasArrow,
+	arrowIconName,
+	itemKey,
+	isOpen,
+	toggleItem,
+	getHeaderId,
+	getPanelId,
+	handleHeaderKeydown,
+	structuredData,
+} = useBaseAccordion(props, emit)
 </script>

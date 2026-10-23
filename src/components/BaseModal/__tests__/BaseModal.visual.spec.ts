@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseModal.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'custom-color', 'opened', 'long-content', 'full-screen'] as const
 
-const COMPONENT = 'ui-basemodal'
-const STORIES = ['default', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseModal — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-modal--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseModal · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-basemodal--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-modal-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

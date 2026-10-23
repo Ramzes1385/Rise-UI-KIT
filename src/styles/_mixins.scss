@@ -1,6 +1,14 @@
 @use 'sass:list';
 @use 'sass:map';
 @use './variables' as *;
+@use './functions' as *;
+
+// Остров слева направо: пространственные элементы (шкала времени, до / после), которые не зеркалятся в RTL.
+// `direction` и `--rise-dir` возвращают LTR всему поддереву, JS-проверки (`isRtl`) тоже видят LTR.
+@mixin ltr-surface {
+	direction: ltr;
+	--rise-dir: 1;
+}
 
 @mixin flex-center {
 	display: flex;
@@ -8,10 +16,143 @@
 	justify-content: center;
 }
 
-/**
- * Возвращает значение брейкпоинта из карты $breakpoints.
- * Бросает ошибку, если имя неизвестно — защита от опечаток.
- */
+@mixin truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@mixin visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+
+// Сброс нативного поля ввода (`input`, `textarea`) до «голого» элемента внутри оболочки: без рамки, обводки и фона, с наследованием цвета и шрифта.
+// Подключается первым в правиле; рамку и фокус рисует оболочка (`field-box`), отступы и размер текста задаёт компонент.
+@mixin field-reset {
+	border: 0;
+	outline: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+}
+
+// Сброс нативной кнопки до «голого» элемента: без рамки, фона, отступов, с наследованием цвета, шрифта и выравнивания.
+// Подключается первым в правиле, остальные свойства (радиус, отступы, выравнивание) переопределяют его.
+@mixin button-reset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: inherit;
+	cursor: pointer;
+}
+
+// Иконочная кнопка панели инструментов 28x28 без рамки и фона, радиус md; тональное наведение — `--rise-bg-elevated`,
+// нажатие — `--rise-bg-accented`, фокус с клавиатуры — кольцо `focus-ring`.
+@mixin tool-button {
+	position: relative;
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: sz(28px);
+	height: sz(28px);
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: sz(var(--rise-radius-md));
+	background-color: transparent;
+	box-shadow: none;
+	color: var(--rise-text);
+	cursor: pointer;
+	@include transition-colors;
+
+	@include hover {
+		border-color: transparent;
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-highlighted);
+	}
+
+	@include active {
+		background-color: var(--rise-bg-accented);
+	}
+
+	@include focus-ring;
+}
+
+// Разрядка подписей в верхнем регистре (`text-transform: uppercase`): для латиницы и кириллицы — `$value`, для китайского и
+// японского (`:lang(zh)`, `:lang(ja)`) — без разрядки: иероглифы не имеют регистра, и интервал только разводит знаки.
+@mixin caps-tracking($value) {
+	letter-spacing: $value;
+
+	&:lang(zh),
+	&:lang(ja) {
+		letter-spacing: 0;
+	}
+}
+
+// Счётчик символов под полем (BaseTextarea): мелкий текст с цифрами одной ширины; $color — токен компонента.
+@mixin field-counter($color: var(--rise-text-muted)) {
+	@include text-size(xs);
+	color: $color;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+// Тонкая полоса прокрутки: бегунок `--rise-border-accented` на прозрачной дорожке; радиус бегунка xs — там, где браузер
+// даёт его задать (WebKit: Safari; Chromium и Firefox рисуют стандартную тонкую полосу по `scrollbar-color`).
+@mixin scrollbar-thin {
+	scrollbar-width: thin;
+	scrollbar-color: var(--rise-border-accented) transparent;
+
+	&::-webkit-scrollbar {
+		width: sz(8px);
+		height: sz(8px);
+	}
+
+	&::-webkit-scrollbar-track {
+		background-color: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: var(--rise-radius-xs);
+		background-color: var(--rise-border-accented);
+	}
+}
+
+// Служебная подпись моно капсом (принцип 6): шапки таблиц, бейджи, подписи групп меню и показателей (Stat), служебные метки,
+// номера шагов и страниц, тайм-коды. Rise Mono 400, `--rise-text-muted`, цифры одной ширины; разрядка `--rise-tracking-label`
+// (у китайского и японского — без разрядки). $size — кегль: 11px, в шапке таблицы и бейдже — 10px (у бейджа `$tracking: 0.08em`).
+@mixin caps-label($size: 11px, $tracking: var(--rise-tracking-label)) {
+	font-family: var(--rise-font-mono);
+	font-size: sz($size);
+	line-height: sz(16px);
+	font-weight: var(--rise-font-weight-normal);
+	font-variant-numeric: tabular-nums;
+	text-transform: uppercase;
+	color: var(--rise-text-muted);
+	@include caps-tracking($tracking);
+}
+
+// Заголовок: Rise Grotesk 600, `--rise-text-highlighted`, разрядка `--rise-tracking-heading`; крупный (от 30px) — `heading(display)`.
+// Кегль задаёт компонент (`text-size`). У китайского и японского разрядки нет.
+@mixin heading($tracking: heading) {
+	font-family: var(--rise-font-heading);
+	font-weight: var(--rise-font-weight-semibold);
+	color: var(--rise-text-highlighted);
+	@include caps-tracking(var(--rise-tracking-#{$tracking}));
+}
+
 @function breakpoint($name) {
 	@if not map.has-key($breakpoints, $name) {
 		@error 'Unknown breakpoint "#{$name}". Available: #{map.keys($breakpoints)}.';
@@ -20,39 +161,8 @@
 	@return map.get($breakpoints, $name);
 }
 
-/**
- * Mobile-first: применяет стили начиная с ширины брейкпоинта и выше.
- *
- * @example
- *   @include respond-to('md') { padding: 24px; }
- */
-@mixin respond-to($name) {
-	@media (min-width: breakpoint($name)) {
-		@content;
-	}
-}
-
-/**
- * Применяет стили на экранах уже брейкпоинта (max-width).
- * Граница берётся на 0.02px ниже, чтобы не пересекаться с respond-to.
- *
- * @example
- *   @include respond-below('mobile') { width: 100%; }
- */
 @mixin respond-below($name) {
 	@media (max-width: (breakpoint($name) - 0.02px)) {
-		@content;
-	}
-}
-
-/**
- * Применяет стили в диапазоне [$from, $to).
- *
- * @example
- *   @include respond-between('sm', 'lg') { display: grid; }
- */
-@mixin respond-between($from, $to) {
-	@media (min-width: breakpoint($from)) and (max-width: (breakpoint($to) - 0.02px)) {
 		@content;
 	}
 }
@@ -61,186 +171,562 @@
 	$transitions: ();
 
 	@each $prop in $props {
-		$transitions: list.append($transitions, #{$prop} var(--transition-base), comma);
+		$transitions: list.append($transitions, #{$prop} var(--rise-duration) var(--rise-ease), comma);
 	}
 
 	transition: $transitions;
 }
 
+@mixin transition-colors($duration: var(--rise-duration-fast)) {
+	transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity;
+	transition-timing-function: var(--rise-ease);
+	transition-duration: $duration;
+}
+
+@mixin motion-safe {
+	@media (prefers-reduced-motion: no-preference) {
+		@content;
+	}
+}
+
+@mixin motion-reduce {
+	@media (prefers-reduced-motion: reduce) {
+		@content;
+	}
+}
+
+@mixin loop-state {
+	animation-play-state: var(--rise-motion-loop-state, running);
+}
+
 @mixin hover {
-	&:not(:disabled, [disabled], .is-disabled, [class*='--disabled']) {
-		&:hover {
+	@media (hover: hover) {
+		&:not(:disabled, [disabled], [aria-disabled='true'], .is-disabled, [class*='--disabled']):hover {
 			@content;
 		}
 	}
 }
 
 @mixin active {
-	&:not(:disabled, [disabled], .is-disabled, [class*='--disabled']) {
+	&:not(:disabled, [disabled], [aria-disabled='true'], .is-disabled, [class*='--disabled']) {
 		&:active {
 			@content;
 		}
 	}
 }
 
-@mixin focus {
+@mixin focus-ring($offset: 2px) {
 	&:focus-visible {
-		@content;
+		outline: 2px solid var(--rise-focus-ring);
+		outline-offset: $offset;
 	}
 }
 
-@mixin interactive {
-	@include transition(background-color, border-color, color, opacity, transform, box-shadow, filter);
+@mixin disabled-state {
+	opacity: var(--rise-disabled-opacity);
+	cursor: not-allowed;
 }
 
-// ============================================================================
-// Кастомный цвет фона (custom-bg)
-// ============================================================================
+@mixin text-size($size) {
+	font-size: sz(var(--rise-font-size-#{$size}));
+	line-height: sz(var(--rise-line-height-#{$size}));
+}
 
-/**
- * Кастомный цвет фона с fallback.
- * Когда --custom-bg задана через useCustomColor — используется она,
- * иначе — значение по умолчанию из темы.
- *
- * @example
- *   @include custom-bg(background-color, var(--color-surface));
- *   // → background-color: var(--custom-bg, var(--color-surface));
- */
+@mixin control-text {
+	font-size: sz(var(--rise-control-font-size));
+	line-height: sz(var(--rise-control-line-height));
+}
+
+@mixin reset-custom-color {
+	--custom-bg: initial;
+	--custom-bg-hover: initial;
+	--custom-bg-active: initial;
+	--custom-bg-focus: initial;
+	--custom-text: initial;
+	--custom-text-hover: initial;
+	--custom-text-active: initial;
+	--custom-text-focus: initial;
+}
+
+@mixin custom-color-scope {
+	@at-root :where(#{&}) {
+		@include reset-custom-color;
+	}
+}
+
+@mixin inherit-custom-color {
+	--custom-bg: inherit;
+	--custom-bg-hover: inherit;
+	--custom-bg-active: inherit;
+	--custom-bg-focus: inherit;
+	--custom-text: inherit;
+	--custom-text-hover: inherit;
+	--custom-text-active: inherit;
+	--custom-text-focus: inherit;
+}
+
 @mixin custom-bg($property, $fallback) {
 	#{$property}: var(--custom-bg, #{$fallback});
 }
 
-/**
- * Кастомный hover-цвет фона с fallback.
- * Цепочка: --custom-bg-hover → --custom-bg → $fallback.
- *
- * @example
- *   @include custom-bg-hover(background-color, var(--color-surface-muted));
- */
 @mixin custom-bg-hover($property, $fallback) {
 	@include hover {
 		#{$property}: var(--custom-bg-hover, var(--custom-bg, #{$fallback}));
 	}
 }
 
-/**
- * Кастомный active-цвет фона с fallback.
- * Цепочка: --custom-bg-active → --custom-bg → $fallback.
- *
- * @example
- *   @include custom-bg-active(background-color, var(--color-border));
- */
 @mixin custom-bg-active($property, $fallback) {
 	@include active {
 		#{$property}: var(--custom-bg-active, var(--custom-bg, #{$fallback}));
 	}
 }
 
-/**
- * Кастомный focus-цвет фона с fallback.
- *
- * @example
- *   @include custom-bg-focus(box-shadow, inset 0 0 0 2px var(--color-accent));
- */
-@mixin custom-bg-focus($property, $fallback) {
-	@include focus {
-		#{$property}: var(--custom-bg-focus, #{$fallback});
+@mixin custom-button-colors($bg, $hover: $bg, $active: $hover, $text: null) {
+	--custom-bg: #{$bg};
+	--custom-bg-hover: #{$hover};
+	--custom-bg-active: #{$active};
+
+	@if $text {
+		--custom-text: #{$text};
 	}
 }
 
-/**
- * Комплексный миксин: кастомный цвет фона для всех состояний.
- *
- * @param {String} $property — CSS-свойство
- * @param {*} $base — базовый fallback
- * @param {*} $hover — hover fallback (по умолчанию = $base)
- * @param {*} $active — active fallback (по умолчанию = $base)
- * @param {*} $focus — focus fallback (по умолчанию = null)
- *
- * @example
- *   @include custom-bg-all(background-color, var(--color-accent), var(--color-accent-hover), var(--color-accent));
- */
-@mixin custom-bg-all($property, $base, $hover: $base, $active: $base, $focus: null) {
+@mixin custom-bg-reset {
+	--custom-bg: initial;
+	--custom-bg-hover: initial;
+	--custom-bg-active: initial;
+	--custom-bg-focus: initial;
+}
+
+@mixin custom-bg-all($property, $base, $hover: $base, $active: $base) {
 	@include custom-bg($property, $base);
 	@include custom-bg-hover($property, $hover);
 	@include custom-bg-active($property, $active);
-
-	@if $focus != null {
-		@include custom-bg-focus($property, $focus);
-	}
 }
 
-// ============================================================================
-// Кастомный цвет текста (custom-text)
-// ============================================================================
-
-/**
- * Кастомный цвет текста с fallback.
- *
- * @example
- *   @include custom-text(color, var(--color-primary));
- *   // → color: var(--custom-text, var(--color-primary));
- */
 @mixin custom-text($property, $fallback) {
 	#{$property}: var(--custom-text, #{$fallback});
 }
 
-/**
- * Кастомный hover-цвет текста с fallback.
- * Цепочка: --custom-text-hover → --custom-text → $fallback.
- *
- * @example
- *   @include custom-text-hover(color, var(--color-accent));
- */
 @mixin custom-text-hover($property, $fallback) {
 	@include hover {
 		#{$property}: var(--custom-text-hover, var(--custom-text, #{$fallback}));
 	}
 }
 
-/**
- * Кастомный active-цвет текста с fallback.
- * Цепочка: --custom-text-active → --custom-text → $fallback.
- *
- * @example
- *   @include custom-text-active(color, var(--color-text));
- */
-@mixin custom-text-active($property, $fallback) {
-	@include active {
-		#{$property}: var(--custom-text-active, var(--custom-text, #{$fallback}));
+@mixin field-focus($color: var(--rise-primary)) {
+	&:focus-within {
+		border-color: #{$color};
+		box-shadow: 0 0 0 1px #{$color};
 	}
 }
 
-/**
- * Кастомный focus-цвет текста с fallback.
- *
- * @example
- *   @include custom-text-focus(color, var(--color-accent));
- */
-@mixin custom-text-focus($property, $fallback) {
-	@include focus {
-		#{$property}: var(--custom-text-focus, #{$fallback});
+// Подпись поля: 13/18, 500, `--rise-text-highlighted`.
+@mixin field-label {
+	font-size: sz(13px);
+	line-height: sz(18px);
+	font-weight: var(--rise-font-weight-medium);
+	color: var(--rise-text-highlighted);
+}
+
+// Звёздочка обязательного поля — цвет акцента, как в макете.
+@mixin field-required {
+	margin-inline-start: sz(2px);
+	color: var(--rise-primary);
+}
+
+// Ошибка под полем: 12/16, `--rise-error-text` (текст роли, 4.5:1 к фону).
+@mixin field-error {
+	@include text-size(xs);
+	color: var(--rise-error-text);
+}
+
+// Подсказка под полем: 12/16, `--rise-text-muted`.
+@mixin field-hint {
+	@include text-size(xs);
+	color: var(--rise-text-muted);
+}
+
+// Оболочка поля (SPEC 3, «Поля»): тональная заливка `--rise-field-bg` (контейнер поднимает её до `--rise-surface-raised`),
+// рамка 1px прозрачная — под фокус (`field-focus`: рамка акцента + кольцо 1px), ошибку и варианты (`field-variant`).
+// $component — имя поля (`input`, `select`, `textarea`…): поле читает свои токены `--rise-<поле>-*`, запасное значение —
+// общие токены полей `--rise-input-*`, затем семантика. Без имени — только семантика (поля вне Form A).
+@mixin field-box($component: null) {
+	@if $component == null {
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-control-radius));
+		@include custom-bg(background-color, var(--rise-field-bg));
+		@include transition-colors;
+		@include field-focus(var(--rise-primary));
+	} @else {
+		border: 1px solid ct($component, border, var(--rise-input-border, transparent));
+		border-radius: sz(ct($component, radius, var(--rise-input-radius, var(--rise-control-radius))));
+		@include custom-bg(background-color, ct($component, bg, var(--rise-input-bg, var(--rise-field-bg))));
+		@include transition-colors;
+		@include field-focus(ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary))));
 	}
 }
 
-/**
- * Комплексный миксин: кастомный цвет текста для всех состояний.
- *
- * @param {String} $property — CSS-свойство
- * @param {*} $base — базовый fallback
- * @param {*} $hover — hover fallback (по умолчанию = $base)
- * @param {*} $active — active fallback (по умолчанию = $base)
- * @param {*} $focus — focus fallback (по умолчанию = null)
- *
- * @example
- *   @include custom-text-all(color, var(--color-text), var(--color-accent));
- */
-@mixin custom-text-all($property, $base, $hover: $base, $active: $base, $focus: null) {
-	@include custom-text($property, $base);
-	@include custom-text-hover($property, $hover);
-	@include custom-text-active($property, $active);
+// Вариант поля поверх `field-box` на той же оболочке: `&--soft &__wrapper { @include field-variant(input, soft); }`.
+// `default` — вид `field-box`; `soft` — `bg-muted`; `filled` — `bg-accented`; `outline` — прозрачный фон и рамка
+// `border-accented`; `ghost` — прозрачный, наведение и фокус — `bg-elevated`; `underline` — только нижняя линия, радиус 0;
+// `shadow` — `--rise-surface-floating` (светлая bg, тёмная bg-elevated) и `shadow-sm`. $component — как в `field-box`
+// (токен цвета фокуса), без имени — `null`. Варианты с рамкой и тенью повторяют фокус: их правило идёт позже правила оболочки.
+@mixin field-variant($component, $variant) {
+	$focus: var(--rise-primary);
 
-	@if $focus != null {
-		@include custom-text-focus($property, $focus);
+	@if $component != null {
+		$focus: ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary)));
+	}
+
+	@if $variant == soft {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	} @else if $variant == filled {
+		@include custom-bg(background-color, var(--rise-bg-accented));
+	} @else if $variant == outline {
+		border-color: var(--rise-border-accented);
+		@include custom-bg(background-color, transparent);
+		@include field-focus($focus);
+	} @else if $variant == ghost {
+		@include custom-bg(background-color, transparent);
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+
+		&:focus-within {
+			@include custom-bg(background-color, var(--rise-bg-elevated));
+		}
+	} @else if $variant == underline {
+		border-color: transparent transparent var(--rise-border-accented);
+		border-radius: 0;
+		@include custom-bg(background-color, transparent);
+
+		&:focus-within {
+			border-color: transparent transparent #{$focus};
+			box-shadow: 0 1px 0 0 #{$focus};
+		}
+	} @else if $variant == shadow {
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		box-shadow: var(--rise-shadow-sm);
+		@include field-focus($focus);
+	} @else if $variant != default {
+		@error 'Unknown field variant "#{$variant}". Available: default, soft, filled, outline, ghost, underline, shadow.';
+	}
+}
+
+// Поля внутри тонального контейнера — на ступень светлее его фона (SPEC 3, «Контейнеры поднимают поля»): на обёртку
+// содержимого карточки `default`/`soft`, боковой панели, тональной секции. `tonal-surface` ставит то же сам.
+@mixin raised-fields {
+	--rise-field-bg: var(--rise-surface-raised);
+}
+
+$-tonal-surfaces: (
+	'page': (
+		var(--rise-bg),
+		var(--rise-bg-elevated),
+	),
+	'muted': (
+		var(--rise-bg-muted),
+		var(--rise-surface-raised),
+	),
+	'elevated': (
+		var(--rise-bg-elevated),
+		var(--rise-surface-raised),
+	),
+	'floating': (
+		var(--rise-surface-floating),
+		var(--rise-field-bg-floating),
+	),
+	'dialog': (
+		var(--rise-surface-dialog),
+		var(--rise-field-bg-floating),
+	),
+);
+
+// Поверхность уровня $level (принцип 1): фон без рамки и тени; поля внутри — на ступень светлее фона (`--rise-field-bg`),
+// кольца-разделители (группа аватаров, бегунок ползунка) — цвета фона (`--rise-surface-bg`). Уровни: `page` — как страница
+// (карточки `outline` и `shadow` — рамку и тень рисует компонент), `muted` — контейнер (карточка по умолчанию, панели),
+// `elevated` — карточка `soft`, `floating` — всплывающий слой (светлая bg, тёмная bg-elevated), `dialog` — окно и боковая
+// панель (светлая bg, тёмная bg-muted), `none` — без фона (`ghost`: поля и кольца — как у родителя). Фон — без `--custom-bg`:
+// компонент с пропом цвета ставит `custom-bg` после миксина.
+@mixin tonal-surface($level: muted) {
+	@if $level == none {
+		background-color: transparent;
+	} @else {
+		@if not map.has-key($-tonal-surfaces, $level) {
+			@error 'Unknown surface level "#{$level}". Available: none, #{map.keys($-tonal-surfaces)}.';
+		}
+
+		$surface: map.get($-tonal-surfaces, $level);
+		--rise-field-bg: #{list.nth($surface, 2)};
+		--rise-surface-bg: #{list.nth($surface, 1)};
+		background-color: list.nth($surface, 1);
+	}
+}
+
+// Раскрытое поле (`--open` у BaseSelect, BaseCascader, BaseTreeSelect): рамка и тень — тот же токен `--rise-<поле>-border-focus`,
+// что и у фокуса в `field-box`, с тем же запасным значением. `$underline` — поле с одной нижней чертой.
+@mixin field-open($component, $underline: false) {
+	$color: ct($component, border-focus, var(--rise-input-border-focus, var(--rise-primary)));
+
+	@if $underline {
+		box-shadow: 0 1px 0 0 #{$color};
+	} @else {
+		border-color: #{$color};
+		box-shadow: 0 0 0 1px #{$color};
+	}
+}
+
+// Всплывающая поверхность (меню, поповеры, выпадающие списки, тосты): без рамки, `tonal-surface(floating)` — светлая bg,
+// тёмная bg-elevated, поля внутри на ступень светлее; радиус lg, тень lg. Отступ $padding (4px, с плотностью `space()`) —
+// отдельным правилом с нулевой специфичностью (`:where()`): свой `padding` компонента сильнее при любом порядке; `null` — без
+// отступа. Объявления после `@include` Sass выводит вторым блоком того же селектора.
+@mixin floating-surface($padding: 4px) {
+	border: 0;
+	border-radius: sz(var(--rise-radius-lg));
+	box-shadow: var(--rise-shadow-lg);
+	color: var(--rise-text);
+	@include tonal-surface(floating);
+
+	@if $padding != null {
+		@at-root :where(#{&}) {
+			padding: space($padding);
+		}
+	}
+}
+
+// Пункт меню и списка: высота 32, отступ 0 8, радиус sm; наведение и фокус — `--rise-surface-floating-hover`
+// (светлая bg-elevated, тёмная bg-accented), фокус с клавиатуры — ещё и кольцо внутри пункта.
+@mixin menu-item {
+	display: flex;
+	align-items: center;
+	gap: sz(10px);
+	min-height: sz(32px);
+	padding: sz(0 8px);
+	border-radius: sz(var(--rise-radius-sm));
+	@include text-size(sm);
+	color: var(--rise-text);
+	cursor: pointer;
+	user-select: none;
+	@include transition-colors;
+
+	@include hover {
+		background-color: var(--rise-surface-floating-hover);
+		color: var(--rise-text-highlighted);
+	}
+
+	&:focus-visible {
+		outline: 2px solid var(--rise-focus-ring);
+		outline-offset: -2px;
+		background-color: var(--rise-surface-floating-hover);
+		color: var(--rise-text-highlighted);
+	}
+}
+
+// Движение (docs/design/DESIGN_SYSTEM.md, «Движение»). Длительности, кривые, сдвиг и масштаб — токены пресета,
+// поэтому `data-rise-motion` и «уменьшить движение» действуют и здесь без отдельных правил.
+
+// Раскрытие по высоте `auto` без замера: строка сетки 0fr ↔ 1fr. Свёрнутое скрыто и от фокуса (visibility);
+// у единственного потомка — `min-height: 0`. Открытое состояние — `expand-rows-open` на том же элементе.
+@mixin expand-rows {
+	display: grid;
+	grid-template-rows: 0fr;
+	opacity: 0;
+	visibility: hidden;
+	transition:
+		grid-template-rows var(--rise-duration-slow) var(--rise-ease-emphasized),
+		opacity var(--rise-duration) var(--rise-ease),
+		visibility 0s linear var(--rise-duration-slow);
+
+	> * {
+		min-height: 0;
+		overflow: hidden;
+	}
+}
+
+@mixin expand-rows-open {
+	grid-template-rows: 1fr;
+	opacity: 1;
+	visibility: visible;
+	transition:
+		grid-template-rows var(--rise-duration-slow) var(--rise-ease-emphasized),
+		opacity var(--rise-duration) var(--rise-ease),
+		visibility 0s;
+}
+
+// Классы `<Transition name="…">`: появление дольше и мягче, уход короче. Подключаются на верхнем уровне файла стилей.
+@mixin enter-fade($name) {
+	.#{$name}-enter-active {
+		transition: opacity var(--rise-duration) var(--rise-ease-out);
+	}
+
+	.#{$name}-leave-active {
+		transition: opacity var(--rise-duration-fast) var(--rise-ease-in);
+	}
+
+	.#{$name}-enter-from,
+	.#{$name}-leave-to {
+		opacity: 0;
+	}
+}
+
+@mixin enter-transform($name, $from, $to: $from, $ease: var(--rise-ease-out)) {
+	.#{$name}-enter-active {
+		transition:
+			opacity var(--rise-duration) var(--rise-ease-out),
+			transform var(--rise-duration) $ease;
+	}
+
+	.#{$name}-leave-active {
+		transition:
+			opacity var(--rise-duration-fast) var(--rise-ease-in),
+			transform var(--rise-duration-fast) var(--rise-ease-in);
+	}
+
+	.#{$name}-enter-from {
+		opacity: 0;
+		transform: $from;
+	}
+
+	.#{$name}-leave-to {
+		opacity: 0;
+		transform: $to;
+	}
+}
+
+@mixin enter-scale($name, $from: var(--rise-motion-scale-from)) {
+	@include enter-transform($name, scale($from));
+}
+
+// Пружина (`--rise-ease-spring`) — только у появления: перелёт есть лишь в пресете `expressive`.
+@mixin enter-pop($name, $from: var(--rise-motion-scale-from)) {
+	@include enter-transform($name, scale($from), $ease: var(--rise-ease-spring));
+}
+
+// $dir — откуда въезжает содержимое: `up` — снизу вверх, `down`, `left` — справа налево, `right`. Уход — дальше по ходу.
+// Горизонтальные `left` и `right` — вдоль строки: в RTL меняются местами (`--rise-dir`, kit.scss).
+@mixin enter-slide($name, $dir: up, $distance: var(--rise-motion-distance)) {
+	$axis: 'X';
+	$sign: -1;
+	$flip: '';
+	@if $dir == up or $dir == down {
+		$axis: 'Y';
+	} @else {
+		$flip: ' * var(--rise-dir, 1)';
+	}
+	@if $dir == up or $dir == left {
+		$sign: 1;
+	}
+	@include enter-transform(
+		$name,
+		translate#{$axis }(calc(#{$distance} * #{$sign}#{$flip})),
+		translate#{$axis }(calc(#{$distance} * #{-$sign}#{$flip}))
+	);
+}
+
+// Проп `animation` оверлея (fade | scale | slide | pop | none): появление и уход `<Transition name="$name">`.
+// $host — элемент с классами перехода и модификатором `<host>--animation-<имя>`; $panel — что двигается внутри
+// (окно над затемнением) или null — двигается сам $host. Движение — свойствами `scale` и `translate`, не `transform`:
+// позиционирование панели через transform не ломается. Сторона slide — `--overlay-slide` (по умолчанию снизу
+// на `--rise-motion-distance`), точка масштаба — `transform-origin` панели (от якоря).
+@mixin overlay-animation($name, $host, $panel: null, $duration: var(--rise-duration), $leave: var(--rise-duration-fast)) {
+	#{$host} {
+		--overlay-scale: 1;
+		--overlay-translate: 0 0;
+		--overlay-ease: var(--rise-ease-out);
+
+		&--animation-scale,
+		&--animation-pop {
+			--overlay-scale: var(--rise-motion-scale-from);
+		}
+
+		&--animation-pop {
+			--overlay-ease: var(--rise-ease-spring);
+		}
+
+		&--animation-slide {
+			--overlay-translate: var(--overlay-slide, 0 var(--rise-motion-distance));
+		}
+	}
+
+	.#{$name}-enter-active {
+		@if $panel {
+			transition: opacity $duration var(--rise-ease-out);
+
+			#{$panel} {
+				transition:
+					opacity $duration var(--rise-ease-out),
+					scale $duration var(--overlay-ease),
+					translate $duration var(--overlay-ease);
+			}
+		} @else {
+			transition:
+				opacity $duration var(--rise-ease-out),
+				scale $duration var(--overlay-ease),
+				translate $duration var(--overlay-ease);
+		}
+	}
+
+	.#{$name}-leave-active {
+		@if $panel {
+			transition: opacity $leave var(--rise-ease-in);
+
+			#{$panel} {
+				transition:
+					opacity $leave var(--rise-ease-in),
+					scale $leave var(--rise-ease-in),
+					translate $leave var(--rise-ease-in);
+			}
+		} @else {
+			transition:
+				opacity $leave var(--rise-ease-in),
+				scale $leave var(--rise-ease-in),
+				translate $leave var(--rise-ease-in);
+		}
+	}
+
+	.#{$name}-enter-from,
+	.#{$name}-leave-to {
+		opacity: 0;
+
+		@if $panel {
+			#{$panel} {
+				opacity: 0;
+				scale: var(--overlay-scale);
+				translate: var(--overlay-translate);
+			}
+		} @else {
+			scale: var(--overlay-scale);
+			translate: var(--overlay-translate);
+		}
+	}
+
+	#{$host}--animation-none.#{$name}-enter-active,
+	#{$host}--animation-none.#{$name}-leave-active {
+		transition: none;
+
+		@if $panel {
+			#{$panel} {
+				transition: none;
+			}
+		}
+	}
+}
+
+// Скользящий индикатор для `useSlidingIndicator`: позиция — transform, размер — ширина и высота абсолютного элемента
+// (раскладку соседей не трогает, как у индикатора вкладок MUI). Первый замер — без перехода (`$instant-selector`).
+@mixin sliding-indicator($instant-selector: '&--instant') {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: var(--indicator-w, 0);
+	height: var(--indicator-h, 0);
+	transform: translate(var(--indicator-x, 0), var(--indicator-y, 0));
+	pointer-events: none;
+	// stylelint-disable-next-line declaration-property-value-disallowed-list -- размер абсолютного индикатора: исключение решения research-motion, 2.4
+	transition-property: transform, width, height;
+	transition-duration: var(--rise-duration);
+	transition-timing-function: var(--rise-ease-spring);
+
+	#{$instant-selector} {
+		transition: none;
 	}
 }

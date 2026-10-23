@@ -1,0 +1,370 @@
+<template>
+	<section
+		ref="rootRef"
+		:class="[
+			ui('root'),
+			variantClass,
+			classes.root,
+			{ 'base-image-map--fullscreen': isFullscreen, 'base-image-map--fullscreen-fallback': isFullscreenFallback },
+		]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		:aria-label="mapLabel">
+		<div
+			class="base-image-map__layout"
+			:class="{
+				'base-image-map__layout--with-directory': hasDirectory,
+				'base-image-map__layout--end': directoryPosition === 'end',
+			}">
+			<div class="base-image-map__main">
+				<div
+					v-if="layerOptions.length > 1 || hasZoomControls || (hasFullscreen && isFullscreenSupported)"
+					:class="[ui('toolbar'), classes.toolbar]">
+					<BaseSegmented
+						v-if="layerOptions.length > 1"
+						:class="ui('layers')"
+						:custom-class="classes.layers"
+						:model-value="view?.layer.id"
+						:options="layerOptions"
+						:aria-label="UI_IMAGE_MAP.LAYERS"
+						@update:model-value="setLayer(String($event))" />
+					<div
+						v-if="hasZoomControls || hasFullscreen"
+						:class="[ui('zoom'), classes.zoom]"
+						role="group"
+						:aria-label="UI_IMAGE_MAP.ZOOM">
+						<template v-if="hasZoomControls">
+							<BaseButton
+								ref="zoomInRef"
+								variant="ghost"
+								:aria-label="UI_ARIA.ZOOM_IN"
+								:is-disabled="zoom.isMaxZoom.value"
+								is-focusable-when-disabled
+								@click="zoom.zoomIn">
+								<template #left><BaseIcon name="plus" /></template>
+							</BaseButton>
+							<BaseButton
+								variant="ghost"
+								:aria-label="UI_ARIA.ZOOM_OUT"
+								:is-disabled="zoom.isMinZoom.value"
+								is-focusable-when-disabled
+								@click="zoom.zoomOut">
+								<template #left><BaseIcon name="minus" /></template>
+							</BaseButton>
+							<BaseButton variant="ghost" :aria-label="UI_ARIA.ZOOM_RESET" @click="zoom.resetZoom()">
+								<template #left><BaseIcon name="rotate-ccw" /></template>
+							</BaseButton>
+						</template>
+						<BaseButton
+							v-if="hasFullscreen && isFullscreenSupported"
+							variant="ghost"
+							data-map-fullscreen
+							:aria-label="UI_IMAGE_MAP.FULLSCREEN"
+							:aria-pressed="isFullscreen"
+							@click="toggleFullscreen">
+							<template #left><BaseIcon :name="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" /></template>
+						</BaseButton>
+					</div>
+				</div>
+
+				<div
+					ref="viewportRef"
+					:class="[
+						ui('viewport'),
+						classes.viewport,
+						{
+							'base-image-map__viewport--zoomed': !zoom.isMinZoom.value,
+							'base-image-map__viewport--dragging': gestures.isDragging.value,
+						},
+					]"
+					:style="viewportStyle"
+					:tabindex="zoom.isMinZoom.value ? undefined : 0"
+					:role="zoom.isMinZoom.value ? undefined : 'group'"
+					:aria-label="zoom.isMinZoom.value ? undefined : UI_IMAGE_MAP.VIEWPORT"
+					@pointerdown="gestures.handlePointerDown"
+					@pointermove="gestures.handlePointerMove"
+					@pointerup="gestures.handlePointerUp"
+					@pointercancel="gestures.handlePointerUp"
+					@keydown="handleViewportKeydown">
+					<Transition name="base-image-map__stage" :css="!isLayerFadeOff" @before-leave="hideLeavingStage">
+						<div
+							v-if="view"
+							:key="view.layer.id"
+							ref="stageRef"
+							:class="[ui('stage'), classes.stage, { 'base-image-map__stage--animated': zoom.isAnimated.value }]"
+							:style="zoom.stageStyle.value"
+							@click="handleStageClick"
+							@auxclick="handleStageAuxClick"
+							@pointerover="handleStagePointerOver"
+							@pointerleave="handleStagePointerLeave"
+							@focusin="handleStageFocusIn"
+							@focusout="handleStageFocusOut">
+							<img
+								v-if="view.layer.image && !svgMarkup"
+								:class="ui('image')"
+								:src="view.layer.image"
+								:alt="view.layer.imageAlt ?? ''"
+								draggable="false" />
+							<div v-if="svgMarkup" ref="svgContainerRef" :class="ui('svg')" v-html="svgMarkup" />
+							<svg
+								v-if="shapes.length"
+								:class="ui('shapes')"
+								:viewBox="`0 0 ${view.layer.width} ${view.layer.height}`"
+								preserveAspectRatio="none"
+								role="presentation">
+								<component
+									:is="shape.geometry.tag"
+									v-for="shape in shapes"
+									:key="shape.item.object.id"
+									v-bind="{ ...shape.geometry.attributes, ...shape.attributes }"
+									:class="[ui('object'), shape.classes, classes.object]"
+									:style="shape.item.style"
+									vector-effect="non-scaling-stroke" />
+							</svg>
+							<ImageMapRouteLine
+								v-if="routeLines.length || routeMarkers.length"
+								:lines="routeLines"
+								:markers="routeMarkers"
+								:width="view.layer.width"
+								:height="view.layer.height" />
+							<component
+								:is="point.tag"
+								v-for="point in points"
+								:key="point.item.object.id"
+								v-bind="point.attributes"
+								:class="[ui('object'), ui('point'), point.classes, classes.object, classes.point]"
+								:style="point.style">
+								<span :class="ui('marker')" aria-hidden="true">
+									<slot name="point" :object="point.item.object" :group="point.item.group" :is-active="point.isActive">
+										<BaseIcon
+											v-if="point.point.icon ?? point.item.group?.icon"
+											:name="(point.point.icon ?? point.item.group?.icon) as string" />
+									</slot>
+								</span>
+								<span v-if="point.point.label" :class="ui('label')" aria-hidden="true">{{ point.point.label }}</span>
+							</component>
+						</div>
+					</Transition>
+					<div v-if="!view" class="base-image-map__status">{{ UI_IMAGE_MAP.EMPTY }}</div>
+					<template v-else>
+						<div class="base-image-map__status" role="status">{{ isSvgLoading ? UI_IMAGE_MAP.LOADING : '' }}</div>
+						<div class="base-image-map__status base-image-map__status--error" role="alert">
+							{{ hasSvgError ? UI_IMAGE_MAP.ERROR : '' }}
+						</div>
+					</template>
+					<div v-if="gestures.isWheelHintVisible.value" :class="ui('hint')" aria-hidden="true">{{ wheelHint }}</div>
+				</div>
+				<ImageMapLegend v-if="legend.length" :groups="legend" :custom-class="classes.legend" :ui="ui" />
+				<ImageMapRoutePanel
+					v-if="hasRoutes && data.routes"
+					:custom-class="classes.route"
+					:ui="ui"
+					:options="routeOptions"
+					:value="route"
+					:steps="routeSteps"
+					:summary="routeSummary"
+					:is-unreachable="isRouteUnreachable"
+					:has-step-free="hasStepFree"
+					@update:value="setRoute"
+					@show-layer="showRouteLayer" />
+			</div>
+			<ImageMapDirectory
+				v-if="hasDirectory"
+				:sections="sections"
+				:controls="controls"
+				:search="searchQuery"
+				:has-search="hasSearch"
+				:view="directoryView"
+				:status-text="statusText"
+				:has-clear="hasClear"
+				:classes="{ directory: classes.directory, filters: classes.filters }"
+				:ui="ui"
+				@update:search="setSearch"
+				@set-filter="setFilter"
+				@toggle-filter="toggleFilter"
+				@select="selectFromDirectory"
+				@hover="hoverFromDirectory"
+				@clear="clearFromDirectory">
+				<template v-if="$slots['directory-item']" #item="slotProps">
+					<slot name="directory-item" v-bind="slotProps" />
+				</template>
+				<template v-if="$slots['directory-empty']" #empty>
+					<slot name="directory-empty" />
+				</template>
+			</ImageMapDirectory>
+		</div>
+
+		<BaseDropdown
+			v-if="tooltipView"
+			:key="tooltipView.item.object.id"
+			class="base-image-map__anchor"
+			:style="tooltipView.style"
+			:is-open="true"
+			position="top"
+			:gap="10"
+			:match-width="false"
+			:prevent-mousedown="false"
+			:padding="0"
+			:show-arrow="true"
+			panel-class="base-image-map__tooltip-panel"
+			@close="overlay.hideTooltip">
+			<div class="base-image-map__anchor-trigger" />
+			<template #dropdown>
+				<div
+					:id="overlay.tooltipDomId"
+					:class="[ui('tooltip'), classes.tooltip]"
+					role="tooltip"
+					@mouseenter="overlay.cancelHide"
+					@mouseleave="overlay.scheduleHide">
+					<slot
+						name="tooltip"
+						:object="tooltipView.item.object"
+						:group="tooltipView.item.group"
+						:hours="hoursOf(tooltipView.item.object.id)">
+						<ImageMapCard :item="tooltipView.item" :hours="hoursOf(tooltipView.item.object.id)" />
+					</slot>
+				</div>
+			</template>
+		</BaseDropdown>
+
+		<component
+			:is="overlay.isSheet.value ? BaseDrawer : BaseModal"
+			v-if="overlay.popupItem.value"
+			:is-open="true"
+			:title="overlay.popupItem.value.object.title"
+			v-bind="overlay.isSheet.value ? { direction: 'bottom' } : {}"
+			:custom-class="{ root: classes.popup }"
+			@close="overlay.closePopup"
+			@update:is-open="overlay.closePopup">
+			<slot
+				name="popup"
+				:object="overlay.popupItem.value.object"
+				:group="overlay.popupItem.value.group"
+				:hours="hoursOf(overlay.popupItem.value.object.id)"
+				:close="overlay.closePopup">
+				<ImageMapCard :item="overlay.popupItem.value" :hours="hoursOf(overlay.popupItem.value.object.id)" is-full />
+			</slot>
+		</component>
+	</section>
+</template>
+
+<script setup lang="ts">
+import '../styles/BaseImageMap.style.scss'
+import ImageMapCard from './ImageMapCard.vue'
+import { BaseIcon } from '@components/BaseIcon'
+import ImageMapLegend from './ImageMapLegend.vue'
+import { BaseModal } from '@components/BaseModal'
+import { BaseButton } from '@components/BaseButton'
+import { BaseDrawer } from '@components/BaseDrawer'
+import ImageMapDirectory from './ImageMapDirectory.vue'
+import ImageMapRouteLine from './ImageMapRouteLine.vue'
+import { BaseDropdown } from '@components/BaseDropdown'
+import ImageMapRoutePanel from './ImageMapRoutePanel.vue'
+import { BaseSegmented } from '@components/BaseSegmented'
+import { useBaseImageMap } from '../model/useBaseImageMap'
+import { UI_ARIA, UI_IMAGE_MAP } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseImageMapEmits, BaseImageMapProps, BaseImageMapSlots } from '../types/BaseImageMap.types'
+
+const props = withDefaults(
+	defineProps<BaseImageMapProps>(),
+	kitDefaults('BaseImageMap', {
+		active: null,
+		defaultAction: 'popup',
+		wheelZoom: 'ctrl',
+		maxZoom: 4,
+		hasZoomControls: true,
+		hasFullscreen: true,
+		hasTooltip: true,
+		hasZoomToActive: false,
+		isPulsing: false,
+		sheetBreakpoint: 640,
+		hasDirectory: false,
+		directoryPosition: 'start',
+		directoryView: 'list',
+		directoryGroupBy: 'group',
+		directoryScope: 'all',
+		hasSearch: true,
+		hasFilters: true,
+		hasLegend: false,
+		hasDeepLinking: false,
+		deepLinkParam: 'location',
+		hasRoutes: false,
+		route: null,
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
+
+const emit = defineEmits<BaseImageMapEmits>()
+
+defineSlots<BaseImageMapSlots>()
+
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	rootRef,
+	viewportRef,
+	stageRef,
+	svgContainerRef,
+	zoomInRef,
+	isFullscreen,
+	isFullscreenSupported,
+	isFullscreenFallback,
+	toggleFullscreen,
+	points,
+	shapes,
+	handleStageClick,
+	handleStageAuxClick,
+	handleStagePointerOver,
+	handleStagePointerLeave,
+	handleStageFocusIn,
+	handleStageFocusOut,
+	handleViewportKeydown,
+	view,
+	layerOptions,
+	mapLabel,
+	viewportStyle,
+	tooltipView,
+	wheelHint,
+	svgMarkup,
+	isSvgLoading,
+	hasSvgError,
+	zoom,
+	gestures,
+	overlay,
+	setLayer,
+	hoursOf,
+	legend,
+	sections,
+	controls,
+	searchQuery,
+	statusText,
+	hasClear,
+	setSearch,
+	setFilter,
+	toggleFilter,
+	selectFromDirectory,
+	hoverFromDirectory,
+	clearFromDirectory,
+	route,
+	setRoute,
+	routeOptions,
+	routeSteps,
+	routeSummary,
+	isRouteUnreachable,
+	hasStepFree,
+	routeLines,
+	routeMarkers,
+	showRouteLayer,
+	exposed,
+	ui,
+	isLayerFadeOff,
+	hideLeavingStage,
+} = useBaseImageMap(props, emit)
+
+defineExpose(exposed)
+</script>

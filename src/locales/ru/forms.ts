@@ -1,0 +1,268 @@
+/** Формы: фильтр таблицы, календарь, диапазоны BaseDatePicker, выбор цвета, конструктор фильтров */
+export const ruFilter = {
+	COLUMN: 'Колонка',
+	CONDITION: 'Условие',
+	VALUE_PLACEHOLDER: 'Значение...',
+	/** Оператор фильтра таблицы */
+	CONTAINS: 'Содержит',
+	/** Операторы фильтра по датам, диапазону и списку значений */
+	BETWEEN: 'Между',
+	IN: 'Один из',
+	BEFORE: 'Раньше',
+	AFTER: 'Позже',
+	ON_OR_BEFORE: 'Не позже',
+	ON_OR_AFTER: 'Не раньше',
+	/** Подсказка поля со списком значений */
+	CHOOSE: 'Выберите…',
+}
+
+export const ruCalendar = {
+	EVENT_TEXT: 'Событие',
+	TIME: 'Время',
+	/** Доступные имена полей времени */
+	HOURS: 'Часы',
+	MINUTES: 'Минуты',
+	SECONDS: 'Секунды',
+}
+
+export const ruDatePicker = {
+	/** Доступное имя группы готовых периодов в панели */
+	PRESETS: 'Готовые периоды',
+	PRESET_TODAY: 'Сегодня',
+	PRESET_YESTERDAY: 'Вчера',
+	PRESET_LAST_7_DAYS: '7 дней',
+	PRESET_LAST_30_DAYS: '30 дней',
+	PRESET_THIS_MONTH: 'Этот месяц',
+	PRESET_LAST_MONTH: 'Прошлый месяц',
+	/** Ошибки ручного ввода периода; `{example}` — пример в формате языка, `{days}` — число дней (`plural.DAYS`) */
+	ERROR_FORMAT: 'Не удалось разобрать период. Пример: {example}',
+	ERROR_UNAVAILABLE: 'Эти даты недоступны для выбора',
+	ERROR_MIN_DAYS: 'Период короче допустимого: минимум {days}',
+	ERROR_MAX_DAYS: 'Период длиннее допустимого: максимум {days}',
+	/** Предупреждение: свой период без `range` и `getRange` или с повторным `id` пропускается; `{id}` — его `id` */
+	PRESET_INVALID: 'BaseDatePicker: период «{id}» пропущен — нужен уникальный id, label и range или getRange',
+}
+
+export const ruColorPicker = {
+	SELECTED_COLOR: 'Выбранный цвет',
+	/** Имя кнопки выбора с `ariaLabel`: «Цвет фона, выбран #ff0000» */
+	NAMED_TRIGGER: '{label}, выбран {color}',
+	SATURATION_BRIGHTNESS: 'Насыщенность и яркость',
+	HUE: 'Тон',
+	HEX_VALUE: 'HEX-значение',
+	PRESET: 'Пресет',
+	/** Переключатель формата полей и подписи каналов под полями */
+	FORMAT: 'Формат цвета',
+	FORMAT_HEX: 'HEX',
+	FORMAT_RGB: 'RGB',
+	FORMAT_HSL: 'HSL',
+	RED: 'Красный',
+	GREEN: 'Зелёный',
+	BLUE: 'Синий',
+	SATURATION: 'Насыщенность',
+	LIGHTNESS: 'Светлота',
+	ALPHA: 'Непрозрачность',
+	SHORT_RED: 'R',
+	SHORT_GREEN: 'G',
+	SHORT_BLUE: 'B',
+	SHORT_HUE: 'H',
+	SHORT_SATURATION: 'S',
+	SHORT_LIGHTNESS: 'L',
+	SHORT_ALPHA: 'A',
+	EYE_DROPPER: 'Взять цвет с экрана',
+	PRESETS: 'Пресеты',
+	RECENT: 'Недавние',
+	/** Палитра токенов кита и строка с цветом выбранного токена */
+	TOKENS: 'Токены кита',
+	TOKEN_VALUE: 'Токен {token}: {color}',
+}
+
+/** Конструктор фильтров: поля условий, связки и сравнения */
+export const ruFilterBuilder = {
+	LABEL: 'Фильтр',
+	MATCH: 'Показывать строки, где выполняются',
+	MATCH_ALL: 'все условия',
+	MATCH_ANY: 'любое из условий',
+	WHERE: 'Где',
+	AND: 'и',
+	OR: 'или',
+	CONDITION: 'Условие {n}',
+	FIELD: 'Поле',
+	OPERATOR: 'Сравнение',
+	VALUE: 'Значение',
+	VALUE_FROM: 'От',
+	VALUE_TO: 'До',
+	CHOOSE: 'Выберите…',
+	ADD: 'Добавить условие',
+	REMOVE: 'Удалить условие {n}',
+	CLEAR: 'Сбросить',
+	EMPTY: 'Условий нет — показаны все строки',
+	CONTAINS: 'содержит',
+	NOT_CONTAINS: 'не содержит',
+	EQ: 'равно',
+	NE: 'не равно',
+	STARTS_WITH: 'начинается с',
+	GT: 'больше',
+	GTE: 'не меньше',
+	LT: 'меньше',
+	LTE: 'не больше',
+	BETWEEN: 'в диапазоне',
+	BEFORE: 'раньше',
+	AFTER: 'позже',
+	EMPTY_VALUE: 'не заполнено',
+	NOT_EMPTY_VALUE: 'заполнено',
+	IS_TRUE: 'да',
+	IS_FALSE: 'нет',
+}
+
+/** Телефон: выбор страны */
+export const ruPhoneInput = {
+	COUNTRY: 'Код страны',
+}
+
+/** Реквизиты: названия полей и ошибки проверки */
+export const ruRequisites = {
+	INN: 'ИНН',
+	KPP: 'КПП',
+	OGRN: 'ОГРН',
+	OGRNIP: 'ОГРНИП',
+	BIK: 'БИК',
+	ACCOUNT: 'Расчётный счёт',
+	CORRESPONDENT_ACCOUNT: 'Корреспондентский счёт',
+	SNILS: 'СНИЛС',
+	CHECKSUM: 'Неверное контрольное число',
+	FORMAT: 'Неверный формат',
+	ACCOUNT_MISMATCH: 'Счёт не подходит к БИК',
+	INCOMPLETE: 'Нужно цифр: {count}',
+	OR: 'или',
+}
+
+/** Подсказки DaData: названия полей по виду подсказок и встроенные проверки */
+export const ruDadata = {
+	ADDRESS: 'Адрес',
+	PARTY: 'Организация или ИП',
+	BANK: 'Банк',
+	FIO: 'ФИО',
+	EMAIL: 'Электронная почта',
+	CHOOSE_OPTION: 'Выберите вариант из списка',
+	NEED_CITY: 'Укажите город или населённый пункт',
+	NEED_STREET: 'Укажите улицу',
+	NEED_HOUSE: 'Укажите дом',
+	NEED_FLAT: 'Укажите квартиру',
+	EMAIL_FORMAT: 'Неверный адрес почты',
+	CHECKSUM: 'Неверное контрольное число {name}',
+	FORMAT: 'Неверный формат {name}',
+}
+
+export const ruSignaturePad = {
+	LABEL: 'Подпись',
+	HINT: 'Распишитесь мышью, пальцем или пером',
+	EMPTY: 'Подписи нет',
+	DRAWN: 'Подпись: {strokes}',
+	UNDO: 'Отменить штрих',
+	CLEAR: 'Очистить',
+}
+
+export const ruAvatarCropper = {
+	LABEL: 'Кадрирование фото',
+	ROLE: 'область кадрирования',
+	HINT: 'Перетащите фото мышью или пальцем. Стрелки сдвигают фото, плюс и минус меняют масштаб, ноль сбрасывает',
+	ZOOM: 'Масштаб',
+	ERROR: 'Не удалось загрузить фото',
+}
+
+/** Предупреждения в консоли о недопустимых числовых пропсах: что пришло и что используется вместо */
+export const ruValueWarnings = {
+	NOT_FINITE: '{component}: `{prop}` = {value} — не конечное число, используется {fallback}',
+	NOT_POSITIVE: '{component}: `{prop}` = {value} — должно быть больше 0, используется {fallback}',
+	NOT_INTEGER: '{component}: `{prop}` = {value} — не целое число, используется {fallback}',
+	NEGATIVE: '{component}: `{prop}` = {value} — меньше 0, не применяется',
+	MAX_BELOW_MIN: '{component}: `max` = {max} меньше `min` = {min} — диапазон сведён к {min}',
+}
+
+/** КриптоПро ЭЦП Browser plug-in: useCryptoPro (шаги диагностики, ошибки; `{message}` — текст ошибки плагина) и BaseCryptoProSign */
+export const ruCryptopro = {
+	STEP_EXTENSION: 'Расширение для браузера',
+	STEP_PLUGIN: 'КриптоПро ЭЦП Browser plug-in',
+	STEP_CSP: 'Криптопровайдер КриптоПро CSP',
+	STEP_OBJECTS: 'Объекты подписи',
+	/** Ошибки useCryptoPro */
+	NO_SCRIPT: 'Не подключён скрипт cadesplugin_api.js',
+	SCRIPT_FAILED: 'Не удалось загрузить скрипт cadesplugin_api.js',
+	NO_EXTENSION: 'Расширение КриптоПро ЭЦП Browser plug-in не отвечает: установите и включите расширение и плагин',
+	NO_PLUGIN: 'КриптоПро ЭЦП Browser plug-in не установлен или недоступен',
+	NO_CSP: 'Не установлен криптопровайдер КриптоПро CSP',
+	OBJECTS_FAILED: 'Не удалось создать объекты подписи КриптоПро',
+	NO_CERTIFICATES: 'В личном хранилище нет сертификатов',
+	CERTIFICATE_NOT_FOUND: 'Сертификат не найден',
+	NO_PRIVATE_KEY: 'У сертификата нет закрытого ключа',
+	CERTIFICATE_INVALID: 'Сертификат недействителен: истёк срок действия или не пройдена проверка',
+	CANCELLED: 'Подпись отменена',
+	UNKNOWN: 'Ошибка КриптоПро: {message}',
+	/** BaseCryptoProSign: области и диагностика */
+	REGION_SIGN: 'Электронная подпись',
+	REGION_VERIFY: 'Проверка электронной подписи',
+	REGION_COSIGN: 'Добавление электронной подписи',
+	STATE_PENDING: 'ожидает проверки',
+	STATE_CHECKING: 'проверяется',
+	STATE_OK: 'готово',
+	STATE_ERROR: 'ошибка',
+	CHECKING: 'Проверяем КриптоПро',
+	VERSIONS: 'КриптоПро ЭЦП Browser plug-in {plugin} · КриптоПро CSP {csp}',
+	RETRY: 'Проверить снова',
+	HELP_PLUGIN: 'Установите КриптоПро ЭЦП Browser plug-in и расширение для браузера, включите расширение и обновите страницу',
+	HELP_CSP: 'Установите криптопровайдер КриптоПро CSP 5.0 или новее и обновите страницу',
+	HELP_SCRIPT: 'Подпись на этой странице не настроена: обратитесь в поддержку',
+	LINK_PLUGIN: 'Скачать КриптоПро ЭЦП Browser plug-in',
+	LINK_CSP: 'Скачать КриптоПро CSP',
+	/** Выбор сертификата и его состояние */
+	CERTIFICATE: 'Сертификат',
+	CERTIFICATE_PLACEHOLDER: 'Выберите сертификат',
+	INN: 'ИНН {inn}',
+	VALID_TO: 'действует до {date}',
+	EXPIRES_TODAY: 'истекает сегодня',
+	EXPIRED: 'срок истёк {date}',
+	NO_KEY: 'нет закрытого ключа',
+	NOT_VALID: 'не проходит проверку',
+	/** Документ */
+	DOCUMENT: 'Документ',
+	DOCUMENT_VERIFY: 'Подписанный документ — для отсоединённой подписи',
+	SOURCE_TEXT: 'Подписываем текст, {size}',
+	SOURCE_TEXT_VERIFY: 'Проверяем подпись текста, {size}',
+	SOURCE_TEXT_COSIGN: 'Добавляем подпись к тексту, {size}',
+	SOURCE_FILE: 'Документ: {name}, {size}',
+	/** Подпись */
+	TYPE: 'Тип подписи',
+	ATTACHED: 'Присоединённая',
+	DETACHED: 'Отсоединённая',
+	HASH_HINT: 'Документ больше {size}: подписывается его хэш, подпись только отсоединённая',
+	HASH_HINT_BATCH: 'Файлы больше {size} подписываются по хэшу, подпись для них только отсоединённая',
+	HASHING: 'Считаем хэш документа',
+	SIGN: 'Подписать',
+	SIGNED: 'Подпись создана: {name}',
+	COSIGN: 'Добавить подпись',
+	COSIGNED: 'Подпись добавлена: {name}',
+	DOWNLOAD: 'Скачать подпись',
+	/** Подпись нескольких файлов (`isMultiple`) */
+	BATCH_LIST: 'Файлы для подписи',
+	BATCH_PROGRESS: 'Подписываем файлы',
+	BATCH_PENDING: 'в очереди',
+	BATCH_SIGNING: 'подписывается',
+	BATCH_SIGNED: 'подписан',
+	BATCH_FAILED: 'не подписан',
+	BATCH_CANCELLED: 'отменён',
+	BATCH_CANCEL: 'Отменить',
+	BATCH_DOWNLOAD: 'Скачать {name}',
+	BATCH_DOWNLOAD_ALL: 'Скачать все подписи',
+	BATCH_SUMMARY: 'Подписано файлов: {signed} из {total}. Ошибок: {failed}, отменено: {cancelled}',
+	/** Проверка подписи */
+	SIGNATURE_FILE: 'Файл подписи',
+	SIGNATURE_GIVEN: 'Подпись для проверки получена',
+	VERIFY: 'Проверить подпись',
+	VALID: 'Подпись верна',
+	INVALID: 'Подпись не прошла проверку',
+	SIGNED_AT: 'Подписано: {date}',
+	TIMESTAMP_AT: 'Штамп времени: {date}',
+	CERTIFICATE_VALID: 'Сертификат действует до {date}',
+	CERTIFICATE_NOT_VALID: 'Сертификат недействителен',
+}

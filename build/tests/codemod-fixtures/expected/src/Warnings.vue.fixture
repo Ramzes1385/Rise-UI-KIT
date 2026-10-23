@@ -1,0 +1,22 @@
+<template>
+	<BaseModal v-model="open" @confirm="save" />
+	<BaseCalendar :events="events">
+		<template #navigation="{ month }">{{ month }}</template>
+		<template #event="{ event }">{{ event.title }}</template>
+	</BaseCalendar>
+	<BaseSelect v-model="value" :options="options">лишний текст</BaseSelect>
+	<BaseTable :columns="columns"><template #default>x</template></BaseTable>
+	<BaseMegaMenu :columns="cols" layout="grid" :hover-delay="100" @item-click="go">
+		<template #column-title="{ title }">{{ title }}</template>
+	</BaseMegaMenu>
+	<BaseBreadcrumbs :items="crumbs" @navigate="(item) => router.push(item.to)" />
+	<BaseFormField label="Имя" for="name">
+		<BaseInput v-model="name" name="name" autocomplete="name" data-testid="name-input" />
+	</BaseFormField>
+	<BaseChat @avatar-click="open" @ban-member="ban" />
+	<BaseText tag="h2">Заголовок</BaseText>
+	<BaseText tag="h3" :weight="600">Заголовок с весом</BaseText>
+	<BaseCheckbox role="group" aria-label="Согласие" />
+	<BaseMediaPlayer src="/x.mp4" />
+	<BaseTree :nodes="nodes" @select="(n) => $router.push(n.to)" />
+</template>

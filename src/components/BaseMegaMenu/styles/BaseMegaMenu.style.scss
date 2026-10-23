@@ -1,308 +1,563 @@
 .base-mega-menu {
+	@include custom-color-scope;
+	--mega-menu-gap: 4px;
+
+	position: relative;
 	box-sizing: border-box;
-	@include custom-bg(background-color, var(--color-white));
-	border: 1px solid var(--color-border);
-	border-radius: var(--border-radius-base);
-	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-	padding: sz(32px);
 	width: 100%;
-	max-width: sz(1200px);
+	@include custom-text(color, var(--rise-text));
 
-	// ── Columns layout ──
-
-	&__container {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 40px;
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
 	}
 
-	&__title {
+	&__bar {
 		display: flex;
 		align-items: center;
 		gap: sz(8px);
-		font-size: sz(16px);
-		font-weight: 700;
-		@include custom-text(color, var(--color-primary));
-		margin-bottom: sz(20px);
-		text-transform: uppercase;
-		letter-spacing: 0.8px;
-		cursor: pointer;
+		min-height: sz(52px);
+		padding: sz(ct(mega-menu, padding-y, 8px) ct(mega-menu, padding-x, 12px));
+		border: 1px solid transparent;
+		border-radius: sz(ct(mega-menu, radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg-muted)));
+		@include transition-colors;
 	}
 
-	&__title-arrow {
-		margin-left: auto;
-		@include transition(transform);
+	&__list {
+		display: flex;
+		flex: 1 1 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(var(--mega-menu-gap));
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
 
-		@include respond-to('md') {
+	&__item {
+		min-width: 0;
+	}
+
+	&__trigger,
+	&__trigger.base-link {
+		@include inherit-custom-color;
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		min-height: sz(36px);
+		margin: 0;
+		padding: sz(0 12px);
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: transparent;
+		@include custom-text(color, ct(mega-menu, trigger-text, var(--rise-text-toned)));
+		font: inherit;
+		@include text-size(sm);
+		font-weight: ct(mega-menu, trigger-font-weight, var(--rise-font-weight-medium));
+		text-decoration: none;
+		white-space: nowrap;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-elevated))});
+			color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
+			text-decoration: none;
+		}
+
+		&:disabled,
+		&.base-link--disabled {
+			@include disabled-state;
+		}
+	}
+
+	&__trigger--open {
+		background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-elevated))});
+		color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
+	}
+
+	&__trigger--active,
+	&__trigger--active.base-link {
+		position: relative;
+		color: var(--custom-text-hover, #{ct(mega-menu, trigger-text-hover, var(--rise-text-highlighted))});
+
+		&::after {
+			position: absolute;
+			inset-inline: sz(12px);
+			bottom: sz(2px);
+			height: 2px;
+			background-color: var(--rise-primary);
+			content: '';
+		}
+	}
+
+	&__trigger-icon {
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+	}
+
+	&__chevron {
+		flex-shrink: 0;
+		color: var(--rise-text-muted);
+		@include transition(transform);
+	}
+
+	&__trigger--open &__chevron {
+		transform: rotate(180deg);
+	}
+
+	&__end {
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		gap: sz(8px);
+		margin-inline-start: auto;
+		@include reset-custom-color;
+	}
+
+	&__toggle.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 12px;
+		--btn-pad-right: 12px;
+
+		min-height: sz(36px);
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include text-size(sm);
+	}
+
+	&__panel {
+		position: absolute;
+		top: calc(100% + #{sz(8px)});
+		inset-inline: 0;
+		z-index: var(--rise-z-overlay);
+		padding: space(ct(mega-menu, panel-padding, 20px));
+		@include floating-surface;
+		border-radius: sz(ct(mega-menu, panel-radius, var(--rise-radius-lg)));
+		@include reset-custom-color;
+
+		&::before {
+			position: absolute;
+			inset-inline: 0;
+			bottom: 100%;
+			height: sz(8px);
+			content: '';
+		}
+	}
+
+	&__panel--inline {
+		position: static;
+		margin-top: sz(4px);
+		padding-block: sz(8px);
+		padding-inline: sz(12px 0);
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		background-color: transparent;
+
+		&::before {
 			display: none;
 		}
 	}
 
-	&__title--open &__title-arrow {
-		transform: rotate(180deg);
+	&__content {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: sz(24px);
+
+		&--promo {
+			grid-template-columns: minmax(0, 1fr) minmax(#{sz(220px)}, #{sz(280px)});
+		}
 	}
 
-	// ── Списки узлов (рекурсивные) ──
+	&__groups {
+		display: grid;
+		grid-template-columns: repeat(var(--mega-menu-columns, 1), minmax(0, 1fr));
+		gap: sz(16px);
+	}
 
-	&__list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
+	&__group {
 		display: flex;
 		flex-direction: column;
-		gap: sz(4px);
-	}
-
-	// Вложенный уровень по умолчанию — аккордеон вниз в потоке.
-	// Используется в columns-layout и на мобильном (узлы в середине широкой панели,
-	// боковой flyout накладывался бы на меню).
-	// Отступ задаётся только padding (margin не суммируем с padding), линия-граница
-	// с зазором от текста — чтобы вертикальные линии уровней не сливались.
-	&__sub-list {
-		list-style: none;
-		margin: sz(2px) 0 0 sz(10px);
-		padding: 0 0 0 sz(16px);
-		display: flex;
-		flex-direction: column;
-		gap: sz(4px);
-		border-left: 1px solid var(--color-border);
-	}
-
-	// Каскадная flyout-панель (dropdown-layout, desktop).
-	// Координаты (position: fixed; top/left) задаёт useFlyoutPosition через inline-стиль,
-	// с flip влево при нехватке места справа.
-	&__sub-list--flyout {
-		z-index: 1000;
-		min-width: sz(220px);
-		margin: 0;
-		padding: sz(8px);
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		box-shadow: var(--shadow-lg);
-		@include custom-bg(background-color, var(--color-white));
-	}
-
-	// ── Узел меню ──
-
-	&__node {
-		position: relative;
-		outline: none;
-
-		&--disabled {
-			opacity: 0.4;
-			pointer-events: none;
-		}
-	}
-
-	&__node-header {
-		display: flex;
-		align-items: center;
-		gap: sz(8px);
-		padding: sz(7px) sz(10px);
-		border-radius: var(--border-radius-base);
-		cursor: pointer;
-		font-size: sz(14px);
-		font-weight: 500;
-		@include custom-text(color, var(--color-text));
-		@include interactive;
-
-		@include hover {
-			@include custom-text(color, var(--color-accent));
-			@include custom-bg(background-color, var(--color-border));
-		}
-
-		@include active {
-			transform: scale(0.99);
-		}
-	}
-
-	&__node-icon {
-		flex-shrink: 0;
-	}
-
-	&__node-label {
-		flex: 1;
+		gap: sz(6px);
 		min-width: 0;
 	}
 
-	// Аккордеон (по умолчанию): стрелка вниз, при раскрытии — вверх
-	&__node-arrow {
-		flex-shrink: 0;
-		opacity: 0.6;
-		transform: rotate(90deg);
-		@include transition(opacity, transform);
+	&__group + &__group {
+		padding-inline-start: sz(16px);
+		border-inline-start: 1px solid var(--rise-border-muted);
 	}
 
-	&__node--open > &__node-header &__node-arrow {
-		opacity: 1;
-		transform: rotate(-90deg);
-	}
-
-	&__node--open > &__node-header {
-		@include custom-bg(background-color, var(--color-border));
-		@include custom-text(color, var(--color-accent));
-	}
-
-	&__node-desc {
-		font-size: sz(12px);
-		color: var(--color-text-muted);
-		margin: 0 0 sz(4px) sz(8px);
-	}
-
-	// ── Dropdown layout ──
-
-	&--dropdown {
-		padding: 0;
-		border: none;
-		box-shadow: none;
-		background-color: transparent;
-		max-width: none;
-
-		// В dropdown на десктопе вложенные уровни — каскад flyout вбок,
-		// поэтому стрелка узла указывает вправо (не вниз, как в аккордеоне).
-		@include respond-to('md') {
-			.base-mega-menu__node-arrow {
-				transform: none;
-			}
-
-			.base-mega-menu__node--open > .base-mega-menu__node-header .base-mega-menu__node-arrow {
-				transform: none;
-			}
-		}
-	}
-
-	&__nav {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-		list-style: none;
-		padding: 0;
+	&__group-title {
 		margin: 0;
+		padding: sz(0 8px);
+		@include caps-label;
 	}
 
-	&__nav-item {
-		position: relative;
-
-		&--disabled {
-			opacity: 0.4;
-			pointer-events: none;
-		}
-	}
-
-	&__nav-link {
+	&__links {
 		display: flex;
-		align-items: center;
-		gap: sz(6px);
-		padding: sz(8px) sz(16px);
-		border: none;
-		@include custom-bg(background-color, transparent);
-		@include custom-text(color, var(--color-text));
-		font-size: sz(14px);
-		font-weight: 500;
-		cursor: pointer;
-		border-radius: var(--border-radius-base);
-		@include interactive;
+		flex-direction: column;
+		gap: sz(2px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__links-item {
+		position: relative;
+	}
+
+	&__link.base-link,
+	&__link--parent {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(12px);
+		padding: sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
+		color: var(--rise-text);
+		@include text-size(sm);
+		text-decoration: none;
+		@include transition-colors;
 
 		@include hover {
-			background-color: var(--color-border);
-			color: var(--color-accent);
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
+			text-decoration: none;
+
+			.base-mega-menu__link-icon {
+				background-color: var(--rise-primary-soft);
+				color: var(--rise-primary-text);
+			}
 		}
 
-		@include focus {
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-			outline: none;
+		&:focus-visible .base-mega-menu__link-icon {
+			color: var(--rise-primary-text);
 		}
 	}
 
-	&__nav-icon {
-		flex-shrink: 0;
+	&__link--parent {
+		width: 100%;
+		margin: 0;
+		border: none;
+		background-color: transparent;
+		font-family: inherit;
+		text-align: start;
+		cursor: pointer;
+		@include focus-ring;
+
+		&:disabled {
+			@include disabled-state;
+		}
 	}
 
-	&__nav-arrow {
+	&__link--expanded {
+		background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
+		color: var(--rise-text-highlighted);
+	}
+
+	&__link-chevron {
 		flex-shrink: 0;
+		align-self: center;
+		margin-inline-start: auto;
+		color: var(--rise-text-muted);
 		@include transition(transform);
 	}
 
-	&__nav-item--open &__nav-arrow {
-		transform: rotate(180deg);
+	&__drill {
+		position: relative;
+		min-width: 0;
 	}
 
-	&__dropdown {
+	&__drill-level {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
+	}
+
+	&__drill-status {
+		@include visually-hidden;
+	}
+
+	&__back {
+		display: flex;
+		align-items: center;
+		gap: sz(6px);
+		width: 100%;
+		margin: 0;
+		padding: sz(6px 8px);
+		border: none;
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: transparent;
+		color: var(--rise-text-muted);
+		font-family: inherit;
+		@include text-size(sm);
+		text-align: start;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: ct(mega-menu, link-bg-hover, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__back-icon {
+		flex-shrink: 0;
+	}
+
+	&__sub {
 		position: absolute;
-		top: 100%;
-		left: 0;
-		min-width: 280px;
-		@include custom-bg(background-color, var(--color-white));
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+		top: sz(-8px);
+		inset-inline-start: calc(100% + #{sz(8px)});
+		z-index: 1;
+		width: max-content;
+		min-width: sz(220px);
+		max-width: min(#{sz(320px)}, calc(100vw - #{sz(16px)}));
 		padding: sz(8px);
-		margin-top: sz(4px);
-		z-index: 100;
-	}
+		@include floating-surface;
+		border-radius: sz(var(--rise-radius-lg));
 
-	// Варианты
-	&--ghost {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
-	}
-
-	&--outline {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-xl);
-	}
-
-	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		border-color: transparent;
-
-		.base-mega-menu__title {
-			@include custom-text(color, var(--color-primary));
+		&::before {
+			position: absolute;
+			top: 0;
+			inset-inline-end: 100%;
+			bottom: 0;
+			width: sz(10px);
+			content: '';
 		}
 	}
 
-	// ── Адаптив (мобильный) ──
-	// Каскадный flyout заменяется аккордеоном вниз в потоке: на узких экранах
-	// боковое раскрытие невозможно. Колонки в один столбец, навигация вертикально.
+	&__sub--below {
+		top: calc(100% + #{sz(4px)});
+		inset-inline: auto 0;
 
-	@include respond-below('md') {
-		max-width: 100%;
+		&::before {
+			inset: auto 0 100%;
+			width: auto;
+			height: sz(8px);
+		}
+	}
+
+	&__link-icon {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--rise-bg-elevated);
+		color: var(--rise-text-muted);
+		@include transition-colors;
+	}
+
+	&__link-text {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+	}
+
+	&__link-label {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-highlighted);
+	}
+
+	&__link-badge.base-badge {
+		padding: sz(0 6px);
+		border-radius: calc(#{sz(var(--rise-radius-sm))} - 1px);
+		@include caps-label(10px, 0.08em);
+	}
+
+	&__link-desc {
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
+
+	&__promo {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		min-width: 0;
 		padding: sz(16px);
-		overflow-x: hidden;
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-bg-muted);
+	}
 
-		&__container {
-			grid-template-columns: 1fr;
-			gap: sz(8px);
-		}
+	&__promo-image.base-image {
+		display: block;
+		margin-bottom: sz(6px);
+		border-radius: sz(var(--rise-radius-md));
+	}
 
-		&__nav {
-			flex-direction: column;
-			align-items: stretch;
-		}
+	&__promo-title {
+		margin: 0;
+		@include text-size(base);
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-text-highlighted);
+	}
 
-		&__nav-item {
-			position: static;
-		}
+	&__promo-desc {
+		margin: 0;
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
 
-		&__nav-arrow {
-			margin-left: auto;
-		}
+	&__promo-link.base-link {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		margin-top: auto;
+		padding-top: sz(6px);
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+	}
 
-		// Dropdown первого уровня раскрывается в потоке (аккордеон), не абсолютным flyout
-		&__dropdown {
-			position: static;
-			min-width: 0;
-			margin-top: 0;
-			border: none;
-			box-shadow: none;
-			padding: 0 0 0 sz(12px);
+	&--mobile &__group + &__group {
+		padding-inline-start: 0;
+		border-inline-start: none;
+	}
+
+	&--mobile &__bar {
+		flex-wrap: wrap;
+	}
+
+	&--mobile &__list {
+		flex-basis: 100%;
+		flex-direction: column;
+		align-items: stretch;
+		order: 1;
+	}
+
+	&--mobile &__trigger {
+		justify-content: flex-start;
+		width: 100%;
+	}
+
+	&--mobile &__chevron {
+		margin-inline-start: auto;
+	}
+
+	&--mobile &__sub {
+		position: static;
+		width: auto;
+		min-width: 0;
+		max-width: none;
+		margin-top: sz(2px);
+		padding-block: sz(0);
+		padding-inline: sz(12px 0);
+		border: none;
+		border-inline-start: 1px solid var(--rise-border-muted);
+		border-radius: 0;
+		box-shadow: none;
+		background-color: transparent;
+
+		&::before {
+			display: none;
 		}
 	}
+
+	&--mobile &__link-chevron {
+		transform: rotate(dir-angle(90deg));
+	}
+
+	&--mobile &__link--expanded &__link-chevron {
+		transform: rotate(dir-angle(-90deg));
+	}
+
+	&--mobile &__promo-image {
+		display: none;
+	}
+
+	&--mobile &__content,
+	&--mobile &__groups {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	&--ghost &__bar {
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--outline &__bar {
+		border-color: ct(mega-menu, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-bg)));
+	}
+
+	&--shadow &__bar {
+		box-shadow: var(--rise-shadow-sm);
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(mega-menu, bg, var(--rise-surface-floating)));
+	}
+
+	&--soft &__bar {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--soft &__trigger {
+		@include hover {
+			background-color: var(--custom-bg-hover, #{ct(mega-menu, trigger-bg-hover, var(--rise-bg-accented))});
+		}
+	}
+}
+
+.base-mega-menu-panel-enter-active,
+.base-mega-menu-panel-leave-active {
+	@include transition(opacity, transform);
+}
+
+.base-mega-menu-panel-enter-from,
+.base-mega-menu-panel-leave-to {
+	opacity: 0;
+
+	@include motion-safe {
+		transform: translateY(#{sz(-4px)});
+	}
+}
+
+@include enter-slide('base-mega-menu-reveal', down);
+
+@include enter-fade('base-mega-menu-swap');
+
+.base-mega-menu-swap-leave-active {
+	position: absolute;
+	inset: space(ct(mega-menu, panel-padding, 20px));
+	overflow: hidden;
+	pointer-events: none;
+}
+
+@include enter-slide('base-mega-menu-sub', right);
+
+.base-mega-menu--mobile .base-mega-menu-sub-enter-from,
+.base-mega-menu__sub--below.base-mega-menu-sub-enter-from {
+	transform: translateY(calc(var(--rise-motion-distance) * -1));
+}
+
+.base-mega-menu--mobile .base-mega-menu-sub-leave-to,
+.base-mega-menu__sub--below.base-mega-menu-sub-leave-to {
+	transform: translateY(var(--rise-motion-distance));
+}
+
+@include enter-slide('base-mega-menu-drill', right);
+
+@include enter-slide('base-mega-menu-drill-back', left);
+
+.base-mega-menu-drill-leave-active,
+.base-mega-menu-drill-back-leave-active {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
 }

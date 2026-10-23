@@ -2,65 +2,114 @@
 	position: relative;
 
 	&__panel {
+		--dd-pad-top: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-right: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-bottom: #{ct(dropdown-panel, padding, 4px)};
+		--dd-pad-left: #{ct(dropdown-panel, padding, 4px)};
+		@include custom-bg(--dd-bg, ct(dropdown-panel, bg, var(--rise-surface-floating)));
+		--dd-border: #{ct(dropdown-panel, border, transparent)};
+
 		position: fixed;
+		z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 		box-sizing: border-box;
-		@include custom-bg(background-color, var(--color-surface));
-		border: sz(2px) solid var(--color-border);
-		border-radius: sz(var(--border-radius-lg));
-		padding: calc(var(--dd-pad-top, 8px) * var(--size-scale, 1)) calc(var(--dd-pad-right, 16px) * var(--size-scale, 1))
-			calc(var(--dd-pad-bottom, 8px) * var(--size-scale, 1)) calc(var(--dd-pad-left, 16px) * var(--size-scale, 1));
-		font-size: sz(14px);
-		box-shadow: var(--shadow-lg);
+		min-width: sz(ct(dropdown-panel, width, 128px));
+		padding-block: space(var(--dd-pad-top) var(--dd-pad-bottom));
+		padding-inline: space(var(--dd-pad-left) var(--dd-pad-right));
 		overflow-y: auto;
-		z-index: 1100;
-		@include interactive;
+		@include floating-surface;
+		border-radius: sz(ct(dropdown-panel, radius, var(--rise-radius-lg)));
+		background-color: var(--dd-bg);
+		@include custom-text(color, ct(dropdown-panel, text, var(--rise-text)));
+		box-shadow: ct(dropdown-panel, shadow, var(--rise-shadow-lg));
+		@include text-size(sm);
+		@include scrollbar-thin;
 
-		// Варианты
-		&--ghost {
-			@include custom-bg(background-color, transparent);
-			border-color: transparent;
-			box-shadow: none;
-
-			@include hover {
-				@include custom-bg(background-color, var(--color-surface-muted));
-			}
+		> * {
+			@include reset-custom-color;
 		}
 
 		&--outline {
-			@include custom-bg(background-color, transparent);
-			border-width: 2px;
+			--dd-border: var(--rise-border-accented);
+
+			box-shadow: inset 0 0 0 1px var(--dd-border);
 		}
 
 		&--shadow {
-			box-shadow: var(--shadow-xl);
+			box-shadow: var(--rise-shadow-xl);
 		}
 
 		&--soft {
-			@include custom-bg(background-color, var(--color-primary-soft));
-			border-color: transparent;
+			@include custom-bg(--dd-bg, var(--rise-bg-muted));
 		}
+
+		&--ghost {
+			@include custom-bg(--dd-bg, transparent);
+
+			box-shadow: none;
+		}
+
+		&--arrow {
+			overflow: visible;
+		}
+
+		&--side-bottom {
+			--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+		}
+
+		&--side-top {
+			--overlay-slide: 0 var(--rise-motion-distance);
+		}
+
+		&--side-left {
+			--overlay-slide: var(--rise-motion-distance) 0;
+		}
+
+		&--side-right {
+			--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+		}
+	}
+
+	&__arrow {
+		position: absolute;
+		box-sizing: border-box;
+		width: sz(8px);
+		height: sz(8px);
+		border: 1px solid var(--dd-border);
+		background-color: var(--dd-bg);
+		pointer-events: none;
+	}
+
+	&__panel--arrow-top > &__arrow {
+		top: 0;
+		left: var(--dd-arrow-offset, 50%);
+		border-right-color: transparent;
+		border-bottom-color: transparent;
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	&__panel--arrow-bottom > &__arrow {
+		bottom: 0;
+		left: var(--dd-arrow-offset, 50%);
+		border-top-color: transparent;
+		border-left-color: transparent;
+		transform: translate(-50%, 50%) rotate(45deg);
+	}
+
+	&__panel--arrow-left > &__arrow {
+		top: var(--dd-arrow-offset, 50%);
+		left: 0;
+		border-top-color: transparent;
+		border-right-color: transparent;
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	&__panel--arrow-right > &__arrow {
+		top: var(--dd-arrow-offset, 50%);
+		right: 0;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+		transform: translate(50%, -50%) rotate(45deg);
 	}
 }
 
-/* Анимация появления/скрытия dropdown */
-.dropdown-enter-active {
-	transition:
-		opacity 0.15s ease-out,
-		transform 0.15s ease-out;
-}
-
-.dropdown-leave-active {
-	transition:
-		opacity 0.1s ease-in,
-		transform 0.1s ease-in;
-}
-
-.dropdown-enter-from {
-	opacity: 0;
-	transform: translateY(-6px) scaleY(0.95);
-}
-
-.dropdown-leave-to {
-	opacity: 0;
-	transform: translateY(-4px) scaleY(0.98);
-}
+@include overlay-animation(base-dropdown, '.base-dropdown__panel', null, var(--rise-duration-fast), var(--rise-duration-fast));

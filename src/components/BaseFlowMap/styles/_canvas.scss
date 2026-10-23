@@ -1,0 +1,220 @@
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-flow-map {
+	&__body {
+		display: flex;
+		flex: 1;
+		min-height: 0;
+	}
+
+	&__stage {
+		position: relative;
+		flex: 1;
+		min-width: 0;
+		min-height: 0;
+	}
+
+	&__side {
+		display: flex;
+		flex: none;
+		flex-direction: column;
+		gap: sz(12px);
+		box-sizing: border-box;
+		inline-size: sz(ct(flow-map, details-width, 340px));
+		overflow: auto;
+		padding: sz(16px);
+		border-inline-start: 1px solid var(--rise-border);
+		@include tonal-surface(muted);
+
+		&:not(:has(*)) {
+			display: none;
+		}
+	}
+
+	&__state {
+		flex: 1;
+		min-height: 0;
+		padding: sz(16px);
+	}
+
+	&__sr {
+		@include visually-hidden;
+	}
+
+	&__viewport {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		touch-action: none;
+		user-select: none;
+		cursor: grab;
+		background-image:
+			linear-gradient(to right, ct(flow-map, canvas-border, var(--rise-border)) 1px, transparent 1px),
+			linear-gradient(to bottom, ct(flow-map, canvas-border, var(--rise-border)) 1px, transparent 1px);
+		background-size: sz(24px) sz(24px);
+
+		&:active {
+			cursor: grabbing;
+		}
+	}
+
+	&__canvas {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		transform-origin: 0 0;
+	}
+
+	&__svg {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	&__group {
+		position: absolute;
+		inset-block-start: 0;
+		inset-inline-start: 0;
+		box-sizing: border-box;
+		border: 1px solid color-mix(in srgb, var(--flow-group-color, #{ct(flow-map, group-border, var(--rise-border))}) 40%, transparent);
+		border-radius: sz(ct(flow-map, group-radius, var(--rise-radius-lg)));
+		background-color: ct(flow-map, group-bg, color-mix(in srgb, var(--flow-group-color, var(--rise-bg)) 5%, transparent));
+		pointer-events: none;
+
+		&--dashed {
+			border-style: dashed;
+		}
+
+		&--header-start > .base-flow-map__label {
+			inset-block: 0;
+			inset-inline-start: 0;
+			inline-size: sz(30px);
+			justify-content: center;
+			border-start-start-radius: inherit;
+			border-end-start-radius: inherit;
+
+			.base-flow-map__label-text {
+				writing-mode: vertical-rl;
+				transform: rotate(180deg);
+			}
+		}
+
+		&--header-top > .base-flow-map__label {
+			inset-block-start: 0;
+			inset-inline: 0;
+			block-size: sz(32px);
+			padding-inline: sz(12px);
+			border-start-start-radius: inherit;
+			border-start-end-radius: inherit;
+		}
+	}
+
+	&__label {
+		position: absolute;
+		display: flex;
+		align-items: center;
+		@include caps-label;
+		color: var(--flow-group-color, #{ct(flow-map, group-text, var(--rise-text-muted))});
+		background-color: color-mix(in srgb, var(--flow-group-color, var(--rise-border)) 11%, transparent);
+		pointer-events: auto;
+		cursor: pointer;
+	}
+
+	&__label-text {
+		white-space: nowrap;
+	}
+
+	&__toggle {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		inline-size: sz(22px);
+		block-size: sz(22px);
+		margin-inline-end: sz(4px);
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		color: inherit;
+		background: transparent;
+		cursor: pointer;
+
+		@include focus-ring(1px);
+	}
+
+	&__group--header-start &__toggle {
+		margin-inline-end: 0;
+		margin-block-end: sz(4px);
+		transform: rotate(180deg);
+	}
+
+	&--morph &__node,
+	&--morph &__group {
+		@include motion-safe {
+			transition:
+				transform var(--rise-duration-slow),
+				opacity var(--rise-duration-slow);
+		}
+	}
+
+	&__hint {
+		position: absolute;
+		inset-block-end: sz(12px);
+		inset-inline-start: 50%;
+		margin: 0;
+		padding: sz(6px 8px);
+		border-radius: sz(var(--rise-radius-sm));
+		@include text-size(xs);
+		color: var(--rise-text-inverted);
+		background-color: var(--rise-bg-inverted);
+		transform: translateX(-50%);
+		pointer-events: none;
+	}
+
+	&__empty {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--rise-text-muted);
+		pointer-events: none;
+	}
+
+	&__list.base-flow-map__sr {
+		overflow: hidden;
+	}
+
+	&__list {
+		max-height: sz(160px);
+		padding: sz(8px 16px);
+		overflow: auto;
+		border-top: 1px solid var(--rise-border);
+		font-size: sz(var(--rise-font-size-sm));
+		@include tonal-surface(page);
+
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		button {
+			padding: sz(2px 0);
+			border: 0;
+			font: inherit;
+			text-align: start;
+			color: inherit;
+			background: none;
+			cursor: pointer;
+		}
+	}
+
+	&__list-title {
+		margin: sz(8px 0 4px);
+		@include caps-label;
+	}
+}

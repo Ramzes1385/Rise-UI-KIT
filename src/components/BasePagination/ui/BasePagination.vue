@@ -1,89 +1,100 @@
 <template>
-	<div class="base-pagination" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
+	<nav :class="[ui('root'), classes.root]" :style="[sizeScaleStyle, customColorStyle]" :aria-label="navLabel">
 		<BaseButton
-			:variant="variant"
-			:is-disabled="modelValue === 1"
+			:variant="inactivePageVariant"
+			:class="ui('arrow')"
+			:is-disabled="isPrevDisabled"
+			is-focusable-when-disabled
 			:size-scale="sizeScale"
 			:custom-class="classes.prev"
-			@click="changePage(modelValue - 1)">
-			<BaseIcon name="chevron-left" :size-scale="calcIconScale('sm', sizeScale)" />
+			:aria-label="UI_ARIA.PAGINATION_PREV"
+			@click="goToPrevPage">
+			<BaseIcon name="chevron-left" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
 
-		<div class="base-pagination__pages" :class="classes.pages">
-			<template v-for="page in pages" :key="page">
+		<div
+			ref="pagesRef"
+			:class="[ui('pages'), classes.pages, { 'base-pagination__pages--ready': isIndicatorVisible }]"
+			:style="indicatorStyle">
+			<span
+				v-if="isIndicatorVisible"
+				:class="[ui('indicator'), { 'base-pagination__indicator--instant': isIndicatorInstant }]"
+				aria-hidden="true" />
+			<template v-for="(page, index) in pages" :key="page === '...' ? `ellipsis-${index}` : page">
 				<BaseButton
 					v-if="page !== '...'"
-					:variant="modelValue === page ? 'default' : variant"
+					:variant="currentPage === page ? DEFAULT_VARIANT : inactivePageVariant"
+					:class="[ui('page'), { 'base-pagination__page--current': currentPage === page }]"
+					data-indicator-item
+					:aria-current="currentPage === page ? 'page' : undefined"
+					:aria-label="pageLabel(page)"
 					:size-scale="sizeScale"
 					:custom-class="classes.button"
 					@click="changePage(page)">
-					<BaseText :size-scale="sizeScale">{{ page }}</BaseText>
+					{{ page }}
 				</BaseButton>
-				<span v-else class="base-pagination__ellipsis" :class="classes.ellipsis">
-					<BaseText :size-scale="sizeScale">...</BaseText>
-				</span>
+				<span v-else :class="[ui('ellipsis'), classes.ellipsis]">…</span>
 			</template>
 		</div>
 
 		<BaseButton
-			:variant="variant"
-			:is-disabled="modelValue === totalPages"
+			:variant="inactivePageVariant"
+			:class="ui('arrow')"
+			:is-disabled="isNextDisabled"
+			is-focusable-when-disabled
 			:size-scale="sizeScale"
 			:custom-class="classes.next"
-			@click="changePage(modelValue + 1)">
-			<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
+			:aria-label="UI_ARIA.PAGINATION_NEXT"
+			@click="goToNextPage">
+			<BaseIcon name="chevron-right" :size-scale="calcIconScale('md', sizeScale)" />
 		</BaseButton>
-	</div>
+	</nav>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BasePagination.style.scss'
-import { calcTotalPages, calcVisiblePages } from '@utils/paginationUtils'
-import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../model/BasePagination.types'
+import { UI_ARIA } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBasePagination } from '../model/useBasePagination'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BasePaginationEmits, BasePaginationProps, BasePaginationSlots } from '../types/BasePagination.types'
 
-const props = withDefaults(defineProps<BasePaginationProps>(), {
-	pageSize: 10,
-	maxVisible: 7,
-	showLastPage: true,
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'prev', 'next', 'pages', 'button', 'ellipsis'],
-})
+const props = withDefaults(
+	defineProps<BasePaginationProps>(),
+	kitDefaults('BasePagination', {
+		pageSize: 10,
+		maxVisible: 7,
+		showLastPage: true,
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BasePaginationEmits>()
 
 defineSlots<BasePaginationSlots>()
 
-const totalPages = computed(() => calcTotalPages(props.total, props.pageSize))
-
-const pages = computed(() =>
-	calcVisiblePages({
-		current: props.modelValue,
-		total: totalPages.value,
-		maxVisible: props.maxVisible,
-		showLastPage: props.showLastPage,
-	}),
-)
-
-function changePage(page: number): void {
-	if (page >= 1 && page <= totalPages.value) {
-		emit('update:modelValue', page)
-		emit('change', page)
-	}
-}
+const {
+	ui,
+	pagesRef,
+	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	pages,
+	currentPage,
+	inactivePageVariant,
+	isPrevDisabled,
+	isNextDisabled,
+	navLabel,
+	pageLabel,
+	changePage,
+	goToPrevPage,
+	goToNextPage,
+} = useBasePagination(props, emit)
 </script>

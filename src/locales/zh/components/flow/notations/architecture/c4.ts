@@ -1,0 +1,25 @@
+/** Нотация C4 BaseFlowMap: виды, правила, предупреждения */
+export const zhFlowC4 = {
+	flowC4: {
+		NOTATION: 'C4',
+		RULES_SUMMARY: '每条关系都有标签；边界内放容器和组件；人员留在边界之外',
+		LEVEL_CONTEXT: '上下文',
+		LEVEL_CONTAINERS: '容器',
+		LEVEL_COMPONENTS: '组件',
+		PERSON: '人员',
+		SOFTWARE_SYSTEM: '软件系统',
+		CONTAINER: '容器',
+		COMPONENT: '组件',
+		EXTERNAL_PERSON: '外部人员',
+		EXTERNAL_SYSTEM: '外部系统',
+		ENTERPRISE_BOUNDARY: '企业边界',
+		SYSTEM_BOUNDARY: '系统边界',
+		CONTAINER_BOUNDARY: '容器边界',
+		RELATIONSHIP: '关系',
+		PROP_TECHNOLOGY: '技术',
+		CARD_LINE: '[{kind}：{technology}]',
+		CARD_LINE_PLAIN: '[{kind}]',
+		RULE_CONTAIN: '“{group}”中只能放置：{kinds}',
+		WARN_NO_LABEL: '关系“{source}” → “{target}”没有标签：C4 的每条线都要有标签',
+	},
+}

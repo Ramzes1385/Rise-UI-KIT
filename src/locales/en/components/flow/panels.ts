@@ -1,0 +1,26 @@
+/** Панели BaseFlowMap: мини-карта, легенда, подробности узла */
+export const enFlowPanels = {
+	flowPanels: {
+		DETAILS: 'Details',
+		MINIMAP: 'Minimap',
+		MINIMAP_HINT: 'Arrow keys move the view, Home fits everything',
+		LEGEND: 'Legend',
+		LEGEND_SHOW: 'Show legend',
+		LEGEND_HIDE: 'Hide legend',
+		STATUS_OK: 'Running',
+		STATUS_WARNING: 'Delays',
+		STATUS_ERROR: 'Errors',
+		STATUS_DOWN: 'Down',
+		STATUS_UNKNOWN: 'No data',
+		DETAILS_NODE: 'Node details',
+		DETAILS_EDGE: 'Link details',
+		DETAILS_GROUP: 'Group details',
+		DETAILS_CLOSE: 'Close details',
+		DETAILS_EMPTY: 'Select a node or a link to see its details',
+		DETAILS_CALLS: 'Calls',
+		DETAILS_CALLED_BY: 'Called by',
+		DETAILS_TEAM: 'Team “{name}”',
+		DETAILS_METRICS: 'Metrics',
+		DETAILS_SHEET: 'Swipe down to close',
+	},
+}

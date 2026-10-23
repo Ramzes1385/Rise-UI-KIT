@@ -1,0 +1,1574 @@
+import { nextTick, ref } from 'vue'
+import { mount } from '@vue/test-utils'
+import { useEditorToolbar } from '../useEditorToolbar'
+
+function withSetup<T>(composable: () => T): T {
+	let result: T
+	mount({
+		setup() {
+			result = composable()
+			return () => null
+		},
+	})
+	return result!
+}
+
+function createMockTextarea(selStart = 0, selEnd = 0): HTMLTextAreaElement {
+	const el = document.createElement('textarea')
+	Object.defineProperty(el, 'selectionStart', { value: selStart, writable: true })
+	Object.defineProperty(el, 'selectionEnd', { value: selEnd, writable: true })
+	return el
+}
+
+function createOptions(withTextarea = false, selStart = 0, selEnd = 0) {
+	const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+	const textareaEl = withTextarea ? createMockTextarea(selStart, selEnd) : null
+	const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>(textareaEl ? { textareaRef: textareaEl } : null)
+	const onInput = vi.fn()
+
+	return { editorRef, codeTextareaRef, onInput, textareaEl }
+}
+
+function mockGetSelection(overrides: Record<string, unknown> = {}) {
+	const selection = {
+		anchorNode: null,
+		rangeCount: 0,
+		getRangeAt: vi.fn(),
+		removeAllRanges: vi.fn(),
+		addRange: vi.fn(),
+		...overrides,
+	}
+	vi.spyOn(window, 'getSelection').mockReturnValue(selection as unknown as Selection)
+	return selection
+}
+
+function selectText(editor: HTMLElement, html: string, [start, end]: [number, number]): void {
+	vi.mocked(window.getSelection).mockRestore()
+	editor.innerHTML = html
+	document.body.appendChild(editor)
+	const text = document.createTreeWalker(editor, NodeFilter.SHOW_TEXT).nextNode() as Text
+	window.getSelection()!.setBaseAndExtent(text, start, text, end)
+}
+
+function placeCaret(editor: HTMLElement, html: string, offset: number): void {
+	vi.mocked(window.getSelection).mockRestore()
+	editor.innerHTML = html
+	document.body.appendChild(editor)
+	const text = editor.querySelector('p')!.firstChild as Text
+	const range = document.createRange()
+	range.setStart(text, offset)
+	range.collapse(true)
+	window.getSelection()!.removeAllRanges()
+	window.getSelection()!.addRange(range)
+}
+
+function mockRange(overrides: Record<string, unknown> = {}) {
+	return {
+		cloneRange: vi.fn().mockReturnThis(),
+		commonAncestorContainer: null,
+		selectNodeContents: vi.fn(),
+		collapse: vi.fn(),
+		...overrides,
+	} as unknown as Range
+}
+
+describe('useEditorToolbar', () => {
+	beforeEach(() => {
+		// execCommand не существует в jsdom
+		Object.defineProperty(document, 'execCommand', {
+			value: vi.fn().mockReturnValue(false),
+			configurable: true,
+			writable: true,
+		})
+		mockGetSelection()
+		vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test')
+	})
+
+	afterEach(() => {
+		vi.restoreAllMocks()
+	})
+
+	describe('Начальное состояние', () => {
+		it('должен возвращать activeStates с начальными значениями', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(activeStates.isBold).toBe(false)
+			expect(activeStates.formatBlock).toBe('')
+		})
+
+		it('должен возвращать contextMenu с начальными значениями', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(contextMenu.isVisible).toBe(false)
+		})
+	})
+
+	describe('toggleCodeMode: очистка HTML', () => {
+		it('очищает HTML из режима кода функцией sanitize при возврате в визуальный режим', async () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const sanitize = vi.fn((html: string) => html.replace(' onerror="alert(1)"', ''))
+			const { codeContent, toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, sanitize }))
+			toggleCodeMode()
+			codeContent.value = '<img src="a.png" onerror="alert(1)">'
+			toggleCodeMode()
+			await nextTick()
+			expect(sanitize).toHaveBeenCalledWith('<img src="a.png" onerror="alert(1)">')
+			expect(editorRef.value!.innerHTML).toBe('<img src="a.png">')
+		})
+	})
+
+	describe('toggleCodeMode', () => {
+		it('должен переключать режимы', async () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			editorRef.value!.innerHTML = '<p>test</p>'
+			const { isCodeMode, codeContent, toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			toggleCodeMode()
+			expect(isCodeMode.value).toBe(true)
+			expect(codeContent.value).toBe('<p>test</p>')
+
+			toggleCodeMode()
+			expect(isCodeMode.value).toBe(false)
+			await nextTick()
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it('не должен падать при editorRef=null', () => {
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(null)
+			const { toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => toggleCodeMode()).not.toThrow()
+		})
+
+		it('toggleCodeMode обратно: editorRef.value может стать null', async () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { toggleCodeMode } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			toggleCodeMode() // в режим кода
+			editorRef.value = null
+			toggleCodeMode() // обратно
+
+			await nextTick()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('applyFormat', () => {
+		it('визуальный режим: начертание включается и снимается тегами без execCommand', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello world</p>', [0, 5])
+
+			applyFormat('bold')
+			expect(editorRef.value!.innerHTML).toBe('<p><b>hello</b> world</p>')
+			applyFormat('italic')
+			applyFormat('underline')
+			applyFormat('strikeThrough')
+			expect(editorRef.value!.innerHTML).toBe('<p><b><i><u><s>hello</s></u></i></b> world</p>')
+			applyFormat('bold')
+			expect(editorRef.value!.innerHTML).toBe('<p><i><u><s>hello</s></u></i> world</p>')
+			expect(onInput).toHaveBeenCalledTimes(5)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: выравнивание и списки — свойства и теги блока без execCommand', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+
+			applyFormat('justifyCenter')
+			expect(editorRef.value!.innerHTML).toBe('<p style="text-align: center;">hello</p>')
+			applyFormat('justifyLeft')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			applyFormat('insertOrderedList')
+			expect(editorRef.value!.innerHTML).toBe('<ol><li>hello</li></ol>')
+			applyFormat('insertOrderedList')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: неизвестная команда ничего не меняет', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+
+			applyFormat('insertImage')
+
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('режим кода: оборачивает тегами', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 5)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'hello'
+			applyFormat('bold')
+			expect(codeContent.value).toBe('<b>hello</b>')
+
+			codeContent.value = 'item'
+			applyFormat('insertUnorderedList')
+			expect(codeContent.value).toBe('<ul>\n<li>item</li>\n</ul>')
+
+			codeContent.value = 'item'
+			applyFormat('insertOrderedList')
+			expect(codeContent.value).toBe('<ol>\n<li>item</li>\n</ol>')
+
+			codeContent.value = 'text'
+			applyFormat('underline')
+			expect(codeContent.value).toBe('<u>text</u>')
+
+			codeContent.value = 'text'
+			applyFormat('strikeThrough')
+			expect(codeContent.value).toBe('<s>text</s>')
+		})
+
+		it('режим кода: неизвестная команда ничего не делает', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			applyFormat('unknown')
+			expect(codeContent.value).toBe('text')
+		})
+
+		it('режим кода: getCodeTextarea возвращает null когда ref есть, но textareaRef=null', () => {
+			// Покрывает ветку `return null` в getCodeTextarea (useEditorToolbar.ts:104):
+			// ref не instanceof HTMLTextAreaElement и ref.textareaRef не HTMLTextAreaElement.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const codeTextareaRef = ref<{ textareaRef: HTMLTextAreaElement | null } | null>({ textareaRef: null })
+			const onInput = vi.fn()
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'preserved'
+			// applyFormat('bold') в code-режиме вызывает wrapCodeSelection → getCodeTextarea() === null → return
+			expect(() => applyFormat('bold')).not.toThrow()
+			expect(codeContent.value).toBe('preserved')
+		})
+	})
+
+	describe('applyBlock / handleHeadingChange', () => {
+		it('визуальный режим: цитата включается и выключается, заголовок меняет тег блока', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyBlock, handleHeadingChange } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [1, 3])
+
+			applyBlock('blockquote')
+			expect(editorRef.value!.innerHTML).toBe('<blockquote>hello</blockquote>')
+			applyBlock('blockquote')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			handleHeadingChange('h1')
+			expect(editorRef.value!.innerHTML).toBe('<h1>hello</h1>')
+			handleHeadingChange('p')
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(window.getSelection()!.toString()).toBe('el')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: неизвестный тег блока игнорируется', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyBlock, handleHeadingChange } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [1, 3])
+
+			applyBlock('section')
+			handleHeadingChange('')
+
+			expect(editorRef.value!.innerHTML).toBe('<p>hello</p>')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('insertParagraph делит абзац и сообщает о вводе', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertParagraph } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [2, 2])
+
+			insertParagraph()
+
+			expect(editorRef.value!.innerHTML).toBe('<p>he</p><p>llo</p>')
+			expect(onInput).toHaveBeenCalledWith('typing')
+		})
+
+		it('режим кода: оборачивает тегами', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 5)
+			const { isCodeMode, codeContent, applyBlock, handleHeadingChange } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			applyBlock('pre')
+			expect(codeContent.value).toBe('<pre>text</pre>')
+
+			codeContent.value = 'title'
+			handleHeadingChange('h2')
+			expect(codeContent.value).toBe('<h2>title</h2>')
+
+			codeContent.value = 'p'
+			handleHeadingChange('p')
+			expect(codeContent.value).toBe('p')
+		})
+	})
+
+	describe('applyColor / handleColorInput', () => {
+		it('визуальный режим: цвет текста — span со style, повторный выбор меняет цвет того же span', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyColor, handleColorInput, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
+			applyColor('#ff0000')
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="color: rgb(255, 0, 0);">hello</span></p>')
+
+			const input = document.createElement('input')
+			input.value = '#00ff00'
+			handleColorInput({ target: input } as unknown as Event)
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="color: rgb(0, 255, 0);">hello</span></p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('режим кода: оборачивает в span', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, applyColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			applyColor('#ff0000')
+			expect(codeContent.value).toBe('<span style="color:#ff0000">text</span>')
+		})
+	})
+
+	describe('applyBackgroundColor', () => {
+		it('визуальный режим: фон — span с background-color', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyBackgroundColor, saveSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
+			applyBackgroundColor('#ffff00')
+
+			expect(editorRef.value!.innerHTML).toBe('<p><span style="background-color: rgb(255, 255, 0);">hello</span></p>')
+		})
+
+		it('режим кода: оборачивает в span с background-color', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, applyBackgroundColor } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			applyBackgroundColor('#ffff00')
+			expect(codeContent.value).toBe('<span style="background-color:#ffff00">text</span>')
+		})
+	})
+
+	describe('resetColor / resetBackgroundColor', () => {
+		it('визуальный режим: снимает inline color со span внутри выделения', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const span = document.createElement('span')
+			span.style.color = 'rgb(255, 0, 0)'
+			span.style.backgroundColor = 'rgb(0, 255, 0)'
+			span.textContent = 'text'
+			editorRef.value!.appendChild(span)
+			mockGetSelection({
+				rangeCount: 1,
+				getRangeAt: vi.fn().mockReturnValue(mockRange({ intersectsNode: vi.fn().mockReturnValue(true) })),
+			})
+			const { resetColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			resetColor()
+			expect(span.style.color).toBe('')
+			expect(span.style.backgroundColor).toBe('rgb(0, 255, 0)')
+		})
+
+		it('визуальный режим: снимает inline background-color и атрибут color у font', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const span = document.createElement('span')
+			span.style.backgroundColor = 'rgb(0, 255, 0)'
+			span.textContent = 'text'
+			const font = document.createElement('font')
+			font.setAttribute('color', '#ff0000')
+			editorRef.value!.append(span, font)
+			mockGetSelection({
+				rangeCount: 1,
+				getRangeAt: vi.fn().mockReturnValue(mockRange({ intersectsNode: vi.fn().mockReturnValue(true) })),
+			})
+			const { resetColor, resetBackgroundColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			resetBackgroundColor()
+			expect(span.style.backgroundColor).toBe('')
+			resetColor()
+			expect(font.hasAttribute('color')).toBe(false)
+		})
+
+		it('визуальный режим: пропускает элементы вне выделения', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const span = document.createElement('span')
+			span.style.color = 'rgb(255, 0, 0)'
+			editorRef.value!.appendChild(span)
+			mockGetSelection({
+				rangeCount: 1,
+				getRangeAt: vi.fn().mockReturnValue(mockRange({ intersectsNode: vi.fn().mockReturnValue(false) })),
+			})
+			const { resetColor } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			resetColor()
+			expect(span.style.color).toBe('rgb(255, 0, 0)')
+		})
+
+		it('режим кода: оборачивает в span с inherit/transparent', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, resetColor, resetBackgroundColor } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			resetColor()
+			expect(codeContent.value).toBe('<span style="color:inherit">text</span>')
+			codeContent.value = 'text'
+			resetBackgroundColor()
+			expect(codeContent.value).toBe('<span style="background-color:transparent">text</span>')
+		})
+	})
+
+	describe('insertLink', () => {
+		it('визуальный режим: оборачивает выделение в ссылку', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertLink, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }),
+			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
+			insertLink()
+
+			expect(editorRef.value!.innerHTML).toBe('<p><a href="https://example.com">hello</a></p>')
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('режим кода: оборачивает в a', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'https://example.com' }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'link'
+			insertLink()
+			expect(codeContent.value).toBe('<a href="https://example.com">link</a>')
+		})
+
+		it('дополняет адрес без схемы до https', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertLink, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => 'example.com/docs' }),
+			)
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			saveSelection()
+
+			insertLink()
+
+			expect(editorRef.value!.querySelector('a')!.getAttribute('href')).toBe('https://example.com/docs')
+		})
+
+		it.each(['javascript:alert(1)', ' JaVaScRiPt:alert(1)', 'data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)'])(
+			'не вставляет ссылку с небезопасной схемой %j',
+			url => {
+				const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+				const { editorRef, codeTextareaRef, onInput } = createOptions()
+				const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => url }))
+				insertLink()
+				expect(editorRef.value!.querySelector('a')).toBeNull()
+				expect(onInput).not.toHaveBeenCalled()
+				expect(warn).toHaveBeenCalledWith(expect.stringContaining('небезопасной схемой'))
+			},
+		)
+
+		it('режим кода: экранирует кавычки адреса в атрибуте', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
+				useEditorToolbar({
+					editorRef,
+					codeTextareaRef,
+					onInput,
+					promptForUrl: () => 'https://example.com/?q="><img src=x onerror=alert(1)>',
+				}),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'link'
+			insertLink()
+			expect(codeContent.value).toBe('<a href="https://example.com/?q=&quot;&gt;&lt;img src=x onerror=alert(1)&gt;">link</a>')
+		})
+
+		it('режим кода: отмена prompt', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 4)
+			const { isCodeMode, codeContent, insertLink } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => null }),
+			)
+			isCodeMode.value = true
+			codeContent.value = 'link'
+			insertLink()
+			expect(codeContent.value).toBe('link')
+		})
+	})
+
+	describe('clearAllFormatting', () => {
+		it('визуальный режим: снимает оформление текста и сбрасывает маркированный список', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { clearAllFormatting } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<ul><li><b>item</b></li></ul>', [0, 4])
+
+			clearAllFormatting()
+
+			expect(editorRef.value!.innerHTML).toBe('<p>item</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('визуальный режим: сбрасывает нумерованные списки', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { clearAllFormatting } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<ol><li>item</li></ol>', [0, 4])
+
+			clearAllFormatting()
+
+			expect(editorRef.value!.innerHTML).toBe('<p>item</p>')
+		})
+
+		it('визуальный режим: не падает если editorRef.value null', () => {
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(null)
+			const { clearAllFormatting } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => clearAllFormatting()).not.toThrow()
+		})
+
+		it('режим кода: удаляет теги', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 11)
+			const { isCodeMode, codeContent, clearAllFormatting } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			isCodeMode.value = true
+			codeContent.value = '<b>bold</b>'
+			clearAllFormatting()
+			expect(codeContent.value).toBe('bold')
+		})
+	})
+
+	describe('insertSeparator', () => {
+		it('визуальный режим: режет абзац разделителем, каретка уходит в следующий абзац', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+
+			insertSeparator()
+
+			expect(editorRef.value!.innerHTML).toBe('<p>a</p><hr><p>b</p>')
+			expect(window.getSelection()!.anchorNode).toBe(editorRef.value!.lastElementChild)
+			expect(onInput).toHaveBeenCalledTimes(1)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('режим кода: вставляет hr', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 0)
+			const { isCodeMode, codeContent, insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'text'
+			insertSeparator()
+			expect(codeContent.value).toBe('<hr>text')
+		})
+	})
+
+	describe('Selection management', () => {
+		it('saveSelection / restoreSelection', () => {
+			const editorDiv = document.createElement('div')
+			const range = mockRange({ commonAncestorContainer: editorDiv })
+			mockGetSelection({ anchorNode: editorDiv, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(editorDiv)
+
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			saveSelection()
+			expect(restoreSelection()).toBe(true)
+		})
+
+		it('saveSelection если getSelection возвращает null', () => {
+			vi.spyOn(window, 'getSelection').mockReturnValue(null as any)
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { saveSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => saveSelection()).not.toThrow()
+		})
+
+		it('ensureSelection вызывает restoreSelection если нужно', () => {
+			const editorDiv = document.createElement('div')
+			const outsideDiv = document.createElement('div')
+			const range = mockRange({ commonAncestorContainer: editorDiv })
+			// Сначала настраиваем чтобы saveSelection сработал
+			mockGetSelection({ anchorNode: editorDiv, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(editorDiv)
+			const { saveSelection, ensureSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			saveSelection()
+
+			// Теперь выделение снаружи
+			mockGetSelection({ anchorNode: outsideDiv, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+			ensureSelection()
+			expect(window.getSelection()?.addRange).toHaveBeenCalled()
+		})
+
+		it('restoreSelection возвращает false если getSelection возвращает null', () => {
+			const editorDiv = document.createElement('div')
+			const range = mockRange({ commonAncestorContainer: editorDiv })
+			mockGetSelection({ rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(editorDiv)
+
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			saveSelection()
+			vi.spyOn(window, 'getSelection').mockReturnValue(null as any)
+			const result = restoreSelection()
+
+			expect(result).toBe(false)
+		})
+
+		it('restoreSelection возвращает false если editorRef.value null', () => {
+			const editorDiv = document.createElement('div')
+			const range = mockRange({ commonAncestorContainer: editorDiv })
+			mockGetSelection({ anchorNode: editorDiv, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(editorDiv)
+
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			saveSelection()
+			editorRef.value = null
+			expect(restoreSelection()).toBe(false)
+		})
+
+		it('ensureSelection ничего не делает если editorRef.value null', () => {
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(null)
+			const { ensureSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => ensureSelection()).not.toThrow()
+		})
+	})
+
+	describe('Media management', () => {
+		it('handleContextMenu / applyMediaSize / removeMedia', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleContextMenu, contextMenu, applyMediaSize, removeMedia } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+
+			const img = document.createElement('img')
+			editorRef.value!.appendChild(img)
+			const event = {
+				target: img,
+				clientX: 10,
+				clientY: 10,
+				preventDefault: vi.fn(),
+			} as unknown as MouseEvent
+			vi.spyOn(img, 'getBoundingClientRect').mockReturnValue({ width: 100, height: 100 } as DOMRect)
+
+			handleContextMenu(event)
+			expect(contextMenu.isVisible).toBe(true)
+
+			contextMenu.width = '50'
+			contextMenu.height = '50'
+			applyMediaSize()
+			expect(img.style.width).toBe('50px')
+			expect(img.style.height).toBe('50px')
+
+			handleContextMenu(event)
+			removeMedia()
+			expect(editorRef.value!.contains(img)).toBe(false)
+		})
+
+		it('режим только для чтения: меню медиа не открывается, размер и удаление не применяются', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			let isReadonly = false
+			const { handleContextMenu, contextMenu, applyMediaSize, removeMedia } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput, isReadonly: () => isReadonly }),
+			)
+			const img = document.createElement('img')
+			editorRef.value!.appendChild(img)
+			const event = { target: img, clientX: 10, clientY: 10, preventDefault: vi.fn() } as unknown as MouseEvent
+			vi.spyOn(img, 'getBoundingClientRect').mockReturnValue({ width: 100, height: 100 } as DOMRect)
+
+			isReadonly = true
+			handleContextMenu(event)
+			expect(contextMenu.isVisible).toBe(false)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+
+			// Меню открыли в режиме редактирования, затем включили режим чтения
+			isReadonly = false
+			handleContextMenu(event)
+			isReadonly = true
+			contextMenu.width = '50'
+			applyMediaSize()
+			expect(img.style.width).toBe('')
+			expect(contextMenu.isVisible).toBe(false)
+
+			isReadonly = false
+			handleContextMenu(event)
+			isReadonly = true
+			removeMedia()
+			expect(editorRef.value!.contains(img)).toBe(true)
+			expect(contextMenu.isVisible).toBe(false)
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('handleImageUpload / handleVideoUpload', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleImageUpload, handleVideoUpload, saveSelection } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			saveSelection()
+
+			const file = new File([''], 'test.png')
+			const input = document.createElement('input')
+			Object.defineProperty(input, 'files', { value: [file] })
+			const event = { target: input } as unknown as Event
+
+			handleImageUpload(event)
+			// Изображение без описания вставляется как оформление (alt=""): иначе скринридер прочитает адрес blob:…
+			expect(editorRef.value!.innerHTML).toBe('<p>a<img src="blob:test" alt="">b</p>')
+			expect(document.execCommand).not.toHaveBeenCalled()
+
+			handleVideoUpload(event)
+			expect(editorRef.value!.querySelector('video')).not.toBeNull()
+			expect(input.value).toBe('')
+		})
+
+		it('handleImageUpload / handleVideoUpload в режиме кода', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions(true, 0, 0)
+			const { handleImageUpload, handleVideoUpload, isCodeMode } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+
+			isCodeMode.value = true
+			const file = new File([''], 'test.png')
+			const input = document.createElement('input')
+			Object.defineProperty(input, 'files', { value: [file] })
+			const event = { target: input } as unknown as Event
+
+			handleImageUpload(event)
+			expect(onInput).toHaveBeenCalled()
+
+			handleVideoUpload(event)
+			expect(onInput).toHaveBeenCalledTimes(2)
+		})
+
+		it('handleImageUpload / handleVideoUpload без файлов', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			const input = document.createElement('input')
+			Object.defineProperty(input, 'files', { value: [] })
+			const event = { target: input } as unknown as Event
+
+			handleImageUpload(event)
+			handleVideoUpload(event)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('Адреса blob: вставленных медиа (EDT-4)', () => {
+		function setup() {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const wrapper = mount({
+				setup() {
+					return { toolbar: useEditorToolbar({ editorRef, codeTextareaRef, onInput }) }
+				},
+				render: () => null,
+			})
+			const { toolbar } = wrapper.vm as unknown as { toolbar: ReturnType<typeof useEditorToolbar> }
+			const upload = (url: string) => {
+				vi.mocked(URL.createObjectURL).mockReturnValueOnce(url)
+				const input = document.createElement('input')
+				Object.defineProperty(input, 'files', { value: [new File([''], 'a.png')] })
+				toolbar.handleImageUpload({ target: input } as unknown as Event)
+			}
+			return { editorRef, toolbar, wrapper, upload }
+		}
+
+		it('при размонтировании освобождает все созданные адреса', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:one')
+			upload('blob:two')
+			expect(revoke).not.toHaveBeenCalled()
+			wrapper.unmount()
+			expect(revoke.mock.calls.map(call => call[0]).sort()).toEqual(['blob:one', 'blob:two'])
+		})
+
+		it('сброс истории освобождает только адреса, которых нет в содержимом', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:kept')
+			upload('blob:gone')
+			editorRef.value!.querySelector('img[src="blob:gone"]')!.remove()
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledTimes(1)
+			expect(revoke).toHaveBeenCalledWith('blob:gone')
+			wrapper.unmount()
+			expect(revoke).toHaveBeenCalledTimes(2)
+			expect(revoke).toHaveBeenLastCalledWith('blob:kept')
+		})
+
+		it('без области сброс истории не падает и освобождает адреса, которых нет в коде', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, toolbar, wrapper, upload } = setup()
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			toolbar.saveSelection()
+			upload('blob:one')
+			editorRef.value = null
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledWith('blob:one')
+			wrapper.unmount()
+		})
+
+		it('адрес в коде режима кода не освобождается при сбросе, пока он в коде; освобождённый — не дважды', () => {
+			const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined)
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textarea = document.createElement('textarea')
+			codeTextareaRef.value = { textareaRef: textarea }
+			const wrapper = mount({
+				setup() {
+					return { toolbar: useEditorToolbar({ editorRef, codeTextareaRef, onInput }) }
+				},
+				render: () => null,
+			})
+			const { toolbar } = wrapper.vm as unknown as { toolbar: ReturnType<typeof useEditorToolbar> }
+			toolbar.isCodeMode.value = true
+			vi.mocked(URL.createObjectURL).mockReturnValueOnce('blob:code')
+			const input = document.createElement('input')
+			Object.defineProperty(input, 'files', { value: [new File([''], 'a.png')] })
+			toolbar.handleImageUpload({ target: input } as unknown as Event)
+			expect(toolbar.codeContent.value).toContain('blob:code')
+			toolbar.history.reset()
+			expect(revoke).not.toHaveBeenCalled()
+			toolbar.codeContent.value = ''
+			toolbar.history.reset()
+			toolbar.history.reset()
+			expect(revoke).toHaveBeenCalledTimes(1)
+			wrapper.unmount()
+			expect(revoke).toHaveBeenCalledTimes(1)
+		})
+	})
+
+	describe('Режим кода: правка тегами через нативную историю поля', () => {
+		function setupCode(value: string, range: [number, number]) {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textarea = document.createElement('textarea')
+			textarea.value = value
+			document.body.append(textarea)
+			textarea.setSelectionRange(...range)
+			codeTextareaRef.value = { textareaRef: textarea }
+			const toolbar = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			toolbar.isCodeMode.value = true
+			toolbar.codeContent.value = value
+			return { toolbar, textarea, onInput }
+		}
+
+		it('обёртка идёт через execCommand insertText в поле и читает итог из него', () => {
+			const { toolbar, textarea, onInput } = setupCode('say hello now', [4, 9])
+			vi.mocked(document.execCommand).mockImplementation((_command, _ui, text) => {
+				textarea.setRangeText(String(text), textarea.selectionStart, textarea.selectionEnd, 'end')
+				return true
+			})
+			toolbar.applyFormat('bold')
+			expect(document.execCommand).toHaveBeenCalledWith('insertText', false, '<b>hello</b>')
+			expect(textarea.value).toBe('say <b>hello</b> now')
+			expect(toolbar.codeContent.value).toBe('say <b>hello</b> now')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('выделение возвращается в поле перед вставкой, чтобы команда заменила его', () => {
+			const { toolbar, textarea } = setupCode('abcdef', [1, 3])
+			vi.mocked(document.execCommand).mockImplementation(() => {
+				expect([textarea.selectionStart, textarea.selectionEnd]).toEqual([1, 3])
+				return true
+			})
+			toolbar.insertSeparator()
+			expect(document.execCommand).toHaveBeenCalledWith('insertText', false, '<hr>')
+		})
+
+		it('где команда отказала, текст ставится присваиванием', () => {
+			const { toolbar } = setupCode('abcdef', [1, 3])
+			toolbar.insertSeparator()
+			expect(document.execCommand).toHaveBeenCalledTimes(1)
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+
+		it('где поле не получило фокус, текст ставится присваиванием', () => {
+			const { toolbar, textarea } = setupCode('abcdef', [1, 3])
+			textarea.remove()
+			toolbar.insertSeparator()
+			expect(document.execCommand).not.toHaveBeenCalled()
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+
+		it('где execCommand нет, текст ставится присваиванием', () => {
+			const { toolbar } = setupCode('abcdef', [1, 3])
+			Object.defineProperty(document, 'execCommand', { value: undefined, configurable: true, writable: true })
+			toolbar.insertSeparator()
+			expect(toolbar.codeContent.value).toBe('a<hr>def')
+		})
+	})
+
+	describe('Keyboard and HTML conversion', () => {
+		it('handleKeyDown Enter без Shift оставляет абзац браузеру', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = {
+				key: 'Enter',
+				shiftKey: false,
+				preventDefault: vi.fn(),
+			} as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('handleKeyDown Shift+Enter вставляет перенос строки <br>', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			placeCaret(editorRef.value!, '<p>ab</p>', 1)
+			const event = {
+				key: 'Enter',
+				shiftKey: true,
+				preventDefault: vi.fn(),
+			} as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+			expect(event.preventDefault).toHaveBeenCalled()
+			expect(editorRef.value!.innerHTML).toBe('<p>a<br>b</p>')
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it('handleKeyDown Ctrl+Shift+Enter не перехватывается', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'Enter', shiftKey: true, ctrlKey: true, preventDefault: vi.fn() } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+		})
+
+		it('handleKeyDown не Enter', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = {
+				key: 'a',
+				shiftKey: false,
+				preventDefault: vi.fn(),
+			} as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+		})
+
+		it.each([
+			['Ctrl+B', { code: 'KeyB', key: 'b', ctrlKey: true }, 'b'],
+			['⌘+I', { code: 'KeyI', key: 'i', metaKey: true }, 'i'],
+			['Ctrl+U в русской раскладке (key = «г»)', { code: 'KeyU', key: 'г', ctrlKey: true }, 'u'],
+			['Ctrl+B на Dvorak (буква B на физической KeyN)', { code: 'KeyN', key: 'b', ctrlKey: true }, 'b'],
+			['Ctrl+I на Colemak (буква I на физической KeyL)', { code: 'KeyL', key: 'i', ctrlKey: true }, 'i'],
+		])('handleKeyDown: %s применяет форматирование вместо действия браузера', (_name, keys, tag) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			selectText(editorRef.value!, '<p>hello</p>', [0, 5])
+			const event = { shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).toHaveBeenCalledOnce()
+			expect(editorRef.value!.querySelector(tag)?.textContent).toBe('hello')
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it.each([
+			['Ctrl+Shift+B', { code: 'KeyB', key: 'b', ctrlKey: true, shiftKey: true }],
+			['Ctrl+Alt+B', { code: 'KeyB', key: 'b', ctrlKey: true, altKey: true }],
+			['Ctrl+K (не горячая клавиша редактора)', { code: 'KeyK', key: 'k', ctrlKey: true }],
+			['B без модификатора', { code: 'KeyB', key: 'b' }],
+			['Ctrl+Б на Dvorak: физическая KeyB несёт другую букву', { code: 'KeyB', key: 'x', ctrlKey: true }],
+		])('handleKeyDown: %s не перехватывается', (_name, keys) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { shiftKey: false, preventDefault: vi.fn(), ...keys } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it.each([
+			['isComposing', { isComposing: true }],
+			['keyCode 229', { keyCode: 229 }],
+		])('handleKeyDown: Enter во время набора через IME (%s) не вставляет перенос строки', (_name, composing) => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { key: 'Enter', shiftKey: false, preventDefault: vi.fn(), ...composing } as unknown as KeyboardEvent
+
+			handleKeyDown(event)
+
+			expect(event.preventDefault).not.toHaveBeenCalled()
+			expect(document.execCommand).not.toHaveBeenCalled()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: одиночный закрывающий тег остаётся буквальным текстом', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('hello </b>world')
+			editorRef.value!.appendChild(textNode)
+			const range = mockRange()
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+			expect(onInput).not.toHaveBeenCalled()
+			expect(editorRef.value!.textContent).toBe('hello </b>world')
+		})
+
+		it('convertInlineHtml: пара, закрытая прямо перед кареткой, становится элементом без атрибутов', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('до <b>жирный</b> после')
+			editorRef.value!.appendChild(textNode)
+			const caret = 'до <b>жирный</b>'.length
+			mockGetSelection({ anchorNode: textNode, anchorOffset: caret, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('до <b>жирный</b> после')
+			expect(editorRef.value!.querySelector('b')?.textContent).toBe('жирный')
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: пара в самом начале абзаца не создаёт пустой текстовый узел перед элементом', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('<i>курсив</i> хвост')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: '<i>курсив</i>'.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('<i>курсив</i> хвост')
+			expect(editorRef.value!.firstChild).toBe(editorRef.value!.querySelector('i'))
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: не трогает буквальные теги, если каретка стоит не сразу после пары', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('пример <b>тега</b> в тексте!')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.querySelector('b')).toBeNull()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml с null textContent', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('')
+			Object.defineProperty(textNode, 'textContent', { get: () => null })
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: пара в самом конце абзаца не создаёт пустой текстовый узел после элемента', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('текст <u>подчёркнуто</u>')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+
+			expect(editorRef.value!.innerHTML).toBe('текст <u>подчёркнуто</u>')
+			expect(editorRef.value!.lastChild).toBe(editorRef.value!.querySelector('u'))
+			expect(onInput).toHaveBeenCalledTimes(1)
+		})
+
+		it('convertInlineHtml: без выделения и без редактора ничего не меняет', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('<b>x</b>')
+			editorRef.value!.appendChild(textNode)
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			vi.spyOn(window, 'getSelection').mockReturnValue(null)
+			convertInlineHtml()
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 0 })
+			convertInlineHtml()
+			mockGetSelection({ anchorNode: textNode, anchorOffset: textNode.length, rangeCount: 1 })
+			editorRef.value = null
+			convertInlineHtml()
+
+			expect(textNode.textContent).toBe('<b>x</b>')
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: нет родителя', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('test </b>')
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1 })
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('handleCodeInput', () => {
+		it('обновляет codeContent и вызывает onInput', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleCodeInput, codeContent } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			handleCodeInput('new content')
+			expect(codeContent.value).toBe('new content')
+			expect(onInput).toHaveBeenCalled()
+		})
+	})
+
+	describe('Edge cases and branches', () => {
+		it('handleColorInput игнорирует не-input target', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleColorInput } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { target: document.createElement('div') } as unknown as Event
+			handleColorInput(event)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('handleImageUpload / handleVideoUpload игнорируют не-input target', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleImageUpload, handleVideoUpload } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = { target: document.createElement('div') } as unknown as Event
+			handleImageUpload(event)
+			handleVideoUpload(event)
+			expect(document.execCommand).not.toHaveBeenCalled()
+		})
+
+		it('saveSelection игнорирует выделение вне редактора', () => {
+			const editorDiv = document.createElement('div')
+			const outsideDiv = document.createElement('div')
+			const range = mockRange({ commonAncestorContainer: outsideDiv })
+			mockGetSelection({ anchorNode: outsideDiv, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+			const { codeTextareaRef, onInput } = createOptions()
+			const editorRef = ref<HTMLDivElement | null>(editorDiv)
+
+			const { saveSelection, restoreSelection } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			saveSelection()
+			expect(restoreSelection()).toBe(false)
+		})
+
+		it('convertInlineHtml: node не в редакторе', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const outsideNode = document.createTextNode('test </b>')
+			mockGetSelection({ anchorNode: outsideNode, rangeCount: 1 })
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: парсинг не создал новых элементов', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const textNode = document.createTextNode('<a>')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1 })
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			convertInlineHtml()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('updateActiveStates определяет выравнивание и формат', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const p = document.createElement('p')
+			p.style.textAlign = 'center'
+			p.textContent = 'text'
+			editorRef.value!.appendChild(p)
+			mockGetSelection({ anchorNode: p.firstChild, rangeCount: 1 })
+
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			updateActiveStates()
+			expect(activeStates.isJustifyCenter).toBe(true)
+
+			p.style.textAlign = 'right'
+			updateActiveStates()
+			expect(activeStates.isJustifyRight).toBe(true)
+
+			p.style.textAlign = 'justify'
+			updateActiveStates()
+			expect(activeStates.isJustifyFull).toBe(true)
+
+			p.style.textAlign = 'end'
+			updateActiveStates()
+			expect(activeStates.isJustifyRight).toBe(true)
+
+			p.style.textAlign = 'left'
+			updateActiveStates()
+			expect(activeStates.isJustifyLeft).toBe(true)
+
+			p.style.textAlign = 'start'
+			updateActiveStates()
+			expect(activeStates.isJustifyLeft).toBe(true)
+
+			const blockquote = document.createElement('blockquote')
+			blockquote.textContent = 'quote'
+			editorRef.value!.appendChild(blockquote)
+			mockGetSelection({ anchorNode: blockquote.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isBlockquote).toBe(true)
+
+			const pre = document.createElement('pre')
+			pre.textContent = 'code'
+			editorRef.value!.appendChild(pre)
+			mockGetSelection({ anchorNode: pre.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isPre).toBe(true)
+		})
+
+		it('updateActiveStates определяет жирный и курсив', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const b = document.createElement('b')
+			b.textContent = 'bold'
+			editorRef.value!.appendChild(b)
+			mockGetSelection({ anchorNode: b.firstChild, rangeCount: 1 })
+
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			updateActiveStates()
+			expect(activeStates.isBold).toBe(true)
+
+			const i = document.createElement('i')
+			i.textContent = 'italic'
+			editorRef.value!.appendChild(i)
+			mockGetSelection({ anchorNode: i.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isItalic).toBe(true)
+
+			const u = document.createElement('u')
+			u.textContent = 'underline'
+			editorRef.value!.appendChild(u)
+			mockGetSelection({ anchorNode: u.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isUnderline).toBe(true)
+
+			const s = document.createElement('s')
+			s.textContent = 'strike'
+			editorRef.value!.appendChild(s)
+			mockGetSelection({ anchorNode: s.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isStrike).toBe(true)
+		})
+
+		it('updateActiveStates определяет списки', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const ul = document.createElement('ul')
+			const li = document.createElement('li')
+			li.textContent = 'item'
+			ul.appendChild(li)
+			editorRef.value!.appendChild(ul)
+			mockGetSelection({ anchorNode: li.firstChild, rangeCount: 1 })
+
+			const { updateActiveStates, activeStates } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			updateActiveStates()
+			expect(activeStates.isUnorderedList).toBe(true)
+
+			const ol = document.createElement('ol')
+			const li2 = document.createElement('li')
+			li2.textContent = 'item'
+			ol.appendChild(li2)
+			editorRef.value!.appendChild(ol)
+			mockGetSelection({ anchorNode: li2.firstChild, rangeCount: 1 })
+			updateActiveStates()
+			expect(activeStates.isOrderedList).toBe(true)
+		})
+	})
+
+	it('покрытие оставшихся веток', () => {
+		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		const { updateActiveStates, closeContextMenu, contextMenu, convertInlineHtml } = withSetup(() =>
+			useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+		)
+
+		editorRef.value = null
+		expect(() => updateActiveStates()).not.toThrow()
+		expect(() => convertInlineHtml()).not.toThrow()
+
+		contextMenu.isVisible = true
+		closeContextMenu()
+		expect(contextMenu.isVisible).toBe(false)
+	})
+
+	it('должен возвращать isActive для useClickOutside', () => {
+		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		const { contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+		contextMenu.isVisible = true
+		expect(contextMenu.isVisible).toBe(true)
+	})
+
+	it('нажатие вне меню медиа закрывает его, пока компонент смонтирован; после размонтирования слой снят', () => {
+		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		let api!: ReturnType<typeof useEditorToolbar>
+		const wrapper = mount({
+			setup() {
+				api = useEditorToolbar({ editorRef, codeTextareaRef, onInput })
+				return () => null
+			},
+		})
+		api.contextMenu.isVisible = true
+		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		expect(api.contextMenu.isVisible).toBe(false)
+
+		api.contextMenu.isVisible = true
+		wrapper.unmount()
+		document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		expect(api.contextMenu.isVisible).toBe(true)
+	})
+
+	it('closeContextMenu вызывается при клике вне меню', () => {
+		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		const { contextMenu, handleContextMenu, contextMenuRef } = withSetup(() =>
+			useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+		)
+
+		const menuDiv = document.createElement('div')
+		contextMenuRef.value = menuDiv
+
+		const img = document.createElement('img')
+		const event = {
+			target: img,
+			clientX: 100,
+			clientY: 200,
+			preventDefault: vi.fn(),
+		} as unknown as MouseEvent
+		vi.spyOn(img, 'getBoundingClientRect').mockReturnValue({ width: 300, height: 200 } as DOMRect)
+
+		handleContextMenu(event)
+		expect(contextMenu.isVisible).toBe(true)
+
+		document.dispatchEvent(new MouseEvent('mousedown'))
+		expect(contextMenu.isVisible).toBe(false)
+	})
+
+	it('клик внутри меню не закрывает его', () => {
+		const { editorRef, codeTextareaRef, onInput } = createOptions()
+		const { contextMenu, handleContextMenu, contextMenuRef } = withSetup(() =>
+			useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+		)
+
+		const menuDiv = document.createElement('div')
+		contextMenuRef.value = menuDiv
+
+		const img = document.createElement('img')
+		const event = {
+			target: img,
+			clientX: 100,
+			clientY: 200,
+			preventDefault: vi.fn(),
+		} as unknown as MouseEvent
+		vi.spyOn(img, 'getBoundingClientRect').mockReturnValue({ width: 300, height: 200 } as DOMRect)
+
+		handleContextMenu(event)
+		expect(contextMenu.isVisible).toBe(true)
+
+		// Нажатие внутри меню: событие всплывает от пункта меню до document
+		document.body.append(menuDiv)
+		menuDiv.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+		expect(contextMenu.isVisible).toBe(true)
+		menuDiv.remove()
+	})
+
+	describe('Дополнительные покрытия веток', () => {
+		it('getCodeTextarea: codeTextareaRef — нативный HTMLTextAreaElement (ветка 102)', () => {
+			// Покрывает useEditorToolbar.ts:102 — `ref instanceof HTMLTextAreaElement` (true).
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const textareaEl = createMockTextarea(0, 3)
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(textareaEl)
+			const onInput = vi.fn()
+			const { isCodeMode, codeContent, applyFormat } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			isCodeMode.value = true
+			codeContent.value = 'abc'
+			applyFormat('bold')
+			expect(codeContent.value).toBe('<b>abc</b>')
+		})
+
+		it('insertLink: пользователь отменил prompt → ранний return', () => {
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { insertLink } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput, promptForUrl: () => null }))
+			insertLink()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('clearAllFormatting: codeMode с null textarea → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:222 — getCodeTextarea() === null → return.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { isCodeMode, codeContent, clearAllFormatting } = withSetup(() =>
+				useEditorToolbar({ editorRef, codeTextareaRef, onInput }),
+			)
+			isCodeMode.value = true
+			codeContent.value = '<b>preserved</b>'
+			clearAllFormatting()
+			expect(codeContent.value).toBe('<b>preserved</b>')
+		})
+
+		it('handleKeyDown: внутри списка → ранний return (без preventDefault)', () => {
+			// Покрывает useEditorToolbar.ts:268 — `if (inList) return`.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const ulEl = document.createElement('ul')
+			editorRef.value!.appendChild(ulEl)
+			const liEl = document.createElement('li')
+			ulEl.appendChild(liEl)
+			mockGetSelection({ anchorNode: liEl })
+
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { handleKeyDown } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+
+			const event = { key: 'Enter', shiftKey: false, preventDefault: vi.fn() } as unknown as KeyboardEvent
+			handleKeyDown(event)
+			expect(event.preventDefault).not.toHaveBeenCalled()
+		})
+
+		it('handleContextMenu: target не HTMLElement → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:277 — `if (!(target instanceof HTMLElement)) return`.
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleContextMenu, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const event = {
+				target: document.createTextNode('text'),
+				clientX: 0,
+				clientY: 0,
+				preventDefault: vi.fn(),
+			} as unknown as MouseEvent
+			handleContextMenu(event)
+			expect(contextMenu.isVisible).toBe(false)
+		})
+
+		it('handleContextMenu: target не IMG/VIDEO → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:278 — `target.tagName !== 'IMG' && !== 'VIDEO'`.
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { handleContextMenu, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const span = document.createElement('span')
+			const event = {
+				target: span,
+				clientX: 0,
+				clientY: 0,
+				preventDefault: vi.fn(),
+			} as unknown as MouseEvent
+			handleContextMenu(event)
+			expect(contextMenu.isVisible).toBe(false)
+		})
+
+		it('applyMediaSize: contextMenu.element=null → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:290 — `if (!contextMenu.element) return`.
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyMediaSize, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			contextMenu.element = null
+			expect(() => applyMediaSize()).not.toThrow()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('applyMediaSize: пустые width/height не применяют стиль', () => {
+			// Покрывает useEditorToolbar.ts:292-293 — ветки `if (contextMenu.width)` false.
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { applyMediaSize, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			const img = document.createElement('img')
+			contextMenu.element = img
+			contextMenu.width = ''
+			contextMenu.height = ''
+			applyMediaSize()
+			expect(img.style.width).toBe('')
+			expect(img.style.height).toBe('')
+			expect(onInput).toHaveBeenCalled()
+		})
+
+		it('removeMedia: contextMenu.element=null → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:299 — `if (!contextMenu.element) return`.
+			const { editorRef, codeTextareaRef, onInput } = createOptions()
+			const { removeMedia, contextMenu } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			contextMenu.element = null
+			expect(() => removeMedia()).not.toThrow()
+			expect(onInput).not.toHaveBeenCalled()
+		})
+
+		it('convertInlineHtml: текст содержит закрывающий тег → парсинг создаёт элементы', () => {
+			// Покрывает useEditorToolbar.ts:390 — temp создаёт >1 узлов или другие условия false.
+			// Текстовый узел внутри editorRef содержит '<b>bold</b>' → temp.innerHTML = '<b>bold</b>'
+			// → temp.childNodes.length=1, firstChild — Element (не Text) → условие false → продолжается.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const textNode = document.createTextNode('hello <b>world</b>')
+			editorRef.value!.appendChild(textNode)
+
+			const range = mockRange({ commonAncestorContainer: textNode })
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1, getRangeAt: vi.fn().mockReturnValue(range) })
+
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => convertInlineHtml()).not.toThrow()
+		})
+
+		it("convertInlineHtml: текст без HTML-тегов (нет '</') → ранний return до temp", () => {
+			// Покрывает useEditorToolbar.ts:383 — `if (!/<\/.../.test(text)) return`.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const textNode = document.createTextNode('plain text without tags')
+			editorRef.value!.appendChild(textNode)
+			mockGetSelection({ anchorNode: textNode, rangeCount: 1 })
+
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => convertInlineHtml()).not.toThrow()
+		})
+
+		it('convertInlineHtml: parent=null → ранний return', () => {
+			// Покрывает useEditorToolbar.ts:394 — `if (!parent) return`.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			// Текстовый узел без parent (не вставлен в DOM), но содержит закрывающий тег.
+			const orphanNode = document.createTextNode('<b>bold</b>')
+			// При этом editorRef.contains(orphanNode) должен быть true, что невозможно для orphan.
+			// Используем другой подход: создадим узел через editorRef, потом отвяжем parent.
+			editorRef.value!.appendChild(orphanNode)
+			// Подделываем contains, чтобы пройти проверку, но parent отсутствует
+			const containsOrig = editorRef.value!.contains.bind(editorRef.value!)
+			vi.spyOn(editorRef.value!, 'contains').mockImplementation((n: Node | null) => n === orphanNode || containsOrig(n))
+			// Удалим parent после прикрепления — orphanNode остаётся в anchorNode selection,
+			// но мы заменим parentNode симуляцией:
+			Object.defineProperty(orphanNode, 'parentNode', { value: null, configurable: true })
+
+			mockGetSelection({ anchorNode: orphanNode, rangeCount: 1 })
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { convertInlineHtml } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			expect(() => convertInlineHtml()).not.toThrow()
+		})
+
+		it('insertCodeAtCursor: codeTextareaRef=null → не падает', () => {
+			// Покрывает useEditorToolbar.ts:124 — getCodeTextarea() === null → return.
+			const editorRef = ref<HTMLDivElement | null>(document.createElement('div'))
+			const codeTextareaRef = ref<HTMLTextAreaElement | null>(null)
+			const onInput = vi.fn()
+			const { isCodeMode, codeContent, insertSeparator } = withSetup(() => useEditorToolbar({ editorRef, codeTextareaRef, onInput }))
+			// insertSeparator в codeMode вызывает insertCodeAtCursor — нужно codeMode=true
+			isCodeMode.value = true
+			codeContent.value = 'before'
+			// codeTextarea null → insertCodeAtCursor возвращается рано
+			expect(() => insertSeparator()).not.toThrow()
+			expect(codeContent.value).toBe('before')
+		})
+	})
+})

@@ -1,0 +1,290 @@
+import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
+import {
+	createImagePreview,
+	downloadFile,
+	formatAcceptHint,
+	formatFileSize,
+	getExtension,
+	getFileIcon,
+	getFileIconName,
+	validateFile,
+} from '../fileUtils'
+
+describe('fileUtils', () => {
+	describe('getExtension', () => {
+		it('возвращает расширение файла', () => {
+			expect(getExtension('document.pdf')).toBe('pdf')
+		})
+
+		it('возвращает расширение для нескольких точек', () => {
+			expect(getExtension('archive.tar.gz')).toBe('gz')
+		})
+
+		it('возвращает пустую строку если нет расширения', () => {
+			expect(getExtension('README')).toBe('')
+		})
+
+		it('возвращает расширение для скрытого файла', () => {
+			expect(getExtension('.gitignore')).toBe('gitignore')
+		})
+	})
+
+	describe('formatFileSize', () => {
+		it('форматирует байты', () => {
+			expect(formatFileSize(500)).toBe('500 Б')
+		})
+
+		it('форматирует килобайты: десятичная запятая по-русски', () => {
+			expect(formatFileSize(1536)).toBe('1,5 КБ')
+		})
+
+		it('форматирует мегабайты', () => {
+			expect(formatFileSize(2 * 1024 * 1024)).toBe('2,0 МБ')
+		})
+
+		it('на английском — точка и английские единицы', () => {
+			setLocale('en')
+
+			expect(formatFileSize(500)).toBe('500 B')
+			expect(formatFileSize(1536)).toBe('1.5 KB')
+			expect(formatFileSize(2 * 1024 * 1024)).toBe('2.0 MB')
+		})
+
+		it('форматирует нулевой размер', () => {
+			expect(formatFileSize(0)).toBe('0 Б')
+		})
+
+		it('форматирует ровно 1024 байта как КБ', () => {
+			expect(formatFileSize(1024)).toBe('1,0 КБ')
+		})
+
+		it('форматирует ровно 1048576 байт как МБ', () => {
+			expect(formatFileSize(1048576)).toBe('1,0 МБ')
+		})
+	})
+
+	describe('getFileIcon', () => {
+		it('возвращает иконку для PDF', () => {
+			expect(getFileIcon('pdf')).toBe('📄')
+		})
+
+		it('возвращает иконку для DOCX без учёта регистра', () => {
+			expect(getFileIcon('docx')).toBe('📝')
+		})
+
+		it('возвращает скрепку для неизвестного расширения', () => {
+			expect(getFileIcon('xyz')).toBe('📎')
+		})
+	})
+
+	describe('getFileIconName', () => {
+		it('возвращает иконку изображения для PNG', () => {
+			expect(getFileIconName('photo.PNG')).toBe('file-img')
+		})
+
+		it('возвращает иконку TypeScript для ts', () => {
+			expect(getFileIconName('script.ts')).toBe('file-ts')
+		})
+
+		it('возвращает иконку Vue для vue', () => {
+			expect(getFileIconName('Component.vue')).toBe('file-vue')
+		})
+
+		it('возвращает иконку архива для zip', () => {
+			expect(getFileIconName('archive.zip')).toBe('file-lock')
+		})
+
+		it('возвращает иконку по умолчанию для неизвестного расширения', () => {
+			expect(getFileIconName('unknown.xyz')).toBe('file-config')
+		})
+
+		it('возвращает иконку по умолчанию для файла без расширения', () => {
+			expect(getFileIconName('README')).toBe('file-config')
+		})
+	})
+
+	describe('validateFile', () => {
+		function createFile(name: string, size: number, type: string): File {
+			return new File([new ArrayBuffer(size)], name, { type })
+		}
+
+		it('пропускает файл без ограничений', () => {
+			const file = createFile('test.pdf', 100, 'application/pdf')
+			const result = validateFile(file, {})
+			expect(result.isValid).toBe(true)
+			expect(result.errors).toHaveLength(0)
+		})
+
+		it('отклоняет файл превышающий maxSize', () => {
+			const file = createFile('big.pdf', 5 * 1024 * 1024, 'application/pdf')
+			const result = validateFile(file, { maxSize: 1 })
+			expect(result.isValid).toBe(false)
+			expect(result.errors[0]).toContain('превышает')
+		})
+
+		it('пропускает файл с допустимым расширением', () => {
+			const file = createFile('doc.pdf', 100, 'application/pdf')
+			const result = validateFile(file, { accept: '.pdf' })
+			expect(result.isValid).toBe(true)
+		})
+
+		it('отклоняет файл с недопустимым расширением: сообщение на языке кита', () => {
+			const file = createFile('doc.exe', 100, 'application/x-msdownload')
+			const result = validateFile(file, { accept: '.pdf,.doc' })
+			expect(result.isValid).toBe(false)
+			expect(result.errors[0]).toBe('Формат файла "doc.exe" не поддерживается. Допустимые: .PDF, .DOC')
+			setLocale('en')
+			expect(validateFile(file, { accept: '.pdf,.doc' }).errors[0]).toBe(
+				'The format of file "doc.exe" is not supported. Allowed: .PDF, .DOC',
+			)
+			setLocale('ru')
+		})
+
+		it('пропускает файл с допустимым MIME-типом', () => {
+			const file = createFile('photo.jpg', 100, 'image/jpeg')
+			const result = validateFile(file, { accept: 'image/*' })
+			expect(result.isValid).toBe(true)
+		})
+
+		it('пропускает файл с точным MIME-типом', () => {
+			const file = createFile('doc.pdf', 100, 'application/pdf')
+			const result = validateFile(file, { accept: 'application/pdf' })
+			expect(result.isValid).toBe(true)
+		})
+
+		it('отклоняет файл с несоответствующим MIME-типом', () => {
+			const file = createFile('doc.pdf', 100, 'application/pdf')
+			const result = validateFile(file, { accept: 'text/plain' })
+			expect(result.isValid).toBe(false)
+		})
+
+		it('отклоняет файл если image/* не совпадает с MIME', () => {
+			const file = createFile('doc.pdf', 100, 'application/pdf')
+			const result = validateFile(file, { accept: 'image/*' })
+			expect(result.isValid).toBe(false)
+		})
+
+		it('пропускает файл без maxSize', () => {
+			const file = createFile('big.pdf', 10 * 1024 * 1024, 'application/pdf')
+			const result = validateFile(file, {})
+			expect(result.isValid).toBe(true)
+		})
+
+		it('пропускает файл если размер в пределах maxSize', () => {
+			const file = createFile('small.pdf', 500 * 1024, 'application/pdf')
+			const result = validateFile(file, { maxSize: 1 })
+			expect(result.isValid).toBe(true)
+		})
+
+		it('пропускает файл со смешанным accept (расширение + MIME)', () => {
+			const file = createFile('photo.jpg', 100, 'image/jpeg')
+			const result = validateFile(file, { accept: '.pdf,image/*' })
+			expect(result.isValid).toBe(true)
+		})
+
+		it('применяет maxSize и accept одновременно', () => {
+			const file = createFile('big.exe', 5 * 1024 * 1024, 'application/x-msdownload')
+			const result = validateFile(file, { maxSize: 1, accept: '.pdf' })
+			expect(result.isValid).toBe(false)
+			expect(result.errors).toHaveLength(2)
+		})
+
+		it('висячая запятая не разрешает файл без MIME-типа', () => {
+			const file = createFile('evil.exe', 10, '')
+			expect(validateFile(file, { accept: 'image/png,' }).isValid).toBe(false)
+		})
+
+		it('составное расширение сравнивается по окончанию имени', () => {
+			expect(validateFile(createFile('backup.tar.gz', 10, 'application/gzip'), { accept: '.tar.gz' }).isValid).toBe(true)
+			expect(validateFile(createFile('backup.gz', 10, 'application/gzip'), { accept: '.tar.gz' }).isValid).toBe(false)
+		})
+
+		it.each(['*', '*/*'])('«%s» принимает любой файл', accept => {
+			expect(validateFile(createFile('a.bin', 10, 'application/octet-stream'), { accept }).isValid).toBe(true)
+		})
+
+		it('accept из одних разделителей не ограничивает типы', () => {
+			expect(validateFile(createFile('a.bin', 10, ''), { accept: ' , ' }).isValid).toBe(true)
+		})
+	})
+
+	describe('formatAcceptHint', () => {
+		it('форматирует допустимые типы', () => {
+			expect(formatAcceptHint('.pdf,.doc')).toBe('.PDF, .DOC')
+		})
+
+		it('MIME-типы — как есть, пустые токены пропускаются', () => {
+			expect(formatAcceptHint('image/*, .pdf,')).toBe('image/*, .PDF')
+		})
+
+		it('возвращает пустую строку для пустого accept', () => {
+			expect(formatAcceptHint('')).toBe('')
+		})
+	})
+
+	describe('createImagePreview', () => {
+		it('возвращает null для не-изображения', async () => {
+			const file = new File([new ArrayBuffer(10)], 'doc.pdf', { type: 'application/pdf' })
+			const result = await createImagePreview(file)
+			expect(result).toBeNull()
+		})
+
+		it('возвращает data URL для изображения', async () => {
+			const file = new File([new ArrayBuffer(10)], 'photo.jpg', { type: 'image/jpeg' })
+			const result = await createImagePreview(file)
+			expect(result).not.toBeNull()
+			expect(result).toContain('data:')
+		})
+
+		it('возвращает null при ошибке чтения', async () => {
+			const file = new File([new ArrayBuffer(10)], 'photo.jpg', { type: 'image/jpeg' })
+			const OriginalFileReader = globalThis.FileReader
+
+			/** Мок, эмулирующий ошибку: onerror = onload, result = null */
+			class MockFileReader {
+				onload: (() => void) | null = null
+				onerror: (() => void) | null = null
+				result: string | null = null
+				readAsDataURL = vi.fn(() => {
+					// В реальном коде: reader.onerror = reader.onload
+					// При ошибке вызывается onerror, который уже указывает на onload
+					setTimeout(() => {
+						this.result = null
+						this.onload?.()
+					}, 0)
+				})
+			}
+
+			vi.stubGlobal('FileReader', MockFileReader)
+			const result = await createImagePreview(file)
+			expect(result).toBeNull()
+			vi.stubGlobal('FileReader', OriginalFileReader)
+		})
+	})
+	describe('downloadFile', () => {
+		it('кликает по временной ссылке с download для безопасного URL и удаляет её', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+				expect(this.getAttribute('href')).toBe('https://cdn.example.com/report.pdf')
+				expect(this.download).toBe('report.pdf')
+			})
+			downloadFile('https://cdn.example.com/report.pdf', 'report.pdf')
+			expect(clickSpy).toHaveBeenCalledOnce()
+			expect(document.querySelector('a[download]')).toBeNull()
+		})
+
+		it('разрешает blob: URL локально созданного файла', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+			downloadFile('blob:http://localhost:3000/5f1c', 'photo.png')
+			expect(clickSpy).toHaveBeenCalledOnce()
+		})
+
+		it('не переходит по javascript: URL из данных вложения', () => {
+			const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+			const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+			downloadFile('javascript:alert(document.cookie)', 'x.txt')
+			expect(clickSpy).not.toHaveBeenCalled()
+			expect(warnSpy).toHaveBeenCalledOnce()
+		})
+	})
+})

@@ -1,133 +1,101 @@
 <template>
 	<div
-		class="base-textarea"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
-				'base-textarea--error': formField.error,
+				'base-textarea--error': control.hasError.value,
 				'base-textarea--disabled': isDisabled,
+				'base-textarea--readonly': isReadonly,
 				'base-textarea--autosize': isAutosize,
+				'base-textarea--has-counter': hasCounter,
 			},
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<FormFieldLabel
 			v-if="label"
+			:for-id="textareaId"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-textarea__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-textarea__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
 		<textarea
+			v-bind="nativeAttrs"
+			:id="textareaId"
 			ref="textareaRef"
-			class="base-textarea__field"
-			:class="classes.field"
+			:class="[ui('field'), classes.field]"
 			:value="modelValue"
 			:placeholder="placeholder"
 			:rows="rows"
 			:maxlength="maxlength"
 			:disabled="isDisabled"
 			:readonly="isReadonly"
-			:name="name"
 			@input="handleInput"
 			@blur="handleBlur"
 			@focus="handleFocus"></textarea>
 
 		<FormFieldError
+			:id="errorId"
 			:error="formField.error"
-			class-name="base-textarea__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
+
+		<span v-if="hasCounter" :id="counterId" :class="ui('counter')">{{ characterCount }}/{{ maxlength }}</span>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseTextarea.style.scss'
-import { toHTMLTextAreaElement } from '@utils/domUtils'
-import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../model/BaseTextarea.types'
+import { useBaseTextarea } from '../model/useBaseTextarea'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseTextareaEmits, BaseTextareaProps, BaseTextareaSlots } from '../types/BaseTextarea.types'
 
-const props = withDefaults(defineProps<BaseTextareaProps>(), {
-	modelValue: '',
-	placeholder: '',
-	rows: 4,
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	isAutosize: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-textarea', props, ['root', 'label', 'required', 'field', 'errorText'])
-
+const props = withDefaults(
+	defineProps<BaseTextareaProps>(),
+	kitDefaults('BaseTextarea', {
+		variant: DEFAULT_VARIANT,
+		modelValue: '',
+		placeholder: '',
+		rows: 4,
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		isAutosize: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseTextareaEmits>()
-
 defineSlots<BaseTextareaSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
-
-function adjustHeight(): void {
-	const el = textareaRef.value
-	/* istanbul ignore next -- el всегда существует после mount, ветка !el — защитный guard */
-	if (!el || !props.isAutosize) return
-
-	el.style.height = `${el.scrollHeight}px`
-}
-
-function handleInput(e: Event): void {
-	const target = toHTMLTextAreaElement(e.target)
-	if (!target) return
-	emit('update:modelValue', target.value)
-
-	if (props.isAutosize) {
-		nextTick(adjustHeight)
-	}
-}
-
-function handleBlur(e: FocusEvent): void {
-	formField.onBlur()
-	emit('blur', e)
-}
-
-function handleFocus(e: FocusEvent): void {
-	emit('focus', e)
-}
-
-watch(
-	() => props.modelValue,
-	() => {
-		if (props.isAutosize) {
-			nextTick(adjustHeight)
-		}
-	},
-)
-
-onMounted(() => {
-	if (props.isAutosize) {
-		nextTick(adjustHeight)
-	}
-})
-
-defineExpose({
-	rootRef: textareaRef,
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	errorId,
+	counterId,
+	formField,
+	hasCounter,
+	control,
+	textareaId,
+	characterCount,
+	nativeAttrs,
 	textareaRef,
-	adjustHeight,
-	focus: () => textareaRef.value?.focus(),
-	blur: () => textareaRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	handleInput,
+	handleBlur,
+	handleFocus,
+	exposed,
+} = useBaseTextarea(props, emit)
+
+defineExpose(exposed)
 </script>

@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseLoader.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseLoader from '../ui/BaseLoader.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseLoader unit', () => {
 	describe('рендер', () => {
@@ -25,6 +20,33 @@ describe('BaseLoader unit', () => {
 			const { container } = render(BaseLoader)
 
 			expect(container.querySelector('.base-loader')?.getAttribute('aria-label')).toBe('Загрузка')
+		})
+	})
+
+	describe('доступное имя', () => {
+		it('должен брать имя статуса из пропса label (без завершающего многоточия)', () => {
+			render(BaseLoader, { props: { label: 'Сохранение...' } })
+
+			expect(screen.getByRole('status', { name: 'Сохранение' })).toBeInTheDocument()
+		})
+
+		it('имя должно совпадать с видимой подписью при hasLabel=true', () => {
+			render(BaseLoader, { props: { hasLabel: true, label: 'Подождите…' } })
+
+			const status = screen.getByRole('status', { name: 'Подождите' })
+			expect(status).toHaveTextContent('Подождите…')
+		})
+
+		it('должен использовать имя по умолчанию, если label пустой', () => {
+			render(BaseLoader, { props: { label: '' } })
+
+			expect(screen.getByRole('status', { name: 'Загрузка' })).toBeInTheDocument()
+		})
+
+		it('должен скрывать декоративную анимацию от вспомогательных технологий', () => {
+			const { container } = render(BaseLoader)
+
+			expect(container.querySelector('.base-loader__animation')).toHaveAttribute('aria-hidden', 'true')
 		})
 	})
 

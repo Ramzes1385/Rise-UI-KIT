@@ -1,0 +1,32 @@
+@use './fonts/fonts';
+
+// Попадает в dist/styles.css и tokens.css: @font-face шрифтов кита (fonts/_fonts.scss, файлы — dist/fonts) и шрифт кита только
+// на его собственных элементах (классы base-*), с нулевой специфичностью. body, button и поля приложения кит не трогает — это
+// решает приложение (README, «Шрифты»). Курсива у шрифтов кита нет: `<em>` и курсив Markdown — наклон, который рисует браузер
+// (font-synthesis: style); полужирный не синтезируется — начертания 300–700 есть в файлах.
+:where([class^='base-'], [class*=' base-']) {
+	font-family: var(--rise-font-sans);
+	font-synthesis: style;
+	text-rendering: optimizelegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+:where([class^='base-'], [class*=' base-']) :where(code, kbd, samp, pre),
+:where(code, kbd, samp, pre):where([class^='base-'], [class*=' base-']) {
+	font-family: var(--rise-font-mono);
+}
+
+// Знак направления письма для сдвигов и градиентов, которые зависят от стороны: translateX(calc(var(--rise-dir) * 10px)).
+// 1 в LTR, −1 в RTL; наследуется, поэтому вложенный dir="ltr" внутри RTL возвращает 1. Служебная переменная, не токен темы.
+:root {
+	--rise-dir: 1;
+}
+
+[dir='rtl'] {
+	--rise-dir: -1;
+}
+
+[dir='ltr'] {
+	--rise-dir: 1;
+}

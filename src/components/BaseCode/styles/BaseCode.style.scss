@@ -1,0 +1,149 @@
+$code-token-types: keyword, string, number, comment, function, tag, attribute, property, variable;
+
+.base-code {
+	@include custom-color-scope;
+	--base-code-number-width: 1ch;
+
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	border: 1px solid ct(code, border, transparent);
+	border-radius: sz(ct(code, radius, var(--rise-radius-md)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(code, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(code, text, var(--rise-text-highlighted)));
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: ct(code, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		gap: space(8px);
+		min-height: sz(ct(code, header-height, 32px));
+		padding-block: space(4px);
+		padding-inline: space(12px 4px);
+		border-bottom: 1px solid var(--rise-border);
+		background-color: ct(code, header-bg, transparent);
+		color: ct(code, header-text, var(--rise-text-toned));
+		@include text-size(xs);
+	}
+
+	&__title {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		font-family: var(--rise-font-mono);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__copy.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 8px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 8px;
+
+		flex-shrink: 0;
+		border-radius: sz(ct(code, copy-radius, var(--rise-radius-sm)));
+		color: ct(code, copy-text, var(--rise-text-toned));
+		@include text-size(xs);
+	}
+
+	&__pre {
+		@include ltr-surface;
+
+		margin: 0;
+		padding: space(ct(code, padding-y, 12px)) 0;
+		overflow: auto;
+		font-family: var(--rise-font-mono);
+		font-size: sz(ct(code, font-size, var(--rise-font-size-xs)));
+		line-height: 1.6;
+		tab-size: 4;
+		font-variant-ligatures: none;
+		@include focus-ring(-2px);
+		@include scrollbar-thin;
+	}
+
+	&__code {
+		display: block;
+		min-width: max-content;
+		font-family: inherit;
+	}
+
+	&--wrapped &__code {
+		min-width: 0;
+	}
+
+	&__line,
+	&__number,
+	&__text,
+	&__token {
+		font-family: inherit;
+	}
+
+	&__line {
+		display: flex;
+		padding-inline: space(ct(code, padding-x, 16px));
+
+		&--highlighted {
+			background-color: var(--rise-primary-soft);
+			box-shadow: inset 2px 0 0 var(--rise-primary);
+		}
+	}
+
+	&__number {
+		flex-shrink: 0;
+		width: var(--base-code-number-width);
+		margin-inline-end: sz(16px);
+		color: var(--rise-text-muted);
+		font-variant-numeric: tabular-nums;
+		text-align: end;
+		user-select: none;
+	}
+
+	&__text {
+		flex: 1;
+		min-width: 0;
+		white-space: pre;
+	}
+
+	&--wrapped &__text {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+	}
+
+	@each $type in $code-token-types {
+		&__token--#{$type} {
+			color: var(--rise-code-#{$type});
+		}
+	}
+
+	&__token--comment {
+		font-style: italic;
+	}
+
+	&__empty {
+		margin: 0;
+		padding-inline: space(ct(code, padding-x, 16px));
+		color: var(--rise-text-toned);
+		font-family: var(--rise-font-sans);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	@include enter-pop(base-code__copy-icon, calc(var(--rise-motion-scale-from) * 0.5));
+}

@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseTable.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'toolbar', 'selection', 'expandable-rows', 'loading', 'empty'] as const
 
-const COMPONENT = 'ui-basetable'
-const STORIES = ['default', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseTable — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-table')
-		await expect(root).toHaveScreenshot(`base-table--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseTable · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `data-basetable--${story}`, { theme, width: 1100, height: 600 })
+				await expectStoryScreenshot(page, `base-table-${story}-${theme}.png`)
+			})
+		}
 	})
 }

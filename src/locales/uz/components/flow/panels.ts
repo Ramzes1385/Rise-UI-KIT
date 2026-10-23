@@ -1,0 +1,26 @@
+/** Панели BaseFlowMap: мини-карта, легенда, подробности узла */
+export const uzFlowPanels = {
+	flowPanels: {
+		DETAILS: 'Tafsilotlar',
+		MINIMAP: 'Mini-xarita',
+		MINIMAP_HINT: 'Strelkalar koʻrinishni siljitadi, Home hammasini sigʻdiradi',
+		LEGEND: 'Belgilar',
+		LEGEND_SHOW: 'Belgilarni koʻrsatish',
+		LEGEND_HIDE: 'Belgilarni yigʻish',
+		STATUS_OK: 'Ishlayapti',
+		STATUS_WARNING: 'Kechikishlar',
+		STATUS_ERROR: 'Xatolar',
+		STATUS_DOWN: 'Ishlamayapti',
+		STATUS_UNKNOWN: 'Maʼlumot yoʻq',
+		DETAILS_NODE: 'Tugun tafsilotlari',
+		DETAILS_EDGE: 'Bogʻlanish tafsilotlari',
+		DETAILS_GROUP: 'Guruh tafsilotlari',
+		DETAILS_CLOSE: 'Tafsilotlarni yopish',
+		DETAILS_EMPTY: 'Tafsilotlarni koʻrish uchun tugun yoki bogʻlanishni tanlang',
+		DETAILS_CALLS: 'Chaqiradi',
+		DETAILS_CALLED_BY: 'Chaqiruvchilar',
+		DETAILS_TEAM: '«{name}» jamoasi',
+		DETAILS_METRICS: 'Metrikalar',
+		DETAILS_SHEET: 'Yopish uchun pastga suring',
+	},
+}

@@ -1,11 +1,12 @@
-export { RANGE_VARIANTS, TICK_SIZES } from './model/BaseRange.types'
+export { RANGE_PARTS, RANGE_VARIANTS, TICK_SIZES } from './types/BaseRange.types'
 export type {
 	BaseRangeEmits,
+	BaseRangePart,
 	BaseRangeProps,
 	BaseRangeSlots,
 	RangeMark,
 	RangeVariant,
 	ThumbSlotProps,
 	TickSize,
-} from './model/BaseRange.types'
+} from './types/BaseRange.types'
 export { default as BaseRange } from './ui/BaseRange.vue'

@@ -1,0 +1,43 @@
+.base-input-number {
+	@include custom-color-scope;
+
+	&__button.base-button {
+		@include inherit-custom-color;
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		flex-shrink: 0;
+		align-self: stretch;
+		width: sz(ct(input-number, button-width, 32px));
+		border-radius: 0;
+		@include custom-text(color, ct(input-number, button-text, var(--rise-text-muted)));
+		@include custom-bg(background-color, ct(input-number, button-bg, transparent));
+		@include custom-bg-hover(background-color, ct(input-number, button-bg-hover, var(--rise-bg-accented)));
+		@include custom-bg-active(background-color, ct(input-number, button-bg-active, var(--rise-bg-accented)));
+
+		.base-icon__svg {
+			width: ct(input-number, button-icon-size, sz(20px));
+			height: ct(input-number, button-icon-size, sz(20px));
+		}
+
+		@include custom-text-hover(color, ct(input-number, button-text-hover, var(--rise-text-highlighted)));
+
+		@include active {
+			.base-icon__svg {
+				transform: scale(var(--rise-motion-scale-from));
+			}
+		}
+
+		&.base-button--disabled {
+			color: ct(input-number, button-text-disabled, var(--rise-text-muted));
+		}
+	}
+
+	&--controls .base-input__field {
+		padding-inline: sz(4px);
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+}

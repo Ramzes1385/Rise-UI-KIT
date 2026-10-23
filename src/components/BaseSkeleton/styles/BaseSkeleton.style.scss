@@ -1,58 +1,55 @@
 .base-skeleton {
-	background-color: var(--color-surface-muted);
 	position: relative;
 	overflow: hidden;
+	background-color: ct(skeleton, bg, var(--rise-bg-elevated));
 
 	&--text {
-		height: sz(16px);
-		border-radius: sz(4px);
-	}
-
-	&--circle {
-		border-radius: var(--border-radius-full);
+		height: sz(ct(skeleton, height, 16px));
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-sm)));
 	}
 
 	&--rect {
-		border-radius: var(--border-radius-base);
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-md)));
 	}
 
-	&--pulse {
-		animation: skeleton-pulse 1.5s ease-in-out infinite;
+	&--circle {
+		aspect-ratio: 1;
+		border-radius: sz(ct(skeleton, radius, var(--rise-radius-md)));
 	}
 
-	&--animated::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-		animation: skeleton-shimmer 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+	@include motion-safe {
+		&--pulse {
+			animation: base-skeleton-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		&--animated::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background-image: linear-gradient(
+				90deg,
+				transparent,
+				color-mix(in srgb, var(--rise-bg-accented) 80%, transparent),
+				transparent
+			);
+			transform: translateX(-100%);
+			animation: base-skeleton-shimmer calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
+			@include loop-state;
+		}
 	}
 }
 
-@keyframes skeleton-pulse {
-	0% {
-		opacity: 1;
-	}
+@include enter-fade(base-skeleton);
+
+@keyframes base-skeleton-pulse {
 	50% {
-		opacity: 0.4;
-	}
-	100% {
-		opacity: 1;
+		opacity: 0.5;
 	}
 }
 
-:root[data-theme='dark'] .base-skeleton--animated::after {
-	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-}
-
-@keyframes skeleton-shimmer {
-	0% {
-		transform: translateX(-100%);
-	}
-	100% {
+@keyframes base-skeleton-shimmer {
+	to {
 		transform: translateX(100%);
 	}
 }

@@ -1,61 +1,44 @@
 <template>
-	<!-- Одиночная анимация -->
-	<Transition
-		v-if="!isGroup"
-		:name="name"
-		:mode="mode"
-		appear
-		@after-enter="handleAfterEnter"
-		@after-leave="handleAfterLeave">
-		<div v-if="show" class="base-animation" :class="classes.root">
-			<slot />
+	<Transition v-if="!isGroup" :name="transitionName" :mode="mode" appear @after-enter="handleAfterEnter" @after-leave="handleAfterLeave">
+		<div v-if="show" :class="[ui('root'), classes.root, { 'base-animation--collapse': isCollapse }]">
+			<div v-if="isCollapse" :class="ui('inner')">
+				<slot />
+			</div>
+			<slot v-else />
 		</div>
 	</Transition>
 
-	<!-- Групповая анимация -->
 	<TransitionGroup
 		v-else
-		:name="name"
+		:name="transitionName"
 		:tag="tag"
 		appear
+		:class="[ui('root'), 'base-animation--group', classes.root]"
 		@after-enter="handleAfterEnter"
 		@after-leave="handleAfterLeave">
-		<div v-if="show" :class="classes.root">
-			<slot />
-		</div>
+		<slot v-if="show" />
 	</TransitionGroup>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
 import '../styles/BaseAnimation.style.scss'
-import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../model/BaseAnimation.types'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBaseAnimation } from '../model/useBaseAnimation'
+import type { BaseAnimationEmits, BaseAnimationProps, BaseAnimationSlots } from '../types/BaseAnimation.types'
 
-const props = withDefaults(defineProps<BaseAnimationProps>(), {
-	name: 'fade',
-	mode: 'out-in',
-	isGroup: false,
-	tag: 'div',
-})
-const { wasPropPassed } = useExplicitPropDetection()
+const props = withDefaults(
+	defineProps<BaseAnimationProps>(),
+	kitDefaults('BaseAnimation', {
+		show: true,
+		name: 'fade',
+		mode: 'out-in',
+		isGroup: false,
+		tag: 'div',
+	}),
+)
 
 const emit = defineEmits<BaseAnimationEmits>()
 defineSlots<BaseAnimationSlots>()
 
-const show = computed(() => (wasPropPassed('show') ? (props.show ?? true) : true))
-
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root'],
-})
-
-function handleAfterEnter(): void {
-	emit('after-enter')
-}
-
-function handleAfterLeave(): void {
-	emit('after-leave')
-}
+const { ui, classes, isCollapse, transitionName, handleAfterEnter, handleAfterLeave } = useBaseAnimation(props, emit)
 </script>

@@ -1,0 +1,190 @@
+import '@testing-library/jest-dom/vitest'
+import { render } from '@testing-library/vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
+import { useTriggerAttributes } from '../useTriggerAttributes'
+import type { TriggerAttributes } from '../types/useTriggerAttributes.types'
+
+function mountTrigger(attributes: () => TriggerAttributes, content: () => ReturnType<typeof h>[], withId = true) {
+	let api!: ReturnType<typeof useTriggerAttributes>
+	const container = ref<HTMLElement | null>(null)
+	const utils = render(
+		defineComponent({
+			setup() {
+				api = useTriggerAttributes(() => container.value, attributes, { withId })
+				return () => h('span', { ref: container }, content())
+			},
+		}),
+	)
+	return { ...utils, api: () => api, container }
+}
+
+describe('useTriggerAttributes', () => {
+	it('ставит атрибуты на первый фокусируемый элемент, снимает undefined, даёт id и снимает всё при размонтировании', async () => {
+		const isOpen = ref(false)
+		const { container, unmount, api } = mountTrigger(
+			() => ({ 'aria-expanded': String(isOpen.value), 'aria-controls': isOpen.value ? 'panel' : undefined }),
+			() => [h('span', 'Иконка'), h('button', { type: 'button' }, 'Меню')],
+		)
+		const button = container.value?.querySelector('button') as HTMLButtonElement
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+		expect(button).not.toHaveAttribute('aria-controls')
+		expect(api().triggerId.value).toBe(button.id)
+		expect(api().getTrigger()).toBe(button)
+
+		isOpen.value = true
+		await nextTick()
+		expect(button).toHaveAttribute('aria-controls', 'panel')
+
+		unmount()
+		expect(button).not.toHaveAttribute('aria-expanded')
+		expect(button).not.toHaveAttribute('id')
+	})
+
+	it('иконка SVG с <use href> перед полем — не триггер: атрибуты получает поле', () => {
+		const { container } = mountTrigger(
+			() => ({ role: 'combobox' }),
+			() => [h('svg', [h('use', { href: '#search' })]), h('input', { type: 'text' })],
+		)
+		expect(container.value?.querySelector('input')).toHaveAttribute('role', 'combobox')
+		expect(container.value?.querySelector('use')).not.toHaveAttribute('role')
+	})
+
+	it('свой id элемента сохраняется; без фокусируемого — первый дочерний элемент', () => {
+		const { container, api } = mountTrigger(
+			() => ({ 'aria-haspopup': 'dialog' }),
+			() => [h('img', { id: 'avatar', alt: 'Аватар' })],
+		)
+		const image = container.value?.querySelector('img') as HTMLImageElement
+		expect(image).toHaveAttribute('aria-haspopup', 'dialog')
+		expect(api().triggerId.value).toBe('avatar')
+	})
+
+	it('aria-describedby — список: свой id добавляется и убирается, чужие остаются', async () => {
+		const isVisible = ref(true)
+		const { container, api } = mountTrigger(
+			() => ({ 'aria-describedby': isVisible.value ? 'tip' : undefined }),
+			() => [h('button', { type: 'button', 'aria-describedby': 'hint' }, 'Сохранить')],
+		)
+		const button = container.value?.querySelector('button') as HTMLButtonElement
+		expect(button.getAttribute('aria-describedby')).toBe('hint tip')
+
+		isVisible.value = false
+		await nextTick()
+		expect(button.getAttribute('aria-describedby')).toBe('hint')
+		expect(api().triggerId.value).toBe(button.id)
+	})
+
+	it('смена элемента-триггера переносит атрибуты; пустой контейнер — без триггера', async () => {
+		const variant = ref<'a' | 'b' | 'none'>('a')
+		const { container, api } = mountTrigger(
+			() => ({ 'aria-describedby': 'tip', 'aria-expanded': 'true' }),
+			() => (variant.value === 'none' ? [] : [h('button', { key: variant.value, type: 'button' }, variant.value)]),
+		)
+		const first = container.value?.querySelector('button') as HTMLButtonElement
+		expect(first).toHaveAttribute('aria-expanded', 'true')
+
+		variant.value = 'b'
+		await nextTick()
+		const second = container.value?.querySelector('button') as HTMLButtonElement
+		expect(second).not.toBe(first)
+		expect(second).toHaveAttribute('aria-describedby', 'tip')
+
+		variant.value = 'none'
+		await nextTick()
+		expect(api().getTrigger()).toBeNull()
+		expect(api().triggerId.value).toBeUndefined()
+	})
+
+	it('без withId id не добавляется', () => {
+		const { container, api } = mountTrigger(
+			() => ({ 'aria-describedby': 'tip' }),
+			() => [h('button', { type: 'button' }, 'Сохранить')],
+			false,
+		)
+		expect(container.value?.querySelector('button')).not.toHaveAttribute('id')
+		expect(api().triggerId.value).toBeUndefined()
+	})
+
+	it('без контейнера триггера нет', () => {
+		let api!: ReturnType<typeof useTriggerAttributes>
+		render(
+			defineComponent({
+				setup() {
+					api = useTriggerAttributes(
+						() => null,
+						() => ({ 'aria-expanded': 'false' }),
+					)
+					return () => h('div')
+				},
+			}),
+		)
+		expect(api.getTrigger()).toBeNull()
+		expect(api.triggerId.value).toBeUndefined()
+	})
+
+	describe('fallbackAttributes (fu-keyboard)', () => {
+		function mountFallback(content: () => ReturnType<typeof h>[]) {
+			let api!: ReturnType<typeof useTriggerAttributes>
+			const container = ref<HTMLElement | null>(null)
+			const utils = render(
+				defineComponent({
+					setup() {
+						api = useTriggerAttributes(
+							() => container.value,
+							() => ({ 'aria-haspopup': 'dialog' }),
+							{ fallbackAttributes: { role: 'button', tabindex: '0' } },
+						)
+						return () => h('span', { ref: container }, content())
+					},
+				}),
+			)
+			return { ...utils, api: () => api, container }
+		}
+
+		it('элемент без фокусируемого получает fallbackAttributes и теряет их при размонтировании', async () => {
+			const label = ref('Подробнее')
+			const { container, unmount, api } = mountFallback(() => [h('span', label.value)])
+			const span = container.value?.querySelector('span') as HTMLElement
+			expect(span).toHaveAttribute('role', 'button')
+			expect(span).toHaveAttribute('tabindex', '0')
+			expect(span).toHaveAttribute('aria-haspopup', 'dialog')
+			expect(api().isFallbackTrigger()).toBe(true)
+
+			label.value = 'Ещё'
+			await nextTick()
+			expect(api().getTrigger()).toBe(span)
+			expect(span).toHaveAttribute('role', 'button')
+
+			unmount()
+			expect(span).not.toHaveAttribute('role')
+			expect(span).not.toHaveAttribute('tabindex')
+		})
+
+		it('кнопка в слоте — без fallbackAttributes; смена span на кнопку снимает их', async () => {
+			const hasButton = ref(false)
+			const { container, api } = mountFallback(() => [
+				hasButton.value ? h('button', { type: 'button' }, 'Открыть') : h('span', 'Открыть'),
+			])
+			const span = container.value?.querySelector('span') as HTMLElement
+			expect(api().isFallbackTrigger()).toBe(true)
+
+			hasButton.value = true
+			await nextTick()
+			const button = container.value?.querySelector('button') as HTMLButtonElement
+			expect(button).not.toHaveAttribute('role')
+			expect(button).not.toHaveAttribute('tabindex')
+			expect(button).toHaveAttribute('aria-haspopup', 'dialog')
+			expect(span).not.toHaveAttribute('role')
+			expect(api().isFallbackTrigger()).toBe(false)
+		})
+
+		it('без опции элемент без фокусируемого остаётся без роли', () => {
+			const { container, api } = mountTrigger(
+				() => ({ 'aria-haspopup': 'dialog' }),
+				() => [h('span', 'Текст')],
+			)
+			expect(container.value?.querySelector('span')).not.toHaveAttribute('role')
+			expect(api().isFallbackTrigger()).toBe(false)
+		})
+	})
+})

@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseBadge.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseBadge from '../ui/BaseBadge.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseBadge unit', () => {
 	describe('рендер', () => {
@@ -80,7 +75,7 @@ describe('BaseBadge unit', () => {
 			expect(screen.queryByText('Текст пропса')).not.toBeInTheDocument()
 		})
 
-		it('не должен рендерить BaseText когда передан слот', () => {
+		it('не должен рендерить текст label когда передан слот', () => {
 			const { container } = render(BaseBadge, {
 				slots: { default: '<span>Слот</span>' },
 			})

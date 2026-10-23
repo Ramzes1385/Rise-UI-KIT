@@ -1,94 +1,100 @@
 .base-alert {
-	--alert-bg: var(--color-surface);
-	--alert-border: var(--color-border);
-	--alert-text: var(--color-text);
-	--alert-icon-color: var(--color-info-icon);
+	@include custom-color-scope;
+	--alert-role: var(--rise-info);
+	--alert-on-role: var(--rise-on-info);
+	--alert-soft: var(--rise-info-soft);
+	--alert-role-text: var(--rise-info-text);
+	--alert-role-border: var(--rise-info-border);
+	--alert-icon: currentcolor;
+	--alert-ring: currentcolor;
 
 	display: flex;
+	flex-wrap: wrap;
 	align-items: flex-start;
-	gap: 0.75rem;
-	padding: 1rem;
-	border-radius: 0.5rem;
-	border: 1px solid var(--alert-border);
-	background-color: var(--alert-bg);
-	color: var(--alert-text);
-	transition: all var(--transition-base);
+	gap: space(ct(alert, gap, 10px));
+	box-sizing: border-box;
+	padding: space(ct(alert, padding-y, 12px) ct(alert, padding-x, 16px));
+	border: 1px solid ct(alert, border, transparent);
+	border-radius: sz(ct(alert, radius, var(--rise-radius-lg)));
+	box-shadow: ct(alert, shadow, none);
+	font-size: sz(ct(alert, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-bg(background-color, ct(alert, bg, var(--alert-role)));
+	@include custom-text(color, ct(alert, text, var(--alert-on-role)));
 
-	// Стили по умолчанию для разных типов
-	&--info {
-		--alert-bg: var(--color-info-bg);
-		--alert-border: var(--color-info-border);
-		--alert-text: var(--color-info-text);
-		--alert-icon-color: var(--color-info-icon);
+	@each $role in (success, warning, error) {
+		&--#{$role} {
+			--alert-role: var(--rise-#{$role});
+			--alert-on-role: var(--rise-on-#{$role});
+			--alert-soft: var(--rise-#{$role}-soft);
+			--alert-role-text: var(--rise-#{$role}-text);
+			--alert-role-border: var(--rise-#{$role}-border);
+		}
 	}
 
-	&--success {
-		--alert-bg: var(--color-success-bg);
-		--alert-border: var(--color-success-border);
-		--alert-text: var(--color-success-text);
-		--alert-icon-color: var(--color-success-icon);
-	}
-
-	&--warning {
-		--alert-bg: var(--color-warning-bg);
-		--alert-border: var(--color-warning-border);
-		--alert-text: var(--color-warning-text);
-		--alert-icon-color: var(--color-warning-icon);
-	}
-
-	&--error {
-		--alert-bg: var(--color-error-bg);
-		--alert-border: var(--color-error-border);
-		--alert-text: var(--color-error-text);
-		--alert-icon-color: var(--color-error-icon);
-	}
-
-	// Варианты отображения
-	&--ghost {
-		background-color: transparent;
-		border-color: transparent;
-	}
-
-	&--outline {
-		background-color: transparent;
-	}
-
+	&--soft,
+	&--outline,
+	&--ghost,
 	&--shadow {
-		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.1),
-			0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		--alert-icon: var(--alert-role);
+		--alert-ring: var(--rise-focus-ring);
 	}
 
 	&--soft {
-		border-color: transparent;
+		@include custom-bg(background-color, var(--alert-soft));
+		@include custom-text(color, var(--alert-role-text));
+	}
+
+	&--outline {
+		border-color: ct(alert, border, var(--alert-role-border));
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--alert-role-text));
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		@include custom-text(color, var(--alert-role-text));
+	}
+
+	&--shadow {
+		box-shadow: ct(alert, shadow, var(--rise-shadow-md));
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		@include custom-text(color, var(--rise-text));
 	}
 
 	&__icon-wrapper {
 		display: flex;
-		align-items: center;
-		justify-content: center;
 		flex-shrink: 0;
-		color: var(--alert-icon-color);
+		@include custom-text(color, var(--alert-icon));
 	}
 
 	&__content {
-		flex-grow: 1;
 		display: flex;
+		flex: 1 1 sz(120px);
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: sz(4px);
+		min-width: 0;
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
+	& &__title,
+	& &__text {
+		@include inherit-custom-color;
 		color: inherit;
-		line-height: 1.25;
+	}
+
+	&--shadow &__title {
+		@include custom-text(color, var(--rise-text-highlighted));
+	}
+
+	&--shadow &__description {
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__description {
-		margin: 0;
-		color: inherit;
-		opacity: 0.9;
-		line-height: 1.4;
+		&:empty {
+			display: none;
+		}
 
 		p {
 			margin: 0;
@@ -97,27 +103,32 @@
 
 	&__actions {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 0.5rem;
-		margin-left: auto;
 		flex-shrink: 0;
+		max-width: 100%;
+		gap: sz(8px);
 	}
 
-	&__close {
-		color: inherit;
-		opacity: 0.6;
-		transition: opacity var(--transition-base);
-		padding: 0.25rem;
-		border-radius: 0.25rem;
+	& &__actions :focus-visible {
+		outline-color: var(--alert-ring);
+	}
 
-		&:hover {
-			opacity: 1;
-			background-color: rgba(0, 0, 0, 0.05);
-		}
+	& &__close {
+		--custom-text: currentcolor;
+		--custom-bg: transparent;
+		--custom-bg-hover: color-mix(in srgb, currentcolor 12%, transparent);
+		--custom-bg-active: color-mix(in srgb, currentcolor 18%, transparent);
 
-		&:focus-visible {
-			outline: 2px solid currentColor;
-			outline-offset: 2px;
-		}
+		max-width: none;
+		margin-block: sz(-2px);
+		margin-inline: 0 sz(-4px);
+	}
+
+	&__close .base-icon__svg {
+		width: sz(16px);
+		height: sz(16px);
 	}
 }
+
+@include enter-scale('base-alert');

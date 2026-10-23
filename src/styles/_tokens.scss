@@ -1,0 +1,592 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+// Палитры Rise 2.0: «Янтарь» (primary), «Космос» (neutral), «Аврора» (success), «Ион» (info), «Мёд» (warning), «Плазма» (error).
+// Порядок и запись — как в KIT_PALETTES (src/utils/theme/themeUtils/presets.ts): тест сверяет их дословно.
+$palettes: (
+	'primary': (
+		50: #fff3eb,
+		100: #ffe6d5,
+		200: #ffc9a8,
+		300: #ffa470,
+		400: #ff8243,
+		500: #ff6a1f,
+		600: #ee5410,
+		700: #c4400a,
+		800: #9a2f07,
+		900: #7a2608,
+		950: #431204,
+	),
+	'neutral': (
+		50: #f5f6f9,
+		100: #eceef3,
+		200: #e1e4ea,
+		300: #cdd2dc,
+		400: #9aa2b4,
+		500: #7e869a,
+		600: #5b6276,
+		700: #414859,
+		800: #2a2f3d,
+		900: #171a24,
+		950: #0b0d14,
+	),
+	'success': (
+		50: #e8f8f0,
+		100: #d3f2e2,
+		200: #a7e3c5,
+		300: #6fd3a2,
+		400: #2fbf7e,
+		500: #12a666,
+		600: #0b7f4e,
+		700: #086b41,
+		800: #065a37,
+		900: #054a2e,
+		950: #032a1a,
+	),
+	'info': (
+		50: #eef3ff,
+		100: #dde6ff,
+		200: #bccdff,
+		300: #8eabff,
+		400: #6a8dff,
+		500: #4f75ff,
+		600: #2a55f0,
+		700: #2143c4,
+		800: #1c3596,
+		900: #1a2e73,
+		950: #111c45,
+	),
+	'warning': (
+		50: #fff6e0,
+		100: #ffebb8,
+		200: #ffd98a,
+		300: #ffc457,
+		400: #ffb224,
+		500: #e89a00,
+		600: #c77300,
+		700: #a85c00,
+		800: #7a4300,
+		900: #5e3400,
+		950: #361d00,
+	),
+	'error': (
+		50: #ffeef0,
+		100: #ffdce0,
+		200: #ffb8c1,
+		300: #ff9da9,
+		400: #ff7a8a,
+		500: #ff5468,
+		600: #dc1f37,
+		700: #b9152b,
+		800: #9b0f22,
+		900: #7a0c1b,
+		950: #45060e,
+	),
+);
+$roles: ('primary', 'success', 'info', 'warning', 'error');
+
+// Заливка роли и наведение — одни и те же шаги в светлой и тёмной теме. Текст на заливке светлый во всех темах — нейтраль 50
+// (мягкий белый); заливка — шаг, на котором он берёт 4.5:1 (`primary` и `warning` — 700, остальные — 600), наведение — на шаг
+// темнее: контраст текста только растёт. Тема `createTheme` ставит свой цвет роли на шаг заливки (KIT_MAIN_SHADES в presets.ts);
+// тёмный текст по выбору темы (`text: 'dark'`) она пишет сидами `--rise-color-<роль>-on` и `--rise-color-<роль>-hover`
+// (наведение тогда светлее), а тёмный бренд, который сливается с фоном тёмной темы, осветляет сидами шагов заливки
+// и наведения только для тёмного режима. Без сидов — значения кита.
+$role-fills: (
+	'primary': (
+		'fill': 700,
+		'hover': 800,
+	),
+	'success': (
+		'fill': 600,
+		'hover': 700,
+	),
+	'info': (
+		'fill': 600,
+		'hover': 700,
+	),
+	'warning': (
+		'fill': 700,
+		'hover': 800,
+	),
+	'error': (
+		'fill': 600,
+		'hover': 700,
+	),
+);
+
+// Тёмная тема: мягкий фон и рамка — смесь яркого цвета роли ('tint') с фоном, текст роли — 'text'. Значение — шаг палитры роли,
+// смесь двух шагов `('from': шаг, 'share': доля, 'to': шаг)` или литерал там, где цвет макета ярче любой смеси шагов («Аврора»:
+// ярче шкалы палитры). Тема `createTheme` с другим цветом success перекрывает литералы в `darkVars`. Таблица — та же,
+// что KIT_DARK_ROLES в presets.ts.
+$dark-roles: (
+	'primary': (
+		'tint': 500,
+		'text': 300,
+	),
+	'success': (
+		'tint': #2fd08a,
+		'text': #7fe6b8,
+	),
+	'info': (
+		'tint': 400,
+		'text': (
+			'from': 200,
+			'share': 59%,
+			'to': 300,
+		),
+	),
+	'warning': (
+		'tint': 400,
+		'text': (
+			'from': 400,
+			'share': 54%,
+			'to': 50,
+		),
+	),
+	'error': (
+		'tint': 500,
+		'text': 300,
+	),
+);
+
+@function palette($role, $shade) {
+	@return var(--rise-color-#{$role}-#{$shade});
+}
+
+// Смесь двух шагов палитры в sRGB: `palette-mix('neutral', 800, 54%, 900)` → `color-mix(in srgb, <800> 54%, <900>)`
+@function palette-mix($role, $first, $share, $second) {
+	@return color-mix(in srgb, #{palette($role, $first)} $share, #{palette($role, $second)});
+}
+
+// Значение из таблицы $dark-roles: шаг, смесь `('from', 'share', 'to')` или литерал цвета
+@function role-color($role, $value) {
+	@if meta.type-of($value) == 'number' {
+		@return palette($role, $value);
+	}
+
+	@if meta.type-of($value) == 'map' {
+		@return palette-mix($role, map.get($value, 'from'), map.get($value, 'share'), map.get($value, 'to'));
+	}
+
+	@return $value;
+}
+
+// Заливка, наведение и текст на заливке роли — общие для светлой и тёмной темы ($role-fills)
+@mixin role-fill-tokens($role) {
+	$fills: map.get($role-fills, $role);
+
+	--rise-#{$role}: #{palette($role, map.get($fills, 'fill'))};
+	--rise-#{$role}-hover: var(--rise-color-#{$role}-hover, #{palette($role, map.get($fills, 'hover'))});
+	--rise-on-#{$role}: var(--rise-color-#{$role}-on, #{palette('neutral', 50)});
+}
+
+@mixin static-tokens {
+	--rise-font-sans: 'Rise Grotesk', sans-serif;
+	--rise-font-heading: 'Rise Grotesk', sans-serif;
+	--rise-font-mono: 'Rise Mono', monospace;
+
+	// Разрядка: крупные заголовки (от 30px), заголовки, служебные подписи капсом (`caps-label`)
+	--rise-tracking-display: -0.045em;
+	--rise-tracking-heading: -0.025em;
+	--rise-tracking-label: 0.12em;
+
+	--rise-font-size-2xs: 10px;
+	--rise-line-height-2xs: 14px;
+	--rise-font-size-xs: 12px;
+	--rise-line-height-xs: 16px;
+	--rise-font-size-sm: 14px;
+	--rise-line-height-sm: 20px;
+	--rise-font-size-base: 16px;
+	--rise-line-height-base: 24px;
+	--rise-font-size-lg: 18px;
+	--rise-line-height-lg: 28px;
+	--rise-font-size-xl: 20px;
+	--rise-line-height-xl: 28px;
+	--rise-font-size-2xl: 24px;
+	--rise-line-height-2xl: 32px;
+	--rise-font-size-3xl: 30px;
+	--rise-line-height-3xl: 36px;
+
+	--rise-font-weight-normal: 400;
+	--rise-font-weight-medium: 500;
+	--rise-font-weight-semibold: 600;
+	--rise-font-weight-bold: 700;
+
+	--rise-radius: 4px;
+	--rise-radius-full: 9999px;
+
+	// Контрол при плотности 1 — 36px: строка 20 + отступы 7 + 7 + рамка 1 + 1 (`--rise-control-height`)
+	--rise-density: 1;
+	--rise-control-padding-y-base: 7px;
+	--rise-control-padding-x-base: 12px;
+	--rise-control-gap-base: 8px;
+	--rise-control-icon-size: 16px;
+
+	--rise-shadow-strength: 1;
+
+	--rise-disabled-opacity: 0.5;
+
+	--rise-z-overlay: 1000;
+	--rise-z-toast: 2000;
+	--rise-z-tooltip: 3000;
+	--rise-z-max: 9999;
+
+	--rise-duration-fast: 140ms;
+	--rise-duration: 200ms;
+	--rise-duration-slow: 320ms;
+	// Период бесконечных анимаций (спиннеры, пульсация, шиммер): пресеты и «уменьшить движение» его не обнуляют —
+	// спиннер крутится всегда, декоративные петли выключает `motion-safe`. Компонент берёт кратное: `calc(var(--rise-duration-loop) * 0.8)`.
+	--rise-duration-loop: 1s;
+	--rise-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--rise-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--rise-ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+
+	// Медиа: подложки и текст поверх фото и видео — одни и те же в светлой и тёмной теме (контраст считается к изображению,
+	// не к фону темы). Подложки и панели — холодный тёмный «Космоса» (#08090f, #10121a), не серый
+	--rise-media-backdrop: rgb(8 9 15 / 88%);
+	--rise-media-surface: rgb(8 9 15 / 60%);
+	--rise-media-surface-hover: rgb(8 9 15 / 80%);
+	--rise-media-scrim: rgb(8 9 15 / 64%);
+	--rise-media-scrim-light: rgb(8 9 15 / 32%);
+	--rise-media-control-hover: color-mix(in srgb, #fff 16%, transparent);
+	--rise-media-control-active: color-mix(in srgb, #fff 24%, transparent);
+	--rise-media-border: color-mix(in srgb, #fff 20%, transparent);
+	--rise-media-text: #f3f5ff;
+	--rise-media-text-toned: color-mix(in srgb, #f3f5ff 85%, transparent);
+	--rise-media-text-muted: color-mix(in srgb, #f3f5ff 72%, transparent);
+	--rise-media-text-dimmed: #9aa2b4;
+	--rise-media-text-inverted: #0b0d14;
+	// Основа затемнений и бликов поверх видео: компоненты смешивают их через color-mix (`color-mix(in srgb, var(--rise-media-shade) 45%, transparent)`)
+	--rise-media-shade: #08090f;
+	--rise-media-highlight: #fff;
+	// Акцент медиаплеера (прогресс, ползунок) — «Янтарь», светлый акцент — «Мёд»; реклама — отдельный жёлтый. Заливка с текстом
+	// (кнопки и счётчики на акценте) — `accent-strong`: «Янтарь» 700, светлый текст `--rise-media-text` берёт на нём 4.5:1
+	--rise-media-accent: #ff6a1f;
+	--rise-media-accent-strong: #c4400a;
+	--rise-media-accent-light: #ffb224;
+	--rise-media-ad: #fc0;
+	// Панели и меню поверх видео: полупрозрачная, плотная и шторка списка серий
+	--rise-media-panel: rgb(16 18 26 / 86%);
+	--rise-media-panel-solid: rgb(16 18 26 / 96%);
+	--rise-media-sheet: linear-gradient(160deg, rgb(33 37 51 / 97%) 0%, rgb(8 9 15 / 97%) 100%);
+	// Цвета субтитров на выбор зрителя (стандартные цвета телетекста)
+	--rise-media-caption-yellow: #ff0;
+	--rise-media-caption-green: #0f0;
+	--rise-media-caption-cyan: #0ff;
+	// Иллюстрации экрана ошибки плеера: небо «ретро» и фон «глитч»
+	--rise-media-error-sky: linear-gradient(to bottom, #050102 0%, #1b0802 40%, #4a1606 58%, #0c0302 58.4%, #030101 100%);
+	--rise-media-error-glitch: linear-gradient(135deg, #0b0b0b 0%, #160a04 100%);
+}
+
+@mixin derived-tokens {
+	--rise-radius-xs: calc(var(--rise-radius) * 0.5);
+	--rise-radius-sm: var(--rise-radius);
+	--rise-radius-md: calc(var(--rise-radius) * 1.5);
+	--rise-radius-lg: calc(var(--rise-radius) * 2);
+	--rise-radius-xl: calc(var(--rise-radius) * 3);
+	--rise-radius-2xl: calc(var(--rise-radius) * 4);
+
+	--rise-control-padding-y: calc(var(--rise-control-padding-y-base) * var(--rise-density));
+	--rise-control-padding-x: calc(var(--rise-control-padding-x-base) * var(--rise-density));
+	--rise-control-gap: calc(var(--rise-control-gap-base) * var(--rise-density));
+	--rise-control-font-size: var(--rise-font-size-sm);
+	--rise-control-line-height: var(--rise-line-height-sm);
+	--rise-control-radius: var(--rise-radius-md);
+	--rise-control-height: calc(var(--rise-control-line-height) + var(--rise-control-padding-y) * 2 + 2px);
+
+	// Фон поля и цвет поверхности под содержимым (кольца-разделители аватаров и бегунков) — по умолчанию для страницы;
+	// контейнеры переопределяют их на обёртке содержимого (`tonal-surface`, `raised-fields`, `floating-surface`)
+	--rise-field-bg: var(--rise-bg-elevated);
+	--rise-surface-bg: var(--rise-bg);
+}
+
+@mixin palette-tokens {
+	@each $role, $shades in $palettes {
+		@each $shade, $value in $shades {
+			--rise-color-#{$role}-#{$shade}: #{$value};
+		}
+	}
+
+	--rise-color-neutral-0: #fff;
+}
+
+@mixin flow-tokens {
+	--rise-flow-epc-event: #f783ac;
+	--rise-flow-epc-function: #8ce99a;
+	--rise-flow-epc-org: #ffe066;
+	--rise-flow-c4-person: #08427b;
+	--rise-flow-c4-system: #1168bd;
+	--rise-flow-c4-external: #8a8a8a;
+	--rise-flow-c4-container: #438dd5;
+	--rise-flow-c4-component: #85bbf0;
+	--rise-flow-es-event: #ffa94d;
+	--rise-flow-es-command: #74c0fc;
+	--rise-flow-es-actor: #ffe066;
+	--rise-flow-es-aggregate: #fff3bf;
+	--rise-flow-es-policy: #d0bfff;
+	--rise-flow-es-read-model: #8ce99a;
+	--rise-flow-es-external: #faa2c1;
+	--rise-flow-es-hotspot: #f783ac;
+	--rise-flow-es-opportunity: #b2f2bb;
+	--rise-flow-ink: #14181d;
+	--rise-flow-paper: #fff;
+}
+
+@mixin light-tokens {
+	color-scheme: light;
+
+	// Тональные уровни: страница → контейнер → поле, наведение, дорожка → нажатие, трек
+	--rise-bg: #{palette('neutral', 0)};
+	--rise-bg-muted: #{palette('neutral', 50)};
+	--rise-bg-elevated: #{palette('neutral', 100)};
+	--rise-bg-accented: #{palette('neutral', 200)};
+	--rise-bg-inverted: #{palette('neutral', 950)};
+	--rise-surface-raised: #{palette('neutral', 0)};
+	--rise-surface-floating: var(--rise-bg);
+	--rise-surface-floating-hover: var(--rise-bg-elevated);
+	--rise-surface-dialog: var(--rise-bg);
+	--rise-surface-selected: var(--rise-bg);
+	--rise-field-bg-floating: var(--rise-bg-elevated);
+
+	--rise-text-dimmed: #{palette('neutral', 400)};
+	--rise-text-muted: #{palette('neutral', 600)};
+	--rise-text-toned: #{palette('neutral', 700)};
+	--rise-text: #{palette('neutral', 800)};
+	--rise-text-highlighted: #{palette('neutral', 950)};
+	--rise-text-inverted: #{palette('neutral', 0)};
+
+	--rise-border: #{palette-mix('neutral', 100, 27%, 200)};
+	--rise-border-muted: #{palette-mix('neutral', 100, 93%, 50)};
+	--rise-border-accented: #{palette('neutral', 300)};
+	--rise-border-control: #{palette('neutral', 500)};
+	--rise-border-inverted: #{palette('neutral', 950)};
+
+	@each $role in $roles {
+		@include role-fill-tokens($role);
+		--rise-#{$role}-soft: #{palette($role, 50)};
+		--rise-#{$role}-soft-hover: #{palette($role, 100)};
+		--rise-#{$role}-text: #{palette($role, 800)};
+		--rise-#{$role}-border: #{palette($role, 200)};
+	}
+
+	--rise-focus-ring: var(--rise-primary);
+
+	--rise-overlay: rgb(11 13 20 / 40%);
+
+	--rise-chart-1: #2a55f0;
+	--rise-chart-2: #ee5410;
+	--rise-chart-3: #0e9aa7;
+	--rise-chart-4: #b87c00;
+	--rise-chart-5: #b8338f;
+	--rise-chart-6: #1f8f3a;
+	--rise-chart-7: #7a4ce0;
+	--rise-chart-8: #c41e35;
+
+	@include flow-tokens;
+
+	--rise-code-keyword: #6b3fd4;
+	--rise-code-string: #0b7a47;
+	--rise-code-number: #b23e06;
+	--rise-code-comment: #5b6276;
+	--rise-code-function: #2a4fd8;
+	--rise-code-tag: #b0174f;
+	--rise-code-attribute: #8a5200;
+	--rise-code-property: #0b6e7a;
+	--rise-code-variable: #2a2f3d;
+
+	// Тени — только у всплывающих слоёв (меню, поповеры, тосты — lg; окна и боковые панели — xl) и у вариантов `shadow`
+	--rise-shadow-xs: 0 1px 2px 0 rgb(11 13 20 / calc(6% * var(--rise-shadow-strength)));
+	--rise-shadow-sm: 0 1px 3px 0 rgb(11 13 20 / calc(8% * var(--rise-shadow-strength)));
+	--rise-shadow-md: 0 4px 14px -4px rgb(11 13 20 / calc(12% * var(--rise-shadow-strength)));
+	--rise-shadow-lg: 0 12px 32px -10px rgb(11 13 20 / calc(18% * var(--rise-shadow-strength)));
+	--rise-shadow-xl: 0 24px 60px -16px rgb(11 13 20 / calc(24% * var(--rise-shadow-strength)));
+}
+
+@mixin dark-tokens {
+	color-scheme: dark;
+
+	// Уровни темнее и между шагами палитры — смесью шагов: тема с другой нейтралью получает те же уровни в своём тоне
+	--rise-bg: color-mix(in srgb, #{palette('neutral', 950)} 73%, #000);
+	--rise-bg-muted: #{palette-mix('neutral', 900, 38%, 950)};
+	--rise-bg-elevated: #{palette('neutral', 900)};
+	--rise-bg-accented: #{palette-mix('neutral', 800, 54%, 900)};
+	--rise-bg-inverted: #{palette('neutral', 50)};
+	--rise-surface-raised: #{palette-mix('neutral', 800, 19%, 900)};
+	--rise-surface-floating: var(--rise-bg-elevated);
+	--rise-surface-floating-hover: var(--rise-bg-accented);
+	--rise-surface-dialog: var(--rise-bg-muted);
+	--rise-surface-selected: var(--rise-bg-accented);
+	--rise-field-bg-floating: var(--rise-surface-raised);
+
+	--rise-text-dimmed: #{palette('neutral', 600)};
+	--rise-text-muted: #{palette-mix('neutral', 400, 42%, 500)};
+	--rise-text-toned: #{palette-mix('neutral', 300, 34%, 400)};
+	--rise-text: #{palette('neutral', 300)};
+	--rise-text-highlighted: #{palette('neutral', 50)};
+	--rise-text-inverted: #{palette('neutral', 950)};
+
+	--rise-border: #{palette-mix('neutral', 800, 26%, 900)};
+	--rise-border-muted: #{palette('neutral', 900)};
+	--rise-border-accented: #{palette('neutral', 800)};
+	--rise-border-control: #{palette-mix('neutral', 500, 23%, 600)};
+	--rise-border-inverted: #{palette('neutral', 50)};
+
+	@each $role in $roles {
+		$scheme: map.get($dark-roles, $role);
+		$tint: role-color($role, map.get($scheme, 'tint'));
+
+		@include role-fill-tokens($role);
+		--rise-#{$role}-soft: color-mix(in srgb, #{$tint} 14%, var(--rise-bg));
+		--rise-#{$role}-soft-hover: color-mix(in srgb, #{$tint} 20%, var(--rise-bg));
+		--rise-#{$role}-text: #{role-color($role, map.get($scheme, 'text'))};
+		--rise-#{$role}-border: color-mix(in srgb, #{$tint} 35%, var(--rise-bg));
+	}
+
+	--rise-focus-ring: var(--rise-primary);
+	--rise-overlay: rgb(3 4 8 / 70%);
+
+	--rise-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / calc(50% * var(--rise-shadow-strength)));
+	--rise-shadow-sm: 0 2px 6px 0 rgb(0 0 0 / calc(50% * var(--rise-shadow-strength)));
+	--rise-shadow-md: 0 8px 20px -6px rgb(0 0 0 / calc(65% * var(--rise-shadow-strength)));
+	--rise-shadow-lg: 0 16px 40px -10px rgb(0 0 0 / calc(75% * var(--rise-shadow-strength)));
+	--rise-shadow-xl: 0 28px 70px -16px rgb(0 0 0 / calc(80% * var(--rise-shadow-strength)));
+
+	--rise-chart-1: #6a8dff;
+	--rise-chart-2: #ff6a1f;
+	--rise-chart-3: #2dd4e0;
+	--rise-chart-4: #ffc23d;
+	--rise-chart-5: #ff6fb5;
+	--rise-chart-6: #3ddc84;
+	--rise-chart-7: #a98bff;
+	--rise-chart-8: #ff5468;
+
+	@include flow-tokens;
+
+	--rise-code-keyword: #b79cff;
+	--rise-code-string: #7fe0a8;
+	--rise-code-number: #ffa470;
+	--rise-code-comment: #8a91a6;
+	--rise-code-function: #8eabff;
+	--rise-code-tag: #ff8fb1;
+	--rise-code-attribute: #ffd07a;
+	--rise-code-property: #6fe3ee;
+	--rise-code-variable: #cdd3e1;
+}
+
+@mixin legacy-aliases {
+	--color-primary: var(--rise-text-highlighted);
+	--color-accent: var(--rise-primary);
+	--color-accent-hover: var(--rise-primary-hover);
+	--color-text: var(--rise-text);
+	--color-text-muted: var(--rise-text-muted);
+	--color-bg: var(--rise-bg-muted);
+	--color-white: var(--rise-bg);
+	--color-border: var(--rise-border);
+	--color-error: var(--rise-error);
+	--color-success: var(--rise-success);
+	--color-warning: var(--rise-warning);
+	--color-info: var(--rise-info);
+	--color-surface: var(--rise-bg);
+	--color-surface-muted: var(--rise-bg-elevated);
+	--color-bg-soft: var(--rise-bg-muted);
+	--color-text-inverse: #fff;
+	--color-primary-soft: var(--rise-primary-soft);
+	--color-primary-soft-hover: var(--rise-primary-soft-hover);
+
+	@each $role in ('info', 'success', 'warning', 'error') {
+		--color-#{$role}-bg: var(--rise-#{$role}-soft);
+		--color-#{$role}-border: var(--rise-#{$role}-border);
+		--color-#{$role}-text: var(--rise-#{$role}-text);
+		--color-#{$role}-icon: var(--rise-#{$role});
+	}
+
+	--color-code-bg: var(--rise-bg-muted);
+	--color-code-border: var(--rise-border);
+	--color-code-header-bg: var(--rise-bg-elevated);
+	--color-code-text: var(--rise-text);
+
+	--color-sidebar-bg: var(--rise-bg);
+	--color-sidebar-border: var(--rise-border);
+	--color-sidebar-text: var(--rise-text);
+	--color-sidebar-muted: var(--rise-text-muted);
+	--color-sidebar-subtle: var(--rise-text-dimmed);
+	--color-sidebar-hover-bg: var(--rise-bg-elevated);
+	--color-sidebar-current-bg: var(--rise-primary-soft);
+	--color-sidebar-current-border: var(--rise-primary-border);
+	--color-sidebar-current-text: var(--rise-primary-text);
+	--color-sidebar-badge-bg: var(--rise-primary-soft-hover);
+	--color-sidebar-badge-text: var(--rise-primary-text);
+	--color-sidebar-footer-bg: var(--rise-bg-muted);
+	--color-sidebar-children-line: var(--rise-border);
+	--color-sidebar-soft-bg: var(--rise-bg-muted);
+	--color-sidebar-soft-border: var(--rise-border);
+	--color-sidebar-soft-footer-bg: var(--rise-bg-elevated);
+
+	--font-family-base: var(--rise-font-sans);
+	--font-family-heading: var(--rise-font-heading);
+	--font-family-mono: var(--rise-font-mono);
+
+	--transition-base: var(--rise-duration) var(--rise-ease);
+	--transition-slow: var(--rise-duration-slow) var(--rise-ease);
+	--border-radius-sm: var(--rise-radius-sm);
+	--border-radius-base: var(--rise-radius-lg);
+	--border-radius-lg: var(--rise-radius-xl);
+	--border-radius-full: var(--rise-radius-full);
+
+	--shadow-sm: var(--rise-shadow-xs);
+	--shadow-md: var(--rise-shadow-md);
+	--shadow-lg: var(--rise-shadow-lg);
+	--shadow-xl: var(--rise-shadow-xl);
+}
+
+:root {
+	@include palette-tokens;
+	@include static-tokens;
+}
+
+// Китайский и японский: латиница и кириллица — Rise Grotesk / Rise Mono, иероглифы — Rise CJK (`@font-face` — src/styles/fonts)
+:lang(zh) {
+	--rise-font-sans: 'Rise Grotesk', 'Rise CJK SC', sans-serif;
+	--rise-font-heading: 'Rise Grotesk', 'Rise CJK SC', sans-serif;
+	--rise-font-mono: 'Rise Mono', 'Rise CJK SC', monospace;
+}
+
+:lang(ja) {
+	--rise-font-sans: 'Rise Grotesk', 'Rise CJK JP', sans-serif;
+	--rise-font-heading: 'Rise Grotesk', 'Rise CJK JP', sans-serif;
+	--rise-font-mono: 'Rise Mono', 'Rise CJK JP', monospace;
+}
+
+:root,
+[data-theme='light'],
+[data-theme='system'] {
+	@include light-tokens;
+}
+
+[data-theme='dark'] {
+	@include dark-tokens;
+}
+
+@media (prefers-color-scheme: dark) {
+	[data-theme='system'] {
+		@include dark-tokens;
+	}
+}
+
+:root,
+[data-theme='light'],
+[data-theme='dark'],
+[data-theme='system'] {
+	@include derived-tokens;
+	@include legacy-aliases;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root,
+	[data-theme],
+	[data-rise-theme] {
+		--rise-duration-fast: 0.01ms;
+		--rise-duration: 0.01ms;
+		--rise-duration-slow: 0.01ms;
+	}
+}

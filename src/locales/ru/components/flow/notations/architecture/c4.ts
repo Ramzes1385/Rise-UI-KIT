@@ -1,0 +1,23 @@
+/** Нотация C4 BaseFlowMap: виды, границы, связи, правила, предупреждения, легенда */
+export const ruFlowC4 = {
+	NOTATION: 'C4',
+	RULES_SUMMARY: 'каждая связь подписана; границы содержат контейнеры и компоненты; люди остаются снаружи',
+	LEVEL_CONTEXT: 'Контекст',
+	LEVEL_CONTAINERS: 'Контейнеры',
+	LEVEL_COMPONENTS: 'Компоненты',
+	PERSON: 'Человек',
+	SOFTWARE_SYSTEM: 'Программная система',
+	CONTAINER: 'Контейнер',
+	COMPONENT: 'Компонент',
+	EXTERNAL_PERSON: 'Внешний человек',
+	EXTERNAL_SYSTEM: 'Внешняя система',
+	ENTERPRISE_BOUNDARY: 'Граница предприятия',
+	SYSTEM_BOUNDARY: 'Граница системы',
+	CONTAINER_BOUNDARY: 'Граница контейнера',
+	RELATIONSHIP: 'Связь',
+	PROP_TECHNOLOGY: 'Технология',
+	CARD_LINE: '[{kind}: {technology}]',
+	CARD_LINE_PLAIN: '[{kind}]',
+	RULE_CONTAIN: 'В «{group}» кладут только: {kinds}',
+	WARN_NO_LABEL: 'У связи «{source}» → «{target}» нет подписи: каждая линия C4 подписана',
+}

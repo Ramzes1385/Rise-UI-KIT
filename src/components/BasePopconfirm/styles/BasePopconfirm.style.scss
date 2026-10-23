@@ -1,0 +1,53 @@
+.base-popconfirm-root {
+	display: inline-flex;
+	vertical-align: middle;
+}
+
+.base-popconfirm-trigger {
+	display: inline-flex;
+}
+
+.base-popconfirm {
+	display: flex;
+	flex-direction: column;
+	gap: sz(ct(popconfirm, gap, 8px));
+	box-sizing: border-box;
+	width: max-content;
+	max-width: sz(ct(popconfirm, width, 300px));
+	padding: space(ct(popconfirm, padding, 8px));
+
+	&__header {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(8px);
+	}
+
+	&__icon {
+		flex-shrink: 0;
+		margin-top: sz(2px);
+		color: ct(popconfirm-icon, text, var(--rise-error-text));
+	}
+
+	&__title {
+		margin: 0;
+		@include text-size(sm);
+		font-weight: ct(popconfirm-title, font-weight, var(--rise-font-weight-semibold));
+		color: ct(popconfirm-title, text, var(--rise-text-highlighted));
+		overflow-wrap: anywhere;
+	}
+
+	&__description {
+		margin: 0;
+		@include text-size(sm);
+		color: ct(popconfirm-description, text, var(--rise-text-muted));
+		overflow-wrap: anywhere;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: sz(8px);
+		margin-top: sz(4px);
+	}
+}

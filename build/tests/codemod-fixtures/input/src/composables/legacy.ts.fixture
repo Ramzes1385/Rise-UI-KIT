@@ -1,0 +1,20 @@
+import { defineLocale } from '@ramzes1385/rise-ui-kit'
+import type { CalendarEvent } from '@ramzes1385/rise-ui-kit'
+import { buildBreadcrumbsSchema, storybookUtils, type SchemaBreadcrumbItem } from '@ramzes1385/rise-ui-kit/utils'
+import { useChatActions, useTableComposition } from '@ramzes1385/rise-ui-kit/composables'
+
+export const locale = defineLocale('ru', {
+	chat: { INSERT_EMOJI: 'Вставить эмодзи', TITLE: 'Чат' },
+	UI_TEXT: { FILE_STATUS_PENDING: 'Ждём' },
+})
+
+export const tabs = [
+	{ key: 'a', label: 'A', icon: '<svg viewBox="0 0 1 1"></svg>' },
+	{ key: 'b', label: 'B', icon: 'settings' },
+]
+
+export const upload = { name: 'BaseFileUpload', status: 'pending' }
+export const preview = (file: { previewUrl?: string }) => file.previewUrl
+
+export const used = [buildBreadcrumbsSchema, storybookUtils, useChatActions, useTableComposition]
+export type Legacy = [CalendarEvent, SchemaBreadcrumbItem]

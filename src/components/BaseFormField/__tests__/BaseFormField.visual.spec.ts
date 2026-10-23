@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseFormField.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'with-error', 'long-content'] as const
 
-const COMPONENT = 'ui-baseformfield'
-const STORIES = ['default', 'with-description', 'with-error', 'required', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseFormField — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-form-field')
-		await expect(root).toHaveScreenshot(`base-form-field--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseFormField · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baseformfield--${story}`, { theme, height: 480 })
+				await expectStoryScreenshot(page, `base-form-field-${story}-${theme}.png`)
+			})
+		}
 	})
 }

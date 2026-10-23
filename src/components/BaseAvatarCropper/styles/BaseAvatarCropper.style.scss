@@ -1,0 +1,103 @@
+.base-avatar-cropper {
+	display: flex;
+	flex-direction: column;
+	gap: ct(avatar-cropper, gap, sz(12px));
+	width: 100%;
+	min-width: 0;
+	max-width: sz(var(--cropper-size));
+
+	&__area {
+		position: relative;
+		box-sizing: border-box;
+		width: 100%;
+		overflow: hidden;
+		border-radius: sz(ct(avatar-cropper, area-radius, var(--rise-radius-lg)));
+		background-color: ct(avatar-cropper, area-bg, var(--rise-bg-accented));
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
+		aspect-ratio: 1;
+		@include focus-ring(2px);
+	}
+
+	&--outline &__area {
+		border: 1px solid ct(avatar-cropper, area-border, var(--rise-border-accented));
+	}
+
+	&--dragging &__area {
+		cursor: grabbing;
+	}
+
+	&--disabled &__area {
+		@include disabled-state;
+	}
+
+	&__image {
+		position: absolute;
+		top: 0;
+		inset-inline-start: 0;
+		width: 100%;
+		height: auto;
+		max-width: none;
+		pointer-events: none;
+		user-select: none;
+		transform-origin: 0 0;
+	}
+
+	&--stepping &__image {
+		@include motion-safe {
+			transition: transform var(--rise-duration) var(--rise-ease-out);
+		}
+	}
+
+	&--loading &__image {
+		visibility: hidden;
+	}
+
+	&__frame {
+		position: absolute;
+		inset: 8%;
+		border-radius: sz(ct(avatar-cropper, frame-radius, var(--rise-radius-md)));
+		outline: 2px solid ct(avatar-cropper, frame-border, rgb(255 255 255 / 90%));
+		box-shadow: ct(avatar-cropper, frame-shadow, 0 0 0 100vmax rgb(0 0 0 / 55%));
+		pointer-events: none;
+	}
+
+	&--circle &__frame {
+		border-radius: 50%;
+	}
+
+	&__message {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		max-width: 80%;
+		padding: sz(6px) sz(12px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: ct(avatar-cropper, message-bg, var(--rise-surface-floating));
+		color: ct(avatar-cropper, message-text, var(--rise-text));
+		text-align: center;
+		transform: translate(-50%, -50%);
+		@include text-size(sm);
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+
+	&__zoom {
+		display: flex;
+		align-items: center;
+		gap: ct(avatar-cropper, zoom-gap, sz(16px));
+	}
+
+	&__zoom-label {
+		color: var(--rise-text-toned);
+		@include text-size(sm);
+	}
+
+	&__range {
+		flex: 1;
+		min-width: 0;
+	}
+}

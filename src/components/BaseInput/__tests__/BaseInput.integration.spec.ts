@@ -1,12 +1,8 @@
-/**
- * Integration-тесты для BaseInput.
- * Проверяют взаимодействие: ввод, v-model, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { defineComponent, ref } from 'vue'
 import BaseInput from '../ui/BaseInput.vue'
+import userEvent from '@testing-library/user-event'
+import { createEvent, fireEvent, render, screen } from '@testing-library/vue'
 
 interface InputRef {
 	value: HTMLInputElement | null
@@ -147,6 +143,28 @@ describe('BaseInput integration', () => {
 			expect(input.value).toBe('(123) 456-78-90')
 		})
 
+		it('должен позволять посимвольно набрать номер в маске с префиксом +7 (', async () => {
+			mockFrame()
+			const user = userEvent.setup()
+			const PhoneField = defineComponent({
+				components: { BaseInput },
+				setup() {
+					const phone = ref('')
+					return { phone }
+				},
+				template: '<BaseInput v-model="phone" mask="+7 (###) ###-##-##" /><output>{{ phone }}</output>',
+			})
+			const { container } = render(PhoneField)
+			const input = getInput()
+
+			await user.type(input, '999')
+			expect(input).toHaveValue('+7 (999')
+
+			await user.type(input, '1234567')
+			expect(input).toHaveValue('+7 (999) 123-45-67')
+			expect(container.querySelector('output')).toHaveTextContent('9991234567')
+		})
+
 		it('должен ограничивать ввод длиной маски', async () => {
 			mockFrame()
 			const { emitted } = render(BaseInput, {
@@ -223,6 +241,65 @@ describe('BaseInput integration', () => {
 			await fireEvent.keyDown(input, { key: 'Delete' })
 
 			expect(emitted()).not.toHaveProperty('update:modelValue')
+		})
+	})
+
+	describe('маска в readonly и disabled полях', () => {
+		it('не должен менять значение readonly-поля с маской по Backspace и Delete', async () => {
+			mockFrame()
+			const { emitted } = render(BaseInput, {
+				props: { modelValue: '12345678', mask: '##.##.####', isReadonly: true },
+			})
+			const input = getInput()
+
+			input.setSelectionRange(10, 10)
+			await fireEvent.keyDown(input, { key: 'Backspace' })
+			input.setSelectionRange(0, 0)
+			await fireEvent.keyDown(input, { key: 'Delete' })
+
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(input).toHaveValue('12.34.5678')
+		})
+
+		it('не должен отменять нативное поведение клавиш и глушить keydown в readonly-поле с маской', async () => {
+			const { emitted } = render(BaseInput, {
+				props: { modelValue: '1234', mask: '##.##', isReadonly: true },
+			})
+			const input = getInput()
+			input.setSelectionRange(5, 5)
+
+			const event = createEvent.keyDown(input, { key: 'Backspace', cancelable: true })
+			await fireEvent(input, event)
+
+			expect(event.defaultPrevented).toBe(false)
+			expect(emitted()).toHaveProperty('keydown')
+		})
+
+		it('не должен эмитить ввод в readonly-поле с маской и должен вернуть отображаемое значение', async () => {
+			mockFrame()
+			const { emitted } = render(BaseInput, {
+				props: { modelValue: '1234', mask: '##.##.####', isReadonly: true },
+			})
+			const input = getInput()
+
+			await fireEvent.update(input, '99')
+
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(input).toHaveValue('12.34')
+		})
+
+		it('не должен менять значение disabled-поля с маской по Backspace', async () => {
+			mockFrame()
+			const { emitted } = render(BaseInput, {
+				props: { modelValue: '1234', mask: '##.##', isDisabled: true },
+			})
+			const input = getInput()
+
+			input.setSelectionRange(5, 5)
+			await fireEvent.keyDown(input, { key: 'Backspace' })
+
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(input).toHaveValue('12.34')
 		})
 	})
 

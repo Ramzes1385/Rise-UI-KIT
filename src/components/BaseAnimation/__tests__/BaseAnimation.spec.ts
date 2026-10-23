@@ -1,12 +1,7 @@
-/**
- * Unit-тесты для BaseAnimation.
- * Проверяют рендер, пропсы и видимость.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
 import BaseAnimation from '../ui/BaseAnimation.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseAnimation unit', () => {
 	describe('рендер', () => {
@@ -46,6 +41,16 @@ describe('BaseAnimation unit', () => {
 
 			expect(container.querySelector('.base-animation')).toBeInTheDocument()
 		})
+
+		it('должен реагировать на show, переданный после монтирования', async () => {
+			const { container, rerender } = render(BaseAnimation, {
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			await rerender({ show: false })
+
+			expect(container.querySelector('.base-animation')).not.toBeInTheDocument()
+		})
 	})
 
 	describe('пропс name', () => {
@@ -55,8 +60,6 @@ describe('BaseAnimation unit', () => {
 				slots: { default: '<p>Контент</p>' },
 			})
 
-			const transition = container.querySelector('.fade-enter-active')
-			// Transition name применяется через CSS-классы Vue
 			expect(container.querySelector('.base-animation')).toBeInTheDocument()
 		})
 	})
@@ -65,7 +68,7 @@ describe('BaseAnimation unit', () => {
 		it('должен рендерить TransitionGroup когда isGroup=true', () => {
 			const { container } = render(BaseAnimation, {
 				props: { show: true, isGroup: true, tag: 'ul' },
-				slots: { default: '<li>Элемент</li>' },
+				slots: { default: '<li key="1">Элемент</li>' },
 				global: {
 					stubs: {
 						TransitionGroup: false,
@@ -75,6 +78,29 @@ describe('BaseAnimation unit', () => {
 
 			const list = container.querySelector('ul')
 			expect(list).toBeInTheDocument()
+		})
+
+		it('должен рендерить элементы списка прямыми потомками tag, без обёртки (иначе ul > div > li)', () => {
+			const { container } = render(BaseAnimation, {
+				props: { isGroup: true, tag: 'ul', name: 'list', customClass: 'custom-list' },
+				slots: { default: '<li key="1">Первый</li><li key="2">Второй</li>' },
+				global: { stubs: { TransitionGroup: false } },
+			})
+
+			const list = container.querySelector('ul') as HTMLElement
+			expect(list.querySelectorAll(':scope > li')).toHaveLength(2)
+			expect(list).toHaveClass('base-animation--group', 'custom-list')
+		})
+
+		it('должен убирать элементы списка когда show=false', () => {
+			const { container } = render(BaseAnimation, {
+				props: { isGroup: true, tag: 'ul', show: false },
+				slots: { default: '<li key="1">Первый</li>' },
+				global: { stubs: { TransitionGroup: false } },
+			})
+
+			expect(container.querySelector('ul')).toBeInTheDocument()
+			expect(container.querySelector('li')).not.toBeInTheDocument()
 		})
 
 		it('должен использовать isGroup=false по умолчанию', () => {
@@ -121,14 +147,11 @@ describe('BaseAnimation unit', () => {
 
 	describe('emit after-leave', () => {
 		it('должен эмитить after-leave при скрытии', async () => {
-			// Transition в jsdom не вызывает after-leave хук автоматически
-			// Используем mount для доступа к Transition stub и эмитим событие
 			const wrapper = mount(BaseAnimation, {
 				props: { show: true },
 				slots: { default: '<p>Контент</p>' },
 			})
 
-			// Находим Transition stub и вызываем after-leave обработчик
 			const transition = wrapper.findComponent({ name: 'Transition' })
 			await transition.vm.$emit('after-leave')
 
@@ -163,6 +186,30 @@ describe('BaseAnimation unit', () => {
 
 			const el = container.querySelector('.base-animation')
 			expect(el).toHaveClass('custom-animation-root')
+		})
+	})
+
+	describe('collapse', () => {
+		it('оборачивает содержимое во внутренний блок для раскрытия строкой сетки', () => {
+			const { container } = render(BaseAnimation, {
+				props: { show: true, name: 'collapse' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const root = container.querySelector('.base-animation')
+			expect(root).toHaveClass('base-animation--collapse')
+			expect(root?.querySelector(':scope > .base-animation__inner > p')).toHaveTextContent('Контент')
+		})
+
+		it('другие анимации — без обёртки', () => {
+			const { container } = render(BaseAnimation, {
+				props: { show: true, name: 'fade' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const root = container.querySelector('.base-animation')
+			expect(root).not.toHaveClass('base-animation--collapse')
+			expect(root?.querySelector(':scope > p')).toHaveTextContent('Контент')
 		})
 	})
 })

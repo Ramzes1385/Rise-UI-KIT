@@ -1,0 +1,1 @@
+export { useTableComposition } from './useTableComposition'

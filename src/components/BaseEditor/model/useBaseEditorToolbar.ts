@@ -1,0 +1,153 @@
+import { UI_EDITOR } from '@/locales/messages'
+import { formatMessage } from '@/locales/state'
+import { useUi } from '@composables/base/useUi'
+import { computed, onUpdated, ref, watch } from 'vue'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { EDITOR_MENU_SCALE_RATIO } from './editorScale'
+import { isMacPlatform } from '@composables/interaction/useHotkeys'
+import { useToolbarKeyboard } from '@composables/interaction/useToolbarKeyboard'
+import type { BaseEditorToolbarProps, HistoryButton, ToolbarButton } from '../types/BaseEditorToolbar.types'
+
+function inlineGroups(): { key: string; items: ToolbarButton[] }[] {
+	return [
+		{
+			key: 'format',
+			items: [
+				{ icon: 'bold', label: UI_EDITOR.BOLD, activeKey: 'isBold', action: 'bold', type: 'format' },
+				{ icon: 'italic', label: UI_EDITOR.ITALIC, activeKey: 'isItalic', action: 'italic', type: 'format' },
+				{ icon: 'underline', label: UI_EDITOR.UNDERLINE, activeKey: 'isUnderline', action: 'underline', type: 'format' },
+				{ icon: 'strike', label: UI_EDITOR.STRIKETHROUGH, activeKey: 'isStrike', action: 'strikeThrough', type: 'format' },
+			] as ToolbarButton[],
+		},
+		{
+			key: 'align',
+			items: [
+				{ icon: 'align-left', label: UI_EDITOR.ALIGN_LEFT, activeKey: 'isJustifyLeft', action: 'justifyLeft', type: 'format' },
+				{
+					icon: 'align-center',
+					label: UI_EDITOR.ALIGN_CENTER,
+					activeKey: 'isJustifyCenter',
+					action: 'justifyCenter',
+					type: 'format',
+				},
+				{ icon: 'align-right', label: UI_EDITOR.ALIGN_RIGHT, activeKey: 'isJustifyRight', action: 'justifyRight', type: 'format' },
+				{
+					icon: 'align-justify',
+					label: UI_EDITOR.ALIGN_JUSTIFY,
+					activeKey: 'isJustifyFull',
+					action: 'justifyFull',
+					type: 'format',
+				},
+			] as ToolbarButton[],
+		},
+	]
+}
+
+function blockGroups(): { key: string; items: ToolbarButton[] }[] {
+	return [
+		{
+			key: 'list',
+			items: [
+				{
+					icon: 'list-bullet',
+					label: UI_EDITOR.LIST_BULLET,
+					activeKey: 'isUnorderedList',
+					action: 'insertUnorderedList',
+					type: 'format',
+				},
+				{
+					icon: 'list-number',
+					label: UI_EDITOR.LIST_NUMBERED,
+					activeKey: 'isOrderedList',
+					action: 'insertOrderedList',
+					type: 'format',
+				},
+			] as ToolbarButton[],
+		},
+		{
+			key: 'block',
+			items: [
+				{ icon: 'quote', label: UI_EDITOR.QUOTE, activeKey: 'isBlockquote', action: 'blockquote', type: 'block' },
+				{ icon: 'code-block', label: UI_EDITOR.CODE_BLOCK, activeKey: 'isPre', action: 'pre', type: 'block' },
+			] as ToolbarButton[],
+		},
+	]
+}
+
+function historyButtons(props: BaseEditorToolbarProps): HistoryButton[] {
+	const isMac = isMacPlatform()
+	const undoKeys = isMac ? UI_EDITOR.UNDO_KEYS_MAC : UI_EDITOR.UNDO_KEYS
+	const redoKeys = isMac ? UI_EDITOR.REDO_KEYS_MAC : UI_EDITOR.REDO_KEYS
+	return [
+		{
+			action: 'undo',
+			icon: 'undo',
+			label: UI_EDITOR.UNDO,
+			tip: formatMessage(UI_EDITOR.HOTKEY_TIP, { name: UI_EDITOR.UNDO, keys: undoKeys }),
+			shortcut: isMac ? 'Meta+Z' : 'Control+Z',
+			isEnabled: props.canUndo,
+		},
+		{
+			action: 'redo',
+			icon: 'redo',
+			label: UI_EDITOR.REDO,
+			tip: formatMessage(UI_EDITOR.HOTKEY_TIP, { name: UI_EDITOR.REDO, keys: redoKeys }),
+			shortcut: isMac ? 'Meta+Shift+Z' : 'Control+Shift+Z',
+			isEnabled: props.canRedo,
+		},
+	]
+}
+
+const TEXT_FIELD_SELECTOR =
+	'textarea, select, [contenteditable="true"], input:not([type="button"], [type="checkbox"], [type="color"], [type="file"], [type="radio"])'
+
+function useToolbarFocus() {
+	const toolbarRef = ref<HTMLElement | null>(null)
+	const keyboard = useToolbarKeyboard({ rootRef: toolbarRef })
+	onUpdated(keyboard.sync)
+	return {
+		toolbarRef,
+		handleFocusIn: keyboard.handleFocusin,
+		handleKeyDown: keyboard.handleKeydown,
+		handleMouseDown(event: MouseEvent): void {
+			if (!(event.target instanceof Element) || !event.target.closest(TEXT_FIELD_SELECTOR)) event.preventDefault()
+		},
+	}
+}
+
+const HEADING_VALUES = new Set(['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+
+function useHeadingValue(props: BaseEditorToolbarProps) {
+	const headingValue = ref<string | number>('p')
+	watch(
+		() => props.activeStates.formatBlock,
+		block => {
+			headingValue.value = HEADING_VALUES.has(block || 'p') ? block || 'p' : ''
+		},
+	)
+	return headingValue
+}
+
+export function useBaseEditorToolbar(props: BaseEditorToolbarProps) {
+	const textColorModel = ref(props.textColor)
+	watch(
+		() => props.textColor,
+		color => {
+			if (!props.isTextColorActive) textColorModel.value = color
+		},
+	)
+	return {
+		...useToolbarFocus(),
+		ui: useUi(props, 'base-editor'),
+		headingValue: useHeadingValue(props),
+		textColorModel,
+		backgroundColorModel: ref(props.backgroundColor),
+		imageInputRef: ref<HTMLInputElement | null>(null),
+		videoInputRef: ref<HTMLInputElement | null>(null),
+		iconScale: computed(() => calcIconScale('sm', props.sizeScale)),
+		controlScale: computed(() => props.sizeScale * EDITOR_MENU_SCALE_RATIO),
+		colorPickerClasses: computed(() => ({ swatch: props.classes.colorPicker })),
+		historyButtons: computed(() => historyButtons(props)),
+		buttonGroups: computed(() => [...inlineGroups(), ...blockGroups()]),
+	}
+}

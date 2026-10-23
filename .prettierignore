@@ -1,0 +1,7 @@
+# Prettier форматирует код: ts, vue, js, scss. Документы, JSON и YAML остаются как есть.
+*.md
+*.json
+*.yml
+*.yaml
+*.html
+*.svg

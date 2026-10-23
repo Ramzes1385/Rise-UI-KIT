@@ -1,13 +1,9 @@
-/**
- * Unit-тесты для компонента ChatMessage.
- * Проверяют рендеринг сообщения, аватара, реакций, статусов и событий.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { describe, expect, it } from 'vitest'
+import { UI_CHAT_TEXT } from '@/locales/messages'
+import { describe, expect, it, vi } from 'vitest'
 import ChatMessageItem from '../ui/ChatMessage.vue'
-import type { ChatMessage } from '../../model/BaseChat.types'
+import type { ChatMessage } from '../../../types/BaseChat.types'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 const BASE_MESSAGE: ChatMessage = {
 	id: '1',
@@ -112,5 +108,85 @@ describe('ChatMessage', () => {
 			props: { message: { ...BASE_MESSAGE, isPinned: true }, sizeScale: 100 },
 		})
 		expect(container.querySelector('.base-chat-message-list__pin-icon')).toBeInTheDocument()
+	})
+
+	describe('статус «не отправлено»', () => {
+		const failed: ChatMessage = { ...BASE_MESSAGE, sender: 'me', status: 'failed' }
+
+		it('показывает группу «Не отправлено» с оповещением и кнопками', () => {
+			render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
+
+			const group = screen.getByRole('group', { name: UI_CHAT_TEXT.STATUS_FAILED })
+			expect(group).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED)
+			expect(within(group).queryByRole('status')).not.toBeInTheDocument()
+			expect(within(group).getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA })).toHaveTextContent(UI_CHAT_TEXT.RETRY)
+			expect(within(group).getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA })).toHaveTextContent(UI_CHAT_TEXT.DELETE)
+		})
+
+		it('«Повторить» эмитит retry', async () => {
+			const { emitted } = render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA }))
+
+			expect(emitted().retry).toHaveLength(1)
+			expect(emitted().discard).toBeUndefined()
+		})
+
+		it('«Удалить» эмитит discard', async () => {
+			const { emitted } = render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA }))
+
+			expect(emitted().discard).toHaveLength(1)
+			expect(emitted().retry).toBeUndefined()
+		})
+
+		it('прячет панель действий и значок статуса доставки', () => {
+			const { container } = render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
+
+			expect(screen.queryByRole('group', { name: UI_CHAT_TEXT.MESSAGE_ACTIONS })).toBeNull()
+			expect(container.querySelector('.base-chat-message-list__status-wrapper')).toBeNull()
+		})
+
+		it('не открывает контекстное меню', async () => {
+			const { container, emitted } = render(ChatMessageItem, { props: { message: failed, sizeScale: 100 } })
+
+			await fireEvent.contextMenu(container.querySelector('.base-chat-message-list__bubble')!)
+
+			expect(emitted()['context-menu']).toBeUndefined()
+		})
+
+		it('у обычного сообщения контекстное меню открывается, блока ошибки нет', async () => {
+			const { container, emitted } = render(ChatMessageItem, {
+				props: { message: { ...BASE_MESSAGE, sender: 'me', status: 'sent' }, sizeScale: 100 },
+			})
+
+			await fireEvent.contextMenu(container.querySelector('.base-chat-message-list__bubble')!)
+
+			expect(emitted()['context-menu']).toHaveLength(1)
+			expect(screen.queryByRole('group', { name: UI_CHAT_TEXT.STATUS_FAILED })).toBeNull()
+		})
+
+		it('«Другие действия» открывает меню под кнопкой и передаёт верх кнопки для переворота вверх', async () => {
+			const { emitted } = render(ChatMessageItem, {
+				props: { message: { ...BASE_MESSAGE, sender: 'me', status: 'sent' }, sizeScale: 100 },
+			})
+			const more = screen.getByRole('button', { name: UI_CHAT_TEXT.MORE_ACTIONS_ARIA })
+			vi.spyOn(more, 'getBoundingClientRect').mockReturnValue(new DOMRect(30, 200, 24, 24))
+
+			await fireEvent.click(more)
+
+			const [event] = emitted()['context-menu'][0] as [MouseEvent & { anchorTop?: number }]
+			expect(event.clientX).toBe(30)
+			expect(event.clientY).toBe(228)
+			expect(event.anchorTop).toBe(196)
+		})
+
+		it('чужое сообщение со статусом failed блока ошибки не показывает', () => {
+			render(ChatMessageItem, { props: { message: { ...BASE_MESSAGE, status: 'failed' }, sizeScale: 100 } })
+
+			expect(screen.queryByRole('group', { name: UI_CHAT_TEXT.STATUS_FAILED })).toBeNull()
+			expect(screen.getByRole('group', { name: UI_CHAT_TEXT.MESSAGE_ACTIONS })).toBeInTheDocument()
+		})
 	})
 })

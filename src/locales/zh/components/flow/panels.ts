@@ -1,0 +1,26 @@
+/** Панели BaseFlowMap: мини-карта, легенда, подробности узла */
+export const zhFlowPanels = {
+	flowPanels: {
+		DETAILS: '详情',
+		MINIMAP: '缩略图',
+		MINIMAP_HINT: '方向键移动视图，Home 键显示全部内容',
+		LEGEND: '图例',
+		LEGEND_SHOW: '显示图例',
+		LEGEND_HIDE: '收起图例',
+		STATUS_OK: '正常',
+		STATUS_WARNING: '延迟',
+		STATUS_ERROR: '错误',
+		STATUS_DOWN: '不可用',
+		STATUS_UNKNOWN: '无数据',
+		DETAILS_NODE: '节点详情',
+		DETAILS_EDGE: '连线详情',
+		DETAILS_GROUP: '分组详情',
+		DETAILS_CLOSE: '关闭详情',
+		DETAILS_EMPTY: '选择节点或连线以查看详情',
+		DETAILS_CALLS: '调用',
+		DETAILS_CALLED_BY: '被调用',
+		DETAILS_TEAM: '团队“{name}”',
+		DETAILS_METRICS: '指标',
+		DETAILS_SHEET: '向下滑动关闭',
+	},
+}

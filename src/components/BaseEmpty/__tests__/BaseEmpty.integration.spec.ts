@@ -1,14 +1,8 @@
-/**
- * Integration-тесты для BaseEmpty.
- * Проверяют композицию с BaseIcon/BaseText, отображение слотов actions/default
- * и взаимодействие пользователя с кнопками действий через родителя.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { render, screen } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
 import BaseEmpty from '../ui/BaseEmpty.vue'
+import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseEmpty integration', () => {
 	describe('слот actions', () => {

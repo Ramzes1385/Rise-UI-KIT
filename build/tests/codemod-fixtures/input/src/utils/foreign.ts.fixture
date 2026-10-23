@@ -1,0 +1,4 @@
+import { calcTotalColumns, getTooltipTransition } from './helpers'
+
+export const own = calcTotalColumns(1, true, false, true)
+export const ownClass = getTooltipTransition('top')

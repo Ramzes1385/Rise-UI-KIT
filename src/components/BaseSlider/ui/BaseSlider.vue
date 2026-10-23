@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-slider"
 		:class="[
+			ui('root'),
 			{
 				'base-slider--vertical': isVertical,
 				'base-slider--dragging': isDragging,
@@ -9,211 +9,201 @@
 				[`base-slider--${animation}`]: true,
 				[`base-slider--arrows-${arrowsPosition}`]: hasArrows,
 			},
+			thumbsSideClass,
 			classes.root,
 		]"
 		:style="[{ height: height }, sizeScaleStyle]"
-		@mouseenter="pauseAutoplay"
-		@mouseleave="resumeAutoplay">
-		<!-- Слот header -->
+		role="region"
+		:aria-roledescription="UI_CAROUSEL.ROLE"
+		:aria-label="carouselLabel"
+		@mouseenter="onMouseEnter"
+		@mouseleave="onMouseLeave"
+		@focusin="onFocusIn"
+		@focusout="onFocusOut">
 		<slot name="header" />
 
-		<!-- Стрелки -->
-		<div v-if="hasArrows" class="base-slider__arrows" :class="classes.arrows">
-			<BaseButton
-				variant="ghost"
-				class="base-slider__arrow base-slider__arrow--prev"
-				:class="classes.arrow"
-				:is-disabled="!isLoop && currentIndex === 0"
-				:size-scale="sizeScale"
-				@click="goPrev"
-				@mousedown="startHold('prev')"
-				@mouseup="stopHold"
-				@mouseleave="stopHold"
-				@touchstart.prevent="startHold('prev')"
-				@touchend="stopHold">
-				<BaseIcon :name="isVertical ? 'chevron-up' : 'chevron-left'" :size-scale="calcIconScale('sm', sizeScale)" />
-			</BaseButton>
-			<BaseButton
-				variant="ghost"
-				class="base-slider__arrow base-slider__arrow--next"
-				:class="classes.arrow"
-				:is-disabled="!isLoop && currentIndex >= maxIndex"
-				:size-scale="sizeScale"
-				@click="goNext"
-				@mousedown="startHold('next')"
-				@mouseup="stopHold"
-				@mouseleave="stopHold"
-				@touchstart.prevent="startHold('next')"
-				@touchend="stopHold">
-				<BaseIcon :name="isVertical ? 'chevron-down' : 'chevron-right'" :size-scale="calcIconScale('sm', sizeScale)" />
-			</BaseButton>
-		</div>
+		<div :class="ui('body')">
+			<div :class="ui('stage')">
+				<BaseButton
+					v-if="hasRotationControl"
+					variant="ghost"
+					:class="[ui('rotation'), classes.rotation]"
+					:aria-label="rotationLabel"
+					:size-scale="sizeScale"
+					data-slider-rotation
+					@click="toggleRotation">
+					<BaseIcon :name="isAutoplayStopped ? 'play' : 'pause'" />
+				</BaseButton>
+				<div v-if="hasArrows && canNavigate" :class="[ui('arrows'), classes.arrows]">
+					<BaseButton
+						:variant="arrowVariant"
+						:class="[ui('arrow'), 'base-slider__arrow--prev', classes.arrow]"
+						:aria-label="UI_ARIA.SLIDER_PREV"
+						:is-disabled="!isLoop && currentIndex === 0"
+						is-focusable-when-disabled
+						:size-scale="sizeScale"
+						@click="onArrowClick('prev', $event)"
+						@pointerdown="startHold('prev', $event)"
+						@pointerup="stopHold"
+						@pointerleave="stopHold"
+						@pointercancel="stopHold">
+						<BaseIcon :name="isVertical ? 'chevron-up' : 'chevron-left'" />
+					</BaseButton>
+					<BaseButton
+						:variant="arrowVariant"
+						:class="[ui('arrow'), 'base-slider__arrow--next', classes.arrow]"
+						:aria-label="UI_ARIA.SLIDER_NEXT"
+						:is-disabled="!isLoop && currentIndex >= maxIndex"
+						is-focusable-when-disabled
+						:size-scale="sizeScale"
+						@click="onArrowClick('next', $event)"
+						@pointerdown="startHold('next', $event)"
+						@pointerup="stopHold"
+						@pointerleave="stopHold"
+						@pointercancel="stopHold">
+						<BaseIcon :name="isVertical ? 'chevron-down' : 'chevron-right'" />
+					</BaseButton>
+				</div>
 
-		<!-- Область слайдов -->
-		<div
-			ref="viewportRef"
-			class="base-slider__viewport"
-			:class="classes.viewport"
-			@touchstart="onTouchStart"
-			@touchmove="onTouchMove"
-			@touchend="onTouchEnd"
-			@mousedown.prevent="onDragStart"
-			@dragstart.prevent>
-			<div class="base-slider__track" :class="classes.track" :style="trackStyle">
 				<div
-					v-for="(item, index) in items"
-					:key="index"
-					class="base-slider__slide"
-					:class="[{ 'base-slider__slide--active': index === currentIndex }, classes.slide]"
-					:style="slideStyle">
-					<slot :item="item" :index="index">
-						<video
-							v-if="item.type === 'video'"
-							:src="item.src"
-							:poster="item.poster"
-							class="base-slider__video"
-							controls
-							muted
-							loop
-							playsinline></video>
-						<BaseImage
-							v-else
-							:src="item.src"
-							:alt="item.alt || ''"
-							class="base-slider__image"
-							loading="lazy"
-							:has-zoom="isZoomable" />
-					</slot>
-					<div
-						v-if="hasCaption && (item.title || item.description)"
-						class="base-slider__caption"
-						:class="classes.caption">
-						<slot name="caption" :item="item" :index="index">
-							<BaseText
-								v-if="item.title"
-								tag="h3"
-								class="base-slider__title"
-								:custom-class="classes.title"
-								:size-scale="sizeScale"
-								:weight="UI_FONT_WEIGHT.BOLD"
-								>{{ item.title }}</BaseText
-							>
-							<BaseText
-								v-if="item.description"
-								class="base-slider__desc"
-								:custom-class="classes.desc"
-								:size-scale="sizeScale"
-								>{{ item.description }}</BaseText
-							>
-						</slot>
+					ref="viewportRef"
+					:class="[ui('viewport'), classes.viewport]"
+					@touchstart="onTouchStart"
+					@touchmove="onTouchMove"
+					@touchend="onTouchEnd"
+					@touchcancel="onTouchCancel"
+					@mousedown="onDragStart"
+					@click.capture="onClickCapture"
+					@dragstart.prevent>
+					<div :class="[ui('track'), classes.track]" :style="trackStyle" :aria-live="liveMode">
+						<div
+							v-for="(item, index) in items"
+							:key="index"
+							:class="[ui('slide'), { 'base-slider__slide--active': index === currentIndex }, classes.slide]"
+							:style="[slideStyle, slideEffectStyle(index)]"
+							role="group"
+							:aria-roledescription="UI_CAROUSEL.SLIDE_ROLE"
+							:aria-label="slideGroupLabel(index)"
+							:inert="isSlideVisible(index) ? undefined : true">
+							<slot :item="item" :index="index">
+								<video
+									v-if="item.type === 'video'"
+									:src="item.src"
+									:poster="item.poster"
+									:class="ui('video')"
+									controls
+									muted
+									loop
+									playsinline
+									@play="onVideoPlay"></video>
+								<BaseImage
+									v-else
+									:src="item.src"
+									:alt="item.alt || ''"
+									:class="ui('image')"
+									:border-radius="0"
+									loading="lazy"
+									:zoom-config="{ hasZoom: isZoomable }" />
+							</slot>
+							<div v-if="hasCaption && (item.title || item.description)" :class="[ui('caption'), classes.caption]">
+								<slot name="caption" :item="item" :index="index">
+									<h3 v-if="item.title" :class="[ui('title'), classes.title]">{{ item.title }}</h3>
+									<p v-if="item.description" :class="[ui('desc'), classes.desc]">{{ item.description }}</p>
+								</slot>
+							</div>
+						</div>
 					</div>
+				</div>
+			</div>
+
+			<div v-if="hasNavigation && canNavigate" :class="[ui('navigation'), classes.navigation]">
+				<div v-if="navigation === 'dots' || navigation === 'both'" :class="[ui('dots'), classes.dots]">
+					<button
+						v-for="(_, page) in pageCount"
+						:key="page"
+						type="button"
+						:class="[ui('dot'), { 'base-slider__dot--active': page === currentPage }, classes.dot]"
+						:aria-label="slideLabel(pageStart(page))"
+						:aria-current="page === currentPage ? 'true' : undefined"
+						@click="goToPage(page)"></button>
+				</div>
+
+				<div v-if="navigation === 'thumbnails' || navigation === 'both'" ref="thumbsRef" :class="[ui('thumbs'), classes.thumbs]">
+					<button
+						v-for="(item, index) in items"
+						:key="index"
+						type="button"
+						:class="[ui('thumb'), { 'base-slider__thumb--active': index === currentIndex }, classes.thumb]"
+						:aria-label="slideLabel(index)"
+						:aria-current="index === currentIndex ? 'true' : undefined"
+						@click="goTo(index)"
+						@keydown="onThumbKeydown($event, index)">
+						<BaseImage
+							:src="item.type === 'video' ? item.poster || '' : item.src"
+							alt=""
+							:class="ui('thumb-image')"
+							:border-radius="0" />
+						<span v-if="item.type === 'video'" :class="ui('thumb-play')">
+							<BaseIcon name="play" :size-scale="calcIconScale('sm', sizeScale)" />
+						</span>
+					</button>
 				</div>
 			</div>
 		</div>
 
-		<!-- Навигация -->
-		<div v-if="hasNavigation" class="base-slider__navigation" :class="classes.navigation">
-			<div v-if="navigation === 'dots' || navigation === 'both'" class="base-slider__dots" :class="classes.dots">
-				<BaseButton
-					v-for="(_, page) in pageCount"
-					:key="page"
-					variant="ghost"
-					class="base-slider__dot"
-					:class="[{ 'base-slider__dot--active': page === currentPage }, classes.dot]"
-					:padding="0"
-					:size-scale="sizeScale"
-					@click="goToPage(page)" />
-			</div>
-
-			<div
-				v-if="navigation === 'thumbnails' || navigation === 'both'"
-				class="base-slider__thumbs"
-				:class="classes.thumbs">
-				<BaseButton
-					v-for="(item, index) in items"
-					:key="index"
-					variant="ghost"
-					class="base-slider__thumb"
-					:class="[{ 'base-slider__thumb--active': index === currentIndex }, classes.thumb]"
-					:size-scale="sizeScale"
-					@click="goTo(index)">
-					<BaseImage v-if="item.type !== 'video'" :src="item.src" :alt="item.alt || ''" />
-					<BaseImage v-else :src="item.poster || ''" :alt="item.alt || 'Video thumbnail'" />
-					<div v-if="item.type === 'video'" class="base-slider__thumb-play">
-						<BaseIcon name="play" :size-scale="calcIconScale('sm', sizeScale)" />
-					</div>
-				</BaseButton>
-			</div>
-		</div>
-
-		<!-- Слот footer -->
 		<slot name="footer" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import '../styles/BaseSlider.style.scss'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseImage } from '@components/BaseImage'
-import { BaseText } from '@components/BaseText'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useSizeScale } from '@composables/useSizeScale'
-import { useSlider } from '@composables/useSlider'
-import { UI_FONT_WEIGHT, UI_SIZE, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import '../styles/BaseSlider.style.scss'
-import type { BaseSliderEmits, BaseSliderProps, BaseSliderSlots } from '../model/BaseSlider.types'
+import { BaseButton } from '@components/BaseButton'
+import { useBaseSlider } from '../model/useBaseSlider'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { UI_ARIA, UI_CAROUSEL } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseSliderEmits, BaseSliderExpose, BaseSliderProps, BaseSliderSlots } from '../types/BaseSlider.types'
 
-const props = withDefaults(defineProps<BaseSliderProps>(), {
-	customClass: undefined,
-	items: undefined,
-	animation: 'slide',
-	navigation: 'dots',
-	isAutoplay: false,
-	autoplayInterval: UI_TIMING.SLIDER_AUTOPLAY_INTERVAL,
-	hasArrows: true,
-	arrowsPosition: 'center',
-	isLoop: true,
-	isVertical: false,
-	initialIndex: 0,
-	height: UI_SIZE.SLIDER_DEFAULT_HEIGHT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	spaceBetween: 0,
-	slidesPerView: 1,
-	slidesPerGroup: 1,
-	hasCaption: true,
-	isZoomable: false,
-})
-
+const props = withDefaults(
+	defineProps<BaseSliderProps>(),
+	kitDefaults('BaseSlider', {
+		customClass: undefined,
+		items: undefined,
+		animation: 'slide',
+		navigation: 'dots',
+		isAutoplay: false,
+		autoplayInterval: 4000,
+		hasArrows: true,
+		arrowsPosition: 'center',
+		isLoop: true,
+		isVertical: false,
+		thumbnailsPosition: 'bottom',
+		initialIndex: 0,
+		index: undefined,
+		height: '400px',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		spaceBetween: 0,
+		slidesPerView: 1,
+		slidesPerGroup: 1,
+		hasCaption: true,
+		isZoomable: false,
+		label: undefined,
+	}),
+)
 const emit = defineEmits<BaseSliderEmits>()
 defineSlots<BaseSliderSlots>()
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-
-const { classes } = useCustomClass({
-	getClass: function () {
-		return props.customClass
-	},
-	elementKeys: [
-		'root',
-		'arrows',
-		'arrow',
-		'viewport',
-		'track',
-		'slide',
-		'caption',
-		'title',
-		'desc',
-		'navigation',
-		'dots',
-		'dot',
-		'thumbs',
-		'thumb',
-	],
-})
 
 const {
+	ui,
+	sizeScaleStyle,
+	classes,
 	viewportRef,
+	thumbsRef,
+	thumbsSideClass,
+	onThumbKeydown,
 	currentIndex,
 	isDragging,
 	trackStyle,
@@ -222,50 +212,37 @@ const {
 	pageCount,
 	currentPage,
 	goTo,
-	goNext,
-	goPrev,
 	goToPage,
-	pauseAutoplay,
-	resumeAutoplay,
+	onMouseEnter,
+	onMouseLeave,
+	onFocusIn,
+	onFocusOut,
 	onTouchStart,
 	onTouchMove,
 	onTouchEnd,
+	onTouchCancel,
 	onDragStart,
-} = useSlider({
-	itemCount: () => props.items.length,
-	animation: () => props.animation,
-	isAutoplay: () => props.isAutoplay,
-	autoplayInterval: () => props.autoplayInterval,
-	isLoop: () => props.isLoop,
-	isVertical: () => props.isVertical,
-	initialIndex: () => props.initialIndex,
-	spaceBetween: () => props.spaceBetween,
-	slidesPerView: () => props.slidesPerView,
-	slidesPerGroup: () => props.slidesPerGroup,
-	onChange: index => emit('change', index),
-	onNext: () => emit('next'),
-	onPrev: () => emit('prev'),
-})
+	onClickCapture,
+	hasNavigation,
+	canNavigate,
+	arrowVariant,
+	pageStart,
+	isSlideVisible,
+	slideEffectStyle,
+	slideLabel,
+	slideGroupLabel,
+	carouselLabel,
+	liveMode,
+	hasRotationControl,
+	rotationLabel,
+	toggleRotation,
+	isAutoplayStopped,
+	onVideoPlay,
+	startHold,
+	stopHold,
+	onArrowClick,
+	exposed,
+} = useBaseSlider(props, emit)
 
-const hasNavigation = computed(() => props.navigation !== 'none')
-
-let holdTimer: ReturnType<typeof setInterval> | null = null
-
-/** Удержание стрелки — быстрое перелистывание */
-function startHold(direction: 'prev' | 'next'): void {
-	stopHold()
-	const action = direction === 'next' ? goNext : goPrev
-	holdTimer = setInterval(action, UI_TIMING.SLIDER_HOLD_INTERVAL)
-}
-
-/** Остановка удержания */
-function stopHold(): void {
-	if (holdTimer) {
-		clearInterval(holdTimer)
-		holdTimer = null
-	}
-}
-
-/** Остановка таймера удержания при размонтировании (если кнопка была зажата). */
-onBeforeUnmount(stopHold)
+defineExpose<BaseSliderExpose>(exposed)
 </script>

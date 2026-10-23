@@ -1,134 +1,167 @@
 .base-card {
-	@include custom-bg(background-color, var(--color-white));
-	border-radius: var(--border-radius-base);
-	border: 1px solid var(--color-border);
-	overflow: hidden;
+	@include custom-color-scope;
+	--card-pad-top: #{ct(card, padding-y, 16px)};
+	--card-pad-right: #{ct(card, padding-x, 20px)};
+	--card-pad-bottom: #{ct(card, padding-y, 16px)};
+	--card-pad-left: #{ct(card, padding-x, 20px)};
+
 	display: flex;
 	flex-direction: column;
-	outline: none;
+	box-sizing: border-box;
 	height: var(--card-height, auto);
-	font-size: sz(16px);
-	@include interactive;
+	overflow: hidden;
+	border: 1px solid ct(card, border, transparent);
+	border-radius: sz(ct(card, radius, var(--rise-radius-lg)));
+	box-shadow: ct(card, shadow, none);
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(card, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(card, text, var(--rise-text)));
+	@include transition-colors;
 
-	&--hoverable {
-		cursor: pointer;
-
-		@include hover {
-			transform: translateY(sz(-4px));
-			box-shadow: var(--shadow-lg);
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 sz(2px) var(--color-bg),
-				0 0 0 sz(4px) var(--color-accent);
-		}
-
-		@include active {
-			transform: translateY(sz(-2px)) scale(0.99);
-			@include custom-bg(background-color, var(--color-border));
-		}
-	}
-
-	&--scroll {
-		.base-card__body {
-			overflow-y: auto;
-		}
-	}
-
-	&--truncate {
-		.base-card__body {
-			display: -webkit-box;
-			-webkit-line-clamp: 3;
-			-webkit-box-orient: vertical;
-			overflow: hidden;
-		}
-	}
-
-	// Варианты
-	&--default {
-		@include custom-bg(background-color, var(--color-white));
-	}
-
-	&--ghost {
-		@include custom-bg(background-color, transparent);
-		border-color: transparent;
-		box-shadow: none;
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
 	}
 
 	&--outline {
+		border-color: ct(card, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(card, bg, var(--rise-bg)));
+	}
+
+	&--ghost {
+		@include tonal-surface(none);
 		@include custom-bg(background-color, transparent);
-		border-width: 2px;
 	}
 
 	&--shadow {
-		box-shadow: var(--shadow-lg);
+		box-shadow: ct(card, shadow, var(--rise-shadow-md));
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(card, bg, var(--rise-surface-floating)));
+	}
 
-		@include hover {
-			box-shadow: var(--shadow-xl);
+	&--hoverable {
+		cursor: pointer;
+		@include focus-ring;
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+
+		@include motion-safe {
+			transition-property:
+				color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform;
+
+			@include hover {
+				transform: translateY(calc(var(--rise-motion-distance) / -4));
+			}
 		}
 	}
 
-	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		border-color: transparent;
+	&--soft#{&}--hoverable {
+		@include custom-bg-hover(background-color, var(--rise-bg-accented));
+	}
 
-		.base-card__title {
-			@include custom-text(color, var(--color-primary));
+	&--outline#{&}--hoverable {
+		@include hover {
+			border-color: ct(card, border-hover, var(--rise-border-control));
 		}
+		@include custom-bg-hover(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost#{&}--hoverable {
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+	}
+
+	&--shadow#{&}--hoverable {
+		@include hover {
+			box-shadow: ct(card, shadow-hover, var(--rise-shadow-lg));
+		}
+	}
+
+	&--disabled {
+		@include disabled-state;
 	}
 
 	&__header {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
-		border-bottom: sz(1px) solid var(--color-border);
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: sz(12px);
 		flex-shrink: 0;
+		gap: sz(12px);
+		padding-block: space(ct(card, header-padding-y, var(--card-pad-top)) ct(card, header-padding-y, var(--card-pad-bottom)));
+		padding-inline: space(ct(card, header-padding-x, var(--card-pad-left)) ct(card, header-padding-x, var(--card-pad-right)));
+		border-bottom: 1px solid ct(card, border, var(--rise-border));
+		background-color: ct(card, header-bg, transparent);
 	}
 
 	&__header-text {
+		display: flex;
 		flex: 1;
+		flex-direction: column;
+		gap: sz(4px);
 		min-width: 0;
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
-		font-size: sz(18px);
-		font-weight: 700;
-		@include custom-text(color, var(--color-primary));
+	& &__title {
+		@include inherit-custom-color;
+		@include text-size(base);
+		@include heading;
+		@include custom-text(color, var(--rise-text-highlighted));
 	}
 
-	&__subtitle {
-		margin: sz(4px) 0 0;
-		font-size: sz(14px);
-		@include custom-text(color, var(--color-text));
-		opacity: 0.7;
+	& &__subtitle {
+		@include inherit-custom-color;
+		@include custom-text(color, var(--rise-text-muted));
 	}
 
 	&__actions {
+		@include reset-custom-color;
 		display: flex;
 		align-items: center;
-		gap: sz(8px);
 		flex-shrink: 0;
+		gap: sz(8px);
+		margin-block: sz(-4px);
 	}
 
 	&__body {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
+		@include reset-custom-color;
 		flex: 1;
-		min-height: 0; // Важно для scroll внутри flex-контейнера
+		min-height: 0;
+		padding-block: space(var(--card-pad-top) var(--card-pad-bottom));
+		padding-inline: space(var(--card-pad-left) var(--card-pad-right));
+		overflow-wrap: break-word;
+
+		&:empty {
+			display: none;
+		}
+	}
+
+	&__header:has(+ .base-card__body:empty) {
+		border-bottom: 0;
 	}
 
 	&__footer {
-		padding: sz(var(--card-pad-top)) sz(var(--card-pad-right)) sz(var(--card-pad-bottom)) sz(var(--card-pad-left));
-		background-color: var(--color-bg);
-		border-top: sz(1px) solid var(--color-border);
-		margin-top: auto;
+		@include reset-custom-color;
 		flex-shrink: 0;
+		margin-top: auto;
+		padding-block: space(var(--card-pad-top) var(--card-pad-bottom));
+		padding-inline: space(var(--card-pad-left) var(--card-pad-right));
+		border-top: 1px solid ct(card, border, var(--rise-border));
+	}
+
+	&--scroll &__body {
+		overflow-y: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+	}
+
+	&--truncate &__body {
+		display: -webkit-box;
+		flex: 0 1 auto;
+		margin-bottom: space(var(--card-pad-bottom));
+		padding-bottom: 0;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 }

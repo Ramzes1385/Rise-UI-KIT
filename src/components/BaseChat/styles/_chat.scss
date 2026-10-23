@@ -1,0 +1,15 @@
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@mixin chat-icon-button($pad: 5px) {
+	&.base-button {
+		--btn-pad-top: #{$pad};
+		--btn-pad-right: #{$pad};
+		--btn-pad-bottom: #{$pad};
+		--btn-pad-left: #{$pad};
+
+		flex: none;
+	}
+}
+@mixin chat-section-border($side: bottom) {
+	border-#{$side}: 1px solid var(--rise-border);
+}

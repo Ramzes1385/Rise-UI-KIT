@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseProgress.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import BaseProgress from '../ui/BaseProgress.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseProgress unit', () => {
 	describe('рендер', () => {
@@ -69,14 +64,12 @@ describe('BaseProgress unit', () => {
 	})
 
 	describe('пропс hasLabel', () => {
-		it('должен рендерить BaseTooltip внутри fill когда hasLabel=true и shape=line', () => {
+		it('должен рендерить подпись с процентом когда hasLabel=true и shape=line', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: true },
 			})
 
-			const trigger = container.querySelector('.base-progress__tooltip-trigger')
-			expect(trigger).toBeInTheDocument()
-			expect(trigger?.closest('.base-progress__fill')).toBeInTheDocument()
+			expect(container.querySelector('.base-progress__status')).toHaveTextContent('50%')
 		})
 
 		it('должен рендерить метку когда hasLabel=true и shape=circle', () => {
@@ -126,6 +119,53 @@ describe('BaseProgress unit', () => {
 		})
 	})
 
+	describe('пропс fill', () => {
+		it('solid по умолчанию: без модификатора заливки и без градиента у кольца', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle' } })
+
+			expect(container.querySelector('.base-progress')?.className).not.toContain('base-progress--fill-')
+			expect(container.querySelector('linearGradient')).not.toBeInTheDocument()
+			expect(container.querySelector<SVGElement>('.base-progress__fill-circle')?.style.stroke).toBe('')
+		})
+
+		it('rainbow: модификатор и семь цветов радуги из токенов у кольца', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle', fill: 'rainbow' } })
+
+			expect(container.querySelector('.base-progress--fill-rainbow')).toBeInTheDocument()
+			const gradient = container.querySelector('linearGradient')
+			const stops = [...container.querySelectorAll('stop')]
+			expect(stops).toHaveLength(7)
+			expect(stops[0].getAttribute('offset')).toBe('0')
+			expect(stops[6].getAttribute('offset')).toBe('1')
+			expect(stops[0].getAttribute('style')).toContain('var(--rise-chart-8)')
+			expect(container.querySelector<SVGElement>('.base-progress__fill-circle')?.style.stroke).toBe(`url("#${gradient?.id}")`)
+		})
+
+		it('gradient: два цвета — светлый оттенок и цвет прогресса', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, shape: 'circle', fill: 'gradient' } })
+
+			expect(container.querySelectorAll('stop')).toHaveLength(2)
+		})
+
+		it('segments: модификатор полосы, у кольца заливка сплошная', () => {
+			const { container } = render(BaseProgress, { props: { value: 50, fill: 'segments' } })
+
+			expect(container.querySelector('.base-progress--fill-segments')).toBeInTheDocument()
+			expect(container.querySelector('linearGradient')).not.toBeInTheDocument()
+		})
+
+		it('у двух индикаторов разные id градиента', () => {
+			const { container } = render({
+				components: { BaseProgress },
+				template:
+					'<div><BaseProgress :value="1" shape="circle" fill="rainbow" /><BaseProgress :value="2" shape="circle" fill="rainbow" /></div>',
+			})
+
+			const ids = [...container.querySelectorAll('linearGradient')].map(node => node.id)
+			expect(new Set(ids).size).toBe(2)
+		})
+	})
+
 	describe('пропс sizeScale', () => {
 		it('не должен устанавливать style когда sizeScale=100', () => {
 			const { container } = render(BaseProgress, {
@@ -151,7 +191,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('0')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 0%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 0;')
 		})
 
 		it('должен устанавливать 50% когда value=50', () => {
@@ -160,7 +200,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('50')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 50%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 50;')
 		})
 
 		it('должен устанавливать 100% когда value=100', () => {
@@ -169,7 +209,7 @@ describe('BaseProgress unit', () => {
 			})
 
 			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('100')
-			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('width: 100%')
+			expect(container.querySelector('.base-progress__fill')?.getAttribute('style')).toContain('--progress-percent: 100;')
 		})
 
 		it('должен ограничивать value сверху при value>max', () => {
@@ -215,6 +255,61 @@ describe('BaseProgress unit', () => {
 		})
 	})
 
+	describe('некорректные value/max', () => {
+		it.each([
+			['value=NaN', { value: Number.NaN }],
+			['max=0', { value: 10, max: 0 }],
+			['max=NaN', { value: 10, max: Number.NaN }],
+			['max<0', { value: 10, max: -50 }],
+		])('не должен выводить «NaN» и лишний прогресс при %s', (_, props) => {
+			const { container } = render(BaseProgress, {
+				props: { ...props, shape: 'circle', hasLabel: true },
+			})
+
+			const progressbar = screen.getByRole('progressbar')
+			expect(progressbar).toHaveAttribute('aria-valuenow', '0')
+			expect(container.textContent).not.toContain('NaN')
+			expect(container.querySelector('.base-progress__circle-label')).toHaveTextContent('0%')
+		})
+
+		it('не должен эмитить complete при некорректном max', async () => {
+			const { emitted, rerender } = render(BaseProgress, { props: { value: 10, max: 100 } })
+
+			await rerender({ value: 10, max: -1 })
+
+			expect(emitted()).not.toHaveProperty('complete')
+		})
+
+		it('должен ограничивать value=Infinity до 100%', () => {
+			render(BaseProgress, { props: { value: Number.POSITIVE_INFINITY } })
+
+			expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100')
+		})
+	})
+
+	describe('доступное имя', () => {
+		it('должен иметь доступное имя по умолчанию', () => {
+			render(BaseProgress, { props: { value: 40 } })
+
+			expect(screen.getByRole('progressbar', { name: 'Прогресс' })).toBeInTheDocument()
+		})
+
+		it('должен использовать ariaLabel как доступное имя', () => {
+			render(BaseProgress, { props: { value: 40, ariaLabel: 'Загрузка файла' } })
+
+			expect(screen.getByRole('progressbar', { name: 'Загрузка файла' })).toBeInTheDocument()
+		})
+
+		it('должен уступать имя внешнему aria-labelledby', () => {
+			render({
+				components: { BaseProgress },
+				template: '<span id="upload-caption">Отчёт.pdf</span><BaseProgress :value="40" aria-labelledby="upload-caption" />',
+			})
+
+			expect(screen.getByRole('progressbar', { name: 'Отчёт.pdf' })).toBeInTheDocument()
+		})
+	})
+
 	describe('пропс color', () => {
 		it('должен устанавливать CSS-переменную --custom-bg когда передан color.bg.base', () => {
 			const { container } = render(BaseProgress, {
@@ -225,8 +320,8 @@ describe('BaseProgress unit', () => {
 		})
 	})
 
-	describe('tooltipColor', () => {
-		it('должен использовать color.bg.base для тултипа когда передан', () => {
+	describe('цвет заливки с подписью', () => {
+		it('должен задавать --custom-bg на корне и при hasLabel (цвет заливки читают полоса и кольцо)', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: true, color: { bg: { base: '#00ff00' } } },
 			})
@@ -234,24 +329,49 @@ describe('BaseProgress unit', () => {
 			expect(container.querySelector('.base-progress')?.getAttribute('style')).toContain('--custom-bg: #00ff00')
 		})
 
-		it('должен использовать var(--color-accent) для тултипа когда color.bg.base не передан', () => {
+		it('не должен задавать inline-стили без пропа color (цвет берётся из токена --rise-primary)', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 50, hasLabel: true },
 			})
 
-			// Проверяем что нет кастомного цвета в style
 			const style = container.querySelector('.base-progress')?.getAttribute('style')
 			expect(style).toBeNull()
 		})
 	})
 
 	describe('isIndeterminate mode', () => {
-		it('должен возвращать percent=0 когда isIndeterminate=true', () => {
+		it.each(['line', 'circle'] as const)('не должен показывать «0%» в неопределённом режиме (shape=%s)', shape => {
+			render(BaseProgress, {
+				props: { value: 75, isIndeterminate: true, hasLabel: true, shape },
+			})
+
+			expect(screen.getByRole('progressbar')).not.toHaveTextContent('%')
+		})
+
+		it('не должен задавать ширину заливки в неопределённом режиме (её задают стили бегущей полосы)', () => {
 			const { container } = render(BaseProgress, {
 				props: { value: 75, isIndeterminate: true },
 			})
 
-			expect(container.querySelector('.base-progress')?.getAttribute('aria-valuenow')).toBe('0')
+			expect(container.querySelector('.base-progress__fill')).not.toHaveAttribute('style')
+		})
+
+		it('не должен сообщать aria-valuenow когда isIndeterminate=true (значение неизвестно)', () => {
+			render(BaseProgress, {
+				props: { value: 75, isIndeterminate: true },
+			})
+
+			expect(screen.getByRole('progressbar')).not.toHaveAttribute('aria-valuenow')
+		})
+
+		it('должен вернуть aria-valuenow после выхода из неопределённого режима', async () => {
+			const { rerender } = render(BaseProgress, {
+				props: { value: 75, isIndeterminate: true },
+			})
+
+			await rerender({ value: 75, isIndeterminate: false })
+
+			expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '75')
 		})
 
 		it('должен рендерить круговой прогресс с full circumference когда isIndeterminate=true', () => {
@@ -260,7 +380,6 @@ describe('BaseProgress unit', () => {
 			})
 
 			const circle = container.querySelector('.base-progress__fill-circle')
-			// stroke-dashoffset должен быть равен circumference (2 * Math.PI * 52 ≈ 326.73)
 			const dashoffset = circle?.getAttribute('stroke-dashoffset')
 			const expectedOffset = (2 * Math.PI * 52).toFixed(2)
 			expect(parseFloat(dashoffset || '0')).toBeCloseTo(parseFloat(expectedOffset), 1)
@@ -316,8 +435,8 @@ describe('BaseProgress unit', () => {
 			expect(container.querySelector('.base-progress')).toHaveClass('custom-root')
 			expect(container.querySelector('.base-progress__track')).toHaveClass('custom-track')
 			expect(container.querySelector('.base-progress__fill')).toHaveClass('custom-fill')
-			expect(container.querySelector('.base-progress__tooltip-trigger')).toHaveClass('custom-tooltip-trigger')
-			expect(container.querySelector('.base-progress__tooltip-anchor')).toHaveClass('custom-tooltip-anchor')
+			expect(container.querySelector('.base-progress__status')).toHaveClass('custom-tooltip-trigger')
+			expect(container.querySelector('.base-progress__status-text')).toHaveClass('custom-tooltip-anchor')
 		})
 	})
 

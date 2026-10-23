@@ -1,0 +1,190 @@
+.base-ai-message {
+	@include custom-color-scope;
+	display: flex;
+	align-items: flex-start;
+	gap: sz(ct(ai-message, gap, 12px));
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	font-size: sz(ct(ai-message, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(ai-message, text, var(--rise-text)));
+
+	&__avatar {
+		display: inline-flex;
+		flex: none;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		overflow: hidden;
+		border-radius: sz(ct(ai-message, avatar-radius, var(--rise-radius-md)));
+		background: ct(ai-message, avatar-bg, var(--rise-primary));
+		background-image: linear-gradient(
+			135deg,
+			#{ct(ai-message, avatar-bg, var(--rise-primary))},
+			color-mix(
+				in oklab,
+				#{ct(ai-message, avatar-bg, var(--rise-primary))} 60%,
+				#{ct(ai-message, avatar-end-bg, var(--rise-ai-message-avatar-bg, var(--rise-primary)))}
+			)
+		);
+		color: var(--rise-on-primary);
+
+		.base-icon {
+			width: sz(18px);
+			height: sz(18px);
+		}
+	}
+
+	&__avatar-image.base-avatar {
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+	}
+
+	&__body {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+	}
+
+	&__header {
+		display: flex;
+		align-items: baseline;
+		gap: sz(8px);
+		line-height: sz(32px);
+	}
+
+	&__name {
+		font-weight: ct(ai-message, name-font-weight, var(--rise-font-weight-semibold));
+		@include custom-text(color, ct(ai-message, name-text, var(--rise-text-highlighted)));
+	}
+
+	&__time {
+		@include caps-label(10px);
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--soft &__body,
+	&--outline &__body {
+		padding: space(ct(ai-message, body-padding-y, 12px) ct(ai-message, body-padding-x, 16px));
+		border-radius: sz(ct(ai-message, body-radius, var(--rise-radius-lg)));
+	}
+
+	&--soft &__body {
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(ai-message, body-bg, var(--rise-bg-muted)));
+	}
+
+	&--outline &__body {
+		border: 1px solid ct(ai-message, body-border, var(--rise-border-accented));
+	}
+
+	&--soft &__header,
+	&--outline &__header {
+		line-height: inherit;
+	}
+
+	&--soft &__time {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--ghost &__avatar,
+	&--ghost &__header {
+		display: none;
+	}
+
+	&__body &__typing {
+		--loader-color: var(--rise-text-muted);
+
+		padding: sz(6px) 0;
+	}
+
+	&__error {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+		margin: 0;
+		padding: sz(8px) sz(12px);
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+
+		> .base-icon {
+			width: sz(16px);
+			height: sz(16px);
+			color: var(--rise-error-text);
+		}
+	}
+
+	&__content {
+		@include inherit-custom-color;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+		margin-inline-start: sz(-8px);
+	}
+
+	&__action {
+		@include button-reset;
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: sz(4px) sz(8px);
+		border-radius: sz(var(--rise-radius-sm));
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+		@include transition-colors;
+		@include focus-ring;
+
+		.base-icon {
+			width: sz(14px);
+			height: sz(14px);
+		}
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+			color: var(--rise-text);
+		}
+	}
+
+	&__action.base-button {
+		@include inherit-custom-color;
+		--btn-pad-top: 4px;
+		--btn-pad-right: 8px;
+		--btn-pad-bottom: 4px;
+		--btn-pad-left: 8px;
+
+		@include custom-bg-reset;
+		border-radius: sz(var(--rise-radius-sm));
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+
+		@include hover {
+			color: var(--rise-text);
+		}
+	}
+
+	&--soft &__action.base-button {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&__action--retry.base-button {
+		margin-inline-start: auto;
+		color: var(--rise-text);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}
+
+@include enter-slide('base-ai-message-actions', up);
+@include enter-slide('base-ai-message-error', up);

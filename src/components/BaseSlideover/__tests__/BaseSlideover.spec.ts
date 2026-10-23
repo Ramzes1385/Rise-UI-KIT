@@ -1,19 +1,13 @@
-/**
- * Unit-тесты для BaseSlideover.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует teleport — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSlideover from '../ui/BaseSlideover.vue'
+import { render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
 }))
-vi.mock('@composables/usePopup', () => ({
+vi.mock('@composables/overlay/usePopup', () => ({
 	usePopup: () => ({ handleOverlayClick: vi.fn(), close: vi.fn() }),
 }))
 
@@ -117,18 +111,14 @@ describe('BaseSlideover unit', () => {
 			render(BaseSlideover, { props: { isOpen: true, isFullWidth: true } })
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('base-slideover--full')).toBe(true)
-			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(true)
 		})
 
 		it('не должен применять модификатор --full когда isFullWidth=false', () => {
 			render(BaseSlideover, { props: { isOpen: true, isFullWidth: false } })
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('base-slideover--full')).toBe(false)
-			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(
-				false,
-			)
+			expect(document.querySelector('.base-slideover__panel')?.classList.contains('base-slideover__panel--full')).toBe(false)
 		})
 	})
 
@@ -160,8 +150,15 @@ describe('BaseSlideover unit', () => {
 	})
 
 	describe('пропс padding', () => {
-		it('должен задавать горизонтальные отступы 24px при padding=24 (по умолчанию)', () => {
+		it('без пропа не задаёт inline-переменные: отступы 16/20 берутся из стилей', () => {
 			render(BaseSlideover, { props: { isOpen: true } })
+
+			const panel = document.querySelector('.base-slideover__panel') as HTMLElement
+			expect(panel.getAttribute('style')).toBeNull()
+		})
+
+		it('должен задавать горизонтальные отступы 24px при padding=24', () => {
+			render(BaseSlideover, { props: { isOpen: true, padding: 24 } })
 
 			const panel = document.querySelector('.base-slideover__panel') as HTMLElement
 			expect(panel.style.getPropertyValue('--slideover-pad-left')).toBe('24px')
@@ -193,6 +190,23 @@ describe('BaseSlideover unit', () => {
 			expect(panel.style.getPropertyValue('--slideover-pad-left')).toBe('20px')
 			expect(panel.style.getPropertyValue('--slideover-pad-top')).toBe('8px')
 			expect(panel.style.getPropertyValue('--slideover-pad-bottom')).toBe('12px')
+		})
+	})
+
+	describe('пропсы sizeScale и color', () => {
+		it('sizeScale задаёт --size-scale на корне: панель и её содержимое масштабируются', () => {
+			render(BaseSlideover, { props: { isOpen: true, sizeScale: 125 } })
+
+			const root = document.querySelector('.base-slideover') as HTMLElement
+			expect(root.style.getPropertyValue('--size-scale')).toBe('1.25')
+		})
+
+		it('color задаёт --custom-bg и --custom-text на корне', () => {
+			render(BaseSlideover, { props: { isOpen: true, color: { bg: { base: '#f5f3ff' }, text: { base: '#4c1d95' } } } })
+
+			const root = document.querySelector('.base-slideover') as HTMLElement
+			expect(root.style.getPropertyValue('--custom-bg')).toBe('#f5f3ff')
+			expect(root.style.getPropertyValue('--custom-text')).toBe('#4c1d95')
 		})
 	})
 
@@ -307,14 +321,10 @@ describe('BaseSlideover unit', () => {
 
 			expect(document.querySelector('.base-slideover')?.classList.contains('custom-slideover-root')).toBe(true)
 			expect(document.querySelector('.base-slideover__panel')?.classList.contains('custom-slideover-panel')).toBe(true)
-			expect(document.querySelector('.base-slideover__header')?.classList.contains('custom-slideover-header')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__header')?.classList.contains('custom-slideover-header')).toBe(true)
 			expect(document.querySelector('.base-slideover__title')?.classList.contains('custom-slideover-title')).toBe(true)
 			expect(document.querySelector('.base-slideover__body')?.classList.contains('custom-slideover-body')).toBe(true)
-			expect(document.querySelector('.base-slideover__footer')?.classList.contains('custom-slideover-footer')).toBe(
-				true,
-			)
+			expect(document.querySelector('.base-slideover__footer')?.classList.contains('custom-slideover-footer')).toBe(true)
 		})
 	})
 })

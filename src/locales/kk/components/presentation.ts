@@ -1,0 +1,25 @@
+/** Дыбыстамасы бар BasePresentationPlayer презентациясы (сөздіктің `presentation` бөлімі) */
+export const kkPresentation = {
+	presentation: {
+		PREVIOUS: 'Алдыңғы слайд',
+		NEXT: 'Келесі слайд',
+		SLIDES: 'Слайдтар',
+		STATUS: '{total} ішінен {n}-слайд: {title}',
+		SLIDE_HINT: '{n}. {title}',
+		REPLAY: 'Басынан көру',
+		LOCKED: '{n} сек кейін қолжетімді',
+		LOCKED_AUDIO: 'Дыбыстаудан кейін қолжетімді',
+		RESUME: '{n}-слайдтан жалғастыру керек пе?',
+		RESUME_YES: 'Жалғастыру',
+		RESUME_NO: 'Басынан',
+		DONE: 'Өтілді',
+		FINISHED: 'Көрсетілім аяқталды',
+		DONE_TEXT: 'Өтілген слайдтар: {total} ішінен {completed}',
+		LOCKED_QUIZ: 'Жалғастыру үшін сұраққа жауап беріңіз',
+		SLIDE_LIST: 'Слайдтар тізімі',
+		NOTES: 'Стенограмма',
+		NOTES_EMPTY: 'Бұл слайдта стенограмма жоқ',
+		SLIDE_DONE: 'Өтілді',
+		SLIDE_LOCKED: 'Қолжетімсіз',
+	},
+}

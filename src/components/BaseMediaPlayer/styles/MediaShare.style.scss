@@ -1,0 +1,276 @@
+.base-media-player {
+	&__share .base-modal__content {
+		max-width: sz(560px);
+		border-radius: sz(var(--rise-radius-xl));
+		background-color: var(--media-panel-solid);
+		color: var(--media-text);
+	}
+
+	&__share.base-modal {
+		container-type: size;
+	}
+
+	&__share .base-modal__header {
+		border-bottom-color: var(--media-border);
+	}
+
+	&__share-body {
+		display: flex;
+		flex-direction: column;
+		gap: sz(14px);
+	}
+
+	&__share-networks {
+		position: relative;
+		margin-inline: sz(-6px);
+	}
+
+	&__share-list {
+		display: flex;
+		gap: sz(4px);
+		margin: 0;
+		padding: sz(4px) sz(6px);
+		overflow-x: auto;
+		list-style: none;
+		scroll-padding-inline: sz(6px);
+		scroll-snap-type: x proximity;
+		scrollbar-width: none;
+		overscroll-behavior-x: contain;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	&__share-networks--back &__share-list {
+		mask-image: linear-gradient(dir-angle(90deg), transparent, var(--rise-media-shade) #{sz(48px)});
+	}
+
+	&__share-networks--forward &__share-list {
+		mask-image: linear-gradient(dir-angle(-90deg), transparent, var(--rise-media-shade) #{sz(48px)});
+	}
+
+	&__share-networks--back.base-media-player__share-networks--forward &__share-list {
+		mask-image: linear-gradient(
+			dir-angle(90deg),
+			transparent,
+			var(--rise-media-shade) #{sz(48px)} calc(100% - #{sz(48px)}),
+			transparent
+		);
+	}
+
+	&__share-item {
+		flex: none;
+		scroll-snap-align: start;
+
+		@include motion-safe {
+			animation: base-media-player-share-in var(--media-slow) var(--media-ease) both;
+			animation-delay: calc(min(var(--media-item-index), 8) * var(--media-fast) / 6);
+		}
+	}
+
+	&__share-link {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: sz(6px);
+		box-sizing: border-box;
+		width: sz(72px);
+		padding: sz(6px) sz(2px);
+		border: 0;
+		border-radius: sz(var(--rise-radius-md));
+		background: none;
+		color: var(--media-text);
+		font: inherit;
+		font-size: sz(var(--rise-font-size-xs));
+		line-height: 1.3;
+		text-decoration: none;
+		cursor: pointer;
+		@include focus-ring;
+
+		@include hover {
+			.base-media-player__share-tile {
+				transform: translateY(-3px) scale(1.06);
+			}
+
+			.base-media-player__share-tile .base-media-player__icon {
+				transform: scale(1.08) rotate(-6deg);
+			}
+		}
+
+		&:active .base-media-player__share-tile {
+			transform: scale(0.94);
+		}
+	}
+
+	&__share-tile {
+		display: grid;
+		place-items: center;
+		width: sz(48px);
+		height: sz(48px);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--media-share-color, color-mix(in srgb, var(--rise-media-highlight) 12%, transparent));
+		color: var(--media-text);
+		transition: transform var(--media-normal) var(--media-spring);
+
+		.base-media-player__icon {
+			width: sz(26px);
+			height: sz(26px);
+			transition: transform var(--media-normal) var(--media-spring);
+		}
+	}
+
+	&__share-label {
+		max-width: 100%;
+		color: var(--media-muted);
+		@include truncate;
+	}
+
+	&__share-link:hover &__share-label,
+	&__share-link:focus-visible &__share-label {
+		color: var(--media-text);
+	}
+
+	&__share-scroll.base-button {
+		--custom-bg: var(--media-panel-solid);
+		--custom-bg-hover: var(--media-panel-solid);
+		--custom-text: var(--media-text);
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		position: absolute;
+		top: sz(24px);
+		z-index: 1;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(var(--rise-radius-md));
+		box-shadow: 0 4px 14px color-mix(in srgb, var(--rise-media-shade) 45%, transparent);
+		transition: transform var(--media-normal) var(--media-spring);
+
+		.base-media-player__icon {
+			width: sz(18px);
+			height: sz(18px);
+		}
+
+		@include hover {
+			transform: scale(1.08);
+		}
+	}
+
+	&__share-scroll--back.base-button {
+		inset-inline-start: 0;
+	}
+
+	&__share-scroll--forward.base-button {
+		inset-inline-end: 0;
+	}
+
+	&__share-row {
+		display: flex;
+		gap: sz(8px);
+	}
+
+	&__share-input.base-input {
+		flex: 1 1 0;
+		width: 0;
+		min-width: 0;
+		color: var(--media-text);
+
+		.base-input__wrapper {
+			border-color: transparent;
+			border-radius: sz(var(--rise-radius-md));
+			background-color: color-mix(in srgb, var(--rise-media-highlight) 6%, transparent);
+		}
+
+		.base-input__field {
+			height: sz(36px);
+			padding: 0 sz(12px);
+			font-size: sz(13px);
+
+			&::placeholder {
+				color: var(--media-muted);
+			}
+		}
+	}
+
+	&__share-copy.base-button {
+		--custom-bg: var(--media-primary-strong);
+		--custom-bg-hover: color-mix(in oklab, var(--media-primary-strong) 80%, var(--rise-media-shade));
+		--custom-text: var(--media-text);
+		--btn-pad-top: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 14px;
+		--btn-pad-right: 14px;
+
+		flex: none;
+		gap: sz(6px);
+		height: sz(38px);
+		border-radius: sz(var(--rise-radius-md));
+		font-size: sz(13px);
+		font-weight: var(--rise-font-weight-semibold);
+		transition:
+			background-color var(--media-normal) var(--media-ease),
+			transform var(--media-normal) var(--media-spring);
+
+		.base-media-player__icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+
+		&:active {
+			transform: scale(0.96);
+		}
+	}
+
+	&__share-copy--done.base-button {
+		--custom-bg: var(--rise-color-success-700);
+		--custom-bg-hover: var(--rise-color-success-700);
+		--custom-text: var(--media-text);
+	}
+
+	&__share-time.base-checkbox {
+		--checkbox-checked-border: var(--media-primary-strong);
+		--checkbox-checked-bg: var(--media-primary-strong);
+		--checkbox-checked-bg-hover: var(--media-primary-strong);
+		align-self: flex-start;
+	}
+}
+
+@container (max-height: 360px) {
+	.base-media-player__share .base-modal__header {
+		padding-block: sz(10px);
+	}
+
+	.base-media-player__share-body {
+		gap: sz(10px);
+	}
+
+	.base-media-player__share-link {
+		width: sz(64px);
+		padding-block: sz(4px);
+	}
+
+	.base-media-player__share-tile {
+		width: sz(40px);
+		height: sz(40px);
+		border-radius: sz(var(--rise-radius-md));
+
+		.base-media-player__icon {
+			width: sz(22px);
+			height: sz(22px);
+		}
+	}
+
+	.base-media-player__share-scroll.base-button {
+		top: sz(16px);
+	}
+}
+
+@keyframes base-media-player-share-in {
+	from {
+		opacity: 0;
+		transform: translateY(#{sz(8px)}) scale(0.9);
+	}
+}

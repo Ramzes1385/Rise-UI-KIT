@@ -1,0 +1,11 @@
+import type { FlowExportImageOptions } from '../../types/api/flowController.types'
+
+const EMPTY_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 1 1"></svg>'
+
+export async function exportFlowSvg(_options?: FlowExportImageOptions): Promise<string> {
+	return EMPTY_SVG
+}
+
+export async function exportFlowPng(_options?: FlowExportImageOptions): Promise<Blob> {
+	return new Blob([], { type: 'image/png' })
+}

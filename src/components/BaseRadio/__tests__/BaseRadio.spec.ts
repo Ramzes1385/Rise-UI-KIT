@@ -1,13 +1,8 @@
-/**
- * Unit-тесты для BaseRadio.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
-import { BaseText } from '@components/BaseText'
 import BaseRadio from '../ui/BaseRadio.vue'
-import type { BaseRadioOption } from '../model/BaseRadio.types'
+import { BaseText } from '@components/BaseText'
+import { render, screen } from '@testing-library/vue'
+import type { BaseRadioOption } from '../types/BaseRadio.types'
 
 const OPTIONS: BaseRadioOption[] = [
 	{ value: 'metal', label: 'Металл' },
@@ -70,6 +65,42 @@ describe('BaseRadio unit', () => {
 			})
 
 			expect(container.querySelector('.base-radio__label')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('доступность группы', () => {
+		it('объявляет radiogroup с именем из заголовка', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test', label: 'Материал' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup', { name: 'Материал' })
+			expect(group).toContainElement(screen.getByRole('radio', { name: 'Металл' }))
+		})
+
+		it('помечает группу aria-required и aria-invalid и связывает её с текстом ошибки', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test', label: 'Материал', isRequired: true, error: 'Выберите материал' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup')
+			expect(group).toHaveAttribute('aria-required', 'true')
+			expect(group).toHaveAttribute('aria-invalid', 'true')
+			expect(group).toHaveAccessibleDescription('Выберите материал')
+		})
+
+		it('без заголовка и ошибки не ставит aria-labelledby, aria-invalid и aria-describedby', () => {
+			render(BaseRadio, {
+				props: { modelValue: '', options: OPTIONS, name: 'test' },
+				...GLOBAL_COMPONENTS,
+			})
+
+			const group = screen.getByRole('radiogroup')
+			expect(group).not.toHaveAttribute('aria-labelledby')
+			expect(group).not.toHaveAttribute('aria-invalid')
+			expect(group).not.toHaveAttribute('aria-describedby')
 		})
 	})
 

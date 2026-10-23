@@ -1,21 +1,29 @@
 <template>
-	<div ref="wrapperRef" class="base-date-picker" :class="classes.root" :style="[sizeScaleStyle, customColorStyle]">
+	<div ref="wrapperRef" :class="[ui('root'), classes.root]" :style="[sizeScaleStyle, customColorStyle]">
 		<DatePickerField
-			:display-value="displayValue"
+			:display-value="fieldText"
 			:placeholder="resolvedProps.placeholder"
 			:label="resolvedProps.label"
-			:error="formField.error"
+			:error="fieldError"
 			:is-disabled="resolvedProps.isDisabled"
 			:is-readonly="resolvedProps.isReadonly"
 			:is-required="resolvedProps.isRequired"
 			:is-open="isOpen"
 			:is-clearable="resolvedProps.isClearable"
 			:has-value="hasValue"
+			:is-editable="isFieldEditable"
+			:has-draft="hasDraft"
 			:input-variant="resolvedProps.inputVariant"
 			:color="color"
 			:size-scale="resolvedProps.sizeScale"
 			:custom-class="classes.field"
+			:class="ui('field')"
+			:part-class="ui"
 			@field-click="handleFieldClick"
+			@keyboard-open="handleKeyboardOpen"
+			@text-input="handleTextInput"
+			@text-commit="handleTextCommit"
+			@text-cancel="handleTextCancel"
 			@clear-click="handleClear"
 			@icon-click="handleFieldClick">
 			<template #icon>
@@ -34,80 +42,51 @@
 			:calendar-config="calendarConfig"
 			:size-scale="resolvedProps.sizeScale"
 			:months-count="computedMonthsCount"
+			:presets="presetItems"
+			:min-days="resolvedProps.minDays"
+			:max-days="resolvedProps.maxDays"
 			:panel-style="panelStyle"
 			:theme="currentTheme"
+			:rise-theme="currentRiseTheme"
+			:motion-preset="currentMotion"
 			:custom-class="classes.panel"
+			:part-class="ui"
 			@model-update="handleModelUpdate"
 			@model-end-update="handleModelEndUpdate"
 			@selected-update="handleSelectedDatesUpdate"
-			@range-select="handleRangeSelect" />
+			@range-select="handleRangeSelect"
+			@preset-select="handlePresetSelect" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useDatePickerState } from '@composables/useDatePickerState'
-import { useExplicitPropDetection } from '@composables/useExplicitPropDetection'
-import { useFormField } from '@composables/useFormField'
-import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT, UI_SIZE } from '@constants'
 import '../styles/BaseDatePicker.style.scss'
-import { resolveDatePickerCalendarConfig } from '../model/BaseDatePickerCalendar.types'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBaseDatePicker } from '../model/useBaseDatePicker'
 import DatePickerField from './DatePickerField/DatePickerField.vue'
 import DatePickerPanel from './DatePickerPanel/DatePickerPanel.vue'
-import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../model/BaseDatePicker.types'
+import type { BaseDatePickerEmits, BaseDatePickerProps, BaseDatePickerSlots } from '../types/BaseDatePicker.types'
 
-// Дефолты резолвятся через useExplicitPropDetection, а не withDefaults:
-// 1) boolean-пропы с дефолтом true (isReadonly, closeOnClickOutside, closeOnEscape) требуют wasPropPassed
-// 2) календарные под-пропы (locale, firstDayOfWeek и др.) явно пробрасываются в calendarConfig
-//    только если родитель их передал — иначе дефолты конфига не перезаписываются.
-const props = defineProps<BaseDatePickerProps>()
-const { wasPropPassed, resolveBooleanPropDefault } = useExplicitPropDetection()
-
-const resolvedProps = computed(() => ({
-	selectionMode: props.selectionMode ?? 'single',
-	placeholder: props.placeholder ?? UI_TEXT.SELECT_DATE,
-	dateFormat: props.dateFormat ?? 'dd.MM.yyyy',
-	inputVariant: props.inputVariant ?? 'outline',
-	calendarVariant: props.calendarVariant ?? 'default',
-	sizeScale: props.sizeScale ?? 100,
-	isDisabled: props.isDisabled ?? false,
-	isReadonly: resolveBooleanPropDefault('isReadonly', props.isReadonly, true),
-	isRequired: props.isRequired ?? false,
-	isClearable: props.isClearable ?? false,
-	closeOnClickOutside: resolveBooleanPropDefault('closeOnClickOutside', props.closeOnClickOutside, true),
-	closeOnEscape: resolveBooleanPropDefault('closeOnEscape', props.closeOnEscape, true),
-	gap: props.gap ?? UI_SIZE.DATEPICKER_GAP,
-	label: props.label ?? '',
-	error: props.error ?? '',
-	isMultiMonth: props.isMultiMonth ?? false,
-}))
-
-const formField = useFormField({
-	value: () => props.modelValue ?? null,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-const { sizeScaleStyle } = useSizeScale({ getScale: () => resolvedProps.value.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'field', 'panel'],
-})
+const props = withDefaults(
+	defineProps<BaseDatePickerProps>(),
+	kitDefaults('BaseDatePicker', { presets: false, monthsShown: undefined, minDays: undefined, maxDays: undefined }),
+)
 
 const emit = defineEmits<BaseDatePickerEmits>()
 defineSlots<BaseDatePickerSlots>()
 
-const calendarConfig = computed(() =>
-	resolveDatePickerCalendarConfig(props, wasPropPassed, props.calendarConfig),
-)
-
 const {
+	ui,
+	resolvedProps,
+	fieldError,
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	calendarConfig,
 	isOpen,
 	currentTheme,
+	currentRiseTheme,
+	currentMotion,
 	wrapperRef,
 	panelRef,
 	computedMonthsCount,
@@ -116,23 +95,23 @@ const {
 	activeValueEnd,
 	activeDates,
 	hasValue,
-	displayValue,
+	fieldText,
+	isFieldEditable,
+	hasDraft,
+	presetItems,
 	handleFieldClick,
+	handleKeyboardOpen,
 	handleClear,
 	handleModelUpdate,
 	handleModelEndUpdate,
 	handleSelectedDatesUpdate,
 	handleRangeSelect,
-} = useDatePickerState({
-	props,
-	resolvedProps,
-	emit,
-	calendarConfig,
-})
+	handleTextInput,
+	handleTextCommit,
+	handleTextCancel,
+	handlePresetSelect,
+	exposed,
+} = useBaseDatePicker(props, emit)
 
-defineExpose({
-	rootRef: wrapperRef,
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

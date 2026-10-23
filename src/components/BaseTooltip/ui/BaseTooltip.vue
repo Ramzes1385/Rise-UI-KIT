@@ -1,145 +1,77 @@
 <template>
-	<div
-		ref="wrapperRef"
-		class="base-tooltip"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		@mouseenter="handleEnter"
-		@mouseleave="handleLeave">
-		<slot />
-
-		<Teleport to="body">
-			<Transition :name="transitionName" :duration="UI_TIMING.TRANSITION_DURATION">
-				<div
-					v-if="isVisible"
-					class="base-tooltip-popup"
-					:class="[[`base-tooltip-popup--${position}`], classes.tooltip]"
-					:style="tooltipStyle">
-					<BaseText tag="span" :custom-class="classes.text">{{ text }}</BaseText>
-				</div>
-			</Transition>
-		</Teleport>
-	</div>
+	<TooltipRoot
+		:is-wrapperless="isWrapperless"
+		:wrapper-class="[ui('root'), classes.root]"
+		:handlers="handlers"
+		:described-by="describedBy"
+		:set-element="setWrapper">
+		<template #trigger>
+			<slot :trigger-props="triggerAttributes" />
+		</template>
+		<template #popup>
+			<Teleport defer :to="teleportTarget">
+				<Transition name="base-tooltip">
+					<div
+						v-if="isShown"
+						:id="tooltipId"
+						ref="popupRef"
+						:class="[ui('popup'), `base-tooltip-popup--${placement}`, animationClass, variantClass, classes.tooltip]"
+						:style="[tooltipStyle, sizeScaleStyle, variantStyle, customColorStyle]"
+						v-bind="inheritedTheme"
+						role="tooltip"
+						@mouseenter="cancelHide"
+						@mouseleave="handleLeave">
+						<BaseText tag="span" :class="ui('text')" :custom-class="classes.text">{{ text }}</BaseText>
+					</div>
+				</Transition>
+			</Teleport>
+		</template>
+	</TooltipRoot>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_TIMING, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcTooltipPosition, getTooltipTransition } from '@utils/tooltipUtils'
 import '../styles/BaseTooltip.style.scss'
-import type { BaseTooltipProps, BaseTooltipSlots } from '../model/BaseTooltip.types'
+import { BaseText } from '@components/BaseText'
+import { TooltipRoot } from '../model/TooltipRoot'
+import { useBaseTooltip } from '../model/useBaseTooltip'
+import { kitDefaults } from '@composables/base/useDefaults'
+import type { BaseTooltipProps, BaseTooltipSlots } from '../types/BaseTooltip.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
-const props = withDefaults(defineProps<BaseTooltipProps>(), {
-	position: 'top',
-	isAlwaysVisible: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseTooltipProps>(),
+	kitDefaults('BaseTooltip', {
+		variant: DEFAULT_VARIANT,
+		position: 'top',
+		isAlwaysVisible: false,
+		isWrapperless: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'fade',
+	}),
+)
 defineSlots<BaseTooltipSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-tooltip', props, ['root', 'tooltip', 'text'])
-
-const isVisible = ref(false)
-const wrapperRef = ref<HTMLElement | null>(null)
-let showTimer: ReturnType<typeof setTimeout> | null = null
-let hideTimer: ReturnType<typeof setTimeout> | null = null
-let rafId: number | null = null
-
-const coords = ref({ top: 0, left: 0, width: 0, height: 0 })
-
-const transitionName = computed(() => getTooltipTransition(props.position))
-
-function updateCoords(): void {
-	/* istanbul ignore next -- defensive guard: wrapperRef всегда доступен после onMounted */
-	if (!wrapperRef.value) return
-	const rect = wrapperRef.value.getBoundingClientRect()
-	coords.value = { top: rect.top, left: rect.left, width: rect.width, height: rect.height }
-}
-
-function startUpdateLoop(): void {
-	function tick(): void {
-		updateCoords()
-		/* istanbul ignore else -- RAF race-condition: tick может выполниться после isVisible=false */
-		if (isVisible.value) {
-			rafId = requestAnimationFrame(tick)
-		}
-	}
-	rafId = requestAnimationFrame(tick)
-}
-
-function stopUpdateLoop(): void {
-	if (rafId !== null) {
-		cancelAnimationFrame(rafId)
-		rafId = null
-	}
-}
-
-const tooltipStyle = computed((): Record<string, string> => {
-	return calcTooltipPosition({
-		position: props.position,
-		coords: coords.value,
-		gap: UI_SIZE.GAP.MD,
-	})
-})
-
-function handleEnter(): void {
-	if (props.isAlwaysVisible) return
-
-	/* istanbul ignore if -- hideTimer присутствует только после handleLeave с активным таймером, цепочка тестируется в e2e */
-	if (hideTimer) {
-		clearTimeout(hideTimer)
-		hideTimer = null
-	}
-
-	showTimer = setTimeout(() => {
-		updateCoords()
-		isVisible.value = true
-		startUpdateLoop()
-	}, UI_TIMING.TOOLTIP_SHOW_DELAY)
-}
-
-function handleLeave(): void {
-	if (props.isAlwaysVisible) return
-
-	/* istanbul ignore else -- showTimer всегда установлен после handleEnter перед handleLeave */
-	if (showTimer) {
-		clearTimeout(showTimer)
-		showTimer = null
-	}
-
-	hideTimer = setTimeout(() => {
-		isVisible.value = false
-		stopUpdateLoop()
-	}, UI_TIMING.TOOLTIP_HIDE_DELAY)
-}
-
-onMounted(() => {
-	if (props.isAlwaysVisible) {
-		updateCoords()
-		isVisible.value = true
-		startUpdateLoop()
-	}
-})
-
-/* istanbul ignore next -- watch isAlwaysVisible: переключение во время жизни компонента покрывается e2e/visual тестами */
-watch(
-	() => props.isAlwaysVisible,
-	newVal => {
-		if (newVal) {
-			updateCoords()
-			isVisible.value = true
-			startUpdateLoop()
-		} else {
-			isVisible.value = false
-			stopUpdateLoop()
-		}
-	},
-)
-
-onBeforeUnmount(() => {
-	stopUpdateLoop()
-	if (showTimer) clearTimeout(showTimer)
-	if (hideTimer) clearTimeout(hideTimer)
-})
+const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	teleportTarget,
+	isShown,
+	setWrapper,
+	popupRef,
+	inheritedTheme,
+	tooltipId,
+	triggerAttributes,
+	handlers,
+	describedBy,
+	isWrapperless,
+	placement,
+	tooltipStyle,
+	handleLeave,
+	cancelHide,
+	ui,
+	animationClass,
+} = useBaseTooltip(props)
 </script>

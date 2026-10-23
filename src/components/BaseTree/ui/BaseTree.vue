@@ -1,63 +1,100 @@
 <template>
 	<div
-		class="base-tree"
-		:class="[variantClass, { 'base-tree--arrow-right': arrowPosition === 'right' }, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<BaseTreeNode v-for="node in items" :key="node.id" :node="node" :depth="0" :size-scale="sizeScale">
-			<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
-			<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
-			<template #label="slotProps"><slot name="label" v-bind="slotProps" /></template>
-			<template #actions="slotProps"><slot name="actions" v-bind="slotProps" /></template>
-		</BaseTreeNode>
+		ref="rootRef"
+		:class="[
+			ui('root'),
+			variantClass,
+			{ 'base-tree--arrow-right': arrowPosition === 'right', 'base-tree--virtual': isVirtual },
+			classes.root,
+		]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle, virtualStyle]"
+		role="tree"
+		:aria-label="ariaLabel"
+		@keydown="handleKeydown">
+		<div v-if="isVirtual" class="base-tree__virtual" role="none" :style="{ height: `${totalSize}px` }">
+			<div
+				v-for="entry in virtualItems"
+				:key="entry.key"
+				:ref="element => measureElement(element, entry.index)"
+				:class="ui('row')"
+				role="none"
+				:style="{ transform: `translateY(${entry.start}px)` }">
+				<BaseTreeNode
+					:node="visibleNodes[entry.index].node"
+					:depth="visibleNodes[entry.index].depth"
+					:set-size="visibleNodes[entry.index].setSize"
+					:pos-in-set="visibleNodes[entry.index].posInSet"
+					:size-scale="sizeScale"
+					is-flat>
+					<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
+					<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
+					<template #label="slotProps">
+						<slot v-if="$slots[`label-${slotProps.node.id}`]" :name="`label-${slotProps.node.id}`" v-bind="slotProps" />
+						<slot v-else name="label" v-bind="slotProps" />
+					</template>
+					<template #actions="slotProps"><slot name="actions" v-bind="slotProps" /></template>
+				</BaseTreeNode>
+			</div>
+		</div>
+		<template v-else>
+			<BaseTreeNode
+				v-for="(node, index) in rootNodes"
+				:key="node.id"
+				:node="node"
+				:depth="0"
+				:set-size="rootNodes.length"
+				:pos-in-set="index + 1"
+				:size-scale="sizeScale">
+				<template #icon="slotProps"><slot name="icon" v-bind="slotProps" /></template>
+				<template #arrow="slotProps"><slot name="arrow" v-bind="slotProps" /></template>
+				<template #label="slotProps">
+					<slot v-if="$slots[`label-${slotProps.node.id}`]" :name="`label-${slotProps.node.id}`" v-bind="slotProps" />
+					<slot v-else name="label" v-bind="slotProps" />
+				</template>
+				<template #actions="slotProps"><slot name="actions" v-bind="slotProps" /></template>
+			</BaseTreeNode>
+		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, provide, toRef } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useTreeState } from '@composables/useTreeState'
 import '../styles/BaseTree.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
 import BaseTreeNode from './BaseTreeNode.vue'
-import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../model/BaseTree.types'
+import { useBaseTree } from '../model/useBaseTree'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseTreeEmits, BaseTreeProps, BaseTreeSlots } from '../types/BaseTree.types'
 
-const props = withDefaults(defineProps<BaseTreeProps>(), {
-	selectionMode: 'none',
-	arrowPosition: 'left',
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isDefaultExpandAll: false,
-})
-
+const props = withDefaults(
+	defineProps<BaseTreeProps>(),
+	kitDefaults('BaseTree', {
+		variant: DEFAULT_VARIANT,
+		selectionMode: 'none',
+		arrowPosition: 'left',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isDefaultExpandAll: false,
+		isVirtual: false,
+		height: 400,
+		itemSize: 36,
+	}),
+)
 const emit = defineEmits<BaseTreeEmits>()
 defineSlots<BaseTreeSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
-	'base-tree',
-	props,
-	['root', 'node', 'header', 'arrow', 'checkbox', 'icon', 'label', 'actions', 'children'],
-)
-
-const { expandedIds, selectedIds, expandedSet, selectedSet, toggleNode, selectNode } = useTreeState({
-	items: toRef(props, 'items'),
-	selectionMode: toRef(props, 'selectionMode'),
-	expandedIds: toRef(props, 'expandedIds'),
-	selectedIds: toRef(props, 'selectedIds'),
-	isDefaultExpandAll: toRef(props, 'isDefaultExpandAll'),
-	emit,
-})
-
-provide(TREE_CONTEXT_KEY, {
-	selectionMode: toRef(props, 'selectionMode'),
-	arrowPosition: toRef(props, 'arrowPosition'),
-	expandedIds,
-	selectedIds,
-	expandedSet,
-	selectedSet,
-	toggleNode,
-	selectNode,
-	classes: computed(function getClasses() {
-		return classes.value
-	}),
-})
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	rootNodes,
+	visibleNodes,
+	rootRef,
+	virtualStyle,
+	virtualItems,
+	totalSize,
+	measureElement,
+	handleKeydown,
+} = useBaseTree(props, emit)
 </script>

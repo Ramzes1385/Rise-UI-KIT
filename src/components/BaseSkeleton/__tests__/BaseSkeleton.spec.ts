@@ -1,8 +1,3 @@
-/**
- * Unit-тесты для BaseSkeleton.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'
@@ -13,6 +8,12 @@ describe('BaseSkeleton unit', () => {
 			const { container } = render(BaseSkeleton)
 
 			expect(container.querySelector('.base-skeleton')).toBeInTheDocument()
+		})
+
+		it('должен скрывать декоративную заглушку от вспомогательных технологий', () => {
+			const { container } = render(BaseSkeleton)
+
+			expect(container.querySelector('.base-skeleton')).toHaveAttribute('aria-hidden', 'true')
 		})
 	})
 
@@ -77,6 +78,14 @@ describe('BaseSkeleton unit', () => {
 
 			const el = container.querySelector('.base-skeleton') as HTMLElement
 			expect(el.style.height).toBe('16px')
+		})
+
+		it('не должен задавать inline-размеры без пропсов width/height (размер задают стили формы)', () => {
+			const { container } = render(BaseSkeleton, { props: { shape: 'circle' } })
+
+			const el = container.querySelector('.base-skeleton') as HTMLElement
+			expect(el.style.width).toBe('')
+			expect(el.style.height).toBe('')
 		})
 
 		it('должен устанавливать ширину как строку когда передана строка', () => {
@@ -159,6 +168,65 @@ describe('BaseSkeleton unit', () => {
 			})
 
 			expect(container.querySelector('.base-skeleton')?.classList.contains('custom-skeleton-root')).toBe(true)
+		})
+	})
+
+	describe('проверка width и height', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		function skeleton(props: Record<string, unknown>): HTMLElement {
+			const { container } = render(BaseSkeleton, { props })
+			return container.querySelector('.base-skeleton') as HTMLElement
+		}
+
+		it('0 применяется как 0px, а не отбрасывается', () => {
+			const el = skeleton({ width: 0, height: 0 })
+
+			expect(el.style.width).toBe('0px')
+			expect(el.style.height).toBe('0px')
+		})
+
+		it.each(['auto', 'fit-content', ' max-content '])('ключевое слово %s при sizeScale ≠ 100 — без calc', value => {
+			const el = skeleton({ width: value, sizeScale: 150 })
+
+			expect(el.style.width).toBe(value.trim())
+		})
+
+		it('длина при sizeScale ≠ 100 масштабируется через calc', () => {
+			expect(skeleton({ height: '2rem', sizeScale: 50 }).style.height).toMatch(/^calc\(/)
+		})
+
+		it('пустая строка не задаёт размер', () => {
+			expect(skeleton({ width: '  ' }).style.width).toBe('')
+		})
+
+		it.each([-10, Number.NaN])('число %s не применяется и даёт предупреждение', value => {
+			const el = skeleton({ width: value, height: value })
+
+			expect(el.style.width).toBe('')
+			expect(el.style.height).toBe('')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSkeleton: `width`'))
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSkeleton: `height`'))
+		})
+
+		it('предупреждение не повторяется при смене sizeScale и color, но повторяется при новом width', async () => {
+			const { rerender } = render(BaseSkeleton, { props: { width: -10 } })
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+
+			await rerender({ width: -10, sizeScale: 150 })
+			await rerender({ width: -10, sizeScale: 150, color: 'var(--rise-surface)' })
+			expect(warnSpy).toHaveBeenCalledTimes(1)
+
+			await rerender({ width: -20, sizeScale: 150, color: 'var(--rise-surface)' })
+			expect(warnSpy).toHaveBeenCalledTimes(2)
 		})
 	})
 })

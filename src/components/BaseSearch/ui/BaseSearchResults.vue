@@ -1,64 +1,82 @@
 <template>
 	<slot name="results" :results="visibleResults" :query="query" :is-loading="isLoading">
-		<slot name="loading" v-if="isLoading" />
+		<slot v-if="isLoading" name="loading">
+			<Transition v-if="visibleResults.length === 0" name="base-search-state" appear :css="!isMotionReduced">
+				<div :class="ui('status')" role="status" v-bind="motionAttrs">
+					<BaseText tag="span" :size-scale="sizeScale">{{ UI_TEXT.LOADING }}</BaseText>
+				</div>
+			</Transition>
+		</slot>
 		<slot name="result-before" :results="visibleResults" :query="query" />
-		<TransitionGroup v-if="visibleResults.length > 0" name="search-result">
-			<div
-				v-for="(item, index) in visibleResults"
-				:key="item.id"
-				class="base-search__result"
-				:class="[{ 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
-				@mousedown.prevent="handleSelect(item)"
-				@mouseenter="handleHighlight(index)">
-				<slot name="result" :item="item" :index="index">
-					<BaseImage
-						v-if="item.image"
-						:src="item.image"
-						:alt="item.title"
-						class="base-search__result-image"
-						:custom-class="classes.resultImage"
-						:border-radius="4"
-						fit="cover"
-						:size-scale="sizeScale" />
-					<BaseIcon
-						v-else-if="item.icon"
-						:name="item.icon"
-						class="base-search__result-icon"
-						:custom-class="classes.resultIcon"
-						:size-scale="calcIconScale('sm', sizeScale)" />
-					<div class="base-search__result-content" :class="classes.resultContent">
+		<Transition v-if="visibleResults.length > 0" name="base-search-state" appear :css="!isMotionReduced">
+			<div :id="listboxId" :class="ui('listbox')" role="listbox" :aria-label="listboxLabel" v-bind="motionAttrs">
+				<div
+					v-for="(item, index) in visibleResults"
+					:id="listboxId ? getSearchOptionId(listboxId, index) : undefined"
+					:key="item.id"
+					:class="[ui('result'), { 'base-search__result--highlighted': index === highlightedIndex }, classes.result]"
+					role="option"
+					:aria-selected="index === highlightedIndex ? 'true' : 'false'"
+					@mousedown.prevent="handleSelect(item)"
+					@mouseenter="handleHighlight(index)">
+					<slot name="result" :item="item" :index="index">
+						<BaseImage
+							v-if="item.image"
+							:src="item.image"
+							:alt="item.title"
+							:class="ui('result-image')"
+							:custom-class="classes.resultImage"
+							fit="cover"
+							:size-scale="sizeScale" />
+						<BaseIcon
+							v-else-if="item.icon"
+							:name="item.icon"
+							:class="ui('result-icon')"
+							:custom-class="classes.resultIcon"
+							:size-scale="calcIconScale('sm', sizeScale)" />
+						<div :class="[ui('result-content'), classes.resultContent]">
+							<BaseText tag="span" :class="ui('result-title')" :custom-class="classes.resultTitle" :size-scale="sizeScale">
+								<template v-for="(part, partIndex) in splitByQuery(item.title)" :key="partIndex">
+									<mark v-if="part.isMatch" :class="ui('match')">{{ part.text }}</mark>
+									<template v-else>{{ part.text }}</template>
+								</template>
+							</BaseText>
+							<BaseText
+								v-if="item.description"
+								tag="span"
+								:class="ui('result-desc')"
+								:custom-class="classes.resultDesc"
+								:size-scale="sizeScale">
+								<template v-for="(part, partIndex) in splitByQuery(item.description)" :key="partIndex">
+									<mark v-if="part.isMatch" :class="ui('match')">{{ part.text }}</mark>
+									<template v-else>{{ part.text }}</template>
+								</template>
+							</BaseText>
+						</div>
 						<BaseText
+							v-if="item.category"
 							tag="span"
-							class="base-search__result-title"
-							:custom-class="classes.resultTitle"
+							:class="ui('result-category')"
+							:custom-class="classes.resultCategory"
 							:size-scale="sizeScale">
-							{{ item.title }}
+							{{ item.category }}
 						</BaseText>
-						<BaseText
-							v-if="item.description"
-							tag="span"
-							class="base-search__result-desc"
-							:custom-class="classes.resultDesc"
-							:size-scale="sizeScale">
-							{{ item.description }}
-						</BaseText>
-					</div>
-					<BaseText
-						v-if="item.category"
-						tag="span"
-						class="base-search__result-category"
-						:custom-class="classes.resultCategory"
-						:size-scale="sizeScale">
-						{{ item.category }}
-					</BaseText>
-				</slot>
+					</slot>
+				</div>
 			</div>
-		</TransitionGroup>
+		</Transition>
 		<template v-else-if="query && !isLoading">
 			<slot name="empty">
-				<div class="base-search__empty" :class="classes.empty">
-					<BaseText :custom-class="classes.emptyText" :size-scale="sizeScale">{{ UI_TEXT.NO_RESULTS }}</BaseText>
-				</div>
+				<Transition name="base-search-state" appear :css="!isMotionReduced">
+					<BaseEmpty
+						is-compact
+						variant="ghost"
+						:class="[ui('empty'), classes.empty]"
+						:custom-class="{ description: classes.emptyText }"
+						:description="emptyText ?? UI_TEXT.NO_RESULTS"
+						:size-scale="sizeScale"
+						v-bind="motionAttrs" />
+				</Transition>
 			</slot>
 		</template>
 		<slot name="result-after" :results="visibleResults" :query="query" />
@@ -66,25 +84,21 @@
 </template>
 
 <script setup lang="ts">
+import { UI_TEXT } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
-import { BaseImage } from '@components/BaseImage'
 import { BaseText } from '@components/BaseText'
-import { UI_TEXT } from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import type { SearchResult } from '../model/BaseSearch.types'
-import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../model/BaseSearchResults.types'
+import { BaseEmpty } from '@components/BaseEmpty'
+import { BaseImage } from '@components/BaseImage'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { getSearchOptionId } from '../model/searchOptionId'
+import { useBaseSearchResults } from '../model/useBaseSearchResults'
+import type { BaseSearchResultsEmits, BaseSearchResultsProps, BaseSearchResultsSlots } from '../types/BaseSearchResults.types'
 
-defineProps<BaseSearchResultsProps>()
+const props = defineProps<BaseSearchResultsProps>()
 
 const emit = defineEmits<BaseSearchResultsEmits>()
 
 defineSlots<BaseSearchResultsSlots>()
 
-function handleSelect(item: SearchResult): void {
-	emit('select', item)
-}
-
-function handleHighlight(index: number): void {
-	emit('highlight', index)
-}
+const { splitByQuery, handleSelect, handleHighlight } = useBaseSearchResults(props, emit)
 </script>

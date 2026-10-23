@@ -1,0 +1,27 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	&__content {
+		position: relative;
+		isolation: isolate;
+	}
+
+	&__wrapper {
+		overflow: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+
+		&--loading {
+			pointer-events: none;
+		}
+	}
+
+	&__sentinel {
+		height: 1px;
+		margin-top: -1px;
+		visibility: hidden;
+		pointer-events: none;
+	}
+}

@@ -1,20 +1,13 @@
-/**
- * Unit-тесты для BaseSearch.
- * Проверяют рендер, CSS-модификаторы и базовое поведение.
- */
-
-import { fireEvent, render, waitFor } from '@testing-library/vue'
 import '@testing-library/jest-dom/vitest'
-import { nextTick } from 'vue'
-import { useEscapeKey } from '@composables/useEscapeKey'
+import { nextTick, reactive } from 'vue'
 import BaseSearch from '../ui/BaseSearch.vue'
+import { useEscapeKey } from '@composables/overlay/useEscapeKey'
+import { fireEvent, render, waitFor } from '@testing-library/vue'
 
-/** Мокаем DOM-зависимые композаблы */
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({ useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }) }))
 
-/** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {
 	stubs: {
 		BaseDropdown: {
@@ -25,7 +18,7 @@ const globalConfig = {
 			template:
 				'<div class="base-input-stub" :class="customClass" :data-placeholder="placeholder" :data-error="error"><slot name="prefix" /><slot name="suffix" /></div>',
 			props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type', 'customClass'],
-			methods: { focus: vi.fn() },
+			methods: { focus: vi.fn(), blur: vi.fn() },
 		},
 		BaseButton: {
 			template: '<button class="base-button-stub" :class="customClass"><slot /></button>',
@@ -440,7 +433,6 @@ describe('BaseSearch unit', () => {
 				global: globalConfig,
 			})
 
-			/** BaseInput стаб эмитит keydown наверх */
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.keyDown(input, { key: 'Enter' })
 			expect(emitted()).toHaveProperty('search')
@@ -457,7 +449,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub" :data-placeholder="placeholder" :data-error="error"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -500,7 +492,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -598,6 +590,40 @@ describe('BaseSearch unit', () => {
 
 			expect(container.querySelector('.base-search__result')).not.toBeInTheDocument()
 		})
+
+		it('должен показывать результаты сервера без клиентской фильтрации при isRemote', () => {
+			const { container } = render(BaseSearch, {
+				props: {
+					modelValue: 'zakat',
+					isRemote: true,
+					results: [
+						{ id: 1, title: 'Закат в горах' },
+						{ id: 2, title: 'Вечер', category: 'Закаты' },
+					],
+				},
+				global: globalConfig,
+			})
+
+			const titles = Array.from(container.querySelectorAll('.base-search__result-title')).map(el => el.textContent?.trim())
+			expect(titles).toEqual(['Закат в горах', 'Вечер'])
+		})
+
+		it('должен ограничивать результаты maxResults при isRemote', () => {
+			const { container } = render(BaseSearch, {
+				props: {
+					modelValue: 'zakat',
+					isRemote: true,
+					maxResults: 1,
+					results: [
+						{ id: 1, title: 'Закат в горах' },
+						{ id: 2, title: 'Вечер' },
+					],
+				},
+				global: globalConfig,
+			})
+
+			expect(container.querySelectorAll('.base-search__result')).toHaveLength(1)
+		})
 	})
 
 	describe('пропс color', () => {
@@ -665,11 +691,10 @@ describe('BaseSearch unit', () => {
 						props: ['isOpen', 'position', 'matchWidth', 'preventMousedown', 'sizeScale', 'maxHeight'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -682,7 +707,6 @@ describe('BaseSearch unit', () => {
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.focus(input)
 
-			// После фокуса с query — dropdown должен открыться
 			const dropdown = container.querySelector('.base-dropdown-stub')
 			expect(dropdown?.getAttribute('data-is-open')).toBe('true')
 		})
@@ -847,7 +871,6 @@ describe('BaseSearch unit', () => {
 
 			await rerender({ modelValue: 'новый запрос' })
 
-			// После обновления modelValue, query должен обновиться и отобразиться в инпуте
 			const input = container.querySelector('.base-input-stub')
 			expect(input?.getAttribute('data-placeholder')).toBeTruthy()
 		})
@@ -865,7 +888,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -880,7 +903,6 @@ describe('BaseSearch unit', () => {
 
 			vi.advanceTimersByTime(300)
 
-			// Не должен эмитить search автоматически
 			expect(emitted()).not.toHaveProperty('search')
 
 			vi.useRealTimers()
@@ -902,7 +924,7 @@ describe('BaseSearch unit', () => {
 							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -916,17 +938,13 @@ describe('BaseSearch unit', () => {
 				global: instantConfig,
 			})
 
-			// Сначала фокусируемся, чтобы isFocused=true
 			const input = container.querySelector('.base-input-stub')!
 			await fireEvent.focus(input)
 
-			// До Enter — результаты не показываются (dropdown закрыт)
 			expect(container.querySelector('.base-search__result')).not.toBeInTheDocument()
 
-			// Нажимаем Enter
 			await fireEvent.keyDown(input, { key: 'Enter' })
 
-			// После Enter — isSearchTriggered=true, результаты показываются
 			expect(container.querySelector('.base-search__result')).toBeInTheDocument()
 		})
 	})
@@ -943,7 +961,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="prefix" /><slot name="suffix" /></div>',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -960,7 +978,6 @@ describe('BaseSearch unit', () => {
 
 			vi.advanceTimersByTime(300)
 
-			// После unmount таймер должен быть отменён
 			expect(emitted()).not.toHaveProperty('search')
 
 			vi.useRealTimers()
@@ -1001,6 +1018,122 @@ describe('BaseSearch unit', () => {
 		})
 	})
 
+	describe('подсветка при изменении списка результатов', () => {
+		const navigationConfig = {
+			stubs: {
+				...globalConfig.stubs,
+				BaseDropdown: {
+					template: '<div class="base-dropdown-stub" :data-is-open="isOpen"><slot /><slot v-if="isOpen" name="dropdown" /></div>',
+					props: ['isOpen'],
+				},
+				BaseInput: {
+					template:
+						'<input class="base-input-stub" :value="modelValue" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+					props: ['modelValue'],
+					emits: ['focus', 'keydown', 'update:modelValue'],
+					methods: { focus: vi.fn(), blur: vi.fn() },
+				},
+			},
+		}
+
+		const FIVE_RESULTS = [
+			{ id: 1, title: 'Тест 1' },
+			{ id: 2, title: 'Тест 2' },
+			{ id: 3, title: 'Тест 3' },
+			{ id: 4, title: 'Тест 4' },
+			{ id: 5, title: 'Тест 5' },
+		]
+
+		async function highlightFourth(input: Element): Promise<void> {
+			await fireEvent.focus(input)
+			for (let step = 0; step < 4; step += 1) {
+				await fireEvent.keyDown(input, { key: 'ArrowDown' })
+			}
+		}
+
+		it('должен сбрасывать подсветку, когда новый ответ короче, и искать по Enter', async () => {
+			const { container, emitted, rerender } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			await rerender({ results: [FIVE_RESULTS[0]] })
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест']])
+		})
+
+		it('должен сбрасывать подсветку при вводе, чтобы Enter искал, а не выбирал', async () => {
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			await fireEvent.update(input, 'тест 1')
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест 1']])
+		})
+
+		it('не должен выбирать скрытый результат по Enter после изменения запроса при isInstant=false', async () => {
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS, isInstant: false },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await fireEvent.focus(input)
+			await fireEvent.keyDown(input, { key: 'Enter' })
+			await fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+			await fireEvent.update(input, 'тест 2')
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toBeUndefined()
+			expect(emitted().search).toEqual([['тест'], ['тест 2']])
+		})
+
+		it('должен сохранять подсветку, если набор результатов не изменился', async () => {
+			const { container, emitted, rerender } = render(BaseSearch, {
+				props: { modelValue: 'тест', results: FIVE_RESULTS },
+				global: navigationConfig,
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await fireEvent.focus(input)
+			await fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+			await rerender({ results: FIVE_RESULTS.map(item => ({ ...item })) })
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(emitted().select).toEqual([[FIVE_RESULTS[0]]])
+		})
+
+		it('не должен падать и выбирать исчезнувший результат, если список сократился в том же тике, что и Enter', async () => {
+			const errorHandler = vi.fn()
+			const results = reactive([...FIVE_RESULTS])
+			const { container, emitted } = render(BaseSearch, {
+				props: { modelValue: 'тест', results },
+				global: { ...navigationConfig, config: { errorHandler } },
+			})
+			const input = container.querySelector('.base-input-stub')!
+			await highlightFourth(input)
+
+			results.splice(1)
+			await fireEvent.keyDown(input, { key: 'Enter' })
+
+			expect(errorHandler).not.toHaveBeenCalled()
+			expect(emitted().select).toBeUndefined()
+
+			await fireEvent.keyDown(input, { key: 'Enter' })
+			expect(emitted().search).toEqual([['тест']])
+		})
+	})
+
 	describe('дополнительное покрытие ветвей', () => {
 		it('должен вызывать setter isOpen при эмите update:isOpen', async () => {
 			const focusConfig = {
@@ -1013,11 +1146,10 @@ describe('BaseSearch unit', () => {
 						emits: ['update:isOpen'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue', 'placeholder', 'variant', 'sizeScale', 'isDisabled', 'error', 'type'],
 						emits: ['update:modelValue', 'focus', 'blur', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1047,11 +1179,10 @@ describe('BaseSearch unit', () => {
 						props: ['isOpen'],
 					},
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @blur="$emit(\'blur\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus', 'blur'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1082,7 +1213,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1112,7 +1243,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1145,7 +1276,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1180,7 +1311,7 @@ describe('BaseSearch unit', () => {
 						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" />',
 						props: ['modelValue'],
 						emits: ['focus'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1287,7 +1418,7 @@ describe('BaseSearch unit', () => {
 							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" :value="modelValue" />',
 						props: ['modelValue'],
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1319,10 +1450,9 @@ describe('BaseSearch unit', () => {
 				stubs: {
 					...globalConfig.stubs,
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1347,10 +1477,9 @@ describe('BaseSearch unit', () => {
 				stubs: {
 					...globalConfig.stubs,
 					BaseInput: {
-						template:
-							'<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
+						template: '<input class="base-input-stub" @focus="$emit(\'focus\')" @keydown="$emit(\'keydown\', $event)" />',
 						emits: ['focus', 'keydown'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1435,7 +1564,7 @@ describe('BaseSearch unit', () => {
 					BaseInput: {
 						template: '<div class="base-input-stub"><slot name="suffix" /></div>',
 						props: ['modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1476,7 +1605,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="suffix" /></div>',
 						props: ['modelValue'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}
@@ -1578,7 +1707,7 @@ describe('BaseSearch unit', () => {
 							'<div class="base-input-stub"><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /><slot name="suffix" /></div>',
 						props: ['modelValue'],
 						emits: ['update:modelValue'],
-						methods: { focus: vi.fn() },
+						methods: { focus: vi.fn(), blur: vi.fn() },
 					},
 				},
 			}

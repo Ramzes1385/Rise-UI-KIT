@@ -1,78 +1,67 @@
 .base-separator {
+	@include custom-color-scope;
+	--sep-spacing: 0px;
+
 	display: flex;
+	align-items: center;
 
-	@include custom-text(color, var(--color-text));
-
-	/* Горизонтальный */
 	&--horizontal {
 		flex-direction: row;
-		align-items: center;
 		width: 100%;
 	}
 
-	/* Вертикальный */
 	&--vertical {
 		flex-direction: column;
-		align-items: center;
+		align-self: stretch;
 		height: 100%;
-		min-height: 24px;
+		min-height: sz(20px);
 	}
 
-	/* Линия */
 	&__line {
-		flex: 1;
-		@include custom-bg(background-color, var(--color-border));
-		@include transition(background-color);
+		flex: 1 1 0;
+		border: 0 solid;
+		@include custom-bg(border-color, ct(separator, border, var(--rise-border)));
 	}
 
 	&--horizontal &__line {
-		height: var(--sep-thickness, 1px);
 		min-width: 0;
+		border-top-width: var(--sep-thickness, 1px);
 	}
 
 	&--vertical &__line {
-		width: var(--sep-thickness, 1px);
 		min-height: 0;
+		border-inline-start-width: var(--sep-thickness, 1px);
 	}
 
-	/* Пунктир — горизонтальный */
-	&--dashed.base-separator--horizontal &__line {
-		background: repeating-linear-gradient(
-			90deg,
-			var(--color-border) 0,
-			var(--color-border) 8px,
-			transparent 8px,
-			transparent 14px
-		);
-		background-color: transparent;
+	&--horizontal:not(.base-separator--with-content) {
+		padding-block: sz(var(--sep-spacing));
 	}
 
-	/* Пунктир — вертикальный */
-	&--dashed.base-separator--vertical &__line {
-		background: repeating-linear-gradient(
-			180deg,
-			var(--color-border) 0,
-			var(--color-border) 8px,
-			transparent 8px,
-			transparent 14px
-		);
-		background-color: transparent;
+	&--vertical:not(.base-separator--with-content) {
+		padding-inline: sz(var(--sep-spacing));
 	}
 
-	/* Контент между линиями */
+	&--dashed &__line {
+		border-style: dashed;
+	}
+
 	&__content {
-		padding: var(--sep-pad-y, 10px) var(--sep-pad-x, 20px);
-		font-size: sz(13px);
-		font-weight: 500;
-		@include custom-text(color, var(--color-text-muted));
-		white-space: nowrap;
+		--sep-pad-y: #{ct(separator-content, padding-y, 0px)};
+		--sep-pad-x: #{ct(separator-content, padding-x, 12px)};
+
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		flex-shrink: 0;
+		padding: sz(var(--sep-pad-y)) sz(var(--sep-pad-x));
+		@include caps-label;
+		font-size: sz(ct(separator-content, font-size, 11px));
+		font-weight: ct(separator-content, font-weight, var(--rise-font-weight-normal));
+		@include custom-text(color, ct(separator-content, text, var(--rise-text-muted)));
+		white-space: nowrap;
 	}
 
 	&--vertical &__content {
-		padding: var(--sep-pad-x, 20px) var(--sep-pad-y, 10px);
+		padding: sz(var(--sep-pad-x)) sz(var(--sep-pad-y));
 	}
 }

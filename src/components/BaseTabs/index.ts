@@ -1,3 +1,3 @@
-export { TABS_VARIANTS } from './model/BaseTabs.types'
-export type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots, TabItem, TabsVariant } from './model/BaseTabs.types'
+export { TABS_PARTS, TABS_VARIANTS } from './types/BaseTabs.types'
+export type { BaseTabsEmits, BaseTabsPart, BaseTabsProps, BaseTabsSlots, TabItem, TabsVariant } from './types/BaseTabs.types'
 export { default as BaseTabs } from './ui/BaseTabs.vue'

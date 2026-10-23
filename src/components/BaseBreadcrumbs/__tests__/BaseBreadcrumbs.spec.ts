@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseBreadcrumbs.
- * Проверяют рендер, пропсы, collapsed-логику и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/vue'
 import BaseBreadcrumbs from '../ui/BaseBreadcrumbs.vue'
-import type { BreadcrumbItem } from '../model/BaseBreadcrumbs.types'
+import type { BreadcrumbItem } from '../types/BaseBreadcrumbs.types'
 
-/** Стандартный набор элементов для тестов */
 const ITEMS: BreadcrumbItem[] = [
 	{ label: 'Главная', to: '/' },
 	{ label: 'Каталог', to: '/catalog' },
@@ -69,7 +63,6 @@ describe('BaseBreadcrumbs unit', () => {
 
 			const slashSeps = container.querySelectorAll('.base-breadcrumbs__sep')
 			expect(slashSeps.length).toBeGreaterThan(0)
-			// Должно содержать несколько слэшей (после дома, после многоточия и между видимыми элементами)
 			const slashes = container.textContent?.match(/\//g)
 			expect(slashes?.length).toBeGreaterThanOrEqual(3)
 		})
@@ -93,6 +86,13 @@ describe('BaseBreadcrumbs unit', () => {
 			expect(dotSeps.length).toBeGreaterThan(0)
 			const dots = container.textContent?.match(/•/g)
 			expect(dots?.length).toBeGreaterThanOrEqual(3)
+		})
+
+		it('должен рендерить стрелку arrow-right для separator="arrow" (а не chevron)', () => {
+			const { container } = render(BaseBreadcrumbs, {
+				props: { items: ITEMS, separator: 'arrow' },
+			})
+			expect(container.querySelector('.base-breadcrumbs__sep use')?.getAttribute('href')).toBe('icons.svg#arrow-right')
 		})
 
 		it('должен рендерить chevron-разделитель для неизвестного типа разделителя', () => {
@@ -119,7 +119,6 @@ describe('BaseBreadcrumbs unit', () => {
 				props: { items: ITEMS, maxItems: 2 },
 			})
 
-			// Должен быть ellipsis + видимые элементы
 			const ellipsis = container.querySelector('.base-breadcrumbs__item--ellipsis')
 			expect(ellipsis).toBeInTheDocument()
 		})
@@ -135,8 +134,8 @@ describe('BaseBreadcrumbs unit', () => {
 			ellipsisBtn.dispatchEvent(new Event('click'))
 			await new Promise(resolve => setTimeout(resolve, 0))
 
-			expect(container.querySelector('.base-breadcrumbs__item--ellipsis')).not.toBeInTheDocument()
-			const listItems = container.querySelectorAll('.base-breadcrumbs__item')
+			expect(ellipsisBtn).toHaveAttribute('aria-expanded', 'true')
+			const listItems = container.querySelectorAll('.base-breadcrumbs__item:not(.base-breadcrumbs__item--ellipsis)')
 			expect(listItems).toHaveLength(ITEMS.length)
 		})
 
@@ -196,7 +195,6 @@ describe('BaseBreadcrumbs unit', () => {
 			})
 
 			const links = container.querySelectorAll('.base-breadcrumbs__link')
-			// Первый элемент - "Главная" с to: '/'
 			const firstLink = links[0] as HTMLElement
 			firstLink.dispatchEvent(new Event('click'))
 
@@ -275,15 +273,6 @@ describe('BaseBreadcrumbs unit', () => {
 		})
 	})
 
-	describe('Schema.org', () => {
-		it('должен рендерить JSON-LD скрипт для SEO', () => {
-			const { container } = render(BaseBreadcrumbs, { props: { items: ITEMS } })
-
-			const script = container.querySelector('script[type="application/ld+json"]')
-			expect(script).toBeInTheDocument()
-		})
-	})
-
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BaseBreadcrumbs, {
@@ -335,16 +324,12 @@ describe('BaseBreadcrumbs unit', () => {
 				props: { items: itemsWithIcons },
 			})
 
-			// Должно быть две иконки (одна в ссылке, одна в текущем элементе)
 			const icons = container.querySelectorAll('.base-breadcrumbs__icon')
 			expect(icons).toHaveLength(2)
 		})
 
 		it('не должен выполнять навигацию, если у элемента нет to и href', async () => {
-			const itemsWithoutNav: BreadcrumbItem[] = [
-				{ label: 'Главная' }, // Не текущий, но без путей навигации
-				{ label: 'Каталог' }, // Текущий
-			]
+			const itemsWithoutNav: BreadcrumbItem[] = [{ label: 'Главная' }, { label: 'Каталог' }]
 			const { emitted, container } = render(BaseBreadcrumbs, {
 				props: { items: itemsWithoutNav },
 			})
@@ -353,7 +338,6 @@ describe('BaseBreadcrumbs unit', () => {
 			const firstLink = links[0] as HTMLElement
 			firstLink.dispatchEvent(new Event('click'))
 
-			// Должен быть эмитирован клик, но не навигация
 			expect(emitted()).toHaveProperty('item-click')
 			expect(emitted()).not.toHaveProperty('navigate')
 		})
@@ -368,7 +352,6 @@ describe('BaseBreadcrumbs unit', () => {
 				},
 			})
 
-			// Должны быть chevron-разделители (иконки)
 			const sepIcon = container.querySelector('.base-breadcrumbs__sep use')
 			expect(sepIcon).toBeInTheDocument()
 			expect(sepIcon?.getAttribute('href')).toBe('icons.svg#chevron-right')
@@ -386,7 +369,6 @@ describe('BaseBreadcrumbs unit', () => {
 			expect(homeBtn).toBeInTheDocument()
 			homeBtn.dispatchEvent(new Event('click'))
 
-			// Навигация не должна быть вызвана
 			expect(emitted()).not.toHaveProperty('navigate')
 		})
 	})

@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseSwitch.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSwitch from '../ui/BaseSwitch.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseSwitch unit', () => {
 	describe('рендер', () => {
@@ -31,6 +26,53 @@ describe('BaseSwitch unit', () => {
 			})
 
 			expect(container.querySelector('.base-switch__slider')).toBeInTheDocument()
+		})
+	})
+
+	describe('доступность', () => {
+		it('должен объявляться как switch с доступным именем и включённым состоянием', () => {
+			render(BaseSwitch, {
+				props: { modelValue: true, label: 'Уведомления' },
+			})
+
+			expect(screen.getByRole('switch', { name: 'Уведомления', checked: true })).toBeInTheDocument()
+		})
+
+		it('должен объявлять выключенное состояние', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Уведомления' },
+			})
+
+			expect(screen.getByRole('switch', { name: 'Уведомления', checked: false })).toBeInTheDocument()
+		})
+
+		it('помечает переключатель aria-invalid и aria-required и связывает с текстом ошибки', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Согласие', isRequired: true, error: 'Нужно согласие' },
+			})
+
+			const toggle = screen.getByRole('switch')
+			expect(toggle).toHaveAttribute('aria-invalid', 'true')
+			expect(toggle).toHaveAttribute('aria-required', 'true')
+			expect(toggle).toHaveAccessibleDescription('Нужно согласие')
+		})
+
+		it('с кастомной ошибкой в слоте error описывает переключатель разметкой слота', () => {
+			render(BaseSwitch, {
+				props: { modelValue: false, label: 'Согласие', error: 'Нужно согласие' },
+				slots: { error: '<span>Включите согласие</span>' },
+			})
+
+			expect(screen.getByRole('switch')).toHaveAccessibleDescription('Включите согласие')
+			expect(screen.queryByText('Нужно согласие')).not.toBeInTheDocument()
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BaseSwitch, { props: { modelValue: false, label: 'Уведомления' } })
+
+			const toggle = screen.getByRole('switch', { name: 'Уведомления' })
+			expect(toggle).not.toHaveAttribute('aria-invalid')
+			expect(toggle).not.toHaveAttribute('aria-describedby')
 		})
 	})
 
@@ -274,7 +316,6 @@ describe('BaseSwitch unit', () => {
 			expect(container.querySelector('.base-switch__handle')?.classList.contains('custom-handle')).toBe(true)
 			expect(container.querySelector('.base-switch__content')?.classList.contains('custom-content')).toBe(true)
 
-			// Проверяем классы на BaseText компонентах
 			expect(container.querySelector('.base-switch__label')?.classList.contains('custom-label')).toBe(true)
 			expect(container.querySelector('.base-switch__required')?.classList.contains('custom-required')).toBe(true)
 			expect(container.querySelector('.base-switch__error-text')?.classList.contains('custom-error-text')).toBe(true)

@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BasePagination.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'many-pages', 'empty'] as const
 
-const COMPONENT = 'ui-basepagination'
-const STORIES = ['default', 'many-pages', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BasePagination — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-pagination')
-		await expect(root).toHaveScreenshot(`base-pagination--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BasePagination · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basepagination--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-pagination-${story}-${theme}.png`)
+			})
+		}
 	})
 }

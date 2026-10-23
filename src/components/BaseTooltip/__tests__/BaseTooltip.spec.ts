@@ -1,13 +1,8 @@
-/**
- * Unit-тесты для BaseTooltip.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen, waitFor } from '@testing-library/vue'
 import BaseTooltip from '../ui/BaseTooltip.vue'
+import { render, screen, waitFor } from '@testing-library/vue'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
 
-/** Опции рендера без заглушек Transition и Teleport */
 const renderOptions = {
 	global: {
 		stubs: {
@@ -115,7 +110,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--ghost')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--ghost')).toBe(true)
 				})
 			})
 
@@ -127,7 +122,7 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--outline')).toBe(true)
+					expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--outline')).toBe(true)
 				})
 			})
 		})
@@ -141,8 +136,8 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
-					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('')
+					const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+					expect(popup.style.getPropertyValue('--size-scale')).toBe('')
 				})
 			})
 
@@ -154,8 +149,8 @@ describe('BaseTooltip unit', () => {
 				})
 
 				await waitFor(() => {
-					const wrapper = container.querySelector('.base-tooltip') as HTMLElement
-					expect(wrapper.style.getPropertyValue('--size-scale')).toBe('1.5')
+					const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+					expect(popup.style.getPropertyValue('--size-scale')).toBe('1.5')
 				})
 			})
 		})
@@ -196,8 +191,8 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				const tooltip = container.querySelector('.base-tooltip') as HTMLElement
-				expect(tooltip?.getAttribute('style')).toContain('--custom-text: #ff0000')
+				const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+				expect(popup?.getAttribute('style')).toContain('--custom-text: #ff0000')
 			})
 		})
 	})
@@ -211,7 +206,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--shadow')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--shadow')).toBe(true)
 			})
 		})
 	})
@@ -225,7 +220,7 @@ describe('BaseTooltip unit', () => {
 			})
 
 			await waitFor(() => {
-				expect(container.querySelector('.base-tooltip')?.classList.contains('base-tooltip--soft')).toBe(true)
+				expect(container.querySelector('.base-tooltip-popup')?.classList.contains('base-tooltip-popup--soft')).toBe(true)
 			})
 		})
 	})
@@ -264,5 +259,210 @@ describe('BaseTooltip unit', () => {
 				expect(tooltip?.querySelector('.base-text')?.classList.contains('custom-text')).toBe(true)
 			})
 		})
+	})
+
+	describe('вариант, масштаб и цвет — у подсказки, а не у обёртки триггера', () => {
+		it('обёртка не получает класс варианта, --size-scale и --custom-*: кнопка в слоте не перекрашивается', async () => {
+			const { container } = render(BaseTooltip, {
+				props: { text: 'Подсказка', variant: 'soft', sizeScale: 125, color: { bg: { base: '#6d28d9' } }, isAlwaysVisible: true },
+				slots: { default: '<button>Цель</button>' },
+				...renderOptions,
+			})
+
+			const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+			expect(wrapper.getAttribute('style')).toBeNull()
+			expect(wrapper.className).toBe('base-tooltip')
+
+			await waitFor(() => {
+				const popup = container.querySelector('.base-tooltip-popup') as HTMLElement
+				expect(popup).toHaveClass('base-tooltip-popup--soft')
+				expect(popup.style.getPropertyValue('--size-scale')).toBe('1.25')
+				expect(popup.style.getPropertyValue('--custom-bg')).toBe('#6d28d9')
+			})
+		})
+
+		it('подсказка — role="tooltip" с id', async () => {
+			render(BaseTooltip, {
+				props: { text: 'Подсказка', isAlwaysVisible: true },
+				slots: { default: '<button>Цель</button>' },
+				...renderOptions,
+			})
+
+			const tooltip = await screen.findByRole('tooltip')
+			expect(tooltip).toHaveTextContent('Подсказка')
+			expect(tooltip.id).not.toBe('')
+		})
+	})
+})
+
+describe('BaseTooltip: доступность и край окна', () => {
+	afterEach(() => {
+		vi.useRealTimers()
+		vi.restoreAllMocks()
+	})
+
+	it('кнопка описана подсказкой, пока та на экране; пустой текст не показывается', async () => {
+		vi.useFakeTimers()
+		const { rerender } = render(BaseTooltip, {
+			props: { text: 'Сохранить черновик' },
+			slots: { default: '<button type="button">Сохранить</button>' },
+		})
+		const button = screen.getByRole('button', { name: 'Сохранить' })
+		expect(button).not.toHaveAttribute('aria-describedby')
+
+		button.focus()
+		await vi.advanceTimersByTimeAsync(200)
+		const tooltip = screen.getByRole('tooltip')
+		expect(button).toHaveAttribute('aria-describedby', tooltip.id)
+		expect(button).toHaveAccessibleDescription('Сохранить черновик')
+
+		await rerender({ text: '' })
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+		expect(button).not.toHaveAttribute('aria-describedby')
+	})
+
+	it('повторный заход на цель до скрытия отменяет скрытие; isAlwaysVisible включается и выключается на лету', async () => {
+		vi.useFakeTimers()
+		const { container, rerender } = render(BaseTooltip, {
+			props: { text: 'Подсказка' },
+			slots: { default: '<button type="button">Цель</button>' },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(200)
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+		await rerender({ isAlwaysVisible: true })
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+		await rerender({ isAlwaysVisible: false })
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+	})
+
+	it('указатель на подсказке не даёт ей скрыться, уход с подсказки скрывает', async () => {
+		vi.useFakeTimers()
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка' },
+			slots: { default: '<button type="button">Цель</button>' },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(200)
+		const tooltip = screen.getByRole('tooltip')
+
+		wrapper.dispatchEvent(new MouseEvent('mouseleave'))
+		tooltip.dispatchEvent(new MouseEvent('mouseenter'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.getByRole('tooltip')).toBeInTheDocument()
+
+		tooltip.dispatchEvent(new MouseEvent('mouseleave'))
+		await vi.advanceTimersByTimeAsync(300)
+		expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+	})
+
+	it('у верхнего края переворачивается вниз, у левого края сдвигается внутрь, стрелка смотрит на триггер', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Свернуть панель', isAlwaysVisible: true },
+			slots: { default: '<button type="button">≡</button>' },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 4, left: 0, width: 20, height: 20, bottom: 24, right: 20, x: 0, y: 4, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		await waitFor(() => expect(screen.getByRole('tooltip')).toHaveClass('base-tooltip-popup--bottom'))
+		const tooltip = screen.getByRole('tooltip')
+		expect(tooltip.style.left).toBe('68px')
+		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('-58px')
+	})
+
+	it('подсказка в контейнере с transform (Storybook Docs, окно плеера) отсчитывается от контейнера', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'translateZ(0)'
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 800 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 600 })
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 800, height: 600, bottom: 700, right: 850, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.top).toBe('228px'))
+		expect(tooltip.style.left).toBe('360px')
+		layer.remove()
+	})
+	it('подсказка в предке с scale(0.5): top и left в единицах предка', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'scale(0.5)'
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 1600 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 1200 })
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 800, height: 600, bottom: 700, right: 850, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.top).toBe('448px'))
+		expect(tooltip.style.left).toBe('720px')
+		layer.remove()
+	})
+	it('подсказка в предке с data-rise-bounds (плеер) сдвигается внутрь его рамки, а не окна', async () => {
+		vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(120)
+		vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(24)
+		const layer = document.createElement('div')
+		layer.style.transform = 'translateZ(0)'
+		layer.setAttribute('data-rise-bounds', '')
+		Object.defineProperty(layer, 'offsetWidth', { configurable: true, value: 400 })
+		Object.defineProperty(layer, 'offsetHeight', { configurable: true, value: 600 })
+		Object.defineProperty(layer, 'clientWidth', { configurable: true, value: 400 })
+		Object.defineProperty(layer, 'clientHeight', { configurable: true, value: 600 })
+		layer.getBoundingClientRect = () =>
+			({ top: 100, left: 50, width: 400, height: 600, bottom: 700, right: 450, x: 50, y: 100, toJSON: () => ({}) }) as DOMRect
+		document.body.append(layer)
+		const { container } = render(BaseTooltip, {
+			props: { text: 'Подсказка', isAlwaysVisible: true, position: 'bottom' },
+			slots: { default: '<button type="button">?</button>' },
+			global: { provide: { [TELEPORT_TARGET_KEY as symbol]: layer } },
+		})
+		const wrapper = container.querySelector('.base-tooltip') as HTMLElement
+		wrapper.getBoundingClientRect = () =>
+			({ top: 300, left: 400, width: 20, height: 20, bottom: 320, right: 420, x: 400, y: 300, toJSON: () => ({}) }) as DOMRect
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+		await new Promise(resolve => requestAnimationFrame(() => resolve(null)))
+
+		const tooltip = await screen.findByRole('tooltip')
+		await waitFor(() => expect(tooltip.style.left).toBe('332px'))
+		expect(tooltip.style.getPropertyValue('--tooltip-arrow-offset')).toBe('28px')
+		layer.remove()
 	})
 })

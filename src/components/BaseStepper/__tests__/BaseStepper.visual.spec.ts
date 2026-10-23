@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseStepper.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['shapes', 'vertical', 'sizes', 'disabled', 'with-icons', 'long-content'] as const
 
-const COMPONENT = 'ui-basestepper'
-const STORIES = ['default', 'vertical', 'disabled-step', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseStepper — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-stepper--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseStepper · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basestepper--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-stepper-${story}-${theme}.png`)
+			})
+		}
 	})
 }

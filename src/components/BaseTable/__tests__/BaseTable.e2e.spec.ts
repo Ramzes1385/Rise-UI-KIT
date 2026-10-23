@@ -1,12 +1,7 @@
-/**
- * E2E smoke-тест для BaseTable.
- * Проверяет: сортировка, пагинация.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('таблица: рендерит строки и заголовки', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetable--default')
+	await page.goto('/iframe.html?id=data-basetable--default')
 	await page.waitForSelector('.base-table', { timeout: 25000 })
 	await page.setViewportSize({ width: 1000, height: 600 })
 
@@ -18,7 +13,7 @@ test('таблица: рендерит строки и заголовки', asyn
 })
 
 test('таблица: сортирует по клику на заголовок', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetable--default')
+	await page.goto('/iframe.html?id=data-basetable--default')
 	await page.waitForSelector('.base-table', { timeout: 25000 })
 	await page.setViewportSize({ width: 1000, height: 600 })
 
@@ -31,7 +26,7 @@ test('таблица: сортирует по клику на заголовок
 })
 
 test('таблица: пагинация переключает страницы', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetable--with-pagination')
+	await page.goto('/iframe.html?id=data-basetable--pagination')
 	await page.waitForSelector('.base-table', { timeout: 25000 })
 	await page.setViewportSize({ width: 1000, height: 600 })
 
@@ -47,7 +42,7 @@ test('таблица: пагинация переключает страницы
 })
 
 test('таблица: показывает пустое состояние', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetable--empty')
+	await page.goto('/iframe.html?id=data-basetable--empty')
 	await page.waitForSelector('.base-table', { timeout: 25000 })
 	await page.setViewportSize({ width: 1000, height: 400 })
 

@@ -1,0 +1,254 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { mount } from '@vue/test-utils'
+import { defineLocale, registerLocale, setLocale } from '@/locales/state'
+import { createApp, defineComponent, h, inject } from 'vue'
+import { en } from '@/locales/en'
+import { ru } from '@/locales/ru'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { createUiKitConfig, createUiKitPlugin, UI_COMPONENTS, uiKitPlugin } from '@/plugin'
+import * as kitRoot from '@/index'
+import { createUiKitConfig as createUiKitConfigEntry } from '@/config'
+import type { UiKitPluginOptions } from '@/plugin'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget/useTeleportTarget'
+import { useTheme } from '@composables/app/useTheme/useTheme'
+import { createTheme } from '@utils/theme/themeUtils'
+import { BaseButton } from '@components/BaseButton'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
+
+const readSource = (path: string): string => readFileSync(join(process.cwd(), path), 'utf8')
+
+/** Компоненты пакета: папки из `export * from './BaseX'` в src/components/index.ts и все `default as BaseY` в их index.ts (вместе с вторичными, как BaseGridItem) — реестр плагина должен совпадать с ними (без числа: новые компоненты не правят тест). */
+const EXPORTED_COMPONENTS = [...readSource('src/components/index.ts').matchAll(/^export \* from '\.\/(Base\w+)'/gm)]
+	.flatMap(([, folder]) => [...readSource(`src/components/${folder}/index.ts`).matchAll(/default as (Base\w+)/g)].map(([, name]) => name))
+	.sort()
+
+const RouterLinkStub = defineComponent({
+	name: 'RouterLinkStub',
+	props: { to: { type: String, required: true } },
+	setup:
+		(props, { slots }) =>
+		() =>
+			h('a', { href: props.to, 'data-router': '' }, slots.default?.()),
+})
+
+const CustomIcon = defineComponent({ name: 'CustomIcon', render: () => h('svg', { 'data-custom': '' }) })
+
+describe('createUiKitPlugin', () => {
+	it('регистрирует компоненты глобально, с префиксом', () => {
+		const wrapper = mount(
+			{ template: '<UiBaseButton>Сохранить</UiBaseButton>' },
+			{ global: { plugins: [createUiKitPlugin({ prefix: 'Ui' })] } },
+		)
+
+		expect(wrapper.get('button').classes()).toContain('base-button')
+	})
+
+	it('defaults: global — для всех компонентов, по имени — для одного', () => {
+		const plugin = createUiKitPlugin({ defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } } })
+		const wrapper = mount(
+			{ render: () => [h(BaseButton, null, () => 'Сохранить'), h(BaseButton, { variant: 'outline' }, () => 'Отмена')] },
+			{ global: { plugins: [plugin] } },
+		)
+
+		const [save, cancel] = wrapper.findAll('button')
+		expect(save.classes()).toContain('base-button--soft')
+		expect(save.attributes('style')).toContain('--size-scale: 0.9')
+		expect(cancel.classes()).toContain('base-button--outline')
+	})
+
+	it('icons: иконка кита заменяется символом спрайта или компонентом', () => {
+		const plugin = createUiKitPlugin({ iconSpritePath: '/icons.svg', icons: { close: 'x-mark', search: CustomIcon } })
+		const wrapper = mount(
+			{ render: () => [h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'search' })] },
+			{ global: { plugins: [plugin] } },
+		)
+
+		expect(wrapper.get('use').attributes('href')).toBe('/icons.svg#x-mark')
+		const custom = wrapper.get('[data-custom]')
+		expect(custom.classes()).toContain('base-icon__svg')
+		expect(custom.attributes('aria-hidden')).toBe('true')
+	})
+
+	it('linkComponent: ссылки на маршруты рендерит компонент приложения', () => {
+		const wrapper = mount(BaseLink, {
+			props: { to: '/docs', label: 'Документация' },
+			global: { plugins: [createUiKitPlugin({ linkComponent: RouterLinkStub })] },
+		})
+
+		expect(wrapper.get('a').attributes()).toMatchObject({ href: '/docs', 'data-router': '' })
+	})
+
+	it('без настроек: имена как есть, тяжёлые компоненты — асинхронные', () => {
+		const wrapper = mount({ template: '<BaseButton>Сохранить</BaseButton>' }, { global: { plugins: [uiKitPlugin] } })
+
+		expect(wrapper.get('button').classes()).toContain('base-button')
+		expect(Object.keys(UI_COMPONENTS).sort()).toEqual(EXPORTED_COMPONENTS)
+		expect(
+			Object.entries(UI_COMPONENTS)
+				.filter(([, component]) => '__asyncLoader' in component)
+				.map(([name]) => name),
+		).toEqual(['BaseCalendar', 'BaseChat', 'BaseDatePicker', 'BaseEditor', 'BaseFileUpload', 'BaseFlowMap', 'BaseTable'])
+	})
+
+	it('teleportTo и locale: контейнер слоёв для provide, язык — для всего кита', () => {
+		const Probe = defineComponent({ setup: () => () => h('output', String(inject(TELEPORT_TARGET_KEY, 'body'))) })
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitPlugin({ teleportTo: '#layers', locale: 'en' })] } })
+
+		expect(wrapper.text()).toBe('#layers')
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+		setLocale('ru')
+	})
+	it('locale принимает словарь, строки поверх готового языка и код зарегистрированного языка', () => {
+		const Probe = defineComponent({ setup: () => () => h('output', UI_TEXT.EMPTY) })
+		const mountWith = (locale: UiKitPluginOptions['locale']) => mount(Probe, { global: { plugins: [createUiKitPlugin({ locale })] } })
+
+		expect(mountWith(defineLocale(ru, { text: { EMPTY: 'Пока пусто' } })).text()).toBe('Пока пусто')
+		expect(UI_TEXT.CANCEL).toBe(ru.text.CANCEL)
+
+		expect(mountWith(defineLocale(en, { code: 'en-GB', text: { EMPTY: 'Nothing here' } })).text()).toBe('Nothing here')
+		expect(UI_TEXT.CANCEL).toBe(en.text.CANCEL)
+
+		registerLocale(defineLocale(en, { code: 'xx', intl: 'de-DE', text: { EMPTY: 'Leer' } }))
+		expect(mountWith('xx').text()).toBe('Leer')
+		setLocale('ru')
+	})
+
+	it('подключает английский словарь, если приложение не зарегистрировало en само', async () => {
+		vi.resetModules()
+		const state = await import('@/locales/state')
+		const plugin = await import('@/plugin')
+		expect(state.localeCodes.value).toEqual(['ru'])
+
+		createApp({ render: () => null }).use(plugin.createUiKitPlugin({ locale: 'en' }))
+		expect(state.localeCodes.value).toEqual(['ru', 'en'])
+		expect(state.getLocale().code).toBe('en')
+	})
+
+	it('свой словарь en приложения плагин не заменяет', () => {
+		const custom = defineLocale(en, { text: { EMPTY: 'Nothing yet' } })
+		registerLocale(custom)
+		const Probe = defineComponent({ setup: () => () => h('output', UI_TEXT.EMPTY) })
+
+		expect(mount(Probe, { global: { plugins: [createUiKitPlugin({ locale: 'en' })] } }).text()).toBe('Nothing yet')
+		registerLocale(en)
+		setLocale('ru')
+	})
+
+	it('theme, themes и themeNonce: тема на html, style с nonce, свои темы доступны useTheme', () => {
+		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
+		mount(defineComponent({ setup: () => () => h('div') }), {
+			global: { plugins: [createUiKitPlugin({ theme: 'corporate', themes: [brand], themeNonce: 'nonce-1' })] },
+		})
+
+		expect(document.documentElement.getAttribute('data-rise-theme')).toBe('corporate')
+		expect(document.head.querySelector<HTMLStyleElement>('style[data-rise-theme-style="corporate"]')?.nonce).toBe('nonce-1')
+		expect(useTheme().themes.value).toContain('brand')
+		mount(defineComponent({ setup: () => () => h('div') }), { global: { plugins: [createUiKitPlugin({ themes: [brand] })] } })
+		expect(useTheme().theme.value).toBe('corporate')
+		document.documentElement.removeAttribute('data-rise-theme')
+		document.documentElement.removeAttribute('data-theme')
+	})
+})
+
+describe('createUiKitConfig', () => {
+	const Probe = defineComponent({ setup: () => () => h('output', String(inject(TELEPORT_TARGET_KEY, 'body'))) })
+
+	afterEach(() => {
+		setLocale('ru')
+		document.documentElement.removeAttribute('data-rise-theme')
+		document.documentElement.removeAttribute('data-theme')
+		document.documentElement.removeAttribute('data-rise-motion')
+		document.documentElement.removeAttribute('data-rise-reduced-motion')
+	})
+
+	it('не подключает en: без registerLocale(en) язык остаётся русским, в консоли — подсказка', async () => {
+		vi.resetModules()
+		const state = await import('@/locales/state')
+		const config = await import('@/config')
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		createApp({ render: () => null }).use(config.createUiKitConfig({ locale: 'en' }))
+		expect(state.getLocale().code).toBe('ru')
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('registerLocale(en)'))
+		warn.mockRestore()
+	})
+
+	it('не регистрирует компоненты глобально', () => {
+		const app = createApp({ render: () => null }).use(createUiKitConfig({ locale: 'ru' }))
+
+		expect(app.component('BaseButton')).toBeUndefined()
+		expect(app.component('BaseTable')).toBeUndefined()
+	})
+
+	it('без настроек ничего не меняет', () => {
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitConfig()] } })
+
+		expect(wrapper.text()).toBe('body')
+		expect(document.documentElement.hasAttribute('data-rise-theme')).toBe(false)
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe(ru.aria.BREADCRUMBS_NAV)
+	})
+
+	it('defaults, icons, iconSpritePath: компоненты с подпутей и из корня получают настройки', () => {
+		const plugin = createUiKitConfig({
+			iconSpritePath: '/icons.svg',
+			icons: { close: 'x-mark', search: CustomIcon },
+			defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } },
+		})
+		const wrapper = mount(
+			{ render: () => [h(BaseButton, null, () => 'Сохранить'), h(BaseIcon, { name: 'close' }), h(BaseIcon, { name: 'search' })] },
+			{ global: { plugins: [plugin] } },
+		)
+
+		const button = wrapper.get('button')
+		expect(button.classes()).toContain('base-button--soft')
+		expect(button.attributes('style')).toContain('--size-scale: 0.9')
+		expect(wrapper.get('use').attributes('href')).toBe('/icons.svg#x-mark')
+		expect(wrapper.get('[data-custom]').classes()).toContain('base-icon__svg')
+	})
+
+	it('linkComponent: ссылки на маршруты рендерит компонент приложения', () => {
+		const wrapper = mount(BaseLink, {
+			props: { to: '/docs', label: 'Документация' },
+			global: { plugins: [createUiKitConfig({ linkComponent: RouterLinkStub })] },
+		})
+
+		expect(wrapper.get('a').attributes()).toMatchObject({ href: '/docs', 'data-router': '' })
+	})
+
+	it('teleportTo и locale: контейнер слоёв для provide, язык — для всего кита', () => {
+		const wrapper = mount(Probe, { global: { plugins: [createUiKitConfig({ teleportTo: '#layers', locale: 'en' })] } })
+
+		expect(wrapper.text()).toBe('#layers')
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+	})
+
+	it('theme, themes, themeNonce, motion и reducedMotion: атрибуты на html, style с nonce', () => {
+		const brand = createTheme({ name: 'brand', primary: '#0f766e' })
+		createApp({ render: () => null }).use(
+			createUiKitConfig({ theme: brand, themes: [brand], themeNonce: 'nonce-2', motion: 'subtle', reducedMotion: 'always' }),
+		)
+
+		const root = document.documentElement
+		expect(root.getAttribute('data-rise-theme')).toBe('brand')
+		expect(document.head.querySelector<HTMLStyleElement>('style[data-rise-theme-style="brand"]')?.nonce).toBe('nonce-2')
+		expect(root.getAttribute('data-rise-motion')).toBe('subtle')
+		expect(root.getAttribute('data-rise-reduced-motion')).toBe('always')
+	})
+
+	it('без document (SSR): движение и тема не трогают html, остальные настройки ставятся', () => {
+		vi.stubGlobal('document', undefined)
+		const app = createApp({ render: () => null })
+		app.use(createUiKitConfig({ motion: 'subtle', reducedMotion: 'always', locale: 'en' }))
+		vi.unstubAllGlobals()
+
+		expect(document.documentElement.hasAttribute('data-rise-motion')).toBe(false)
+		expect(UI_ARIA.BREADCRUMBS_NAV).toBe('Breadcrumbs')
+	})
+
+	it('экспортируется из входа плагина, корня и /config — одной и той же функцией', () => {
+		expect(kitRoot.createUiKitConfig).toBe(createUiKitConfig)
+		expect(createUiKitConfigEntry).toBe(createUiKitConfig)
+	})
+})

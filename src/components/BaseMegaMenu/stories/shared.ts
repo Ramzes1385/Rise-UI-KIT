@@ -1,0 +1,255 @@
+import { placeholderImage } from '@/stories/helpers'
+import type { MegaMenuItem } from '../types/BaseMegaMenu.types'
+
+export const ITEMS: MegaMenuItem[] = [
+	{
+		key: 'products',
+		label: 'Продукты',
+		isActive: true,
+		groups: [
+			{
+				title: 'Платформа',
+				items: [
+					{
+						label: 'Аналитика',
+						icon: 'star',
+						description: 'Отчёты и дашборды в реальном времени',
+						to: '/analytics',
+						badge: 'Новое',
+					},
+					{ label: 'Документы', icon: 'file', description: 'Договоры, счета и акты', to: '/docs' },
+					{ label: 'Календарь', icon: 'calendar', description: 'Встречи и сроки команды', to: '/calendar' },
+				],
+			},
+			{
+				title: 'Интеграции',
+				items: [
+					{ label: 'Почта', icon: 'send', description: 'Письма клиентам из карточки', to: '/integrations/mail' },
+					{ label: 'Мессенджеры', icon: 'comment', description: 'Чаты в одной ленте', to: '/integrations/chats' },
+					{ label: 'API', icon: 'code', description: 'REST и вебхуки', to: '/integrations/api' },
+				],
+			},
+		],
+		promo: {
+			title: 'Rise 2.0',
+			description: 'Новые компоненты, тёмная тема и мобильный вид навигации.',
+			image: placeholderImage({ width: 560, height: 315, hue: 24 }),
+			linkLabel: 'Что нового',
+			to: '/changelog',
+		},
+	},
+	{
+		key: 'resources',
+		label: 'Ресурсы',
+		groups: [
+			{
+				title: 'Изучить',
+				items: [
+					{ label: 'Справочный центр', icon: 'search', description: 'Ответы на частые вопросы', to: '/help' },
+					{ label: 'Блог', icon: 'list-bullet', description: 'Кейсы и новости продукта', to: '/blog' },
+					{ label: 'Вебинары', icon: 'video', description: 'Скоро', to: '/webinars', isDisabled: true },
+				],
+			},
+			{
+				title: 'Сообщество',
+				items: [
+					{ label: 'Форум', icon: 'comment', to: '/forum' },
+					{ label: 'События', icon: 'calendar', to: '/events' },
+				],
+			},
+		],
+	},
+	{
+		key: 'company',
+		label: 'Компания',
+		groups: [
+			{
+				items: [
+					{ label: 'О нас', to: '/about' },
+					{ label: 'Вакансии', to: '/careers', badge: '12' },
+					{ label: 'Контакты', to: '/contacts' },
+				],
+			},
+		],
+	},
+	{ key: 'pricing', label: 'Цены', to: '/pricing' },
+]
+
+export const FRAME_STYLE = 'min-height: 460px;'
+
+export const SLOT_KEYS = ['link', 'promo', 'end']
+
+export const VARIANT_ITEMS: MegaMenuItem[] = [
+	{ label: 'Продукты', groups: [{ items: [{ label: 'Аналитика', to: '/analytics' }] }] },
+	{ label: 'Ресурсы', groups: [{ items: [{ label: 'Блог', to: '/blog' }] }] },
+	{ label: 'Цены', to: '/pricing' },
+]
+
+export const DISABLED_ITEMS: MegaMenuItem[] = [
+	...ITEMS,
+	{ key: 'enterprise', label: 'Для бизнеса', isDisabled: true, groups: [{ items: [{ label: 'Тарифы', to: '/enterprise' }] }] },
+	{ key: 'partners', label: 'Партнёрам', to: '/partners', isDisabled: true },
+]
+
+export const LONG_ITEMS: MegaMenuItem[] = [
+	{
+		key: 'catalog',
+		label: 'Каталог товаров для дома, дачи и ремонта',
+		groups: [
+			{
+				title: 'Ремонт и строительство',
+				items: [
+					{
+						label: 'Сухие строительные смеси и грунтовки',
+						description: 'Штукатурки, шпаклёвки, клей для плитки и наливные полы',
+						to: '/c/mixes',
+					},
+					{ label: 'Лакокрасочные материалы', to: '/c/paint' },
+				],
+			},
+			{
+				title: 'Сад',
+				items: [
+					{ label: 'Семена и рассада', to: '/c/seeds' },
+					{ label: 'Садовая техника', to: '/c/tools' },
+				],
+			},
+			{
+				title: 'Дом',
+				items: [
+					{ label: 'Текстиль', to: '/c/textile' },
+					{ label: 'Посуда', to: '/c/dishes' },
+				],
+			},
+			{
+				title: 'Свет',
+				items: [
+					{ label: 'Люстры', to: '/c/lamps' },
+					{ label: 'Светильники для улицы', to: '/c/outdoor' },
+				],
+			},
+		],
+	},
+	{ key: 'delivery', label: 'Доставка и самовывоз', to: '/delivery' },
+	{ key: 'service', label: 'Сервис и гарантия', to: '/service' },
+	{ key: 'stores', label: 'Магазины', to: '/stores' },
+	{ key: 'business', label: 'Юридическим лицам', to: '/b2b' },
+]
+
+export const CASCADE_ITEMS: MegaMenuItem[] = [
+	{
+		key: 'catalog',
+		label: 'Каталог',
+		groups: [
+			{
+				title: 'Товары',
+				items: [
+					{
+						label: 'Электроника',
+						icon: 'star',
+						description: 'Телефоны, ноутбуки, планшеты',
+						children: [
+							{
+								label: 'Телефоны',
+								children: [
+									{
+										label: 'Смартфоны',
+										children: [
+											{
+												label: 'Флагманы',
+												children: [
+													{ label: 'С большим экраном', to: '/c/phones/smart/top/large' },
+													{ label: 'Компактные', to: '/c/phones/smart/top/compact' },
+												],
+											},
+											{ label: 'Средний класс', to: '/c/phones/smart/middle' },
+											{ label: 'Бюджетные', to: '/c/phones/smart/budget' },
+										],
+									},
+									{ label: 'Кнопочные', to: '/c/phones/push' },
+									{
+										label: 'Аксессуары',
+										children: [
+											{
+												label: 'Чехлы',
+												children: [
+													{ label: 'Кожаные', to: '/c/phones/cases/leather' },
+													{ label: 'Силиконовые', to: '/c/phones/cases/silicone' },
+												],
+											},
+											{ label: 'Зарядки', to: '/c/phones/chargers' },
+											{ label: 'Наушники', to: '/c/phones/headphones' },
+										],
+									},
+								],
+							},
+							{ label: 'Ноутбуки', to: '/c/laptops', badge: 'Новое' },
+							{
+								label: 'Планшеты',
+								children: [
+									{ label: 'С клавиатурой', to: '/c/tablets/keyboard' },
+									{ label: 'Для детей', to: '/c/tablets/kids' },
+								],
+							},
+						],
+					},
+					{
+						label: 'Дом и сад',
+						icon: 'folder',
+						description: 'Мебель, текстиль, инструменты',
+						children: [
+							{ label: 'Мебель', to: '/c/furniture' },
+							{ label: 'Текстиль', to: '/c/textile' },
+						],
+					},
+					{ label: 'Книги', icon: 'file', description: 'Бумажные и электронные', to: '/c/books' },
+				],
+			},
+			{
+				title: 'Покупателям',
+				items: [
+					{ label: 'Доставка', to: '/delivery' },
+					{ label: 'Оплата', to: '/payment' },
+					{
+						label: 'Возврат',
+						children: [
+							{ label: 'Условия', to: '/returns' },
+							{ label: 'Заявление', to: '/returns/form' },
+						],
+					},
+				],
+			},
+		],
+	},
+	{ key: 'pricing', label: 'Цены', to: '/pricing' },
+]
+
+export const WIDTH_ITEMS: MegaMenuItem[] = [
+	{
+		key: 'catalog',
+		label: 'Каталог',
+		groups: [
+			{
+				title: 'Товары',
+				items: [
+					{
+						label: 'Электроника',
+						children: [
+							{ label: 'Телефоны', to: '/c/phones' },
+							{ label: 'Ноутбуки', to: '/c/laptops' },
+							{ label: 'Планшеты', to: '/c/tablets' },
+						],
+					},
+					{
+						label: 'Дом и сад',
+						children: [
+							{ label: 'Мебель', to: '/c/furniture' },
+							{ label: 'Инструменты', to: '/c/tools' },
+						],
+					},
+					{ label: 'Распродажа', to: '/c/sale' },
+				],
+			},
+		],
+	},
+]

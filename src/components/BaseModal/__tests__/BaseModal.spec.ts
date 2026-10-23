@@ -1,16 +1,10 @@
-/**
- * Unit-тесты для BaseModal.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует teleport to="body" — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseModal from '../ui/BaseModal.vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useEscapeKey', () => ({ useEscapeKey: vi.fn() }))
+vi.mock('@composables/overlay/useScrollLock', () => ({
 	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
 }))
 const { popupMock } = vi.hoisted(() => ({
@@ -22,7 +16,7 @@ const { popupMock } = vi.hoisted(() => ({
 	},
 }))
 
-vi.mock('@composables/usePopup', () => ({
+vi.mock('@composables/overlay/usePopup', () => ({
 	usePopup: (options: {
 		onClose: () => void
 		isOpen: () => boolean
@@ -32,7 +26,6 @@ vi.mock('@composables/usePopup', () => ({
 	}) => {
 		popupMock.onClose = options.onClose
 		popupMock.lastOptions = options as unknown as Record<string, () => unknown>
-		// Вызываем геттеры — нужно для coverage функций-стрелок
 		options.isOpen()
 		options.closeOnOverlay()
 		options.closeOnEscape()
@@ -68,6 +61,40 @@ describe('BaseModal unit', () => {
 			})
 
 			expect(screen.getByText('Контент')).toBeInTheDocument()
+		})
+	})
+
+	describe('роль, описание и after-leave', () => {
+		it('по умолчанию dialog; dialogRole и ariaDescribedby задают роль и описание', async () => {
+			const { rerender } = render(BaseModal, {
+				props: { isOpen: true, title: 'Удалить проект?' },
+				slots: { default: '<p id="modal-hint">Это действие нельзя отменить.</p>' },
+			})
+			expect(screen.getByRole('dialog', { name: 'Удалить проект?' })).not.toHaveAttribute('aria-describedby')
+
+			await rerender({ dialogRole: 'alertdialog', ariaDescribedby: 'modal-hint' })
+			expect(screen.getByRole('alertdialog', { name: 'Удалить проект?' })).toHaveAccessibleDescription(
+				'Это действие нельзя отменить.',
+			)
+		})
+
+		it('без заголовка имя окна задаёт ariaLabel; заголовок важнее', async () => {
+			const { rerender } = render(BaseModal, { props: { isOpen: true, ariaLabel: 'Палитра команд' } })
+			expect(screen.getByRole('dialog', { name: 'Палитра команд' })).not.toHaveAttribute('aria-labelledby')
+
+			await rerender({ title: 'Команды' })
+			expect(screen.getByRole('dialog', { name: 'Команды' })).not.toHaveAttribute('aria-label')
+		})
+
+		it('после анимации закрытия эмитит after-leave', async () => {
+			const { emitted, rerender } = render(BaseModal, {
+				props: { isOpen: true, title: 'Окно' },
+				global: { stubs: { transition: false } },
+			})
+			expect(emitted()).not.toHaveProperty('after-leave')
+
+			await rerender({ isOpen: false })
+			await waitFor(() => expect(emitted()['after-leave']).toHaveLength(1))
 		})
 	})
 
@@ -226,8 +253,7 @@ describe('BaseModal unit', () => {
 
 		it('должен возвращать true когда closeOnOverlay=null (ветка ?? true)', () => {
 			render(BaseModal, {
-				// @ts-expect-error — проверяем рантайм-ветку `?? true` при null
-				props: { isOpen: true, closeOnOverlay: null },
+				props: { isOpen: true, closeOnOverlay: null as unknown as boolean },
 			})
 
 			expect(popupMock.lastOptions?.closeOnOverlay()).toBe(true)
@@ -252,10 +278,12 @@ describe('BaseModal unit', () => {
 	})
 
 	describe('пропс sizeScale', () => {
-		it('не должен устанавливать style когда sizeScale=100', () => {
+		it('не должен устанавливать --size-scale когда sizeScale=100', () => {
 			render(BaseModal, { props: { isOpen: true } })
 
-			expect(document.querySelector('.base-modal')?.getAttribute('style')).toBeNull()
+			const modal = document.querySelector('.base-modal') as HTMLElement
+			expect(modal.style.getPropertyValue('--size-scale')).toBe('')
+			expect(modal.getAttribute('style')).toBe('--rise-layer-index: 1;')
 		})
 
 		it('должен устанавливать --size-scale когда sizeScale=150', () => {

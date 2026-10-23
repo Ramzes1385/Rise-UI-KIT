@@ -1,0 +1,30 @@
+.base-container {
+	box-sizing: border-box;
+	width: 100%;
+	margin-inline: auto;
+	padding-inline: sz(ct(container, padding-x, 16px));
+
+	@media (min-width: 640px) {
+		padding-inline: sz(ct(container, padding-x, 24px));
+	}
+
+	@media (min-width: 1024px) {
+		padding-inline: sz(ct(container, padding-x, 32px));
+	}
+
+	&--sm {
+		max-width: ct(container, width, 640px);
+	}
+
+	&--md {
+		max-width: ct(container, width, 768px);
+	}
+
+	&--lg {
+		max-width: ct(container, width, 1024px);
+	}
+
+	&--xl {
+		max-width: ct(container, width, 1280px);
+	}
+}

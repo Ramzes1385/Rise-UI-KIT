@@ -1,0 +1,28 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	&__table {
+		width: 100%;
+		border-collapse: separate;
+		border-spacing: 0;
+		table-layout: auto;
+
+		&--fixed {
+			table-layout: fixed;
+		}
+	}
+
+	&__col--check {
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(16px)});
+	}
+
+	&__col--number {
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(32px)});
+	}
+
+	&__col--expand {
+		width: calc(#{space(var(--tbl-pad-left))} + #{sz(24px)});
+	}
+}

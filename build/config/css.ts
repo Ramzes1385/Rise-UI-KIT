@@ -1,24 +1,14 @@
-/**
- * Конфигурация стилей UI-библиотеки.
- * Глобальные SCSS-модули (variables/mixins/functions) автоматически инжектятся
- * во все компонентные стили через prelude, кроме самих модулей-источников
- * (иначе Sass-ошибка «Module loop: this module is already being loaded»).
- * Sass: modern-compiler API. CSS-трансформ/минификация: Lightning CSS.
- */
+/** Глобальный prelude инжектится во все стили компонентов, кроме самих модулей-источников — иначе Sass-ошибка «Module loop». */
 
+import { Features } from 'lightningcss'
 import type { CSSOptions } from 'vite'
-import { isProductionMode } from '../utils/helpers'
+import { isProductionMode } from '../utils/helpers.ts'
 
-/** Глобальный prelude — автоматически инжектится во все .scss-entry компонентов. */
-const GLOBAL_SCSS_PRELUDE = [
-	'@use "@styles/variables" as *;',
-	'@use "@styles/mixins" as *;',
-	'@use "@styles/functions" as *;',
-	'',
-].join('\n')
+const GLOBAL_SCSS_PRELUDE = ['@use "@styles/variables" as *;', '@use "@styles/mixins" as *;', '@use "@styles/functions" as *;', ''].join(
+	'\n',
+)
 
-/** Глобальные SCSS-файлы — не должны импортировать сами себя (защита от module loop). */
-const GLOBAL_SCSS_FILES = ['_variables.scss', '_mixins.scss', '_functions.scss']
+const GLOBAL_SCSS_FILES = ['_tokens.scss', '_motion.scss', '_variables.scss', '_mixins.scss', '_functions.scss']
 
 function shouldSkipImport(filename: string): boolean {
 	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
@@ -29,18 +19,23 @@ function addGlobalImports(source: string, filename: string): string {
 	return `${GLOBAL_SCSS_PRELUDE}${source}`
 }
 
-/** Создаёт конфигурацию CSS для Vite. */
-export function createCssConfig(mode: string): CSSOptions {
+/** Настройки Sass с глобальным prelude — общие для сборки библиотеки, Storybook и Vitest. */
+export function createScssOptions() {
+	return {
+		additionalData: addGlobalImports,
+		charset: false,
+	}
+}
+
+/** `scss` — свои настройки Sass для отдельного прохода сборки (CSS подпутей, build/plugins/subpathCss.ts) */
+export function createCssConfig(mode: string, scss: object = createScssOptions()): CSSOptions {
 	const isProduction = isProductionMode(mode)
 
 	return {
 		transformer: 'lightningcss',
+		lightningcss: { exclude: Features.LogicalProperties },
 		preprocessorOptions: {
-			scss: {
-				api: 'modern-compiler',
-				additionalData: addGlobalImports,
-				charset: false,
-			},
+			scss,
 		},
 
 		devSourcemap: !isProduction,

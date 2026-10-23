@@ -1,8 +1,8 @@
 <template>
 	<div
-		class="base-separator"
-		:style="[thicknessStyle, sizeScaleStyle, customColorStyle]"
+		:style="[rootStyle, sizeScaleStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			`base-separator--${orientation}`,
 			{
 				'base-separator--dashed': isDashed,
@@ -10,55 +10,41 @@
 			},
 			classes.root,
 		]"
-		:role="orientation === 'horizontal' ? 'separator' : undefined"
-		:aria-orientation="orientation">
-		<!-- Линия без контента -->
+		role="separator"
+		:aria-orientation="orientation"
+		:aria-labelledby="label || $slots.default ? contentId : undefined">
 		<template v-if="!label && !$slots.default">
-			<div class="base-separator__line" :class="classes.line"></div>
+			<div :class="[ui('line'), classes.line]"></div>
 		</template>
 
-		<!-- Линия с контентом (метка или слот) -->
 		<template v-if="label || $slots.default">
-			<div class="base-separator__line base-separator__line--before" :class="classes.line"></div>
-			<span class="base-separator__content" :style="spacingStyle" :class="classes.content">
+			<div :class="[ui('line'), 'base-separator__line--before', classes.line]"></div>
+			<span :id="contentId" :class="[ui('content'), classes.content]" :style="spacingStyle">
 				<slot>{{ label }}</slot>
 			</span>
-			<div class="base-separator__line base-separator__line--after" :class="classes.line"></div>
+			<div :class="[ui('line'), 'base-separator__line--after', classes.line]"></div>
 		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
 import '../styles/BaseSeparator.style.scss'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBaseSeparator } from '../model/useBaseSeparator'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseSeparatorProps, BaseSeparatorSlots } from '../types/BaseSeparator.types'
 
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseSeparatorProps, BaseSeparatorSlots } from '../model/BaseSeparator.types'
-
-const props = withDefaults(defineProps<BaseSeparatorProps>(), {
-	orientation: 'horizontal',
-	thickness: 1,
-	isDashed: false,
-	spacing: 10,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseSeparatorProps>(),
+	kitDefaults('BaseSeparator', {
+		orientation: 'horizontal',
+		thickness: 1,
+		isDashed: false,
+		spacing: undefined,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 defineSlots<BaseSeparatorSlots>()
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'line', 'content'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
 
-const spacingStyle = computed(() => ({
-		'--sep-pad-y': `${props.spacing}px`,
-		'--sep-pad-x': `${props.spacing * 2}px`,
-}))
-
-const thicknessStyle = computed(() => ({
-		'--sep-thickness': `${props.thickness}px`,
-}))
+const { ui, classes, sizeScaleStyle, customColorStyle, contentId, spacingStyle, rootStyle } = useBaseSeparator(props)
 </script>

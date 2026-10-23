@@ -1,0 +1,169 @@
+import type { Ref } from 'vue'
+import { isSafeUrl } from '@utils/data/urlUtils'
+import { useMediaElement } from '../core/useMediaElement'
+import { formatMediaTime } from '@utils/media/mediaUtils'
+import { useMediaEventLog } from '../core/useMediaEventLog'
+import { usePlayerOverlays } from '../overlays/usePlayerOverlays'
+import { usePlayerPlaylist } from '../playlist/usePlayerPlaylist'
+import { isHlsSource, useHlsAdapter } from '../core/useHlsAdapter'
+import { UI_PLAYER, formatMessage, formatNumber } from '../messages'
+import { TELEPORT_TARGET_KEY } from '@composables/app/useTeleportTarget'
+import { computed, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import type { MediaQualityOption } from '../../types/playback/MediaHls.types'
+import type { MediaState, MediaSourceItem } from '../../types/playback/MediaCore.types'
+import type { BaseMediaPlayerEmits, MediaPlayerProps } from '../../types/BaseMediaPlayer.types'
+import { isAudioSource, sizedSources, sourceHeight, useMediaSources } from '../core/useMediaSources'
+
+const IMAGE_PROTOCOLS = ['http:', 'https:', 'blob:', 'data:'] as const
+
+const LINK_PROTOCOLS = ['http:', 'https:'] as const
+
+function safeUrl(url: string | undefined, protocols: readonly string[]): string | undefined {
+	return url && isSafeUrl(url, protocols) ? url : undefined
+}
+
+export function useLabels(state: Readonly<MediaState>) {
+	return {
+		playLabel: computed(() => (state.isPaused ? UI_PLAYER.PLAY : UI_PLAYER.PAUSE)),
+		muteLabel: computed(() => (state.isMuted || state.volume === 0 ? UI_PLAYER.UNMUTE : UI_PLAYER.MUTE)),
+		currentTimeText: computed(() => formatMediaTime(state.currentTime, state.duration)),
+		durationText: computed(() => formatMediaTime(state.duration)),
+		seekValueText: computed(() =>
+			formatMessage(UI_PLAYER.TIME, {
+				current: formatMediaTime(state.currentTime, state.duration),
+				duration: formatMediaTime(state.duration),
+			}),
+		),
+		volumeValue: computed(() => (state.isMuted ? 0 : state.volume)),
+		volumeValueText: computed(() => formatNumber(state.isMuted ? 0 : state.volume, { style: 'percent', maximumFractionDigits: 0 })),
+	}
+}
+
+const AUTO_QUALITY = 'auto'
+
+const qualityLabel = (item: MediaSourceItem): string => item.label ?? `${sourceHeight(item)}p`
+
+function fileQualityOptions(sources: ReturnType<typeof useMediaSources>): MediaQualityOption[] {
+	const playable = sources.playableSources.value
+	if (!sources.hasAutoQuality.value)
+		return playable.filter(item => item.label).map(item => ({ id: item.src, label: item.label as string }))
+	const active = sources.isAutoQuality.value ? sources.activeSource.value : null
+	const auto = active
+		? { id: AUTO_QUALITY, label: `${UI_PLAYER.QUALITY_AUTO} (${qualityLabel(active)})`, text: qualityLabel(active) }
+		: { id: AUTO_QUALITY, label: UI_PLAYER.QUALITY_AUTO }
+	return [
+		auto,
+		...sizedSources(playable)
+			.reverse()
+			.map(item => ({ id: item.src, label: qualityLabel(item) })),
+	]
+}
+
+function useQualityTarget(media: Readonly<Ref<HTMLVideoElement | null>>, setTargetHeight: (height: number) => void) {
+	let observer: ResizeObserver | null = null
+	const measure = (): void => {
+		const element = media.value
+		if (element) setTargetHeight(Math.round(element.clientHeight * (window.devicePixelRatio || 1)))
+	}
+	onMounted(() => {
+		measure()
+		if (typeof ResizeObserver === 'undefined' || !media.value) return
+		observer = new ResizeObserver(measure)
+		observer.observe(media.value)
+	})
+	onBeforeUnmount(() => observer?.disconnect())
+}
+
+function usePlayerSources(
+	props: MediaPlayerProps,
+	player: { media: Readonly<Ref<HTMLVideoElement | null>>; sources: () => MediaSourceItem[] | string | undefined },
+) {
+	const { media } = player
+	const sources = useMediaSources({
+		sources: player.sources,
+		allowedProtocols: () => props.allowedProtocols,
+		media,
+		canPlay: item => isHlsSource(item) && Boolean(props.hls?.isSupported()),
+	})
+	useQualityTarget(media, sources.setTargetHeight)
+	const hls = useHlsAdapter({ Hls: () => props.hls, config: () => props.hlsConfig, media, source: () => sources.activeSource.value })
+	const fileActiveId = (): string | undefined =>
+		sources.hasAutoQuality.value && sources.isAutoQuality.value ? AUTO_QUALITY : sources.activeSource.value?.src
+	return {
+		sources,
+		hls,
+		view: {
+			src: computed(() => (hls.isHlsActive.value ? undefined : sources.activeSource.value?.src)),
+			qualities: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.options.value : fileQualityOptions(sources))),
+			activeQualityId: computed(() => (hls.isHlsActive.value ? hls.hlsQuality.activeId.value : fileActiveId())),
+			isAudioMode: computed(() => props.mode === 'audio' || (props.mode === 'auto' && isAudioSource(sources.activeSource.value))),
+			selectQuality(id: string): void {
+				if (hls.isHlsActive.value) return hls.hlsQuality.select(id)
+				if (id === AUTO_QUALITY) return sources.setAutoQuality()
+				const source = sources.playableSources.value.find(item => item.src === id)
+				if (source) sources.setSource(source)
+			},
+		},
+	}
+}
+
+function accentStyle(color: string | undefined): Record<string, string> {
+	return color ? { '--media-primary': color, '--media-primary-strong': `color-mix(in oklab, ${color} 72%, black)` } : {}
+}
+
+function usePlayerView(props: MediaPlayerProps, series: ReturnType<typeof usePlayerPlaylist>, isAudio: Readonly<Ref<boolean>>) {
+	const posterSrc = computed(() => safeUrl(series.content.poster(), IMAGE_PROTOCOLS))
+	const posterVideoSrc = computed(() => safeUrl(series.content.posterVideo(), IMAGE_PROTOCOLS))
+	return {
+		posterSrc,
+		posterVideoSrc,
+		hasCover: (): boolean => Boolean(posterSrc.value || posterVideoSrc.value),
+		logoSrc: computed(() => safeUrl(props.logo, IMAGE_PROTOCOLS)),
+		logoLink: computed(() => safeUrl(props.logoHref, LINK_PROTOCOLS)),
+		rootStyle: computed(() => ({
+			...accentStyle(props.accentColor),
+			...(isAudio.value ? {} : { aspectRatio: props.aspectRatio, '--media-aspect': props.aspectRatio }),
+		})),
+		rates: computed(() => [...props.playbackRates].sort((a, b) => a - b)),
+	}
+}
+
+function useTeleportLayer(root: Readonly<Ref<HTMLElement | null>>): HTMLElement | null {
+	const layer = typeof document === 'undefined' ? null : document.createElement('div')
+	layer?.classList.add('base-media-player__layer')
+	provide(TELEPORT_TARGET_KEY, layer ?? 'body')
+	onMounted(() => layer && root.value?.append(layer))
+	onBeforeUnmount(() => layer?.remove())
+	return layer
+}
+
+function usePlayerElements() {
+	const rootRef = ref<HTMLElement | null>(null)
+	return {
+		rootRef,
+		mediaRef: ref<HTMLVideoElement | null>(null),
+		audioRef: ref<HTMLAudioElement | null>(null),
+		adMediaRef: ref<HTMLVideoElement | null>(null),
+		clipMediaRef: ref<HTMLVideoElement | null>(null),
+		soundRef: ref<HTMLMediaElement | null>(null),
+		controlsRef: ref<HTMLElement | null>(null),
+		layer: useTeleportLayer(rootRef),
+	}
+}
+
+export function usePlayerBase(props: MediaPlayerProps, playerEmit: BaseMediaPlayerEmits) {
+	const elements = usePlayerElements()
+	const { state, actions } = useMediaElement(elements.mediaRef, elements.soundRef)
+	const { eventLog, logEmits } = useMediaEventLog({ media: elements.mediaRef, state })
+	const emit = logEmits(playerEmit)
+	const series = usePlayerPlaylist(props, emit)
+	const { sources, hls, view } = usePlayerSources(props, { media: elements.mediaRef, sources: series.content.sources })
+	const cover = usePlayerView(props, series, view.isAudioMode)
+	const overlays = usePlayerOverlays(props, {
+		state,
+		activeSource: sources.activeSource,
+		adapterError: hls.hlsError,
+		hasCover: cover.hasCover,
+	})
+	return { elements, state, actions, eventLog, emit, series, sources, hls, view, cover, overlays }
+}

@@ -1,67 +1,33 @@
 # Rise UI KIT
 
-`@ramzes1385/rise-ui-kit` — UI-kit библиотека компонентов для Vue 3.
+[![npm](https://img.shields.io/npm/v/@ramzes1385/rise-ui-kit?color=42b883)](https://www.npmjs.com/package/@ramzes1385/rise-ui-kit)
+[![CI](https://github.com/Ramzes1385/Rise-UI-KIT/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ramzes1385/Rise-UI-KIT/actions/workflows/ci.yml)
+[![Storybook](https://img.shields.io/badge/Storybook-ff4785?logo=storybook&logoColor=white)](https://ramzes1385.github.io/Rise-UI-KIT/)
+[![Vue 3.5+](https://img.shields.io/badge/Vue-3.5%2B-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-Библиотека содержит готовые переиспользуемые компоненты интерфейса, composables, utils, иконки, глобальные стили и Vue plugin для быстрой интеграции в приложение.
+`@ramzes1385/rise-ui-kit` — библиотека компонентов для Vue 3: 114 компонентов, composables, utils, иконки и дизайн-токены со светлой и тёмной темой.
 
-Пакет подходит для использования в Vue 3 проектах, дизайн-системах, админ-панелях, личных кабинетах, внутренних корпоративных интерфейсах и frontend-шаблонах.
+**[Открыть Storybook](https://ramzes1385.github.io/Rise-UI-KIT/)** — все компоненты вживую: варианты, состояния, клавиатура, обе темы, таблицы props и событий, а в разделе Blocks — готовые экраны из компонентов кита.
 
 ---
 
 ## Возможности
 
-- Vue 3 компоненты;
-- TypeScript типизация;
-- готовый npm package;
-- поддержка глобальной регистрации компонентов через plugin;
-- поддержка прямого импорта компонентов;
-- готовые стили библиотеки;
-- composables для повторного использования логики;
-- utils для работы с датами, файлами, цветами, таблицами и навигацией;
-- набор базовых компонентов для построения сложных интерфейсов;
-- Storybook/dev-окружение для разработки компонентов;
-- unit/integration тесты;
-- автоматический release через `semantic-release`;
-- npm publish через CI/CD.
+- компоненты: поля и формы (в том числе телефон, сумма, реквизиты и адрес), окна, меню и подсказки, таблица, дерево и списки на тысячи строк, каркас страницы и навигация, чат и блоки ИИ-чата, редактор, канбан, графики, просмотр JSON и сравнение текстов, видео- и аудиоплеер, электронная подпись через КриптоПро;
+- дизайн-токены `--rise-*`: светлая, тёмная и системная тема, перекраска бренда, скругления и плотность без правок стилей;
+- доступность: роли и клавиатура по образцам WAI-ARIA APG; каждая история Storybook проверяется axe в светлой и тёмной теме;
+- строки интерфейса на русском и английском, свой язык — `registerLocale`, свои строки поверх готового языка — `defineLocale`; форматы дат, чисел и первый день недели следуют за языком;
 
----
+- строки интерфейса на русском, английском, казахском (кириллица) и узбекском (латиница), свой язык — `defineLocale`;
 
-## Миграция на 2.0.0
-
-- **`createIconPlugin` перенесён в `src/plugins/iconPlugin/`** (ранее — внутри `@composables/useIcon`). Импорт через `@composables` сохранён для обратной совместимости; новый каноничный путь — `@ramses1385/rise-ui-kit/plugins` (или `export * as plugins` из корня пакета).
-- **Subpath-экспорты `./components`, `./composables`, `./utils`, `./icons`, `./plugins` теперь разрешаются корректно** (ранее `dist/` содержал только `index.js`, и subpath-импорты указывали на несуществующие файлы). Главный импорт `@ramzes1385/rise-ui-kit` работает без изменений.
-- Добавлены константы `UI_SIZE.GAP`, `UI_SIZE.PADDING`, `UI_FONT_WEIGHT.REGULAR`, `UI_TIMING.TOUR_FOCUS_DURATION`, `UI_TIMING.SLIDER_AUTOPLAY_INTERVAL`.
-- Stories и компоненты приведены к единому контракту `defineExpose<...>` / `defineSlots<...>`; литералы текстов заменены на `UI_TEXT.*`.
-
----
-
-## Стек
-
-Основной стек проекта:
-
-```txt
-Vue 3
-TypeScript
-Vite
-SCSS
-Vitest
-Storybook
-ESLint
-Prettier
-Husky
-Commitlint
-semantic-release
-```
-
-Дополнительно используются:
-
-```txt
-Vite library mode
-vue-tsc
-Conventional Commits
-GitHub Actions
-npm Trusted Publisher / NPM_TOKEN
-```
+- строки интерфейса на русском, английском, китайском (упрощённом) и японском, свой язык — `defineLocale`;
+- письмо справа налево (`dir="rtl"`): логические CSS-свойства, зеркальные иконки и клавиши, шкалы и панели; переключатель направления в Storybook и автоаудит `npm run test:rtl`;
+- типы TypeScript для props, событий, слотов и методов;
+- зависимостей нет: Vue (и three для 3D-карты) — peer-зависимости, шрифты кита (Rise Grotesk и Rise Mono, SIL OFL 1.1) — в самом пакете и подключаются вместе со стилями; потоки HLS — через hls.js, который подключает приложение;
+- видеоплеер — отдельным входом `@ramzes1385/rise-ui-kit/media` и отдельными стилями `media.css`: приложения без плеера не загружают ни его код, ни его стили;
+- электронная подпись `BaseCryptoProSign` и `useCryptoPro`: пользователю нужны КриптоПро CSP, ЭЦП Browser plug-in с расширением для браузера и сертификат с закрытым ключом; приложение раздаёт скрипт `cadesplugin_api.js` с сайта КриптоПро и подключает его на странице или передаёт адрес в `script-url` — подробности и ограничения в docs/reference/COMPONENTS.md, раздел BaseCryptoProSign;
+- composables и utils: горячие клавиши, ловушка фокуса, слои оверлеев, виртуальный список, даты, файлы, субтитры, проверка ссылок.
 
 ---
 
@@ -69,19 +35,38 @@ npm Trusted Publisher / NPM_TOKEN
 
 ```bash
 npm install @ramzes1385/rise-ui-kit
-```
-
-или:
-
-```bash
+# или
 yarn add @ramzes1385/rise-ui-kit
-```
-
-или:
-
-```bash
 pnpm add @ramzes1385/rise-ui-kit
 ```
+
+Нужен Vue 3.5 или новее.
+
+### Поддержка браузеров
+
+| Браузер | Минимальная версия |
+|---|---|
+| Chrome, Edge | 111 |
+| Firefox | 113 |
+| Safari, Safari на iOS | 16.2 |
+
+Минимум задаёт CSS: токены цветов (`--rise-primary-soft`, `--rise-overlay` и другие) строятся через `color-mix()`, и в браузере старше указанного у компонентов пропадают фоны и рамки. JS собран под ES2020, полифилов в пакете нет; из более новых API используется только `Array.prototype.at` (Chrome 92, Firefox 90, Safari 15.4).
+
+Что работает не везде (компоненты остаются рабочими):
+
+- **Firefox 113–120** — нет `:has()`: у BaseRadio с рамкой не подсвечивается выбранный вариант и кольцо фокуса, у BaseSegmented и кнопки файла в BaseEditor нет кольца фокуса с клавиатуры, в BaseCalendar не закрашивается выбранный диапазон, в BaseMediaPlayer нижний баннер может перекрыть субтитры и подсказки над панелью.
+- **Улучшения, без которых вид проще:** `field-sizing: content` (поле растёт по тексту), `interpolate-size` (плавное раскрытие до `auto`), `text-wrap: balance`, анимация через `@property` (вращение кольца BaseAvatar).
+
+### Переход с 1.x на 2.0
+
+Механическую часть перехода делает кодмод из пакета, без дополнительных установок:
+
+```bash
+npx @ramzes1385/rise-ui-kit migrate src          # по умолчанию --dry: diff и предупреждения, файлы не меняются
+npx @ramzes1385/rise-ui-kit migrate src --write  # записать правки (повторный запуск ничего не меняет)
+```
+
+Он переименовывает импорты (`/plugins` → `/icons`, `BaseMediaPlayer` → `/media`), подключает `media.css` при использовании плеера, переводит `calcTotalColumns`, `resolveTooltipPlacement` и `calcTooltipShift` на объект, убирает неработавшие пропсы `variant`, `sizeScale`, `color` у `BaseAnimation`, `BaseImage` и `BaseSlider`, добавляет префикс `rise-` классам переходов. Всё, что требует решения (удалённые слоты и события, токены, роли в тестах), он только показывает как `файл:строка` со ссылкой на раздел [docs/v2/MIGRATION.md](docs/v2/MIGRATION.md#автоматический-переход). Обрабатываются `.vue`, `.ts`, `.tsx`, `.js`, `.css`, `.scss`.
 
 ---
 
@@ -93,6 +78,379 @@ pnpm add @ramzes1385/rise-ui-kit
 
 ```ts
 import '@ramzes1385/rise-ui-kit/styles'
+```
+
+Тот же файл доступен как `@ramzes1385/rise-ui-kit/styles.css`.
+
+Чтобы стили приложения всегда побеждали стили кита — без `!important` и без борьбы за специфичность и порядок импорта, — подключите вариант в каскадном слое `rise` и задайте порядок слоёв:
+
+```css
+/* main.css приложения */
+@layer reset, rise, app;
+@import '@ramzes1385/rise-ui-kit/styles.layer.css';
+```
+
+`styles.layer.css` — одна строка `@import url('./styles.css') layer(rise);`. Стили вне слоёв сильнее любого слоя, поэтому `@layer app` можно и не объявлять. С Tailwind CSS v4: `@layer theme, base, rise, components, utilities;`. По умолчанию `styles.css` без слоя: глобальные сбросы приложения (`button { padding: 0 }`) иначе перебили бы кит.
+
+### Стили видеоплеера
+
+Стили `BaseMediaPlayer` и `BasePresentationPlayer` не входят в `styles.css` — они в `media.css`. Приложение с плеером подключает оба файла, `media.css` — после `styles`; токены лежат только в `styles.css`, `media.css` их не повторяет:
+
+```ts
+import '@ramzes1385/rise-ui-kit/styles'
+import '@ramzes1385/rise-ui-kit/media.css'
+```
+
+Со слоями — рядом с `styles.layer.css` (оба кладут стили в слой `rise`):
+
+```css
+@layer reset, rise, app;
+@import '@ramzes1385/rise-ui-kit/styles.layer.css';
+@import '@ramzes1385/rise-ui-kit/media.layer.css';
+```
+
+### Точечная установка
+
+Компонент можно подключить с его подпути: в сборку приложения попадут JS и CSS только этого компонента и тех, что он использует внутри (BaseSelect тянет BaseDropdown, BaseInput, BaseIcon…). Токены, тема, шрифты кита (`@font-face`) и база шрифта — отдельным файлом `tokens.css`, один раз:
+
+```ts
+// main.ts
+import '@ramzes1385/rise-ui-kit/tokens.css'
+```
+
+```vue
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
+import { BaseSelect, type BaseSelectOption } from '@ramzes1385/rise-ui-kit/BaseSelect'
+</script>
+```
+
+**Настройки без регистрации компонентов.** `createUiKitConfig` из `@ramzes1385/rise-ui-kit/config` ставит всё то же, что `createUiKitPlugin`, — `locale`, `theme`, `themes`, `themeNonce`, `defaults`, `icons`, `iconSpritePath`, `linkComponent`, `teleportTo`, `motion`, `reducedMotion`, — кроме `prefix` и регистрации компонентов. Реестр компонентов он не импортирует, поэтому их JS в сборку не попадает:
+
+```ts
+// main.ts
+import { createApp } from 'vue'
+import { RouterLink } from 'vue-router'
+import { createUiKitConfig } from '@ramzes1385/rise-ui-kit/config'
+import { en, registerLocale } from '@ramzes1385/rise-ui-kit'
+import '@ramzes1385/rise-ui-kit/tokens.css'
+import App from './App.vue'
+
+registerLocale(en) // английский словарь — явно: встроен только ru
+createApp(App)
+	.use(
+		createUiKitConfig({
+			locale: 'en',
+			theme: 'corporate',
+			defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' } },
+			linkComponent: RouterLink,
+			iconSpritePath: '/icons.svg',
+		}),
+	)
+	.mount('#app')
+```
+
+Функция есть и в корне пакета (`import { createUiKitConfig } from '@ramzes1385/rise-ui-kit'`): сборщик отсекает реестр и там, но подпуть `/config` гарантирует, что ничего лишнего не подтянется.
+
+**Строки — только те, что читает компонент.** Каждый компонент берёт из русского словаря только свои разделы (`text`, `aria`, `datePicker`…), поэтому в сборку попадают только прочитанные строки; другие языки — целиком и только подключённые (`registerLocale(en)`, раздел «Языки»). Замер на приложении из `npm pack` (Vite 8, JS gzip вместе с Vue ≈23 КБ):
+
+| Приложение | JS gzip | До выноса словарей |
+|---|--:|--:|
+| BaseButton с подпути | 27,8 КБ | 27,8 КБ |
+| BaseButton + `createUiKitConfig` (тема, `defaults`) | 34,6 КБ | 77,9 КБ |
+| то же + `registerLocale(en)`, `locale: 'en'` | 67,8 КБ (34,6 + словарь `en` 33,3 КБ) | 77,9 КБ |
+| BaseSelect с подпути | 54,1 КБ | 92,4 КБ |
+| BaseDatePicker с подпути | 68,5 КБ | 105,8 КБ |
+| `createUiKitPlugin` (все компоненты, `ru` и `en`) | 502,6 КБ (+ 256,9 КБ по `import()`) | 455,5 КБ |
+
+Вес каждого компонента при импорте с подпути (JS и CSS, с учётом общих чанков) — таблица [docs/reference/SIZES.md](docs/reference/SIZES.md) (`npm run report:sizes`).
+
+- Подпуть есть у каждого компонента из `@ramzes1385/rise-ui-kit/components` (`/BaseButton`, `/BaseTable`, …) и отдаёт то же, что его раздел там: компонент, его константы и типы. Плеер и 3D-компоненты — по-прежнему отдельными входами: `/media`, `/map3d`, `/flow3d`, `/roadmap3d`.
+- CSS компонента JS подпути подключает сам — `styles.css` не нужен. Приложение на Vite 8: CSS всех компонентов `tokens.css` + BaseButton — 4,8 КБ gzip против 96,9 КБ у `styles.css`, с BaseSelect — 8,5 КБ.
+- Подпути, корень и `/components` делят один код: компонент из подпути и из корня — один и тот же, настройки кита (`defaults`, тема, язык) действуют на оба. Но `createUiKitPlugin` регистрирует все компоненты глобально, и их JS попадает в сборку (приложение с ним — 454,0 КБ gzip стартового JS против 27,8 КБ с одной кнопкой). При точечной установке настройки задаёт `createUiKitConfig` — тот же набор опций без регистрации компонентов (см. ниже).
+- Подключили `styles.css` — `tokens.css` уже не нужен (токены в нём есть). Стили компонентов с подпутей — без каскадного слоя; `tokens.layer.css` кладёт в слой `rise` только токены. Весь кит в слое — `styles.layer.css` и импорт из корня.
+- Импорт `.css` из JS пакета обрабатывает сборщик (Vite, webpack). При SSR пакет нужно пропустить через сборку, а не отдавать Node как внешний модуль — иначе Node не знает расширения `.css`.
+
+**Vite + SSR** (`vite.config.ts`):
+
+```ts
+export default defineConfig({
+	ssr: { noExternal: ['@ramzes1385/rise-ui-kit'] },
+})
+```
+
+**Nuxt** — проще через модуль (см. «Автоимпорт»). Без модуля (`nuxt.config.ts`) — как у других китов, у которых JS компонента импортирует свой CSS:
+
+```ts
+export default defineNuxtConfig({
+	css: ['@ramzes1385/rise-ui-kit/tokens.css'],
+	build: { transpile: ['@ramzes1385/rise-ui-kit'] },
+})
+```
+
+```vue
+<!-- pages/index.vue -->
+<script setup lang="ts">
+import { BaseButton } from '@ramzes1385/rise-ui-kit/BaseButton'
+</script>
+```
+
+### Автоимпорт
+
+Компоненты в шаблоне без импортов: в сборку попадают только те, что есть в шаблонах, — с подпутей (см. «Точечная установка»). Нужны два дополнения: резолвер или модуль, которые превращают `<BaseButton>` в импорт с подпути, и типы шаблонов (см. «Типы в шаблонах»). Пакеты автоимпорта (`unplugin-vue-components`, `@nuxt/kit`) кит не ставит и не импортирует.
+
+**Vite и `unplugin-vue-components`.** Приложение ставит плагин само (`npm i -D unplugin-vue-components`) и подключает резолвер кита:
+
+```ts
+// vite.config.ts
+import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
+import { defineConfig } from 'vite'
+import { RiseUiResolver } from '@ramzes1385/rise-ui-kit/resolver'
+
+export default defineConfig({
+	plugins: [vue(), Components({ resolvers: [RiseUiResolver()] })],
+})
+```
+
+```ts
+// main.ts — токены один раз (или RiseUiResolver({ tokens: true }) без этой строки)
+import '@ramzes1385/rise-ui-kit/tokens.css'
+```
+
+```vue
+<!-- без import: плагин сам возьмёт BaseButton и BaseSelect с подпутей -->
+<template>
+	<BaseButton variant="soft">Сохранить</BaseButton>
+	<BaseSelect v-model="city" label="Город" :options="cities" />
+</template>
+```
+
+- `RiseUiResolver(options?)` знает только публичные компоненты кита (те же, у которых есть подпуть); чужие имена (`MyButton`, `RouterLink`) оставляет плагину. `<BaseMediaPlayer>` берёт из `/media` и подключает `media.css`: стили плеера не входят в его подпуть. `BaseImageMap3D` автоимпортом не подключается — ему нужен `three`, импортируйте его из `/map3d`.
+- CSS компонента подпуть подключает сам, поэтому у обычных компонентов `sideEffects` резолвер не задаёт. Исключения — токены при `tokens` и `media.css` у плеера.
+- Опции: `prefix` — префикс имён в шаблонах (`prefix: 'Ui'` → `<UiBaseButton>`, как у `createUiKitPlugin`; свой `prefix` у `unplugin-vue-components` относится к компонентам из папок приложения и на резолверы не действует); `tokens` — `true` подключает `tokens.css` вместе с компонентами, `'layer'` — `tokens.layer.css` (токены в слое `rise`); по умолчанию `false`.
+- Резолвер — обычный объект `{ type: 'component', resolve(name) }` без зависимости от сборщика. Проверено на Vite 8 с `unplugin-vue-components` 32; для webpack, Rspack и Rollup (у плагина есть и они) — по тому же контракту, но на них не запускалось.
+- Замер на приложении из `npm pack` (Vite 8): `<BaseButton>` и `<BaseSelect>` без импортов — 93,1 КБ gzip JS и 8,7 КБ CSS; ни BaseTable, ни BaseEditor в сборке нет.
+
+**Nuxt.** Модуль из пакета — функция Nuxt без зависимости от `@nuxt/kit`:
+
+```ts
+// nuxt.config.ts
+export default defineNuxtConfig({
+	modules: [['@ramzes1385/rise-ui-kit/nuxt', { config: { locale: 'en', theme: 'corporate' } }]],
+})
+```
+
+```vue
+<!-- pages/index.vue — без import -->
+<template>
+	<BaseButton variant="soft">Сохранить</BaseButton>
+</template>
+```
+
+Что делает модуль:
+
+- регистрирует публичные компоненты для автоимпорта Nuxt (хук `components:extend`, импорт с подпути каждого компонента): в сборку и на страницу попадают только использованные, а `.nuxt/components.d.ts` Nuxt пишет сам — отдельных типов не нужно. Компонент приложения с тем же именем главнее;
+- подключает `@ramzes1385/rise-ui-kit/tokens.css` в `css`;
+- добавляет пакет в `build.transpile` — нужно для SSR;
+- если задан `config`, ставит плагин Nuxt, который подключает словарь языка `config.locale` (`registerLocale`, только выбранный, своим чанком) и вызывает `createUiKitConfig` с этими настройками на сервере и в браузере.
+
+Опции модуля (кортеж в `modules` или ключ `riseUiKit` в `nuxt.config`; кортеж главнее):
+
+| Опция | По умолчанию | Что делает |
+|---|---|---|
+| `prefix` | `''` | префикс имён: `prefix: 'Ui'` → `<UiBaseButton>` |
+| `tokens` | `true` | `true` — `tokens.css`, `'layer'` — `tokens.layer.css` (слой `rise`), `false` — приложение подключает само |
+| `transpile` | `true` | добавить пакет в `build.transpile` |
+| `config` | — | настройки кита: `locale`, `theme` (имя пресета), `motion`, `reducedMotion`, `iconSpritePath`, `teleportTo` (селектор), `themeNonce` |
+
+В `config` — только значения, которые переживают сериализацию в `runtimeConfig.public`. Настройки-функции и компоненты (`defaults`, `icons`, `linkComponent`, `themes` из `createTheme`) задаёт плагин приложения: `nuxtApp.vueApp.use(createUiKitConfig({ linkComponent: NuxtLink, … }))` из `@ramzes1385/rise-ui-kit/config`. Тема из `config.theme` ставится в браузере после гидрации; на сервере CSS темы можно взять из `useTheme().css`.
+
+Проверено на Nuxt 4.6: сборка, страница SSR с `<BaseButton>`, гидрация без предупреждений, токены в CSS, тема после загрузки; то же с `prefix: 'Ui'` и `tokens: 'layer'`. Модуль принимает Nuxt 3.9 и новее, но на Nuxt 3 не запускался.
+
+Проверка на пакете из `npm pack`: `npm run test:autoimport` (нужны сборка и сеть: пакеты ставятся из реестра во временную папку).
+
+### Типы в шаблонах
+
+Глобально зарегистрированные компоненты (`createUiKitPlugin`, автоимпорт, `<component :is>`) Volar и `vue-tsc` видят через `GlobalComponents` Vue. Кит кладёт эти объявления в `@ramzes1385/rise-ui-kit/global` — по строке на каждый компонент вида `BaseButton: typeof import('@ramzes1385/rise-ui-kit/BaseButton')['BaseButton']`. Подключите одной строкой в `env.d.ts`:
+
+```ts
+/// <reference types="@ramzes1385/rise-ui-kit/global" />
+```
+
+или в `tsconfig.json` (поле `types` заменяет автоподключение `@types/*` — оставьте в нём и остальное, например `vite/client`):
+
+```json
+{ "compilerOptions": { "types": ["vite/client", "@ramzes1385/rise-ui-kit/global"] } }
+```
+
+После этого в шаблоне `<BaseButton variant="nope">` — ошибка типа, а `<BaseButton variantt="soft">` — ошибка неизвестного пропа, если включить `"vueCompilerOptions": { "strictTemplates": true }`. Без `strictTemplates` неизвестные атрибуты проходят как обычные атрибуты HTML.
+
+- Объявления — для имён по умолчанию (`BaseButton`). С `prefix` (`<UiBaseButton>`) их не хватает: `unplugin-vue-components` пишет свой `components.d.ts` с нужными именами (опция `dts`, по умолчанию включена при установленном TypeScript), Nuxt — свой `.nuxt/components.d.ts`.
+- Вместе с `components.d.ts` плагина объявления не конфликтуют: тип у обоих один и тот же.
+- Плеер (`/media`) и 3D-компоненты (`/map3d`, `/flow3d`, `/roadmap3d`) в `global` не входят — как и в `createUiKitPlugin`: их импортируют по имени.
+- Проверено `vue-tsc` 3.3 на пакете из `npm pack`: верный шаблон проходит, опечатка в пропе и неверное значение — ошибки (`npm run test:autoimport`).
+
+### Шрифты
+
+Шрифты кита входят в пакет и подключаются сами, вместе со стилями: `@font-face` лежат в `styles.css` (и `styles.layer.css`), а при точечной установке — в `tokens.css`; файлы — в `dist/fonts`, адреса в CSS относительные, и сборщик приложения (Vite, webpack, Nuxt) кладёт их в сборку сам. Ничего устанавливать и импортировать не нужно, системные шрифты кит не использует.
+
+- **Rise Grotesk** — `--rise-font-sans` и `--rise-font-heading`: латиница — [Space Grotesk](https://github.com/floriankarsten/space-grotesk) (насыщенность 300–700), кириллица (в том числе казахская), №, ₸ и стрелки — [Onest](https://github.com/googlefonts/onest), размер подогнан под латиницу (96 %).
+- **Rise Mono** — `--rise-font-mono`: латиница — [Space Mono](https://github.com/googlefonts/spacemono) 400 и 700, кириллица, ₽, №, ₸ и узбекские ʻ ʼ — [IBM Plex Mono](https://github.com/IBM/plex) 400 и 700 (102 %).
+- Знаки клавиш и меню (⌘ ⌥ ⌃ ⇧ ↵ ⌫ ⌦ ⋮), отметки и фигуры (✓ ✕ ● ■ ▲ ▶ ★ ⚠), стрелки и знаки фильтров (⇒ ⟶ ∈ ∉ ∧ ∨) есть в обоих семействах (из Noto Sans Symbols 2, Noto Sans Math и Noto Sans Symbols). Эмодзи рисует шрифт эмодзи системы.
+- Метрики запасных начертаний подогнаны под основное: строка, где латиница смешана с кириллицей, не выше обычной.
+- `font-display: block`: пока файл шрифта загружается (до 3 с), текст не виден, и системный шрифт не мелькает. Браузер скачивает только нужные файлы (`unicode-range`): русскому интерфейсу — латиницу и кириллицу Rise Grotesk (≈ 66 КБ), моноширинный — когда он есть на странице (латиница и кириллица ≈ 43–44 КБ на насыщенность). Все файлы — ≈ 157 КБ.
+- Курсива у шрифтов кита нет: `<em>` и курсив Markdown — наклон, который рисует браузер (`font-synthesis: style` на элементах кита); полужирный браузер не дорисовывает — нужные насыщенности есть в файлах.
+
+**Китайский и японский.** Иероглифы и кану рисуют **Rise CJK SC** и **Rise CJK JP** — [Noto Sans SC и Noto Sans JP](https://github.com/notofonts/noto-cjk), насыщенность 400–700. Шрифт приходит со словарём языка, поэтому словари `zh` и `ja` лежат не в корне пакета, а на своих подпутях:
+
+```ts
+import { registerLocale } from '@ramzes1385/rise-ui-kit'
+import { zh } from '@ramzes1385/rise-ui-kit/locales/zh' // вместе со словарём — CSS шрифта Rise CJK SC
+
+registerLocale(zh)
+```
+
+Сборщик кладёт файлы шрифта в сборку сам; модуль Nuxt с `config: { locale: 'zh' }` (или `'ja'`) подключает шрифт сам. Без этих словарей ни CSS, ни файлов иероглифов в сборке приложения нет. Китайский или японский текст без словаря кита (имена в русском интерфейсе и т. п.) — `import '@ramzes1385/rise-ui-kit/fonts/zh.css'` или `fonts/ja.css`.
+
+- В пакете — частотные знаки: китайский — GB2312 уровня 1 и самые частые иероглифы по статистике Google Fonts (4381 знак, ≈ 1,2 МБ в 20 файлах), японский — дзёё-кандзи, JIS X 0208 уровня 1, кана и частые знаки (3674 знака, ≈ 1 МБ в 17 файлах). Редкий иероглиф вне набора рисует системный шрифт.
+- Файлы нарезаны по `unicode-range`, браузер скачивает только куски со знаками на странице: первый кусок — знаки словаря кита и пунктуация (весь интерфейс кита — один файл: ≈ 213 КБ для китайского, ≈ 167 КБ для японского), дальше — куски по частоте знаков, по 34–69 КБ.
+- Семейства стоят в `--rise-font-sans` и `--rise-font-mono` для `:lang(zh)` и `:lang(ja)`: задайте `lang` на `<html>` или на контейнере с текстом — у общих иероглифов китайские и японские начертания различаются.
+- Модуль Nuxt кладёт CSS шрифта в `css` только для языка из своих настроек; приложение, которое переключает язык само, берёт словарь с подпути, как выше.
+
+`styles.css` задаёт шрифт только элементам кита (классы `base-*`, селектор `:where` с нулевой специфичностью — стили приложения его перекрывают): `--rise-font-sans`, внутри `code`, `kbd`, `samp`, `pre` — `--rise-font-mono`. Шрифт `body`, `button` и полей ввода приложения кит не меняет; чтобы весь интерфейс использовал шрифт библиотеки, добавьте в стили приложения `body, button, input, textarea, select { font-family: var(--rise-font-sans); }`. Алиасы 1.x (`--font-family-base` и др.) оставлены для совместимости, в новом коде — `--rise-font-sans` и `--rise-font-mono`.
+
+**Свой шрифт.** Шрифт кита задают токены — замените их в CSS приложения или темой (`createTheme({ font: { sans, heading, mono } })`, раздел «Темы за 5 минут»); `@font-face` своего шрифта подключает приложение:
+
+```css
+:root {
+  --rise-font-sans: 'Golos Text', sans-serif;
+  --rise-font-heading: 'Golos Text', sans-serif;
+  --rise-font-mono: 'Fira Code', monospace;
+}
+```
+
+Файлы шрифтов кита браузер тогда не скачивает: `@font-face` без текста этим шрифтом ничего не загружает (в сборке приложения файлы останутся).
+
+**CSP.** Файлы шрифтов приходят с того же источника, что и сборка приложения: хватает `font-src 'self'`. Все они больше 4 КБ, и Vite не встраивает их в CSS; если сборщик встраивает файлы побольше (webpack `type: 'asset'` — до 8 КБ), разрешите `data:` в `font-src`.
+
+**Лицензия шрифтов** — SIL Open Font License 1.1, а не MIT, как у кита: шрифты можно использовать, встраивать и распространять вместе с приложением, но не продавать отдельно. Авторы, источники, изменения и текст лицензии — `dist/fonts/THIRD_PARTY_NOTICES.md` в пакете.
+
+### Дизайн-система и темы
+
+Внешний вид задают CSS-переменные `--rise-*` из `dist/styles.css`: палитры, семантические цвета (фон, текст, рамки, роли primary/success/info/warning/error), радиусы, тени, шрифты и размеры контролов. Полный список и правила — [docs/design/DESIGN_SYSTEM.md](docs/design/DESIGN_SYSTEM.md), живые примеры — Storybook, раздел **Foundations**.
+
+```css
+/* Тёмная тема — атрибутом на <html> или на любом контейнере; data-theme="light" возвращает светлую внутри тёмной */
+/* <html data-theme="dark"> */
+
+:root {
+  /* Бренд: палитра primary (оттенки 50…950). Семантические токены обеих тем пересчитаются сами */
+  --rise-color-primary-400: #a78bfa;
+  --rise-color-primary-700: #6d28d9;
+  --rise-color-primary-800: #5b21b6;
+  /* …остальные оттенки */
+
+  --rise-radius: 6px;            /* база скруглений: 0 — строгий интерфейс, 8px — мягкий */
+  --rise-density: 0.75;          /* плотность отступов контролов и поверхностей: 0.75 — компактно, 1.25 — просторно */
+  --rise-shadow-strength: 0.6;   /* сила теней: 0 — без теней, 1.8 — выразительные */
+  --rise-font-heading: 'Nunito', system-ui, sans-serif; /* шрифт заголовков */
+
+  /* Токены компонента (--rise-<компонент>-…): кит их только читает — список в docs/design/COMPONENT_TOKENS.md */
+  --rise-button-radius: 9999px;
+  --rise-card-shadow: var(--rise-shadow-sm);
+}
+```
+
+- **Тема на области страницы** — сиды на элементе с `data-rise-theme` и `data-theme` на нём же (`<section data-rise-theme="brand" data-theme="light">`): без `data-theme` на том же элементе семантические токены не пересчитаются. Выпадающие панели и подсказки из области берут оба атрибута.
+- **Классы частей** — проп `ui` (`<BaseButton :ui="{ root: 'rounded-full', label: 'tracking-wide' }">`) добавляет классы к БЭМ-элементам компонента; глобально — `defaults.BaseButton.ui` плагина. БЭМ-классы (`.base-card__header`) — публичный API.
+
+- **Тема «как в системе»** — `data-theme="system"`: тёмная при `prefers-color-scheme: dark`. Переключать тему из кода — `useColorMode()` (`mode`: `light`, `dark`, `system`; выбор сохраняется в localStorage), кнопка для шапки — `BaseColorModeButton`. Чтобы тема из localStorage применялась до загрузки скриптов, добавьте в `<head>`: `<script>document.documentElement.dataset.theme = localStorage.getItem('rise-color-mode') || 'system'</script>`.
+- **Размер компонента** — проп `sizeScale` (проценты): 75 / 87.5 / 100 / 112.5 / 125 ≈ xs / sm / md / lg / xl, контролы 24–40px. Кнопка, поле, селект и переключатели одного `sizeScale` одной высоты.
+- **Цвет одного компонента** — проп `color` (`{ bg: { base, hover, active, focus }, text: { … } }`). Вложенные в него компоненты этот цвет не наследуют.
+- **Слои** — токены `--rise-z-overlay` (1000: окна, боковые панели, тур, поиск на весь экран, выпадающие панели, календарь, контекстные меню — сверх токена добавляется место слоя в порядке открытия), `--rise-z-toast` (2000: уведомления), `--rise-z-tooltip` (3000: подсказки), `--rise-z-max` (9999: просмотр изображения). Если у приложения свои слои (липкая шапка с `z-index: 1000` и т. п.), переопределите токены в `:root` (см. «Слои»).
+- **Контраст.** Пары «текст/фон» токенов проходят WCAG 2.2 AA в обеих темах — `npm run test:contrast`, отчёт [docs/design/contrast.md](docs/design/contrast.md).
+- **Переменные 1.x** (`--color-accent`, `--color-text-muted`, `--border-radius-base`…) оставлены алиасами новых токенов для CSS приложения, но компоненты их больше не читают: перекрашивайте через `--rise-*`. В 2.0 алиасы остаются, удалены они будут в следующей мажорной версии.
+
+### Темы за 5 минут
+
+Свой облик — из цвета бренда и нескольких входов. `createTheme()` строит палитру 50…950 в OKLCH и гарантирует контраст WCAG 2.2 AA в светлой и тёмной теме (светлый бренд для кнопок затемняется — `theme.adjusted`).
+
+```ts
+import { createApp } from 'vue'
+import { createTheme, createUiKitPlugin } from '@ramzes1385/rise-ui-kit'
+
+const brand = createTheme({
+  name: 'brand',             // → <html data-rise-theme="brand">
+  primary: '#0f766e',        // единственный обязательный цвет
+  neutral: 'tinted',         // 'tinted' (серый с тоном бренда) | 'gray' | HEX: '#64748b'
+  radius: 'lg',              // 'none' | 'sm' | 'md' | 'lg' | 'full' | число px
+  density: 'compact',        // 'compact' | 'default' | 'comfortable' | множитель
+  font: { sans: '"Golos Text", system-ui, sans-serif' },
+  shadows: 'soft',           // 'none' | 'soft' | 'default' | 'strong' | множитель
+  motion: 'subtle',          // 'none' | 'subtle' | 'default' | 'expressive'
+})
+
+createApp(App).use(createUiKitPlugin({ theme: brand })) // или theme: 'corporate' — готовый пресет
+```
+
+- **Пресеты** `THEME_PRESETS`: `rise` (вид кита), `corporate` (админки и таблицы), `playful` (потребительские приложения), `minimal` (инструменты и документация). Переключение в рантайме — `useTheme().setTheme('playful')` или `setTheme(createTheme({…}))`; список — `useTheme().themes`.
+- **Без JS** — `brand.css` можно положить в CSS приложения как есть: это только CSS-переменные на `[data-rise-theme="brand"]`. **SSR** — `useTheme().css` (строка для `<style>` в `<head>`); на сервере `applyTheme` ничего не делает. **CSP** — `createUiKitPlugin({ themeNonce })` или `applyTheme(theme, { nonce })`.
+- **Тема на области** — `applyTheme(theme, { target: element })`: ставит `data-rise-theme` и, если его нет, `data-theme` (режим ближайшего предка). Правило: `data-rise-theme` и `data-theme` — на одном элементе.
+- Не заданный вход тема не трогает: значение остаётся от кита или от `:root` приложения. Что угодно ещё — вход `tokens` (`{ '--rise-button-radius': '999px' }`); чёрному бренду в тёмной теме — `primaryDark: '#fafafa'`.
+- Проверка своей темы — `createTheme(…).contrast` (все пары `npm run test:contrast`, у каждой `ok`). Подробно — [DESIGN_SYSTEM, «Темы бренда»](docs/design/DESIGN_SYSTEM.md).
+
+### Токены для дизайна
+
+Токены и готовые темы экспортируются в формате [W3C Design Tokens](https://www.w3.org/community/design-tokens/) (`$value`, `$type`, группы): для Figma (Tokens Studio), Style Dictionary и мобильных платформ. Собирает их `npm run build`, отдельных зависимостей нет.
+
+```ts
+import tokens from '@ramzes1385/rise-ui-kit/tokens.json' with { type: 'json' }
+import corporateDark from '@ramzes1385/rise-ui-kit/tokens/corporate.dark.json' with { type: 'json' }
+```
+
+- `tokens.json` — кит без темы (светлый режим); `tokens/<тема>.<режим>.json` — темы `rise`, `corporate`, `playful`, `minimal` в светлом и тёмном режиме. Каждый файл полный: палитры, семантические цвета (ссылками на палитру), шрифты, размеры, скругления, тени, длительности, кривые, слои.
+- Тест сверяет файлы с `_tokens.scss` (каждая переменная `--rise-*` есть в каждом файле) и со значениями `createTheme`. Что в экспорт не входит и как подключить Figma и Style Dictionary — [docs/design/DESIGN_TOKENS.md](docs/design/DESIGN_TOKENS.md).
+
+---
+
+## Иконки
+
+Иконки используются через `BaseIcon`.
+
+```vue
+<script setup lang="ts">
+import { BaseIcon } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseIcon name="search" />
+	<BaseIcon name="close" />
+	<BaseIcon name="send" />
+</template>
+```
+
+### Спрайт
+
+BaseIcon берёт иконки из спрайта `dist/icons.svg` пакета. Сделайте его доступным приложению: скопируйте `node_modules/@ramzes1385/rise-ui-kit/dist/icons.svg` в `public/` или импортируйте URL — `import iconSpriteUrl from '@ramzes1385/rise-ui-kit/icons.svg?url'` (подпуть `./icons.svg` добавлен в `exports`). Передайте абсолютный путь: `app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))` или `iconSpriteUrl`; если нужны только иконки — `createIconPlugin({ spritePath: '/icons.svg' })`. Без опции используется относительный `'icons.svg'`: он резолвится от URL страницы, и на вложенных маршрутах (`/users/42` → `/users/icons.svg`) файл не находится. Спрайт должен отдаваться с того же origin, что и страница; при деплое под подпутём укажите `${import.meta.env.BASE_URL}icons.svg`.
+
+```ts
+// main.ts: URL спрайта из пакета (Vite)
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createUiKitPlugin } from '@ramzes1385/rise-ui-kit'
+import iconSpriteUrl from '@ramzes1385/rise-ui-kit/icons.svg?url'
+
+createApp(App).use(createUiKitPlugin({ iconSpritePath: iconSpriteUrl })).mount('#app')
+```
+
+```ts
+// main.ts: только иконки — глобальный BaseIcon без остальных компонентов
+import { createApp } from 'vue'
+import App from './App.vue'
+import { createIconPlugin } from '@ramzes1385/rise-ui-kit/icons'
+
+createApp(App).use(createIconPlugin({ spritePath: '/icons.svg' })).mount('#app')
 ```
 
 ---
@@ -112,17 +470,227 @@ import '@ramzes1385/rise-ui-kit/styles'
 
 const app = createApp(App)
 
-app.use(createUiKitPlugin())
+// iconSpritePath — абсолютный путь к SVG-спрайту иконок (см. раздел «Иконки»)
+app.use(createUiKitPlugin({ iconSpritePath: '/icons.svg' }))
 
 app.mount('#app')
 ```
 
-После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API.
+Опции `createUiKitPlugin` (кроме `prefix` — они же у `createUiKitConfig`, см. «Точечная установка»):
+
+- `prefix` — префикс глобальных имён (`prefix: 'Ui'` → `UiBaseButton`);
+- `iconSpritePath` — путь к спрайту иконок;
+- `defaults` — значения props по умолчанию: `global` — для всех компонентов, по имени — для одного. Переопределяются props со значением по умолчанию в компоненте (строки, числа, логические значения); props из шаблона важнее;
+- `icons` — замена иконок кита: имя символа в спрайте, полный адрес символа или компонент с `<svg>`;
+- `linkComponent` — компонент ссылок на маршруты (RouterLink, NuxtLink). Без него компоненты берут RouterLink, если подключён vue-router, иначе рендерят `<a href>`;
+- `locale` — язык строк кита: `ru` (по умолчанию), `en` или свой словарь (см. «Языки»);
+- `teleportTo` — куда телепортировать окна, выпадающие панели, тултипы и уведомления: CSS-селектор или элемент, по умолчанию `body` (см. «Слои»).
+
+```ts
+import { RouterLink } from 'vue-router'
+import CloseIcon from './icons/CloseIcon.vue'
+
+app.use(
+	createUiKitPlugin({
+		iconSpritePath: '/icons.svg',
+		defaults: { global: { sizeScale: 90 }, BaseButton: { variant: 'soft' }, BaseModal: { closeOnOverlay: false } },
+		icons: { close: CloseIcon, 'chevron-down': 'arrow-down' },
+		linkComponent: RouterLink,
+		locale: 'en',
+	}),
+)
+```
+
+### Языки
+
+Строки интерфейса кита (подписи кнопок, доступные имена, «Нет данных»), формат дат, чисел и валют, множественное число, первый день недели, сортировка и поиск без учёта регистра зависят от языка. Свой язык и свои строки добавляются без форка. Язык один на страницу, и меняется он на лету — компоненты перерисовываются сразу. Готовые языки:
+
+| Код | Язык | Языковой тег Intl | Первый день недели |
+|---|---|---|---|
+| `ru` | русский (по умолчанию) | `ru-RU` | понедельник |
+| `en` | английский | `en-US` | воскресенье |
+| `kk` | казахский, кириллица | `kk-KZ` | понедельник |
+| `uz` | узбекский, латиница | `uz-Latn-UZ` | понедельник |
+| `zh` | китайский упрощённый | `zh-CN` | понедельник |
+| `ja` | японский | `ja-JP` | воскресенье |
+
+Встроен только `ru`, и из него в сборку приложения попадают только разделы, которые читают его компоненты (кнопке без текста строки не нужны вовсе). `en`, `kk`, `uz`, `zh` и `ja` подключаются по выбору — словарь целиком, только подключённый (английский ≈29–31 КБ gzip: ≈29 КБ своего JS в приложении, ≈31 КБ файлом в dist); `zh` и `ja` — с подпутей `/locales/zh` и `/locales/ja`, вместе со шрифтом иероглифов (раздел «Шрифты»). `createUiKitPlugin` подключает `en` сам (приложение с плагином и так получает все компоненты); при точечной установке, с `createUiKitConfig` или без плагина английский подключают так же, как остальные:
+
+```ts
+import { en, kk, registerLocale, setLocale } from '@ramzes1385/rise-ui-kit'
+
+registerLocale(en) // один раз при старте
+registerLocale(kk)
+setLocale('kk') // или createUiKitPlugin({ locale: 'kk' }), createUiKitConfig({ locale: 'kk' }), <BaseApp locale="kk">
+```
+
+Первая отрисовка и SSR — синхронные: словари ничего не загружают по сети, `registerLocale` — обычный импорт. Без регистрации `setLocale('en')` язык не меняет, а в консоли — подсказка с кодом подключения.
+
+ Переводы `kk`, `uz`, `zh`, `ja` сделаны без носителя языка — до выпуска их стоит показать носителям; замечания по формулировкам удобно вносить через `defineLocale(kk, { text: { … } })`.
+
+**Задать язык** — любым из трёх способов:
+
+```ts
+app.use(createUiKitPlugin({ locale: 'en' })) // 1. при создании приложения (плагин подключает en сам)
+// <BaseApp :locale="lang"> … </BaseApp>       // 2. проп, следует за значением
+setLocale('en')                                // 3. из любого места (без плагина — после registerLocale(en))
+```
+
+**Переопределить строки** — `defineLocale(base, overrides)` заменяет только переданные ключи, остальные берутся из `base`. Результат принимают плагин, `<BaseApp locale>` и `setLocale()`:
+
+```ts
+import { createUiKitPlugin, defineLocale, en, ru } from '@ramzes1385/rise-ui-kit'
+
+app.use(createUiKitPlugin({ locale: defineLocale(ru, { text: { EMPTY: 'Пока ничего нет' } }) }))
+const enGB = defineLocale(en, { code: 'en-GB', intl: 'en-GB', firstDayOfWeek: 1 })
+```
+
+**Добавить свой язык** — словарь типа `UiKitLocale` (TypeScript подскажет все ключи; проще всего `defineLocale(en, { … })` поверх готового) и `registerLocale()`. Регистрация идёт по `locale.code`; после неё код принимают `setLocale('de')`, `<BaseApp locale="de">` и `createUiKitPlugin({ locale: 'de' })`, а `useLocale().locales` отдаёт список кодов для переключателя языка:
+
+```ts
+import { defineLocale, en, registerLocale, setLocale, useLocale } from '@ramzes1385/rise-ui-kit'
+
+registerLocale(
+	defineLocale(en, {
+		code: 'de',
+		intl: 'de-DE', // тег для Intl: даты, числа, множественное число, сортировка
+		firstDayOfWeek: 1, // 0 — воскресенье, 1 — понедельник
+		text: { EMPTY: 'Keine Daten', CANCEL: 'Abbrechen' },
+		aria: { CLOSE: 'Schließen' },
+	}),
+)
+setLocale('de')
+
+const { locale, locales, formatNumber, formatDate, plural } = useLocale()
+plural({ one: '{n} file', other: '{n} files' }, 3) // '3 files'
+```
+
+Повторная регистрация того же кода заменяет словарь (в том числе `ru` и `en`); включённый язык обновляется сразу, а `createUiKitPlugin` не затирает `en`, зарегистрированный приложением. Неизвестный код `setLocale` не принимает: язык остаётся прежним, в консоль идёт предупреждение со списком доступных кодов; у готового словаря кита, который не подключён (`setLocale('en')` без `registerLocale(en)`), — с подсказкой, как его подключить. Свой словарь без части разделов (не через `defineLocale`) недостающие разделы берёт из русского.
+
+**Форматы.** Календарь, выбор даты, график, канбан, диаграмма активности, расписание и другие компоненты берут формат дат и чисел (`locale.intl`) и первый день недели (`locale.firstDayOfWeek`) из языка кита, если не заданы пропсы `locale` и `firstDayOfWeek` — явный проп главнее; BaseCalendar и BaseDatePicker с явным `locale` без `firstDayOfWeek` берут первый день недели этого языка (`Intl.Locale`), а BaseHeatmap принимает свой `firstDayOfWeek`. Поиск и сравнение текста идут по языку кита: без учёта регистра, «е» равна «ё», письмо без регистра (китайский, японский, корейский) сравнивается как есть. Внутренние вычисления (часовой пояс в расписании и `.ics`, ISO-даты) от языка не зависят. Строки из props (`placeholder`, `label`) приложение переводит само.
+
+**Даты в браузерах без данных языка.** Урезанный ICU (Chromium из Playwright, часть встроенных браузеров) не знает казахский (даты выходят по-английски: «May 7, 2025») и отдаёт для узбекского корневые данные («2025 M05 7»). Все компоненты с датами (календарь, выбор даты, события, Gantt, Heatmap, расписание ImageMap, канбан, лента, чат, относительное время) берут названия месяцев и дней через общий помощник: он проверяет, есть ли у браузера данные языка, и если нет, а в словаре есть `calendarNames` (и `relativeTime` для «5 минут назад»), форматирует по словарю. Поле заполнено у `kk` и `uz` значениями CLDR; остальным языкам оно не нужно. Свои названия — `defineLocale(kk, { calendarNames: { months: […] } })`; при полных данных `Intl` (Node, настоящие Chrome и Safari) работает обычный `Intl`, словарь не используется. Числа (`1,234.5` вместо `1 234,5`) эта подмена не затрагивает.
+
+**Составные подписи** («Оценка 4,5 из 5», «Айдос жазып жатыр», «Удалить файл.pdf») — целые шаблоны с `{value}`, `{max}`, `{name}` и т. п., а не куски, склеенные в русском порядке слов; формат — `formatMessage`. Прежние ключи-куски (`rating.OF`, `rating.ARIA_PREFIX`, `chat.TYPING_SUFFIX`, `chat.PINNED_COUNTER`, `text.FILE_MAX_SIZE_PREFIX` и др.) из словарей убраны, но заданные приложением через `defineLocale` по-прежнему работают (список — docs/v2/MIGRATION.md).
+
+**Поиск.** Сравнение без различия регистра, «е» и «ё», полной и половинной ширины (`ＡＢＣ` = `abc`, `ｶﾞ` = `ガ`), а для японского — хираганы и катаканы (`カタカナ` = `かたかな`); подсветка совпадений в BaseSearch, BaseAutocomplete, BaseChat и расшифровке плеера точна и при разной длине исходной и свёрнутой строки. BaseImageMap с `directoryGroupBy: 'alpha'`: для японского разделы по рядам каны (あ, か, さ…), иероглифы и цифры — в «#»; для китайского без чтений (пиньиня) разделов нет — один список, отсортированный по языку.
+
+Подробнее, с живыми примерами и кодом — страница Storybook «Foundations / Localization».
+
+Китайский и японский: в словарях `zh` (неделя с понедельника) и `ja` (с воскресенья) у существительных одна форма множественного числа со счётным словом внутри строки, между числом и иероглифами стоит пробел. Тексты написаны без носителя языка — перед выпуском в продукт их стоит показать переводчику. Названия эмодзи в `BaseEmojiPicker` на китайский и японский не переведены (берутся английские; в кит данные CLDR для этих языков не входят), своё имя задают пропом `emojis`. Ввод через IME (пиньинь, кана) не принимает Enter, подтверждающий выбор иероглифа, за действие поля; цифры полной ширины в числовых, телефонных и платёжных полях приводятся к обычным. Подробности — docs/design/CHANGES_FOR_APPS.md.
+
+После этого компоненты можно использовать в шаблонах без локального импорта, если они зарегистрированы plugin API. Типы глобальных компонентов пакет не объявляет (`GlobalComponents`), поэтому props в шаблоне проверяются только при прямом импорте.
 
 ```vue
 <template>
-	<BaseButton label="Сохранить" />
+	<BaseButton>Сохранить</BaseButton>
 </template>
+```
+
+---
+
+### Письмо справа налево
+
+Компоненты зеркалятся сами, когда на странице, предке или самом компоненте стоит `dir="rtl"`: порядок элементов, отступы, выравнивание текста, стороны панелей, шевроны и стрелки, клавиши ← и → (в RTL ← означает «вперёд»), шкалы (минимум справа, как у нативного `<input type="range">`), полосы прокрутки, затухающие края. В LTR вид и поведение прежние.
+
+```html
+<html lang="ar" dir="rtl">
+```
+
+- **Языки.** `dir` не зависит от языка кита: кит не выставляет его сам. Для арабского, иврита и фарси задайте `dir="rtl"` на `<html>` вместе с `lang`; строки интерфейса — `defineLocale` (раздел «Языки»).
+- **Панели.** В `position` у BaseDropdown и BaseTooltip `left` и `right` — физические стороны, `bottom-start` и `bottom-end` — по направлению строки: в RTL `bottom-start` выравнивает панель по правому краю триггера. Меню и подсказки кита, которым нужна сторона «в конец строки» (вложенное меню, подсказка у свёрнутой боковой панели), выбирают её сами. Панель, телепортированная в `body`, получает `dir` блока, из которого открыта. Компоненты у края страницы следуют строке: `side` у BaseDrawer и BaseSlideover, углы BaseNotification и BaseCookieConsent — `left` это начало строки (в RTL справа), `right` — конец.
+- **Что не зеркалится.** Панель управления видеоплеера (шкала времени и громкости), сравнение «до / после», поля PIN-кода, блоки кода, JSON-просмотрщик, графики, спарклайны, карты, холсты, цветовые области и диаграмма Ганта остаются слева направо: у них пространственные оси, и зеркало сломало бы смысл.
+- **Иконки.** Иконки направления (`arrow-left`, `arrow-right`, `chevron-left`, `chevron-right`, `undo`, `redo`, `reply`, `send`) зеркалятся в RTL; чтобы оставить значок как есть, задайте `scale: none` классу `base-icon--directional`.
+- **Свои стили.** В CSS приложения используйте логические свойства (`margin-inline-start`, `inset-inline-end`, `text-align: start`); сдвиг вдоль строки — `calc(var(--rise-dir) * 16px)` (`--rise-dir` равна 1 в LTR и −1 в RTL). В JS: `isRtl(element)` и `useDirection()` (подпуть `utils` и `composables`), а клавиши ← и → — через `resolveArrowKey(event)`.
+- **Проверка.** В Storybook — переключатель «Направление» в панели; `npm run test:stories -- --dir=rtl` прогоняет все истории в RTL, `npm run test:rtl` — автоаудит: ошибки, axe, переполнение и зеркальность положения элементов относительно LTR на ширинах 1280 и 375.
+
+---
+
+### BaseApp: уведомления и окна из кода
+
+Оберните приложение в `BaseApp` один раз — обычно в корневом `App.vue`. Он не добавляет разметки: рендерит слот и поверх страницы — уведомления и окна, которые вызывают из кода.
+
+```vue
+<!-- App.vue -->
+<script setup lang="ts">
+import { BaseApp } from '@ramzes1385/rise-ui-kit'
+</script>
+
+<template>
+	<BaseApp :toaster="{ position: 'bottom-right', max: 3 }">
+		<RouterView />
+	</BaseApp>
+</template>
+```
+
+В любом компоненте внутри:
+
+```ts
+import { useConfirm, useOverlay, useToast } from '@ramzes1385/rise-ui-kit'
+
+const toast = useToast()
+const confirm = useConfirm()
+const overlay = useOverlay()
+
+// Уведомление; с тем же id — заменяет показанное
+const id = toast.add({ title: 'Готовим отчёт…', isPersistent: true })
+toast.update(id, { type: 'success', title: 'Отчёт готов', isPersistent: false })
+toast.add({ title: 'Комментарий удалён', actions: [{ label: 'Вернуть', onClick: restore }] })
+
+// Подтверждение: true — подтвердили, false — отменили (кнопкой, Escape, кликом по фону)
+if (await confirm({ title: 'Удалить проект?', description: 'Это необратимо.', confirmLabel: 'Удалить', isDanger: true })) {
+	await api.deleteProject(projectId)
+}
+
+// Своё окно: компонент получает props и isOpen, результат передаёт в emit('close', value)
+const rename = overlay.create(RenameProjectModal)
+const newName = await rename.open({ name: project.name })
+```
+
+- `toaster` — настройки уведомлений: `position`, `duration` (3000 мс), `max` (5 одновременно, старые закрываются), `variant`, `sizeScale`.
+- Окно для `useOverlay()` закрывается событием `close` (с результатом) или `update:isOpen` (без результата); если компонент шлёт оба, `close` должен идти первым. После анимации (`after-leave`) окно удаляется из DOM.
+- Вызовы вне дерева `BaseApp` (в сторе, роутере, обработчике запросов) идут в последний смонтированный `BaseApp`. Без `BaseApp` вызов пишет предупреждение в консоль и ничего не показывает; `confirm()` при этом отвечает `false`.
+
+**Полоса загрузки при переходах** — `useLoadingBar()`: `start`, `finish`, `error`; полосу показывает `BaseApp`. Хранилище одно на страницу, поэтому вызывать можно и до монтирования приложения — например, в охранниках роутера (кит vue-router не импортирует):
+
+```ts
+import { useLoadingBar } from '@ramzes1385/rise-ui-kit'
+
+const loadingBar = useLoadingBar()
+router.beforeEach(() => loadingBar.start())
+router.afterEach(() => loadingBar.finish())
+router.onError(() => loadingBar.error())
+```
+
+- Полоса растёт до 90 % и ждёт `finish`; повторный `start` во время загрузки ничего не меняет, `finish` и `error` без `start` — тоже. Счётчика вложенных загрузок нет: одна полоса на одну загрузку страницы.
+- Для скринридера — `role="progressbar"` без значения (ход оценочный) и с именем «Загрузка страницы»; шаги роста не объявляются. `isLoading` удобно поставить в `aria-busy` основной области: `<main :aria-busy="loadingBar.isLoading.value">`.
+- При `prefers-reduced-motion: reduce` полоса не движется: видна во всю ширину, пока идёт загрузка. Проп `loadingBar` у `BaseApp` — толщина `height` (3 px) и имя `label`.
+- Полоса одна на страницу, поэтому и `BaseApp` на странице должен быть один: второй `BaseApp` нарисует ту же полосу ещё раз.
+
+### Слои: окна, панели и подсказки
+
+Окна, боковые панели, выпадающие списки, меню и подсказки — слои. Кит ведёт их общий стек в порядке открытия:
+
+- **Escape и клик снаружи получает только верхний слой.** Из окна с открытым списком первое нажатие Escape закрывает список, второе — окно. Клик в панели вложенного списка (фильтр в поповере, выбор в окне) не закрывает внешний слой, хотя обе панели телепортированы в body.
+- **Свой обработчик Escape** внутри слоя вызывает `event.preventDefault()` — тогда слои это нажатие не трогают: поле с собственной отменой по Escape не закроет окно.
+- **Свои всплывающие элементы** подключаются к стеку через `useEscapeKey` и `useClickOutside` (или `useLayer`) из `@ramzes1385/rise-ui-kit/composables`, место в порядке наложения даёт `useLayerIndex` — см. [Composables](docs/reference/COMPOSABLES.md).
+- **Край окна.** Выпадающие панели (`BaseDropdown`, `BaseDropdownMenu`, `BaseContextMenu`, `BaseSelect`, `BasePopover`, `BasePopconfirm`, `BaseSearch`, `BaseDatePicker`) и подсказки `BaseTooltip` открываются с противоположной стороны, если на выбранной не хватает места, а вдоль края окна сдвигаются, оставляя 8px.
+- **Тема.** Панель, открытая из блока с `data-theme`, берёт тему этого блока, а не страницы: тёмный плеер на светлой странице получает тёмное меню. Так работают выпадающие панели, подсказки, календарь и контекстные меню редактора и чата.
+- **Контейнер слоёв.** По умолчанию слои телепортируются в `body`. Свой контейнер задают `createUiKitPlugin({ teleportTo: '#layers' })` или `<BaseApp teleport-to="#layers">` (он важнее плагина для компонентов внутри); контейнер может стоять в том же шаблоне, что и меню. Это нужно, например, в полноэкранном режиме: панели в `body` не видны поверх элемента, развёрнутого через Fullscreen API. У контейнера не должно быть `transform`, `filter` и `contain` — панели позиционируются через `position: fixed`.
+- **Порядок наложения — порядок открытия.** Окно, открытое из меню, — над меню; список в окне — над окном; тур, запущенный из окна, — над окном. z-index такого слоя — `--rise-z-overlay` плюс его место среди открытых (`--rise-layer-index`), поэтому порядок компонентов в DOM не важен. Уведомления, подсказки и просмотр изображения всегда выше — у них свои токены (см. «Дизайн-система и темы»).
+
+```vue
+<!-- Плеер: при переходе в полноэкранный режим меню и подсказки должны оставаться видимыми -->
+<template>
+	<div ref="playerRef" class="player">
+		<video … />
+		<div id="player-layers" />
+	</div>
+</template>
+```
+
+```ts
+app.use(createUiKitPlugin({ teleportTo: '#player-layers' }))
 ```
 
 ---
@@ -137,7 +705,7 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 </script>
 
 <template>
-	<BaseButton label="Сохранить" />
+	<BaseButton>Сохранить</BaseButton>
 </template>
 ```
 
@@ -145,13 +713,42 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ## Публичный API
 
-Все внешние импорты должны идти через главный публичный API пакета:
+Компоненты и их типы импортируются из корня пакета. Composables, utils и icons из корня экспортируются только как namespace (`composables`, `utils`, `icons`) — либо импортируйте их из подпутей пакета:
 
 ```ts
-import { BaseButton, BaseInput, BaseModal, BaseTable, useDebounce, formatFileSize } from '@ramzes1385/rise-ui-kit'
+import { BaseButton, BaseInput, BaseModal, BaseTable, composables, utils } from '@ramzes1385/rise-ui-kit'
+import { useDebounceFn } from '@ramzes1385/rise-ui-kit/composables'
+import { formatFileSize } from '@ramzes1385/rise-ui-kit/utils'
 
 import '@ramzes1385/rise-ui-kit/styles'
+
+const size = utils.formatFileSize(1024) // то же, что formatFileSize(1024)
 ```
+
+Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale`, `registerLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты.
+
+Исключение — сервисы всего приложения: `useToast`, `useOverlay`, `useConfirm`, `useLoadingBar`, `useColorMode`, `useLocale`, а также `setLocale`, `defineLocale` и словари `ru`, `en` импортируются из корня пакета по имени, как компоненты; словари `zh` и `ja` — с подпутей `/locales/zh` и `/locales/ja` (со шрифтом иероглифов).
+
+Видеоплеер `BaseMediaPlayer` и его типы — только из подпути `@ramzes1385/rise-ui-kit/media`: в корень пакета и в плагин он не входит, поэтому приложения без плеера его код не загружают. Стили плеера — отдельным файлом `@ramzes1385/rise-ui-kit/media.css` (см. «Подключение стилей»).
+
+Подпути из `package.json#exports`: `/components`, `/composables`, `/utils`, `/icons` (константы спрайта и `createIconPlugin`), `/media` (видеоплеер), `/map3d` (3D-карта этажей), `/flow3d` (3D-схема процессов), `/roadmap3d` (3D-роадмап), `/styles` (`/styles.css`), `/media.css` (стили плеера), `/tokens.json` и `/tokens/<тема>.<режим>.json` (токены для дизайна), `/icons.svg`, а также подпуть на каждый компонент (`/BaseButton`, `/BaseSelect`, …) и `/tokens.css` для них (см. «Точечная установка»), `/config` (`createUiKitConfig`), `/locales/zh` и `/locales/ja` (словари со шрифтом иероглифов), `/fonts/zh.css` и `/fonts/ja.css` (только шрифт), `/resolver` (резолвер для `unplugin-vue-components`), `/nuxt` (модуль Nuxt) и `/global` (типы шаблонов) — см. «Автоимпорт» и «Типы в шаблонах».
+
+### 3D-карта этажей
+
+3D-карта `BaseImageMap3D` (этажи стопкой, модели GLB, камера, выбор, каталог и маршруты на three.js) — только из подпути `@ramzes1385/rise-ui-kit/map3d`, как плеер из `/media`. Ей нужен `three` — необязательная peer-зависимость, которую ставит только приложение с 3D-картой:
+
+```bash
+npm i three
+npm i -D @types/three
+```
+
+```ts
+import { BaseImageMap3D } from '@ramzes1385/rise-ui-kit/map3d'
+```
+
+Без `three` основной вход работает как прежде, а импорт `/map3d` не соберётся. Данные — тот же JSON, что у `BaseImageMap` и `BaseImageMapEditor`, плюс необязательные 3D-поля; без WebGL карта сама показывает 2D-план. Подробно — [docs/reference/MAP3D.md](docs/reference/MAP3D.md).
+
+Так же — только из своих подпутей и с тем же `three` — подключаются 3D-схема процессов `BaseFlowMap3D` (`@ramzes1385/rise-ui-kit/flow3d`) и 3D-роадмап `BaseRoadmap3D` (`@ramzes1385/rise-ui-kit/roadmap3d`). Справочник — [docs/reference/FLOW3D.md](docs/reference/FLOW3D.md).
 
 Не рекомендуется импортировать внутренние файлы из `dist` напрямую:
 
@@ -168,1495 +765,67 @@ import { BaseButton } from '@ramzes1385/rise-ui-kit'
 
 ---
 
-## Структура пакета
+### Отдельные пакеты
 
-```txt
-src/
-  components/      # UI-компоненты
-  composables/     # Vue composables
-  icons/           # иконки и icon registry
-  plugins/         # Vue-плагины (createIconPlugin и др.)
-  styles/          # глобальные стили
-  utils/           # утилиты
-  plugin.ts        # Vue plugin
-  index.ts         # главный публичный API
+Крупные компоненты можно ставить отдельными пакетами — по образцу плеера, со своим релизом и стилями. Пакеты строятся из публичных входов кита: он и Vue — их peerDependencies, язык (`setLocale()`, `defineLocale()`), настройки плагина и иконки приходят из кита.
 
-build/
-  config/          # общие Vite-конфиги
-  plugins/         # Vite plugins
-  lib/             # npm library build
-  tests/           # Vitest config
-  release/         # semantic-release config
-  ci/              # CI/CD конфиги и env examples
-  commitlint/      # commitlint config
+| Пакет | Что внутри | Стили |
+|---|---|---|
+| `@ramzes1385/rise-media-player` | `BaseMediaPlayer`, `BasePresentationPlayer` | `@ramzes1385/rise-media-player/styles.css` |
+| `@ramzes1385/rise-maps` | `BaseMap`, `BaseImageMap`, `BaseImageMapEditor`; `BaseImageMap3D` — вход `/map3d`, `three` необязателен | `@ramzes1385/rise-maps/styles.css` |
+| `@ramzes1385/rise-editor` | `BaseEditor` | `@ramzes1385/rise-editor/styles.css` |
 
-dist/              # результат сборки библиотеки
-```
+Пока пакеты не опубликованы, их содержимое готовит скрипт кита: `node build/packages/extract.mjs <media|maps|editor> <пустая папка>`, затем в папке `npm install` и `npm run build`. Что внутри, как переносить и что решить владельцу до публикации (репозитории, тесты и stories в пакетах, словарь, версия кита) — в [build/packages/README.md](build/packages/README.md). Компоненты остаются и в ките — приложения, которым не нужна точечная установка, ничего не меняют.
 
----
-
-# Компоненты
-
-Ниже приведён список основных компонентов библиотеки.
-
----
-
-## BaseButton
-
-Базовая кнопка.
-
-Подходит для действий, форм, тулбаров, модальных окон и карточек.
-
-### Пример
-
-```vue
-<script setup lang="ts">
-import { BaseButton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseButton label="Сохранить" />
-
-	<BaseButton variant="ghost" label="Отмена" />
-
-	<BaseButton :disabled="true" label="Недоступно" />
-</template>
-```
-
----
-
-## BaseInput
-
-Базовое поле ввода.
-
-### Пример
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseInput } from '@ramzes1385/rise-ui-kit'
-
-const value = ref('')
-</script>
-
-<template>
-	<BaseInput v-model="value" placeholder="Введите текст" />
-</template>
-```
-
----
-
-## BaseTextarea
-
-Многострочное поле ввода.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseTextarea } from '@ramzes1385/rise-ui-kit'
-
-const description = ref('')
-</script>
-
-<template>
-	<BaseTextarea v-model="description" placeholder="Описание" />
-</template>
-```
-
----
-
-## BaseSelect
-
-Компонент выбора значения из списка.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseSelect } from '@ramzes1385/rise-ui-kit'
-
-const selected = ref(null)
-
-const options = [
-	{ label: 'Активен', value: 'active' },
-	{ label: 'Неактивен', value: 'inactive' },
-]
-</script>
-
-<template>
-	<BaseSelect v-model="selected" :options="options" placeholder="Выберите статус" />
-</template>
-```
-
----
-
-## BaseCheckbox
-
-Чекбокс.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseCheckbox } from '@ramzes1385/rise-ui-kit'
-
-const checked = ref(false)
-</script>
-
-<template>
-	<BaseCheckbox v-model="checked" label="Согласен с условиями" />
-</template>
-```
-
----
-
-## BaseRadio
-
-Radio button.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseRadio } from '@ramzes1385/rise-ui-kit'
-
-const value = ref('email')
-</script>
-
-<template>
-	<BaseRadio v-model="value" value="email" label="Email" />
-
-	<BaseRadio v-model="value" value="phone" label="Телефон" />
-</template>
-```
-
----
-
-## BaseSwitch
-
-Переключатель.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseSwitch } from '@ramzes1385/rise-ui-kit'
-
-const enabled = ref(false)
-</script>
-
-<template>
-	<BaseSwitch v-model="enabled" label="Включить уведомления" />
-</template>
-```
-
----
-
-## BaseForm
-
-Контейнер формы.
-
-```vue
-<script setup lang="ts">
-import { BaseForm, BaseInput, BaseButton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseForm>
-		<BaseInput placeholder="Email" />
-		<BaseButton label="Отправить" />
-	</BaseForm>
-</template>
-```
-
----
-
-## BaseFormField
-
-Обёртка для поля формы.
-
-Обычно используется для label, ошибок и вспомогательного текста.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseFormField, BaseInput } from '@ramzes1385/rise-ui-kit'
-
-const email = ref('')
-</script>
-
-<template>
-	<BaseFormField label="Email" error="Некорректный email">
-		<BaseInput v-model="email" placeholder="example@mail.com" />
-	</BaseFormField>
-</template>
-```
-
----
-
-## BaseModal
-
-Модальное окно.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseModal, BaseButton } from '@ramzes1385/rise-ui-kit'
-
-const isOpen = ref(false)
-</script>
-
-<template>
-	<BaseButton label="Открыть" @click="isOpen = true" />
-
-	<BaseModal v-model="isOpen" title="Подтверждение">
-		<p>Вы уверены?</p>
-	</BaseModal>
-</template>
-```
-
----
-
-## BaseSlideover
-
-Выезжающая панель.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseSlideover, BaseButton } from '@ramzes1385/rise-ui-kit'
-
-const isOpen = ref(false)
-</script>
-
-<template>
-	<BaseButton label="Открыть панель" @click="isOpen = true" />
-
-	<BaseSlideover v-model="isOpen"> Содержимое панели </BaseSlideover>
-</template>
-```
-
----
-
-## BaseDropdown
-
-Выпадающее меню.
-
-```vue
-<script setup lang="ts">
-import { BaseDropdown, BaseButton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseDropdown>
-		<template #trigger>
-			<BaseButton label="Меню" />
-		</template>
-
-		<div>Пункт меню</div>
-	</BaseDropdown>
-</template>
-```
-
----
-
-## BasePopover
-
-Popover-компонент.
-
-```vue
-<script setup lang="ts">
-import { BasePopover, BaseButton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BasePopover>
-		<template #trigger>
-			<BaseButton label="Открыть popover" />
-		</template>
-
-		<div>Контент popover</div>
-	</BasePopover>
-</template>
-```
-
----
-
-## BaseTooltip
-
-Tooltip для подсказок.
-
-```vue
-<script setup lang="ts">
-import { BaseTooltip, BaseButton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseTooltip content="Подсказка">
-		<BaseButton label="Наведи на меня" />
-	</BaseTooltip>
-</template>
-```
-
----
-
-## BaseTable
-
-Таблица данных.
-
-```vue
-<script setup lang="ts">
-import { BaseTable } from '@ramzes1385/rise-ui-kit'
-
-const columns = [
-	{ key: 'name', label: 'Название' },
-	{ key: 'status', label: 'Статус' },
-]
-
-const rows = [
-	{ id: 1, name: 'Задача 1', status: 'Активна' },
-	{ id: 2, name: 'Задача 2', status: 'Завершена' },
-]
-</script>
-
-<template>
-	<BaseTable :columns="columns" :rows="rows" />
-</template>
-```
-
----
-
-## BasePagination
-
-Пагинация.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BasePagination } from '@ramzes1385/rise-ui-kit'
-
-const page = ref(1)
-</script>
-
-<template>
-	<BasePagination v-model="page" :total="100" :page-size="10" />
-</template>
-```
-
----
-
-## BaseTabs
-
-Табы.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseTabs } from '@ramzes1385/rise-ui-kit'
-
-const activeTab = ref('main')
-
-const tabs = [
-	{ label: 'Основное', value: 'main' },
-	{ label: 'Настройки', value: 'settings' },
-]
-</script>
-
-<template>
-	<BaseTabs v-model="activeTab" :items="tabs" />
-</template>
-```
-
----
-
-## BaseAccordion
-
-Аккордеон.
-
-```vue
-<script setup lang="ts">
-import { BaseAccordion } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseAccordion title="Подробнее"> Контент аккордеона </BaseAccordion>
-</template>
-```
-
----
-
-## BaseCard
-
-Карточка.
-
-```vue
-<script setup lang="ts">
-import { BaseCard } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseCard>
-		<h3>Заголовок</h3>
-		<p>Описание карточки</p>
-	</BaseCard>
-</template>
-```
-
----
-
-## BaseAlert
-
-Alert-сообщение.
-
-```vue
-<script setup lang="ts">
-import { BaseAlert } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseAlert type="success" title="Успешно" description="Данные сохранены" />
-</template>
-```
-
----
-
-## BaseNotification
-
-Уведомление.
-
-```vue
-<script setup lang="ts">
-import { BaseNotification } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseNotification title="Новое уведомление" description="Данные обновлены" />
-</template>
-```
-
----
-
-## BaseBadge
-
-Badge-компонент.
-
-```vue
-<script setup lang="ts">
-import { BaseBadge } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseBadge label="New" />
-</template>
-```
-
----
-
-## BaseChip
-
-Chip-компонент.
-
-```vue
-<script setup lang="ts">
-import { BaseChip } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseChip label="Vue" />
-</template>
-```
-
----
-
-## BaseAvatar
-
-Аватар пользователя.
-
-```vue
-<script setup lang="ts">
-import { BaseAvatar } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseAvatar name="Иван Иванов" src="/avatar.png" />
-</template>
-```
-
----
-
-## BaseImage
-
-Компонент изображения.
-
-```vue
-<script setup lang="ts">
-import { BaseImage } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseImage src="/image.jpg" alt="Описание изображения" />
-</template>
-```
-
----
-
-## BaseIcon
-
-Компонент иконки.
-
-```vue
-<script setup lang="ts">
-import { BaseIcon } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseIcon name="search" />
-</template>
-```
-
----
-
-## BaseLoader
-
-Loader.
-
-```vue
-<script setup lang="ts">
-import { BaseLoader } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseLoader />
-</template>
-```
-
----
-
-## BaseSkeleton
-
-Skeleton-заглушка.
-
-```vue
-<script setup lang="ts">
-import { BaseSkeleton } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseSkeleton />
-</template>
-```
-
----
-
-## BaseEmpty
-
-Empty state.
-
-```vue
-<script setup lang="ts">
-import { BaseEmpty } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseEmpty title="Нет данных" description="Попробуйте изменить фильтры" />
-</template>
-```
-
----
-
-## BaseProgress
-
-Progress bar.
-
-```vue
-<script setup lang="ts">
-import { BaseProgress } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseProgress :value="65" />
-</template>
-```
-
----
-
-## BaseRange
-
-Range input.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseRange } from '@ramzes1385/rise-ui-kit'
-
-const value = ref(50)
-</script>
-
-<template>
-	<BaseRange v-model="value" :min="0" :max="100" />
-</template>
-```
-
----
-
-## BaseSlider
-
-Slider/carousel.
-
-```vue
-<script setup lang="ts">
-import { BaseSlider } from '@ramzes1385/rise-ui-kit'
-
-const slides = [
-	{ id: 1, title: 'Слайд 1' },
-	{ id: 2, title: 'Слайд 2' },
-]
-</script>
-
-<template>
-	<BaseSlider :items="slides" />
-</template>
-```
-
----
-
-## BaseRating
-
-Рейтинг.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseRating } from '@ramzes1385/rise-ui-kit'
-
-const rating = ref(4)
-</script>
-
-<template>
-	<BaseRating v-model="rating" />
-</template>
-```
-
----
-
-## BaseSearch
-
-Поиск.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseSearch } from '@ramzes1385/rise-ui-kit'
-
-const query = ref('')
-</script>
-
-<template>
-	<BaseSearch v-model="query" placeholder="Поиск" />
-</template>
-```
-
----
-
-## BaseDatePicker
-
-Выбор даты.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseDatePicker } from '@ramzes1385/rise-ui-kit'
-
-const date = ref(null)
-</script>
-
-<template>
-	<BaseDatePicker v-model="date" />
-</template>
-```
-
----
-
-## BaseCalendar
-
-Календарь.
-
-```vue
-<script setup lang="ts">
-import { BaseCalendar } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseCalendar />
-</template>
-```
-
----
-
-## BaseColorPicker
-
-Выбор цвета.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseColorPicker } from '@ramzes1385/rise-ui-kit'
-
-const color = ref('#42b883')
-</script>
-
-<template>
-	<BaseColorPicker v-model="color" />
-</template>
-```
-
----
-
-## BaseFileUpload
-
-Загрузка файлов.
-
-```vue
-<script setup lang="ts">
-import { BaseFileUpload } from '@ramzes1385/rise-ui-kit'
-
-function handleFiles(files: FileList): void {
-	console.log(files)
-}
-</script>
-
-<template>
-	<BaseFileUpload @change="handleFiles" />
-</template>
-```
-
----
-
-## BaseEditor
-
-Редактор текста.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseEditor } from '@ramzes1385/rise-ui-kit'
-
-const content = ref('')
-</script>
-
-<template>
-	<BaseEditor v-model="content" />
-</template>
-```
-
----
-
-## BaseChat
-
-Компонент чата.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseChat } from '@ramzes1385/rise-ui-kit'
-
-const messages = ref([
-	{
-		id: '1',
-		text: 'Привет',
-		senderName: 'Анна',
-		createdAt: new Date().toISOString(),
-	},
-])
-
-function handleSend(payload: { text: string }): void {
-	messages.value.push({
-		id: String(Date.now()),
-		text: payload.text,
-		senderName: 'Вы',
-		createdAt: new Date().toISOString(),
-	})
-}
-</script>
-
-<template>
-	<BaseChat :messages="messages" @send="handleSend" />
-</template>
-```
-
----
-
-## BaseTree
-
-Дерево данных.
-
-```vue
-<script setup lang="ts">
-import { BaseTree } from '@ramzes1385/rise-ui-kit'
-
-const nodes = [
-	{
-		id: '1',
-		label: 'Родитель',
-		children: [{ id: '1-1', label: 'Дочерний элемент' }],
-	},
-]
-</script>
-
-<template>
-	<BaseTree :nodes="nodes" />
-</template>
-```
-
----
-
-## BaseMegaMenu
-
-Многоуровневое меню.
-
-```vue
-<script setup lang="ts">
-import { BaseMegaMenu } from '@ramzes1385/rise-ui-kit'
-
-const items = [
-	{
-		label: 'Раздел',
-		children: [{ label: 'Подраздел', to: '/section' }],
-	},
-]
-</script>
-
-<template>
-	<BaseMegaMenu :items="items" />
-</template>
-```
-
----
-
-## BaseMenu
-
-Меню.
-
-```vue
-<script setup lang="ts">
-import { BaseMenu } from '@ramzes1385/rise-ui-kit'
-
-const items = [
-	{ label: 'Профиль', value: 'profile' },
-	{ label: 'Выход', value: 'logout' },
-]
-</script>
-
-<template>
-	<BaseMenu :items="items" />
-</template>
-```
-
----
-
-## BaseSideBar
-
-Боковая панель навигации.
-
-```vue
-<script setup lang="ts">
-import { BaseSideBar } from '@ramzes1385/rise-ui-kit'
-
-const items = [
-	{ label: 'Главная', to: '/' },
-	{ label: 'Настройки', to: '/settings' },
-]
-</script>
-
-<template>
-	<BaseSideBar :items="items" />
-</template>
-```
-
----
-
-## BaseBreadcrumbs
-
-Хлебные крошки.
-
-```vue
-<script setup lang="ts">
-import { BaseBreadcrumbs } from '@ramzes1385/rise-ui-kit'
-
-const items = [{ label: 'Главная', to: '/' }, { label: 'Пользователи', to: '/users' }, { label: 'Профиль' }]
-</script>
-
-<template>
-	<BaseBreadcrumbs :items="items" />
-</template>
-```
-
----
-
-## BaseStepper
-
-Stepper.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseStepper } from '@ramzes1385/rise-ui-kit'
-
-const step = ref(1)
-
-const steps = [{ label: 'Данные' }, { label: 'Проверка' }, { label: 'Готово' }]
-</script>
-
-<template>
-	<BaseStepper v-model="step" :steps="steps" />
-</template>
-```
-
----
-
-## BaseTour
-
-Компонент пользовательского тура по интерфейсу.
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseTour } from '@ramzes1385/rise-ui-kit'
-
-const isOpen = ref(true)
-
-const steps = [
-	{
-		target: '#first-step',
-		title: 'Первый шаг',
-		content: 'Описание первого шага',
-	},
-]
-</script>
-
-<template>
-	<BaseTour v-model:is-open="isOpen" :steps="steps" />
-</template>
-```
-
----
-
-## BaseText
-
-Компонент текста.
-
-```vue
-<script setup lang="ts">
-import { BaseText } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseText tag="p" :weight="600"> Текст </BaseText>
-</template>
-```
-
----
-
-## BaseSeparator
-
-Разделитель.
-
-```vue
-<script setup lang="ts">
-import { BaseSeparator } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseSeparator />
-</template>
-```
-
----
-
-## BasePin
-
-Pin/закреплённый элемент.
-
-```vue
-<script setup lang="ts">
-import { BasePin } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BasePin />
-</template>
-```
-
----
-
-## BaseAnimation
-
-Компонент анимации.
-
-```vue
-<script setup lang="ts">
-import { BaseAnimation } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseAnimation>
-		<div>Анимированный контент</div>
-	</BaseAnimation>
-</template>
-```
-
----
-
-# Список компонентов
-
-```txt
-BaseAccordion
-BaseAlert
-BaseAnimation
-BaseAvatar
-BaseBadge
-BaseBreadcrumbs
-BaseButton
-BaseCalendar
-BaseCard
-BaseChat
-BaseCheckbox
-BaseChip
-BaseColorPicker
-BaseDatePicker
-BaseDropdown
-BaseEditor
-BaseEmpty
-BaseFileUpload
-BaseForm
-BaseFormField
-BaseIcon
-BaseImage
-BaseInput
-BaseLoader
-BaseMegaMenu
-BaseMenu
-BaseModal
-BaseNotification
-BasePagination
-BasePin
-BasePopover
-BaseProgress
-BaseRadio
-BaseRange
-BaseRating
-BaseSearch
-BaseSelect
-BaseSeparator
-BaseSideBar
-BaseSkeleton
-BaseSlideover
-BaseSlider
-BaseStepper
-BaseSwitch
-BaseTable
-BaseTabs
-BaseText
-BaseTextarea
-BaseTooltip
-BaseTour
-BaseTree
-```
-
----
-
-# Composables
-
-Библиотека также экспортирует composables.
-
-## useDebounce
-
-Используется для отложенного вызова функции или реакции на изменение значения.
-
-```ts
-import { useDebounce } from '@ramzes1385/rise-ui-kit'
-
-const debouncedSearch = useDebounce((value: string) => {
-	console.log(value)
-}, 300)
-```
-
----
+## Безопасность
 
-## useClickOutside
+Кит выводит текст пользователей так, чтобы он оставался текстом: приложению не нужно очищать его перед передачей в компоненты.
 
-Отслеживает клик вне элемента.
+| Что выводится | Гарантия |
+|---|---|
+| Любой текст из props и данных (подписи, имена, сообщения чата, комментарии, строки таблиц, JSON, код, diff) | Вывод через шаблоны Vue: разметка в тексте остаётся текстом. `v-html` в ките — только JSON-LD (экранирован) и SVG плана после `sanitizeSvg` |
+| `BaseMarkdown`, `BaseAiMessage`, сообщения чата с Markdown | Собственный разбор в дерево узлов без `v-html`: HTML-теги выводятся текстом; ссылки — только `http:`, `https:`, `mailto:`, `tel:` и относительные (`javascript:`, `vbscript:`, `data:` остаются текстом); картинки — `http:`, `https:`, `blob:` и `data:image/*`; глубже 32 уровней вложенности — обычный текст |
+| `BaseEditor` (`v-model` — HTML) | `modelValue`, вставка из буфера, перетаскивание, `insertHtml`, режим кода и вставка после `uploadMedia` проходят `sanitizeHtml`; ссылки — только `http:`, `https:`, `mailto:`, `tel:` |
+| `sanitizeHtml(html)` для вашей разметки (CMS, письма, API) | Белый список элементов, атрибутов и CSS-свойств: `script`, `style`, `iframe`, `svg`, формы и другие опасные элементы удаляются вместе с содержимым, `on*`, `class`, `id`, `srcset` и прочие неразрешённые атрибуты — тоже; `href` — как выше, `src` — `http:`, `https:`, `blob:` и `data:image/*` у `img`; `target="_blank"` получает `rel="noopener noreferrer"`; результат устойчив (повторная очистка не меняет его), глубже 128 уровней элементы отбрасываются. Без DOM (SSR) возвращает экранированный текст |
+| Ссылки (`BaseLink` и компоненты, которые строят ссылки через него) | `isSafeUrl`: опасные схемы не попадают в `href`, переход по ним не выполняется |
+| JSON-LD (проп `seo`) | `<`, `>`, `&`, U+2028 и U+2029 экранируются: строка `</script>` в данных не закрывает тег |
+| SVG плана (`BaseImageMap`, `BaseImageMapEditor`) | `sanitizeSvg`: белый список элементов, нет `script`, `on*` и внешних ссылок |
 
-```vue
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useClickOutside } from '@ramzes1385/rise-ui-kit'
+Чего кит не делает:
 
-const rootRef = ref<HTMLElement | null>(null)
+- Адреса ресурсов из данных приложения — аватар, вложение чата, `src` у `BaseImage`, аудио и видео — отдаются браузеру как есть: браузеры не исполняют `javascript:` в `src` картинок и медиа. Если такой адрес вводит пользователь, проверяйте его при сохранении; для картинки есть `isSafeImageUrl`. Ссылки-переходы (`href`) кит фильтрует всегда.
+- Кит не заменяет `Content-Security-Policy`, очистку на сервере и проверку загружаемых файлов.
 
-useClickOutside(rootRef, () => {
-	console.log('Клик вне блока')
-})
-</script>
+Как это проверяется. Помимо тестов компонентов, в `build/tests/fuzz` — фаззинг XSS без зависимостей: свой детерминированный генератор (одно зерно — те же входы) собирает входы из словаря опасных конструкций (теги `script`, `iframe`, `svg`, `math`, `style`, `form`; `on*` в разных регистрах, с пробелами и NUL; `javascript:`, `vbscript:`, `data:` в `href`, `src`, `xlink:href`, `action`, `formaction`, `srcset`, `poster`; сущности `&#x6A;avascript`; комментарии, CDATA, незакрытые теги, вложенность, mXSS вроде `<svg><style><img>`; ссылки, картинки и автоссылки Markdown). Проверка независима от кита: схему адреса читает `URL` по стандарту WHATWG, исполнение скрипта ловит шпион на `alert`, разметка после очистки разбирается как `innerHTML` и не должна содержать запрещённых элементов, `on*` и опасных адресов; повторная очистка не должна менять результат.
 
-<template>
-	<div ref="rootRef">Контент</div>
-</template>
-```
+- Обычный `npm run test:unit` гоняет около 1500 входов (до 10 секунд).
+- Долгий прогон — `npm run test:fuzz -- --iterations=50000` (последний полный прогон (общая машина, 2 ядра): 537 500 входов утилит и разбора (`sanitizeHtml` 130 000, адреса 150 000, `parseMarkdown` 150 000, `escapeHtml` 50 000, `serializeJsonLd` 50 000, SVG 7 500) и 19 630 входов компонентов, нарушений 0; 18 итераций jsdom не засчитаны — его собственные ошибки разбора, см. FOLLOW_UPS). Он не входит в CI и не запускается по расписанию: запускайте перед релизом и после правок `htmlUtils`, `urlUtils`, Markdown и редактора.
+- Упавшую итерацию повторяет `npm run test:fuzz -- --only=<цель>:<номер>`; найденный вход сокращается до минимального и печатается в отчёте.
+- Ограничения: прогон идёт в jsdom, не в браузере; найденное и починенное — в `docs/design/FOLLOW_UPS.md`, «Задача w16-security-tokens».
 
 ---
 
-## useEscapeKey
+## Документация
 
-Обработка Escape.
+| Документ | Что внутри |
+|---|---|
+| [Storybook](https://ramzes1385.github.io/Rise-UI-KIT/) | Все компоненты вживую: варианты, состояния, клавиатура, обе темы, таблицы props и событий |
+| [Компоненты](docs/reference/COMPONENTS.md) | Справочник: назначение, основные props и события, примеры |
+| [Composables](docs/reference/COMPOSABLES.md) | `useDebounce`, `useClickOutside`, `useEscapeKey`, `useFocusTrap`, `useHotkeys` и другие |
+| [Utils](docs/reference/UTILS.md) | Даты, файлы, цвета, субтитры, медиа, проверка ссылок, координаты `position: fixed` |
+| [Вес компонентов](docs/reference/SIZES.md) | JS и CSS (gzip) каждого компонента при импорте с подпути, с учётом общего кода |
+| [3D-карта этажей](docs/reference/MAP3D.md) | Вход `/map3d`: установка `three`, 3D-поля данных, модели GLB, камера, клавиатура, фолбэк на 2D |
+| [3D-схема и 3D-роадмап](docs/reference/FLOW3D.md) | Входы `/flow3d` и `/roadmap3d`: установка `three`, 3D-поля данных, модели, клавиатура, «Правка» в 3D, запасной 2D-вид |
+| [SEO-разметка](docs/reference/SEO.md) | Проп `seo`: JSON-LD schema.org у компонентов и проверка в Google Rich Results и Яндекс Вебмастере |
+| [Переход на 2.0](docs/v2/MIGRATION.md) | Что изменилось для приложения и что сделать при обновлении с 1.x |
+| [Что заметит приложение после редизайна](docs/design/CHANGES_FOR_APPS.md) | Значения по умолчанию, DOM, доступность, токены |
+| [Дизайн-система](docs/design/DESIGN_SYSTEM.md) | Токены `--rise-*`, темы, размеры, правила стилей |
+| [Токены для дизайна](docs/design/DESIGN_TOKENS.md) | `tokens.json` в формате W3C Design Tokens: имена, значения, Figma (Tokens Studio), Style Dictionary |
+| [Разработка](docs/reference/DEVELOPMENT.md) | Стек, структура репозитория, Storybook, тесты, сборка, CI |
+| [Ведение репозитория](docs/CONTRIBUTING.md) | Ветки, коммиты, pull request, релизы, новый компонент |
 
-```ts
-import { useEscapeKey } from '@ramzes1385/rise-ui-kit'
-
-useEscapeKey(() => {
-	console.log('Escape pressed')
-})
-```
-
----
-
-## useScrollLock
-
-Блокировка прокрутки страницы.
-
-```ts
-import { useScrollLock } from '@ramzes1385/rise-ui-kit'
-
-const { lock, unlock } = useScrollLock()
-
-lock()
-unlock()
-```
-
----
-
-## useBreakpoint
-
-Работа с breakpoint значениями.
-
-```ts
-import { useBreakpoint } from '@ramzes1385/rise-ui-kit'
-
-const { isMobile, isTablet, isDesktop } = useBreakpoint()
-```
-
----
-
-## useTableData
-
-Помощник для работы с табличными данными.
-
-```ts
-import { useTableData } from '@ramzes1385/rise-ui-kit'
-
-const table = useTableData({
-	rows: [],
-	columns: [],
-})
-```
-
----
-
-## Список composables
-
-```txt
-useAutoScroll
-useBreakpoint
-useCalendar
-useClickOutside
-useColorPicker
-useCustomClass
-useCustomColor
-useCustomStyle
-useDebounce
-useDropdownPosition
-useEditorToolbar
-useEscapeKey
-useFlyoutPosition
-useIcon
-useImageZoom
-useInputMask
-useListNavigation
-useMegaMenuTree
-usePadding
-usePasswordVisibility
-usePopup
-useScrollLock
-useSizeScale
-useSlider
-useSwipe
-useTableData
-useVariant
-```
-
----
-
-# Utils
-
-Библиотека экспортирует набор утилит.
-
-## fileUtils
-
-Утилиты для работы с файлами.
-
-```ts
-import { formatFileSize } from '@ramzes1385/rise-ui-kit'
-
-const size = formatFileSize(1024)
-```
-
----
-
-## dateUtils
-
-Утилиты для работы с датами.
-
-```ts
-import { formatDate } from '@ramzes1385/rise-ui-kit'
-
-const date = formatDate(new Date())
-```
-
----
-
-## colorUtils
-
-Утилиты для работы с цветами.
-
-```ts
-import { isValidColor } from '@ramzes1385/rise-ui-kit'
-
-const valid = isValidColor('#42b883')
-```
-
----
-
-## Список utils
-
-```txt
-assertUtils
-colorUtils
-dateUtils
-editorDomInspect
-fileUtils
-formatUtils
-imageUtils
-navigationUtils
-paginationUtils
-rangeUtils
-schemaUtils
-tableUtils
-tooltipUtils
-```
-
----
-
-# Иконки
-
-Иконки используются через `BaseIcon`.
-
-```vue
-<script setup lang="ts">
-import { BaseIcon } from '@ramzes1385/rise-ui-kit'
-</script>
-
-<template>
-	<BaseIcon name="search" />
-	<BaseIcon name="close" />
-	<BaseIcon name="send" />
-</template>
-```
-
----
-
-# Разработка проекта
-
-## Установка зависимостей
-
-```bash
-npm install
-```
-
-## Запуск dev-режима
-
-```bash
-npm run dev
-```
-
-## Storybook
-
-```bash
-npm run storybook
-```
-
----
-
-# Тестирование
-
-## Все unit/integration тесты
-
-```bash
-npm run test:unit
-```
-
-## Один тестовый файл
-
-```bash
-npm run test:unit -- src/components/BaseChat/ChatInput/ChatInput.spec.ts
-```
-
----
-
-# Сборка
-
-## Сборка npm-библиотеки
-
-```bash
-npm run build:lib
-```
-
-Результат:
-
-```txt
-dist/index.js
-dist/index.d.ts
-dist/plugin.d.ts
-dist/styles.css
-dist/icons.svg
-```
-
-## App/demo сборка
-
-```bash
-npm run build:app
-```
-
----
-
-# Проверка npm-пакета
-
-```bash
-npm run pack:dry
-```
-
-Команда собирает библиотеку и показывает, какие файлы попадут в npm package.
-
----
-
-# Локальная установка `.tgz`
-
-Создать локальный пакет:
-
-```bash
-rm -rf dist
-rm -f *.tgz
-
-npm run build:lib
-npm pack
-```
-
-Установить в тестовый проект:
-
-```bash
-npm install "D:/IT/IT/Портфолио/Rise-UI-KIT/ramzes1385-rise-ui-kit-x.y.z.tgz"
-```
-
----
-
-# CI/CD
-
-Для локальной проверки перед push:
-
-```bash
-npm run ci:validate
-```
-
-Команда должна выполнять:
-
-```txt
-lint
-unit tests
-npm package dry-run
-```
-
----
-
-# Release
-
-Релизы управляются через `semantic-release`.
-
-Локальная проверка:
-
-```bash
-npm run release:dry
-```
-
-Реальный релиз запускается только в CI/CD после push в `main`.
-
 ---
-
-## Conventional Commits
-
-Примеры:
-
-```txt
-fix: preserve chat autocomplete enter submit
-feat: add base timeline component
-docs: update readme
-ci: configure semantic release
-```
-
-Правила релиза:
-
-```txt
-fix      -> patch
-perf     -> patch
-refactor -> patch
-build    -> patch
-deps     -> patch
-feat     -> minor
-
-docs     -> без релиза
-test     -> без релиза
-chore    -> без релиза
-ci       -> без релиза
-style    -> без релиза
-```
-
----
-
-## Нельзя делать вручную
-
-После подключения `semantic-release` не нужно вручную выполнять:
-
-```bash
-npm version patch
-npm version minor
-npm version major
-git tag v...
-npm publish
-```
-
-За версии, changelog, теги, GitHub Release и npm publish отвечает `semantic-release`.
-
----
-
-# Проверка перед push
-
-```bash
-npm run lint
-npm run test:unit
-npm run build:lib
-npm run pack:dry
-npm run release:dry
-```
 
-После проверки:
+## Лицензия
 
-```bash
-git status
-git add .
-git commit -m "docs: update readme"
-git push origin main
-```
+MIT (поле `license` в `package.json`). Сторонние материалы в пакете — значки видеоплеера (Font Awesome Free) и данные эмодзи (emojibase-data, Unicode CLDR) — под своими лицензиями.

@@ -1,25 +1,8 @@
-/**
- * Integration-тесты для BasePin.
- * Проверяют взаимодействие: ввод, навигация, вставка, Backspace.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { render } from '@testing-library/vue'
-import { defineComponent, ref } from 'vue'
 import BasePin from '../ui/BasePin.vue'
-
-/** Wrapper-компонент с v-model для тестирования complete */
-function createPinWrapper(length = 4) {
-	return defineComponent({
-		components: { BasePin },
-		setup() {
-			const value = ref('')
-			return { value, length }
-		},
-		template: '<BasePin v-model="value" :length="length" />',
-	})
-}
+import { defineComponent, ref } from 'vue'
+import { render } from '@testing-library/vue'
+import userEvent from '@testing-library/user-event'
 
 describe('BasePin integration', () => {
 	describe('ввод символа', () => {
@@ -73,7 +56,6 @@ describe('BasePin integration', () => {
 			await user.keyboard('1')
 			await user.keyboard('2')
 
-			// Проверяем что complete обработчик был вызван через DOM-эффект
 			const filledInputs = container.querySelectorAll<HTMLInputElement>('.base-pin__input')
 			expect(filledInputs[0].value).toBe('1')
 			expect(filledInputs[1].value).toBe('2')
@@ -102,11 +84,9 @@ describe('BasePin integration', () => {
 			})
 
 			const inputs = container.querySelectorAll<HTMLInputElement>('.base-pin__input')
-			// Фокус на второй позиции (пустая)
 			inputs[1]?.focus()
 			await user.keyboard('{Backspace}')
 
-			// Должен удалиться предыдущий символ '1'
 			const events = emitted()['update:modelValue'] as string[][]
 			expect(events.at(-1)?.[0]).toBe('')
 		})
@@ -122,7 +102,6 @@ describe('BasePin integration', () => {
 			await user.keyboard('{Backspace}')
 
 			const events = emitted()['update:modelValue'] as string[][]
-			// Должен остаться пустым
 			expect(events.at(-1)?.[0]).toBe('')
 		})
 	})
@@ -136,7 +115,6 @@ describe('BasePin integration', () => {
 			const firstInput = container.querySelector<HTMLInputElement>('.base-pin__input')
 			firstInput?.focus()
 
-			// Disabled input не получает фокус, поэтому просто проверяем отсутствие эмитов
 			expect(emitted()).not.toHaveProperty('update:modelValue')
 		})
 	})
@@ -213,7 +191,6 @@ describe('BasePin integration', () => {
 			const firstInput = container.querySelector<HTMLInputElement>('.base-pin__input')
 			firstInput?.focus()
 
-			// Эмулируем paste события
 			await user.paste('1234')
 
 			const events = emitted()['update:modelValue'] as string[][]
@@ -281,7 +258,6 @@ describe('BasePin integration', () => {
 			firstInput.dispatchEvent(pasteEvent)
 
 			const events = emitted()['update:modelValue'] as string[][]
-			// Пустая вставка устанавливает пустой modelValue
 			expect(events.at(-1)?.[0]).toBe('')
 		})
 
@@ -298,7 +274,6 @@ describe('BasePin integration', () => {
 
 			const events = emitted()['update:modelValue'] as string[][]
 			expect(events.at(-1)?.[0]).toBe('12')
-			// complete не должен эмититься при неполной вставке
 			expect(emitted()).not.toHaveProperty('complete')
 		})
 	})
@@ -310,13 +285,11 @@ describe('BasePin integration', () => {
 				props: { modelValue: '1234' },
 			})
 
-			// Стираем второй символ чтобы проверить замену на пробел
 			const inputs = container.querySelectorAll<HTMLInputElement>('.base-pin__input')
 			inputs[1]?.focus()
 			await user.keyboard('{Backspace}')
 
 			const events = emitted()['update:modelValue'] as string[][]
-			// Вторая позиция становится пробелом: '1 34' → trimEnd не трогает средний пробел
 			expect(events.at(-1)?.[0]).toBe('1 34')
 		})
 
@@ -326,8 +299,6 @@ describe('BasePin integration', () => {
 				props: { modelValue: '' },
 			})
 
-			// Первая ячейка пуста (chars[0] === ' '), Backspace на первой позиции
-			// Код попадает в else-ветку: index===0, поэтому chars[index-1] не трогаем
 			const inputs = container.querySelectorAll<HTMLInputElement>('.base-pin__input')
 			inputs[0]?.focus()
 			await user.keyboard('{Backspace}')

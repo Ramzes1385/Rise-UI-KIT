@@ -1,0 +1,46 @@
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+
+.base-chat-message-list {
+	&__meta {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		@include caps-label(10px);
+		white-space: nowrap;
+	}
+
+	&__status-wrapper {
+		display: inline-flex;
+		align-items: center;
+
+		&--read {
+			color: var(--rise-info);
+		}
+	}
+
+	&__failed {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		@include text-size(xs);
+	}
+
+	&__failed-text {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(4px);
+		color: var(--rise-error-text);
+	}
+
+	&__failed-btn--danger.base-button {
+		--custom-text: var(--rise-error-text);
+		--custom-bg-hover: var(--rise-error-soft);
+		--custom-bg-active: var(--rise-error-soft-hover);
+	}
+
+	&__status-icon--second {
+		margin-inline-start: sz(-14px);
+	}
+}

@@ -1,0 +1,568 @@
+.base-event-calendar {
+	@include custom-color-scope;
+	--event-color: var(--rise-primary);
+	--lane-height: #{sz(22px)};
+	--slot-height: #{sz(24px)};
+	--axis-width: #{sz(56px)};
+	--grid-line: #{ct(event-calendar, cell-border, var(--rise-border-muted))};
+	--grid-line-strong: var(--rise-border);
+	--event-grid-bg: var(--custom-bg, var(--rise-surface-raised));
+
+	display: flex;
+	flex-direction: column;
+	gap: space(12px);
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	container: base-event-calendar / inline-size;
+	padding: space(12px);
+	border: 1px solid ct(event-calendar, border, transparent);
+	border-radius: sz(ct(event-calendar, radius, var(--rise-radius-lg)));
+	@include custom-text(color, var(--rise-text));
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg-muted)));
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(event-calendar, bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline {
+		--event-grid-bg: var(--custom-bg, var(--rise-bg));
+		border-color: ct(event-calendar, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(event-calendar, bg, transparent));
+	}
+
+	&--ghost {
+		--event-grid-bg: var(--custom-bg, var(--rise-bg));
+		padding: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px 12px);
+	}
+
+	&__nav {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+
+		.base-button {
+			--custom-text: inherit;
+			--custom-text-hover: inherit;
+		}
+	}
+
+	&__title {
+		flex: 1 1 auto;
+		min-width: 0;
+		@include heading;
+		@include custom-text(color, var(--rise-text-highlighted));
+		@include text-size(lg);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__view {
+		position: relative;
+		min-width: 0;
+
+		&:has(> .base-event-calendar__view-leaving) {
+			overflow: clip;
+		}
+	}
+
+	&__view-leaving {
+		position: absolute;
+		inset: 0 0 auto;
+		pointer-events: none;
+	}
+
+	@include motion-safe {
+		@include enter-slide(base-event-calendar__view-next, left);
+		@include enter-slide(base-event-calendar__view-prev, right);
+		@include enter-scale(base-event-calendar__view-change);
+	}
+
+	&__month {
+		display: grid;
+		border: 1px solid var(--grid-line);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--event-grid-bg);
+	}
+
+	&__weekdays,
+	&__week {
+		display: grid;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+	}
+
+	&__weekdays,
+	&__resource-head,
+	&__time-head {
+		background-color: ct(event-calendar, header-bg, transparent);
+	}
+
+	&__weekdays,
+	&__time-grid > :first-child {
+		border-start-start-radius: inherit;
+		border-start-end-radius: inherit;
+	}
+
+	&__weekday {
+		padding: space(6px 8px);
+		border-bottom: 1px solid var(--grid-line);
+		text-align: center;
+		@include caps-label(10px);
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-muted)));
+	}
+
+	&__week + &__week &__day {
+		border-top: 1px solid var(--grid-line);
+	}
+
+	&__day {
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+		min-height: sz(96px);
+		padding: space(ct(event-calendar, cell-padding-y, 4px)) 0;
+		outline-offset: -2px;
+		@include focus-ring(-2px);
+
+		& + & {
+			border-inline-start: 1px solid var(--grid-line);
+		}
+
+		&--outside {
+			@include custom-text(color, var(--rise-text-muted));
+			@include custom-bg(background-color, var(--rise-bg-muted));
+		}
+	}
+
+	&__day:not(.base-event-calendar__day--outside, .base-event-calendar__day--selected) {
+		@include hover {
+			background-color: ct(event-calendar, cell-bg-hover, transparent);
+		}
+	}
+
+	&__day-number {
+		align-self: flex-end;
+		min-width: sz(24px);
+		padding: 0 sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
+		line-height: sz(24px);
+		font-variant-numeric: tabular-nums;
+		text-align: center;
+	}
+
+	&__day--today &__day-number {
+		font-weight: var(--rise-font-weight-semibold);
+		color: var(--rise-on-primary);
+		background-color: ct(event-calendar, today-bg, var(--rise-primary));
+	}
+
+	&__lanes {
+		position: relative;
+		height: calc(var(--lane-height) * (var(--lanes) + var(--more)));
+	}
+
+	&__event {
+		@include button-reset;
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		box-sizing: border-box;
+		min-width: 0;
+		padding: 0 space(ct(event-calendar, event-padding-x, 6px));
+		border-radius: sz(ct(event-calendar, event-radius, var(--rise-radius-sm)));
+		box-shadow: inset dir-x(3px) 0 0 var(--event-color);
+		@include custom-text(color, var(--rise-text));
+		text-align: start;
+		background-color: color-mix(in srgb, var(--event-color) 16%, var(--event-grid-bg));
+		font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+		@include transition-colors;
+		@include focus-ring(1px);
+
+		@include hover {
+			background-color: color-mix(in srgb, var(--event-color) 28%, var(--event-grid-bg));
+		}
+
+		&--bar {
+			position: absolute;
+			top: calc(var(--lane) * var(--lane-height));
+			inset-inline-start: sz(2px);
+			z-index: 1;
+			width: calc(var(--span, 1) * 100% + (var(--span, 1) - 1) * 1px - #{sz(4px)});
+			height: calc(var(--lane-height) - #{sz(2px)});
+		}
+
+		&--timed {
+			box-shadow: none;
+			background-color: transparent;
+			@include custom-text(color, var(--rise-text));
+
+			&::before {
+				flex: none;
+				width: sz(6px);
+				height: sz(6px);
+				border-radius: var(--rise-radius-xs);
+				background-color: var(--event-color);
+				content: '';
+			}
+		}
+
+		&--continued {
+			box-shadow: none;
+			border-start-start-radius: 0;
+			border-end-start-radius: 0;
+		}
+
+		&--continuing {
+			border-start-end-radius: 0;
+			border-end-end-radius: 0;
+		}
+
+		&--item {
+			width: 100%;
+			min-height: sz(32px);
+			padding: space(4px) space(ct(event-calendar, event-padding-x, 8px));
+			font-size: sz(ct(event-calendar, event-font-size, var(--rise-font-size-sm)));
+			line-height: sz(var(--rise-line-height-sm));
+		}
+
+		&--block {
+			position: absolute;
+			z-index: 1;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0;
+			min-height: sz(18px);
+			padding: sz(2px) space(ct(event-calendar, event-padding-x, 6px));
+			overflow: hidden;
+			box-shadow:
+				inset dir-x(3px) 0 0 var(--event-color),
+				0 0 0 1px var(--event-grid-bg);
+		}
+
+		&--block &-title,
+		&--block &-time {
+			@include truncate;
+		}
+
+		&--compact {
+			flex-direction: row;
+			align-items: center;
+			gap: sz(4px);
+			padding-block: 0;
+		}
+
+		&--compact &-time {
+			flex: none;
+		}
+	}
+
+	&__event-time {
+		flex: none;
+		color: inherit;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__event-title {
+		min-width: 0;
+		font-weight: var(--rise-font-weight-medium);
+		@include truncate;
+	}
+
+	&__more {
+		position: absolute;
+		top: calc(var(--lanes) * var(--lane-height));
+		inset-inline-start: sz(2px);
+	}
+
+	&__more-button {
+		@include button-reset;
+		text-align: center;
+		padding: 0 sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
+		font-weight: var(--rise-font-weight-medium);
+		@include custom-text(color, var(--rise-text-toned));
+		@include text-size(xs);
+		@include focus-ring(1px);
+
+		@include hover {
+			color: var(--rise-text);
+			background-color: var(--rise-bg-elevated);
+		}
+	}
+
+	&__popover {
+		display: flex;
+		flex-direction: column;
+		gap: space(4px);
+		min-width: sz(220px);
+	}
+
+	&__popover-title {
+		margin: 0 0 sz(4px);
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: space(12px);
+	}
+
+	&__agenda-date {
+		padding: space(6px 8px);
+		border-radius: sz(var(--rise-radius-sm));
+		font-weight: var(--rise-font-weight-semibold);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&__agenda-items {
+		display: flex;
+		flex-direction: column;
+		gap: space(4px);
+		margin: sz(4px) 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__list &__event-time {
+		min-width: sz(96px);
+	}
+
+	&__empty {
+		padding: space(32px 16px);
+		@include custom-text(color, var(--rise-text-toned));
+		text-align: center;
+	}
+
+	&__time-grid {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid var(--grid-line);
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--event-grid-bg);
+	}
+
+	&__resource-head,
+	&__time-head,
+	&__all-day,
+	&__time-canvas {
+		display: grid;
+		grid-template-columns: var(--axis-width) repeat(var(--days), minmax(0, 1fr));
+	}
+
+	&__all-day {
+		grid-template-columns: var(--axis-width) minmax(0, 1fr);
+		border-bottom: 1px solid var(--grid-line);
+	}
+
+	&__resource {
+		grid-column: span var(--span);
+		min-width: 0;
+		padding: sz(6px) sz(8px);
+		overflow: hidden;
+		border-bottom: 1px solid var(--grid-line);
+		border-inline-start: 2px solid var(--grid-line-strong);
+		font-weight: var(--rise-font-weight-semibold);
+		text-align: center;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__header-day--resource-start,
+	&__column--resource-start {
+		border-inline-start: 2px solid var(--grid-line-strong);
+	}
+
+	&__header-day {
+		padding: space(6px 8px);
+		border-bottom: 1px solid var(--grid-line);
+		border-inline-start: 1px solid var(--grid-line);
+		font-weight: var(--rise-font-weight-medium);
+		text-align: center;
+		@include caps-label(10px);
+		@include custom-text(color, ct(event-calendar, header-text, var(--rise-text-muted)));
+
+		&--today {
+			color: var(--rise-primary-text);
+		}
+	}
+
+	&__all-day-label {
+		padding: sz(4px);
+		text-align: end;
+		@include caps-label(10px);
+	}
+
+	&__all-day-events {
+		position: relative;
+		min-height: calc(var(--lane-height) * var(--all-day-lanes) + #{sz(4px)});
+		border-inline-start: 1px solid var(--grid-line);
+
+		.base-event-calendar__event--bar {
+			width: auto;
+			margin-inline-end: sz(4px);
+		}
+	}
+
+	&__time-body {
+		max-height: sz(560px);
+		overflow: auto;
+		@include scrollbar-thin;
+	}
+
+	&__time-canvas {
+		position: relative;
+		height: calc(var(--slots) * var(--slot-height));
+	}
+
+	&__axis {
+		display: grid;
+		grid-auto-rows: var(--slot-height);
+	}
+
+	&__axis-slot {
+		padding-inline-end: sz(6px);
+		text-align: end;
+		@include custom-text(color, var(--rise-text-toned));
+		transform: translateY(-50%);
+		@include text-size(2xs);
+
+		&:first-child {
+			visibility: hidden;
+		}
+	}
+
+	&__column {
+		position: relative;
+		border-inline-start: 1px solid var(--grid-line);
+		background-image: linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+		background-size: 100% calc(var(--slot-height) * 2);
+
+		&--work-hours {
+			@include custom-bg(background-color, var(--rise-bg-muted));
+		}
+	}
+
+	&__work {
+		position: absolute;
+		inset-inline: 0;
+		@include custom-bg(background-color, var(--event-grid-bg));
+	}
+
+	&__now {
+		position: absolute;
+		inset-inline: 0;
+		z-index: 2;
+		border-top: 2px solid var(--rise-error);
+		pointer-events: none;
+	}
+
+	&__now-label {
+		@include visually-hidden;
+	}
+
+	&--selectable &__month,
+	&--selectable &__time-canvas {
+		user-select: none;
+	}
+
+	&--selectable &__column {
+		outline-offset: -2px;
+		@include focus-ring(-2px);
+	}
+
+	&__day--selected {
+		background-color: color-mix(in srgb, var(--rise-primary) 12%, var(--event-grid-bg));
+	}
+
+	&__selection,
+	&__cursor {
+		position: absolute;
+		inset-inline: 0;
+		pointer-events: none;
+	}
+
+	&__selection {
+		background-color: color-mix(in srgb, var(--rise-primary) 16%, transparent);
+	}
+
+	&__resize {
+		position: absolute;
+		inset-inline-end: 0;
+		bottom: 0;
+		cursor: ew-resize;
+	}
+
+	&__event--bar &__resize {
+		top: 0;
+		width: sz(8px);
+	}
+
+	&__event--block &__resize {
+		inset-inline-start: 0;
+		height: sz(8px);
+		cursor: ns-resize;
+	}
+
+	&__event--grabbed,
+	&__event--dragging {
+		z-index: 3;
+		box-shadow:
+			inset dir-x(3px) 0 0 var(--event-color),
+			var(--rise-shadow-md);
+	}
+
+	&__event--dragging {
+		cursor: grabbing;
+		opacity: 0.85;
+	}
+
+	&__event--blocked {
+		outline: 2px dashed var(--rise-error);
+		cursor: not-allowed;
+	}
+
+	&__cursor {
+		z-index: 2;
+		box-sizing: border-box;
+		border: 2px solid var(--rise-primary);
+		border-radius: sz(var(--rise-radius-sm));
+	}
+
+	@container base-event-calendar (max-width: 420px) {
+		&__view {
+			--axis-width: #{sz(44px)};
+		}
+
+		&__day {
+			min-height: sz(64px);
+		}
+
+		&__day-number {
+			min-width: sz(20px);
+			padding: 0 sz(4px);
+			line-height: sz(20px);
+		}
+
+		&__weekday {
+			padding: space(4px 2px);
+		}
+	}
+}

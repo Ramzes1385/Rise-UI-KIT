@@ -1,13 +1,13 @@
 <template>
 	<BaseCard
-		class="base-chat"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle, { height: height }]"
 		:size-scale="sizeScale"
 		:padding="0">
-		<div class="base-chat__body">
+		<div :class="ui('body')" @keydown.esc="handleSelectionEscape">
 			<ChatHeader
 				v-if="title"
+				:class="ui('header')"
 				:title="title"
 				:subtitle="subtitle"
 				:avatar="avatar"
@@ -20,8 +20,8 @@
 				@toggle-search="isSearching = !isSearching"
 				@info-click="handleInfoClick" />
 
-			<!-- Панель закрепленных сообщений (несколько закрепов) -->
 			<ChatPinnedPanel
+				:class="ui('pinned')"
 				:pinned-messages="pinnedMessages"
 				v-model:current-index="currentPinnedIndex"
 				:current-user-role="currentUserRole"
@@ -30,7 +30,11 @@
 				@unpin="handleUnpin" />
 
 			<ChatMessageList
+				:key="chatId"
 				ref="messageListRef"
+				:class="ui('list')"
+				:message-class="ui('message')"
+				:bubble-class="ui('bubble')"
 				:messages="filteredMessages"
 				:size-scale="sizeScale"
 				:search-query="searchQuery"
@@ -41,6 +45,13 @@
 				:avatar="avatar"
 				:all-images-urls="allImagesUrls"
 				:current-user-role="currentUserRole"
+				:members="members"
+				:max-badges="maxBadges"
+				:last-read-message-id="lastReadMessageId"
+				:today="today"
+				:is-loading="isLoading"
+				:has-more-messages="hasMoreMessages"
+				:is-loading-more="isLoadingMore"
 				@avatar-click="handleAvatarClick"
 				@message-select="handleMessageSelect"
 				@reply-click="handleReplyClick"
@@ -48,60 +59,88 @@
 				@message-reaction="handleMessageReaction"
 				@download-file="handleDownloadFile"
 				@file-click="handleDownloadFile"
+				@message-edit="handleMessageEdit"
+				@load-more="$emit('load-more')"
 				@pin-message="handlePin"
+				@unpin-message="handleUnpin"
 				@delete-message="handleDeleteSingle"
 				@mention-click="handleMentionClick"
-				@command-click="handleCommandClick" />
+				@command-click="handleCommandClick"
+				@retry-message="emit('retry-message', $event)"
+				@discard-message="emit('discard-message', $event)" />
 
-			<!-- Панель ввода или тулбар массовых действий -->
 			<ChatInput
-				v-if="selectedMessageIds.length === 0"
+				:key="chatId"
+				v-show="selectedMessageIds.length === 0"
+				:class="ui('input')"
 				:size-scale="sizeScale"
 				:replying-to="replyingTo"
+				:editing-message="editingMessage"
 				:quick-replies="quickReplies"
 				:members="members"
 				:commands="commands"
 				:is-group="isGroup"
+				:accept="accept"
+				:max-file-size="maxFileSize"
+				:max-files="maxFiles"
+				:has-voice="hasVoiceMessages"
+				:request-voice-stream="requestVoiceStream"
 				@send="handleSend"
+				@send-voice="handleSendVoice"
 				@attach="handleAttach"
+				@attach-error="handleAttachError"
+				@edit="handleEdit"
+				@cancel-edit="handleCancelEdit"
+				@edit-last="handleEditLast"
 				@cancel-reply="handleCancelReply"
 				@quick-reply="handleQuickReply" />
 
 			<ChatSelectionToolbar
-				v-else
+				v-if="selectedMessageIds.length > 0"
+				:class="ui('toolbar')"
 				:selected-count="selectedMessageIds.length"
+				:total-count="filteredMessages.length"
+				:visible-selected-count="visibleSelectedCount"
 				:size-scale="sizeScale"
+				@select-all="handleSelectAll"
 				@forward="handleForwardSelected"
 				@delete="handleDeleteSelected"
 				@cancel="handleCancelSelection" />
 
-			<!-- Окно подтверждения удаления сообщений -->
 			<BaseModal
 				:is-open="deleteConfirm.isOpen"
 				:is-contained="true"
 				:size-scale="sizeScale"
 				:title="UI_CHAT_TEXT.DELETE_CONFIRM"
 				@update:is-open="handleCancelDelete">
-				<BaseText :size-scale="sizeScale * UI_CHAT_SCALE.CONFIRM" class="base-chat__confirm-text">
-					{{ deleteConfirmText }}
-				</BaseText>
+				<p class="base-chat__confirm-text">{{ deleteConfirmText }}</p>
 				<template #footer>
-					<div class="base-chat__confirm-actions">
-						<BaseButton variant="ghost" :size-scale="sizeScale" @click="handleCancelDelete">
-							{{ UI_TEXT.CANCEL }}
-						</BaseButton>
-						<BaseButton
-							variant="default"
-							:size-scale="sizeScale"
-							class="base-chat__confirm-delete-btn"
-							@click="handleConfirmDelete">
-							{{ UI_TEXT.DELETE }}
-						</BaseButton>
-					</div>
+					<BaseButton variant="outline" :size-scale="sizeScale" @click="handleCancelDelete">
+						{{ UI_TEXT.CANCEL }}
+					</BaseButton>
+					<BaseButton :size-scale="sizeScale" class="base-chat__confirm-delete-btn" @click="handleConfirmDelete">
+						{{ UI_TEXT.DELETE }}
+					</BaseButton>
 				</template>
 			</BaseModal>
 
-			<!-- Слайдовер информации, медиа, файлов и админ-панели -->
+			<BaseModal
+				:is-open="memberConfirm.isOpen"
+				:is-contained="true"
+				:size-scale="sizeScale"
+				:title="memberConfirmTitle"
+				@update:is-open="handleCancelMember">
+				<p class="base-chat__confirm-text">{{ memberConfirmText }}</p>
+				<template #footer>
+					<BaseButton variant="outline" :size-scale="sizeScale" @click="handleCancelMember">
+						{{ UI_TEXT.CANCEL }}
+					</BaseButton>
+					<BaseButton :size-scale="sizeScale" class="base-chat__confirm-delete-btn" @click="handleConfirmMember">
+						{{ UI_TEXT.CONFIRM }}
+					</BaseButton>
+				</template>
+			</BaseModal>
+
 			<ChatSlideover
 				v-model:is-open="isInfoOpen"
 				v-model:active-tab="activeTab"
@@ -109,11 +148,17 @@
 				:title="title"
 				:subtitle="subtitle"
 				:avatar="avatar"
+				:description="description"
 				:is-group="isGroup"
 				:members="members"
 				:messages="messages"
 				:current-user-role="currentUserRole"
+				:max-badges="maxBadges"
+				:current-user-id="currentUserId"
+				:max-warnings="maxWarnings"
+				:companion-status="companionStatus"
 				:size-scale="sizeScale"
+				@add-member="handleAddMember"
 				@file-click="handleDownloadFile"
 				@download-file="handleDownloadFile"
 				@write-message="handleWriteMessage"
@@ -125,52 +170,57 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import '../styles/BaseChat.style.scss'
+import { ChatInput } from './ChatInput'
+import { ChatHeader } from './ChatHeader'
+import { CHAT_MAX_BADGES } from './ChatBadges'
+import { ChatSlideover } from './ChatSlideover'
 import { BaseCard } from '@components/BaseCard'
 import { BaseModal } from '@components/BaseModal'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useChatActions } from '@composables/useChatActions'
-import { useChatDeleteConfirm } from '@composables/useChatDeleteConfirm'
-import { useChatState } from '@composables/useChatState'
-import { UI_TEXT, UI_SIZE, UI_CHAT_SCALE, UI_CHAT_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
-import '../styles/BaseChat.style.scss'
-import { ChatHeader } from './ChatHeader'
-import { ChatInput } from './ChatInput'
+import { useBaseChat } from '../model/useBaseChat'
 import { ChatMessageList } from './ChatMessageList'
 import { ChatPinnedPanel } from './ChatPinnedPanel'
+import { BaseButton } from '@components/BaseButton'
+import { CHAT_MAX_WARNINGS } from '../model/chatLimits'
+import { UI_CHAT_TEXT, UI_TEXT } from '@/locales/messages'
+import { kitDefaults } from '@composables/base/useDefaults'
 import { ChatSelectionToolbar } from './ChatSelectionToolbar'
-import { ChatSlideover } from './ChatSlideover'
-import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../model/BaseChat.types'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseChatEmits, BaseChatProps, BaseChatSlots } from '../types/BaseChat.types'
 
-/** Публичные методы ChatMessageList, экспонированные через defineExpose */
-interface MessageListExposed {
-	scrollToMessage: (messageId: string) => void
-}
-
-const props = withDefaults(defineProps<BaseChatProps>(), {
-	variant: 'bubble',
-	height: UI_SIZE.CHAT_DEFAULT_HEIGHT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	isTyping: false,
-	typingUsername: '',
-	isGroup: false,
-	members: () => [],
-	quickReplies: () => [],
-	commands: () => [],
-	currentUserRole: 'member',
-})
-
+const props = withDefaults(
+	defineProps<BaseChatProps>(),
+	kitDefaults('BaseChat', {
+		variant: 'bubble',
+		height: '500px',
+		sizeScale: SIZE_SCALE_DEFAULT,
+		isTyping: false,
+		typingUsername: '',
+		isGroup: false,
+		members: () => [],
+		quickReplies: () => [],
+		commands: () => [],
+		currentUserRole: 'member',
+		maxBadges: CHAT_MAX_BADGES,
+		maxWarnings: CHAT_MAX_WARNINGS,
+		isLoading: false,
+		hasMoreMessages: false,
+		isLoadingMore: false,
+		autoDownload: true,
+	}),
+)
 const emit = defineEmits<BaseChatEmits>()
 
 defineSlots<BaseChatSlots>()
 
-const { variantClass, variantStyle, sizeScaleStyle, customColorStyle, classes } = useStandardBaseComponent('base-chat', props, ['root'])
-
-const messageListRef = ref<MessageListExposed | null>(null)
-
 const {
+	ui,
+	variantClass,
+	variantStyle,
+	sizeScaleStyle,
+	customColorStyle,
+	classes,
+	messageListRef,
 	searchQuery,
 	isSearching,
 	selectedMessageIds,
@@ -181,18 +231,27 @@ const {
 	pinnedMessages,
 	currentPinnedIndex,
 	filteredMessages,
+	visibleSelectedCount,
 	allImagesUrls,
 	handleMessageSelect,
+	handleSelectAll,
+	handleSelectionEscape,
+	handleEditLast,
 	handleMessageReply,
 	handleCancelReply,
+	editingMessage,
+	handleMessageEdit,
+	handleCancelEdit,
+	handleEdit,
+	handleAddMember,
+	memberConfirm,
+	memberConfirmTitle,
+	memberConfirmText,
+	handleConfirmMember,
+	handleCancelMember,
 	handleAvatarClick,
 	handleInfoClick,
 	handleScrollToPinned,
-} = useChatState(props, emit, {
-	scrollToMessage: messageId => messageListRef.value?.scrollToMessage(messageId),
-})
-
-const {
 	deleteConfirm,
 	deleteConfirmText,
 	handleDeleteSelected,
@@ -201,17 +260,12 @@ const {
 	handleCancelDelete,
 	handleForwardSelected,
 	handleCancelSelection,
-} = useChatDeleteConfirm({
-	selectedMessageIds,
-	onDelete: ids => emit('delete-messages', ids),
-	onForward: ids => emit('forward-messages', ids),
-})
-
-const {
 	handleHeaderAvatarClick,
 	handleReplyClick,
 	handleSend,
+	handleSendVoice,
 	handleAttach,
+	handleAttachError,
 	handleMessageReaction,
 	handleQuickReply,
 	handleDownloadFile,
@@ -223,12 +277,5 @@ const {
 	handleUpdateMemberRole,
 	handleMentionClick,
 	handleCommandClick,
-} = useChatActions({
-	emit,
-	replyingTo,
-	getAvatar: () => props.avatar,
-	messageListRef,
-	handleAvatarClick,
-	handleCancelReply,
-})
+} = useBaseChat(props, emit)
 </script>

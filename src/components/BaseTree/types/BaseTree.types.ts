@@ -1,0 +1,175 @@
+import type { ComputedRef, InjectionKey, Ref } from 'vue'
+import type { UiClassFn, UiProp } from '@composables/base/useUi'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+
+export type TreeSelectionMode = 'none' | 'single' | 'multiple'
+
+export type TreeArrowPosition = 'left' | 'right'
+
+export const TREE_VARIANTS = ['default', 'ghost', 'outline', 'shadow', 'soft'] as const
+
+/**
+ * Части дерева для пропа `ui` (БЭМ-элементы `.base-tree__<часть>`, `root` — корень `role="tree"`):
+ * node — узел (строка и его ветка); header — строка узла (`role="treeitem"`); arrow — шеврон раскрытия;
+ * checkbox — флажок узла в режиме `multiple`; icon — иконка узла; label — подпись; link — ссылка в подписи (`to`/`href`);
+ * actions — действия справа; children — ветка детей (`role="group"`, раскрывается по высоте);
+ * children-inner — содержимое ветки; row — строка виртуального списка (`isVirtual`).
+ */
+export const TREE_PARTS = [
+	'node',
+	'header',
+	'arrow',
+	'checkbox',
+	'icon',
+	'label',
+	'link',
+	'actions',
+	'children',
+	'children-inner',
+	'row',
+] as const
+
+export type BaseTreePart = (typeof TREE_PARTS)[number]
+
+export interface TreeNode {
+	/** Уникальный идентификатор */
+	id: string
+	/** Заголовок узла */
+	label: string
+	/** Иконка (имя из спрайта) */
+	icon?: string
+	/** Дочерние узлы */
+	children?: TreeNode[]
+	/** Отключен ли узел */
+	isDisabled?: boolean
+	/** Маршрут приложения: подпись узла — ссылка (BaseLink), Enter переходит по ней */
+	to?: string
+	/** Внешний адрес: подпись узла — ссылка (BaseLink) */
+	href?: string
+	/** Target ссылки */
+	target?: '_blank' | '_self'
+}
+
+/**
+ * Контекст дерева для provide/inject
+ */
+export interface TreeContext {
+	/** Режим выбора */
+	selectionMode: Ref<TreeSelectionMode>
+	/** Позиция стрелки */
+	arrowPosition: Ref<TreeArrowPosition>
+	/** Раскрытые идентификаторы */
+	expandedIds: Ref<string[]>
+	/** Выбранные идентификаторы */
+	selectedIds: Ref<string[]>
+	/** Множество раскрытых id для O(1) проверки */
+	expandedSet: Ref<Set<string>>
+	/** Множество выбранных id для O(1) проверки */
+	selectedSet: Ref<Set<string>>
+	/** Узлы с частичным выбором в режиме multiple: выбрана часть доступных потомков */
+	indeterminateSet: Ref<Set<string>>
+	/** Дети узла без повторных id (цикл в children или дубль) */
+	childrenOf: (node: TreeNode) => TreeNode[]
+	/** Переключить раскрытие узла */
+	toggleNode: (id: string) => void
+	/** Выбрать/отменить выбор узла */
+	selectNode: (id: string) => void
+	/** Кастомные классы */
+	classes: ComputedRef<Record<string, string | undefined>>
+	/** tabindex узла: 0 — у одного узла дерева (roving tabindex), у остальных -1 */
+	tabIndexOf: (id: string) => number
+	/** Узел получил фокус: стрелки продолжат от него */
+	setActive: (id: string) => void
+	/** Классы частей из пропа `ui` и `defaults.BaseTree.ui` плагина */
+	ui: UiClassFn<BaseTreePart>
+	/** Элемент заголовка узла (treeitem) — для перевода фокуса с клавиатуры */
+	registerHeader: (id: string, element: HTMLElement) => void
+	/** Снять регистрацию; элемент сверяется — узел с тем же id мог уже смонтироваться в другом месте дерева */
+	unregisterHeader: (id: string, element: HTMLElement) => void
+}
+
+export const TREE_CONTEXT_KEY: InjectionKey<TreeContext> = Symbol('tree-context')
+
+export interface BaseTreeProps extends BaseComponentProps<
+	(typeof TREE_VARIANTS)[number],
+	'root' | 'node' | 'header' | 'arrow' | 'checkbox' | 'icon' | 'label' | 'actions' | 'children'
+> {
+	/**
+	 * Корневые узлы дерева. id уникальны во всём дереве: повторный id (цикл в children или дубль) не показывается,
+	 * в консоли — предупреждение
+	 */
+	items: TreeNode[]
+	/**
+	 * Режим выбора: `single` — один узел (`aria-selected`); `multiple` — флажки с каскадом: узел выбирает доступных
+	 * потомков, выбор всех доступных детей выбирает родителя, часть — частичный выбор (`aria-checked="mixed"`).
+	 * Отключённые узлы и их поддеревья в каскаде не участвуют. При переходе в `single` остаётся не больше одного
+	 * выбранного узла (событие `update:selectedIds`); в `none` выбор не меняется кликом, `selectedIds` сохраняются
+	 */
+	selectionMode?: TreeSelectionMode
+	/** Позиция стрелки раскрытия */
+	arrowPosition?: TreeArrowPosition
+	/** v-model раскрытых узлов */
+	expandedIds?: string[]
+	/** v-model выбранных узлов */
+	selectedIds?: string[]
+	/** Раскрыть все узлы по умолчанию; узлы, пришедшие позже (асинхронные `items`), тоже раскрываются */
+	isDefaultExpandAll?: boolean
+	/** Имя дерева для скринридера, например «Файлы проекта» */
+	ariaLabel?: string
+	/**
+	 * Виртуальная прокрутка для деревьев на тысячи видимых узлов: в DOM только видимые узлы и запас, дерево —
+	 * плоский список treeitem с aria-level, aria-setsize и aria-posinset. Работает вместе с `height`
+	 */
+	isVirtual?: boolean
+	/** Высота области дерева при `isVirtual`: число — в пикселях, строка — любая CSS-длина */
+	height?: number | string
+	/** Высота узла до замера при `isVirtual`, px */
+	itemSize?: number
+	/**
+	 * Классы частей дерева (`root`, `node`, `header`, `arrow`, `label`, `children`…) — добавляются к классам кита.
+	 * Глобально — `createUiKitPlugin({ defaults: { BaseTree: { ui } } })`, классы плагина и экземпляра склеиваются.
+	 *
+	 * @example
+	 * <BaseTree :items="items" :ui="{ header: 'rounded-full', label: 'font-medium' }" />
+	 */
+	ui?: UiProp<BaseTreePart>
+}
+
+export interface BaseTreeEmits {
+	(event: 'update:expandedIds', value: string[]): void
+	(event: 'update:selectedIds', value: string[]): void
+	(event: 'toggle', nodeId: string, isExpanded: boolean): void
+	(event: 'select', nodeId: string, isSelected: boolean): void
+}
+
+export interface BaseTreeSlots {
+	/** Кастомная иконка узла */
+	icon?: (props: { node: TreeNode }) => unknown
+	/** Кастомная стрелка раскрытия */
+	arrow?: (props: { node: TreeNode; isExpanded: boolean }) => unknown
+	/** Кастомное содержимое метки узла */
+	label?: (props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown
+	/** Метка одного узла по его `id`: `label-docs` — узел `docs`, на любой глубине; у остальных — `label` */
+	[name: `label-${string}`]: ((props: { node: TreeNode; depth: number; isSelected: boolean; isExpanded: boolean }) => unknown) | undefined
+	/**
+	 * Действия справа от узла: видны при наведении и при фокусе на узле. Клик внутри не выбирает и не раскрывает узел.
+	 * В порядке Tab — только действия узла, который сейчас в порядке Tab; у остальных узлов фокусируемые элементы
+	 * слота получают `tabindex="-1"`
+	 */
+	actions?: (props: { node: TreeNode }) => unknown
+}
+
+/** Видимый узел: раскрыты все его предки. Уровень и позиция — для плоского списка виртуальной прокрутки */
+export interface VisibleNode {
+	node: TreeNode
+	parentId: string | null
+	depth: number
+	setSize: number
+	posInSet: number
+}
+
+export type TreeProps = PropsWithDefaults<
+	BaseTreeProps,
+	'selectionMode' | 'arrowPosition' | 'isDefaultExpandAll' | 'isVirtual' | 'height' | 'itemSize'
+>

@@ -1,0 +1,115 @@
+.date-picker-panel {
+	position: fixed;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
+	display: flex;
+	flex-direction: column;
+	gap: sz(ct(date-picker, panel-gap, 4px));
+	box-sizing: border-box;
+	min-width: min-content;
+	max-width: calc(100vw - 16px);
+	overflow-y: auto;
+	@include tonal-surface(floating);
+	padding: space(ct(date-picker, panel-padding, 4px));
+	background-color: ct(date-picker, panel-bg, var(--rise-surface-floating));
+	color: ct(date-picker, panel-text, var(--rise-text));
+	border: 1px solid ct(date-picker, panel-border, transparent);
+	border-radius: sz(ct(date-picker, panel-radius, var(--rise-radius-lg)));
+	box-shadow: ct(date-picker, panel-shadow, var(--rise-shadow-lg));
+	@include text-size(sm);
+	@include scrollbar-thin;
+
+	&--presets {
+		display: grid;
+		grid-template-columns: auto auto;
+		align-items: start;
+		column-gap: sz(ct(date-picker, panel-gap, 4px));
+
+		@include respond-below(mobile) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	&__presets {
+		grid-row: 1 / span 2;
+		display: flex;
+		flex-direction: column;
+		gap: sz(2px);
+		padding-inline-end: sz(ct(date-picker, panel-gap, 4px));
+		border-inline-end: 1px solid ct(date-picker, presets-border, var(--rise-border));
+
+		@include respond-below(mobile) {
+			grid-row: auto;
+			flex-flow: row wrap;
+			padding-inline-end: 0;
+			padding-bottom: sz(ct(date-picker, panel-gap, 4px));
+			border-inline-end: 0;
+			border-bottom: 1px solid ct(date-picker, presets-border, var(--rise-border));
+		}
+	}
+
+	&__preset.base-button {
+		justify-content: flex-start;
+		white-space: nowrap;
+	}
+
+	&__header {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: sz(4px);
+	}
+
+	&__nav-group {
+		display: flex;
+		align-items: center;
+		gap: sz(2px);
+
+		&--next {
+			justify-content: flex-end;
+		}
+	}
+
+	&__nav-btn.base-button {
+		--btn-pad-top: var(--rise-control-padding-y);
+		--btn-pad-right: var(--rise-control-padding-y);
+		--btn-pad-bottom: var(--rise-control-padding-y);
+		--btn-pad-left: var(--rise-control-padding-y);
+
+		flex: none;
+	}
+
+	&__nav-btn--double .base-button__label {
+		display: flex;
+	}
+
+	&__nav-btn--double .base-icon + .base-icon {
+		margin-inline-start: sz(-12px);
+	}
+
+	&__year-title {
+		padding: 0 sz(8px);
+		@include text-size(sm);
+		font-weight: ct(date-picker, title-font-weight, var(--rise-font-weight-semibold));
+		font-variant-numeric: tabular-nums;
+		color: ct(date-picker, title-text, var(--rise-text-highlighted));
+		white-space: nowrap;
+	}
+
+	&__months {
+		display: flex;
+		gap: sz(8px);
+	}
+
+	&__calendar.base-calendar.base-card {
+		--card-pad-top: 4px;
+		--card-pad-right: 4px;
+		--card-pad-bottom: 4px;
+		--card-pad-left: 4px;
+
+		flex: 1 1 0;
+	}
+}
+
+@include enter-scale(date-picker-panel);
+@include enter-slide(date-picker-month-next, left);
+@include enter-slide(date-picker-month-prev, right);

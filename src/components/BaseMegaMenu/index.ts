@@ -1,11 +1,18 @@
 export type {
 	BaseMegaMenuEmits,
+	BaseMegaMenuExpose,
+	BaseMegaMenuPart,
 	BaseMegaMenuProps,
 	BaseMegaMenuSlots,
-	MegaMenuColumn,
+	MegaMenuDrilldown,
+	MegaMenuGroup,
 	MegaMenuItem,
-	MegaMenuLayout,
+	MegaMenuLink,
+	MegaMenuLinkSlotProps,
+	MegaMenuPromo,
+	MegaMenuPromoSlotProps,
 	MegaMenuTrigger,
-} from './model/BaseMegaMenu.types'
-export { MEGA_MENU_VARIANTS } from './model/BaseMegaMenu.types'
+	MegaMenuVariant,
+} from './types/BaseMegaMenu.types'
+export { MEGA_MENU_DRILLDOWNS, MEGA_MENU_PARTS, MEGA_MENU_VARIANTS } from './types/BaseMegaMenu.types'
 export { default as BaseMegaMenu } from './ui/BaseMegaMenu.vue'

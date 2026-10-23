@@ -1,0 +1,32 @@
+{
+	"media": {
+		"name": "@ramzes1385/rise-media-player",
+		"components": [
+			{ "dir": "BaseMediaPlayer", "to": "" },
+			{ "dir": "BasePresentationPlayer", "to": "presentation" }
+		],
+		"entries": {},
+		"threeEntries": []
+	},
+	"maps": {
+		"name": "@ramzes1385/rise-maps",
+		"components": [
+			{ "dir": "BaseMap", "to": "BaseMap" },
+			{ "dir": "BaseImageMap", "to": "BaseImageMap" },
+			{ "dir": "BaseImageMapEditor", "to": "BaseImageMapEditor" },
+			{ "dir": "BaseImageMap3D", "to": "BaseImageMap3D" }
+		],
+		"entries": {
+			"index.ts": ["BaseMap", "BaseImageMap", "BaseImageMapEditor"],
+			"map3d.ts": ["BaseImageMap3D"]
+		},
+		"threeEntries": ["map3d.ts"],
+		"shared": ["scene3d"]
+	},
+	"editor": {
+		"name": "@ramzes1385/rise-editor",
+		"components": [{ "dir": "BaseEditor", "to": "" }],
+		"entries": {},
+		"threeEntries": []
+	}
+}

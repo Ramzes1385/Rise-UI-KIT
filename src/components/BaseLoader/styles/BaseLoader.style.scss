@@ -1,148 +1,139 @@
 .base-loader {
+	@include custom-color-scope;
+	@include custom-text('--loader-color', ct(loader, text, var(--rise-primary)));
+
 	display: inline-flex;
 	flex-direction: column;
 	align-items: center;
-	gap: sz(12px);
-
-	@include custom-text('--loader-color', var(--color-accent));
+	gap: sz(ct(loader, gap, 8px));
 
 	&__animation {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: sz(36px);
-		height: sz(36px);
+		width: sz(ct(loader, icon-size, 32px));
+		height: sz(ct(loader, icon-size, 32px));
 	}
 
 	&__label {
-		font-size: sz(14px);
-		color: var(--color-text-muted);
-		font-weight: 500;
+		font-size: sz(ct(loader, label-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		color: ct(loader, label-text, var(--rise-text-muted));
 	}
 
-	// ── Spinner ──
+	&__announce {
+		@include visually-hidden;
+	}
 
 	&__spinner {
 		width: 100%;
 		height: 100%;
-		animation: base-loader-rotate 1.4s linear infinite;
+		animation: base-loader-spin calc(var(--rise-duration-loop) * 0.8) linear infinite;
 	}
 
 	&__spinner-track {
-		stroke: var(--color-border);
+		stroke: ct(loader, spinner-track-bg, var(--rise-bg-accented));
 	}
 
 	&__spinner-fill {
 		stroke: var(--loader-color);
-		@include custom-text(stroke, var(--loader-color));
-		stroke-dasharray: 80, 200;
-		stroke-dashoffset: 0;
+		stroke-dasharray: 31.4px 125.7px;
 		stroke-linecap: round;
-		animation: base-loader-dash 1.4s ease-in-out infinite;
 	}
 
-	// ── Dots ──
-
-	&--dots {
-		.base-loader__animation {
-			gap: sz(6px);
-		}
+	&--dots &__animation {
+		gap: sz(4px);
 	}
 
 	&__dot {
 		width: sz(8px);
 		height: sz(8px);
-		border-radius: 50%;
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-dot 1.4s ease-in-out infinite both;
-
-		&:nth-child(1) {
-			animation-delay: -0.32s;
-		}
-
-		&:nth-child(2) {
-			animation-delay: -0.16s;
-		}
 	}
-
-	// ── Pulse ──
 
 	&__pulse {
-		width: sz(36px);
-		height: sz(36px);
-		border-radius: 50%;
+		position: relative;
+		width: sz(12px);
+		height: sz(12px);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-pulse 1.4s ease-in-out infinite both;
+
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			background-color: inherit;
+			opacity: 0;
+		}
 	}
 
-	// ── Bars ──
-
-	&--bars {
-		.base-loader__animation {
-			gap: sz(4px);
-			align-items: flex-end;
-		}
+	&--bars &__animation {
+		gap: sz(4px);
 	}
 
 	&__bar {
-		width: sz(5px);
-		height: sz(28px);
-		border-radius: sz(2px);
+		width: sz(4px);
+		height: sz(24px);
+		border-radius: sz(var(--rise-radius-xs));
 		background-color: var(--loader-color);
-		@include custom-bg(background-color, var(--loader-color));
-		animation: base-loader-bar 1.2s ease-in-out infinite both;
-
-		&:nth-child(1) {
-			animation-delay: -0.36s;
-		}
-
-		&:nth-child(2) {
-			animation-delay: -0.24s;
-		}
-
-		&:nth-child(3) {
-			animation-delay: -0.12s;
-		}
+		transform: scaleY(0.5);
 	}
 
-	// ── Overlay ──
+	@include motion-safe {
+		&__dot {
+			animation: base-loader-dot calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
+			@include loop-state;
+
+			&:nth-child(1) {
+				animation-delay: calc(var(--rise-duration-loop) * -0.32);
+			}
+
+			&:nth-child(2) {
+				animation-delay: calc(var(--rise-duration-loop) * -0.16);
+			}
+		}
+
+		&__pulse::before {
+			animation: base-loader-ping calc(var(--rise-duration-loop) * 1.2) var(--rise-ease-out) infinite;
+			@include loop-state;
+		}
+
+		&__bar {
+			animation: base-loader-bar calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite both;
+			@include loop-state;
+
+			&:nth-child(1) {
+				animation-delay: calc(var(--rise-duration-loop) * -0.36);
+			}
+
+			&:nth-child(2) {
+				animation-delay: calc(var(--rise-duration-loop) * -0.24);
+			}
+
+			&:nth-child(3) {
+				animation-delay: calc(var(--rise-duration-loop) * -0.12);
+			}
+		}
+	}
 
 	&--overlay {
 		position: absolute;
 		inset: 0;
-		z-index: 9999;
-		display: flex;
-		align-items: center;
+		z-index: calc(var(--rise-z-overlay) - 1);
 		justify-content: center;
-		background-color: rgba(0, 0, 0, 0.3);
-		backdrop-filter: blur(2px);
+		background-color: ct(loader, bg, color-mix(in srgb, var(--rise-surface-bg) 80%, transparent));
+	}
+
+	&--overlay &__label {
+		color: ct(loader, label-text, var(--rise-text-toned));
 	}
 }
 
-// ── Keyframes ──
-
-@keyframes base-loader-rotate {
-	100% {
+@keyframes base-loader-spin {
+	to {
 		transform: rotate(360deg);
-	}
-}
-
-@keyframes base-loader-dash {
-	0% {
-		stroke-dasharray: 1, 200;
-		stroke-dashoffset: 0;
-	}
-
-	50% {
-		stroke-dasharray: 90, 200;
-		stroke-dashoffset: -35;
-	}
-
-	100% {
-		stroke-dasharray: 90, 200;
-		stroke-dashoffset: -124;
 	}
 }
 
@@ -150,28 +141,26 @@
 	0%,
 	80%,
 	100% {
-		transform: scale(0);
+		transform: scale(0.5);
+		opacity: 0.4;
 	}
 
 	40% {
 		transform: scale(1);
+		opacity: 1;
 	}
 }
 
-@keyframes base-loader-pulse {
+@keyframes base-loader-ping {
 	0% {
-		transform: scale(0.8);
-		opacity: 1;
+		transform: scale(1);
+		opacity: 0.6;
 	}
 
-	50% {
-		transform: scale(1.2);
-		opacity: 0.5;
-	}
-
+	80%,
 	100% {
-		transform: scale(0.8);
-		opacity: 1;
+		transform: scale(2.6);
+		opacity: 0;
 	}
 }
 

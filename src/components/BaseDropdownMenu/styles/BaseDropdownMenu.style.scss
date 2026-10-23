@@ -1,0 +1,158 @@
+.base-dropdown-menu {
+	@include custom-color-scope;
+	display: inline-flex;
+	vertical-align: middle;
+
+	&__trigger {
+		display: inline-flex;
+	}
+
+	&__panel {
+		--dm-panel-width: #{ct(dropdown-menu-panel, width, 180px)};
+		--dm-panel-text: var(--custom-text);
+		--dm-item-text: #{ct(dropdown-menu-item, text, var(--rise-text))};
+		--dm-item-bg-hover: #{ct(dropdown-menu-item, bg-hover, var(--rise-surface-floating-hover))};
+		--dm-item-radius: #{ct(dropdown-menu-item, radius, var(--rise-radius-sm))};
+		--dm-item-padding-x: #{ct(dropdown-menu-item, padding-x, 8px)};
+		--dm-item-padding-y: #{ct(dropdown-menu-item, padding-y, 6px)};
+		--dm-item-font-size: #{ct(dropdown-menu-item, font-size, var(--rise-font-size-sm))};
+		--dm-item-icon-size: #{ct(dropdown-menu-item, icon-size, 16px)};
+		--dm-label-text: #{ct(dropdown-menu-label, text, var(--rise-text-muted))};
+		--dm-separator-border: #{ct(dropdown-menu-separator, border, var(--rise-border))};
+		--dm-shortcut-text: #{ct(dropdown-menu-shortcut, text, var(--rise-text-muted))};
+
+		min-width: sz(var(--dm-panel-width));
+		max-width: sz(320px);
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		outline: none;
+	}
+
+	&__group {
+		display: flex;
+		flex-direction: column;
+	}
+
+	&__item {
+		@include inherit-custom-color;
+		@include menu-item;
+		padding: sz(var(--dm-item-padding-y) var(--dm-item-padding-x));
+		border-radius: sz(var(--dm-item-radius));
+		font-size: sz(var(--dm-item-font-size));
+		@include custom-text(color, var(--dm-panel-text, var(--dm-item-text)));
+		outline: none;
+
+		@include hover {
+			background-color: var(--dm-item-bg-hover);
+		}
+
+		&:focus {
+			background-color: var(--custom-bg-hover, var(--dm-item-bg-hover));
+			color: var(--custom-text-hover, var(--custom-text, var(--dm-panel-text, var(--rise-text-highlighted))));
+
+			.base-dropdown-menu__icon,
+			.base-dropdown-menu__submenu-arrow,
+			.base-dropdown-menu__shortcut {
+				color: inherit;
+			}
+		}
+
+		&[aria-expanded='true'] {
+			background-color: var(--dm-item-bg-hover);
+		}
+
+		@include active {
+			background-color: var(--rise-bg-accented);
+		}
+
+		&--danger,
+		&--danger:focus {
+			color: color-mix(in oklab, var(--rise-error-text) 70%, var(--dm-panel-text, var(--rise-error-text)));
+
+			.base-dropdown-menu__icon {
+				color: inherit;
+			}
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+
+		&.base-link {
+			display: flex;
+			font-size: sz(var(--dm-item-font-size));
+			line-height: sz(var(--rise-line-height-sm));
+			text-decoration: none;
+			@include custom-text(color, var(--dm-panel-text, var(--dm-item-text)));
+
+			@include hover {
+				text-decoration: none;
+			}
+
+			&:focus {
+				color: var(--custom-text-hover, var(--custom-text, var(--dm-panel-text, var(--rise-text-highlighted))));
+			}
+		}
+	}
+
+	&__indicator {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(16px);
+	}
+
+	&__dot {
+		width: sz(6px);
+		height: sz(6px);
+		border-radius: 50%;
+		background-color: currentcolor;
+	}
+
+	&__icon,
+	&__submenu-arrow {
+		flex-shrink: 0;
+		color: var(--dm-panel-text, var(--rise-text-muted));
+		@include transition-colors;
+
+		.base-icon__svg {
+			width: sz(calc(var(--dm-item-icon-size) * 1.25));
+			height: sz(calc(var(--dm-item-icon-size) * 1.25));
+		}
+	}
+
+	&__item-label {
+		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	&__shortcut {
+		flex-shrink: 0;
+		padding-inline-start: sz(16px);
+		@include text-size(xs);
+		color: var(--dm-panel-text, var(--dm-shortcut-text));
+	}
+
+	&__label {
+		padding: sz(6px var(--dm-item-padding-x) 2px);
+		@include caps-label;
+		color: var(--dm-panel-text, var(--dm-label-text));
+	}
+
+	&__separator.base-separator {
+		flex-shrink: 0;
+		width: auto;
+		margin: sz(4px) sz(-4px);
+
+		.base-separator__line {
+			border-color: var(--dm-separator-border);
+		}
+	}
+}
+
+@include enter-pop(base-dropdown-menu-check, calc(var(--rise-motion-scale-from) * 0.5));

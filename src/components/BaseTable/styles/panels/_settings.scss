@@ -1,0 +1,25 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	&__settings {
+		display: flex;
+		align-items: center;
+		margin-inline-start: auto;
+	}
+
+	&__export {
+		display: flex;
+		align-items: center;
+		margin-inline-start: auto;
+	}
+
+	&__settings + &__export {
+		margin-inline-start: 0;
+	}
+
+	&__settings-panel {
+		min-width: sz(200px);
+	}
+}

@@ -1,11 +1,10 @@
-/**
- * Unit-тесты для BaseFormField.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
+import { nextTick } from 'vue'
+import { mount } from '@vue/test-utils'
+import { UI_TEXT } from '@/locales/messages'
 import BaseFormField from '../ui/BaseFormField.vue'
+import { render, screen } from '@testing-library/vue'
+import type { FormFieldValidateExpose } from '@composables/form/useFormField'
 
 describe('BaseFormField unit', () => {
 	describe('рендер', () => {
@@ -78,6 +77,15 @@ describe('BaseFormField unit', () => {
 			expect(screen.getByText('Обязательное поле')).toBeInTheDocument()
 		})
 
+		it('ошибка — role="alert": появление объявляется сразу, без ошибки роли нет', async () => {
+			const { rerender } = render(BaseFormField, { props: { description: 'Подсказка' } })
+			expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+			await rerender({ error: 'Обязательное поле' })
+
+			expect(await screen.findByRole('alert')).toHaveTextContent('Обязательное поле')
+		})
+
 		it('должен добавлять класс --error когда есть ошибка', () => {
 			const { container } = render(BaseFormField, { props: { error: 'Ошибка' } })
 
@@ -88,6 +96,92 @@ describe('BaseFormField unit', () => {
 			const { container } = render(BaseFormField)
 
 			expect(container.querySelector('.base-form-field')?.classList.contains('base-form-field--error')).toBe(false)
+		})
+	})
+
+	describe('доступность: связь подписи, описания и ошибки', () => {
+		it('без for помечает содержимое группой с именем из подписи и описанием', () => {
+			render(BaseFormField, {
+				props: { label: 'Каналы', description: 'Можно выбрать несколько' },
+				slots: { default: '<input type="checkbox" aria-label="Email" />' },
+			})
+
+			const group = screen.getByRole('group', { name: 'Каналы' })
+			expect(group).toHaveAccessibleDescription('Можно выбрать несколько')
+			expect(group).toContainElement(screen.getByRole('checkbox', { name: 'Email' }))
+		})
+
+		it('ошибка вытесняет описание и в тексте, и в aria-describedby группы', () => {
+			render(BaseFormField, {
+				props: { label: 'Каналы', description: 'Можно выбрать несколько', error: 'Выберите канал' },
+			})
+
+			expect(screen.getByRole('group', { name: 'Каналы' })).toHaveAccessibleDescription('Выберите канал')
+			expect(screen.queryByText('Можно выбрать несколько')).not.toBeInTheDocument()
+		})
+
+		it('с for связывает подпись с полем по id и не создаёт группу', () => {
+			render(BaseFormField, {
+				props: { label: 'Имя', for: 'name-input' },
+				slots: { default: '<input id="name-input" type="text" />' },
+			})
+
+			expect(screen.getByLabelText('Имя')).toBe(screen.getByRole('textbox'))
+			expect(screen.queryByRole('group')).not.toBeInTheDocument()
+		})
+
+		it('без подписи не создаёт безымянную группу', () => {
+			render(BaseFormField, { slots: { default: '<input type="text" />' } })
+
+			expect(screen.queryByRole('group')).not.toBeInTheDocument()
+		})
+
+		it('без ошибки не рендерит пустую обёртку анимации ошибки', () => {
+			const { container } = render(BaseFormField, { props: { label: 'Имя' } })
+
+			expect(container.querySelector('.base-animation')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('defineExpose: validate/reset', () => {
+		function mountField(props: Record<string, unknown>) {
+			const wrapper = mount(BaseFormField, {
+				props,
+				slots: { default: '<input type="text" value="Иван" />' },
+			})
+			return { wrapper, api: wrapper.vm as unknown as FormFieldValidateExpose }
+		}
+
+		it('validate() обязательного поля без внешней ошибки возвращает true и не показывает ложную ошибку', async () => {
+			const { wrapper, api } = mountField({ label: 'Имя', isRequired: true })
+
+			expect(api.validate()).toBe(true)
+			await nextTick()
+			expect(wrapper.text()).not.toContain(UI_TEXT.REQUIRED_FIELD)
+
+			wrapper.unmount()
+		})
+
+		it('validate() возвращает false при внешней ошибке и показывает её текст', async () => {
+			const { wrapper, api } = mountField({ label: 'Имя', isRequired: true, error: 'Введите имя' })
+
+			expect(api.validate()).toBe(false)
+			await nextTick()
+			expect(wrapper.text()).toContain('Введите имя')
+			expect(wrapper.text()).not.toContain(UI_TEXT.REQUIRED_FIELD)
+
+			wrapper.unmount()
+		})
+
+		it('reset() после validate() не оставляет сообщений об ошибке', async () => {
+			const { wrapper, api } = mountField({ label: 'Имя', isRequired: true })
+
+			api.validate()
+			api.reset()
+			await nextTick()
+			expect(wrapper.find('.base-form-field__error').exists()).toBe(false)
+
+			wrapper.unmount()
 		})
 	})
 
@@ -125,12 +219,8 @@ describe('BaseFormField unit', () => {
 			expect(container.querySelector('.base-form-field')?.classList.contains('custom-field-root')).toBe(true)
 			expect(container.querySelector('.base-form-field__header')?.classList.contains('custom-field-header')).toBe(true)
 			expect(container.querySelector('.base-form-field__label')?.classList.contains('custom-field-label')).toBe(true)
-			expect(container.querySelector('.base-form-field__required')?.classList.contains('custom-field-required')).toBe(
-				true,
-			)
-			expect(container.querySelector('.base-form-field__content')?.classList.contains('custom-field-content')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-form-field__required')?.classList.contains('custom-field-required')).toBe(true)
+			expect(container.querySelector('.base-form-field__content')?.classList.contains('custom-field-content')).toBe(true)
 			expect(container.querySelector('.custom-field-animation')).toBeInTheDocument()
 			expect(container.querySelector('.base-form-field__error')?.classList.contains('custom-field-error')).toBe(true)
 		})

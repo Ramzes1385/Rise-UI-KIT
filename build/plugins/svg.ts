@@ -1,12 +1,8 @@
-/**
- * SVG: загрузка как Vue-компонент + SVGO-оптимизация.
- * Удаляет мусор из SVG (metadata, editor tags), сохраняет viewBox.
- */
+/** SVGO удаляет мусор из SVG (metadata, editor tags), сохраняет viewBox. */
 
 import type { PluginOption } from 'vite'
 import svgLoader from 'vite-svg-loader'
 
-/** Создаёт плагин SVG-загрузчика */
 export function createSvgPlugin(): PluginOption {
 	return svgLoader({
 		defaultImport: 'component',

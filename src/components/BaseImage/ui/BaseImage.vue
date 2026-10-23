@@ -1,7 +1,7 @@
 <template>
 	<div
-		class="base-image"
 		:class="[
+			ui('root'),
 			`base-image--${fit}`,
 			{
 				'base-image--loaded': isLoaded,
@@ -11,144 +11,111 @@
 			},
 			classes.root,
 		]"
-		:style="[containerStyle, borderRadiusStyle, sizeScaleStyle, customColorStyle]">
-		<div v-if="hasPlaceholder && !isLoaded && !hasError" class="base-image__placeholder" :class="classes.placeholder">
-			<slot name="placeholder">
-				<div class="base-image__shimmer"></div>
-			</slot>
-		</div>
+		:style="[containerStyle, radiusStyle, sizeScaleStyle, customColorStyle]">
+		<component :is="'script'" v-if="structuredData" type="application/ld+json" v-html="structuredData" />
 
-		<div v-if="hasError" class="base-image__error" :class="classes.error">
+		<Transition name="base-image-placeholder">
+			<div v-if="hasPlaceholder && !isLoaded && !hasError" :class="[ui('placeholder'), classes.placeholder]">
+				<slot name="placeholder">
+					<BaseSkeleton :class="ui('shimmer')" />
+				</slot>
+			</div>
+		</Transition>
+
+		<div v-if="hasError" :class="[ui('error'), classes.error]">
 			<slot name="error">
-				<span class="base-image__error-icon">🖼️</span>
-				<span class="base-image__error-text">{{ UI_TEXT.IMAGE_ERROR }}</span>
+				<BaseIcon name="image" :class="ui('error-icon')" :aria-label="alt" />
+				<span :class="ui('error-text')">{{ UI_TEXT.IMAGE_ERROR }}</span>
 			</slot>
 		</div>
 
-		<picture v-if="!hasError">
-			<source v-if="avifSrc" :srcset="avifSrc" type="image/avif" />
-			<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
-			<img
-				:src="currentSrc"
-				:srcset="srcsetValue"
-				:sizes="sizesValue"
-				:alt="alt"
-				:width="width"
-				:height="height"
-				:loading="loading"
-				decoding="async"
-				class="base-image__img"
-				:class="classes.img"
-				@click="handleImageClick"
-				@load="handleLoad"
-				@error="handleError" />
-		</picture>
+		<component
+			:is="resolvedHasZoom ? 'button' : 'div'"
+			v-if="!hasError && currentSrc"
+			:class="ui('frame')"
+			v-bind="zoomTriggerAttrs"
+			@click="handleImageClick">
+			<picture>
+				<source v-if="avifSrc" :srcset="avifSrc" type="image/avif" />
+				<source v-if="webpSrc" :srcset="webpSrc" type="image/webp" />
+				<img
+					ref="imgRef"
+					v-bind="imgAttrs"
+					:src="currentSrc"
+					:srcset="srcsetValue"
+					:sizes="sizesValue"
+					:alt="alt"
+					:width="width"
+					:height="height"
+					:loading="loading"
+					decoding="async"
+					:class="[ui('img'), classes.img]"
+					@load="handleLoad"
+					@error="handleError" />
+			</picture>
+		</component>
 
 		<BaseImageZoom
-			v-if="zoom.isZoomOpen.value"
+			v-if="isZoomRendered"
 			ref="zoomRef"
 			:zoom="zoom"
 			:gallery="gallery"
 			:alt="alt"
 			:classes="classes"
+			:ui="ui"
 			:show-minimap="resolvedShowMinimap"
-			:current-scale="zoom.currentScale.value" />
+			:current-scale="zoom.currentScale.value"
+			@after-leave="handleZoomAfterLeave" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import '../styles/BaseImage.style.scss'
-
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useImageGallery } from '@composables/useImageGallery'
-import { useImageState } from '@composables/useImageState'
-import { useImageZoom } from '@composables/useImageZoom'
-import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
+import { UI_TEXT } from '@/locales/messages'
 import BaseImageZoom from './BaseImageZoom.vue'
-import type { BaseImageEmits, BaseImageProps, BaseImageSlots } from '../model/BaseImage.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { useBaseImage } from '../model/useBaseImage'
+import { BaseSkeleton } from '@components/BaseSkeleton'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseImageEmits, BaseImageExpose, BaseImageProps, BaseImageSlots } from '../types/BaseImage.types'
 
-const props = withDefaults(defineProps<BaseImageProps>(), {
-	src: undefined,
-	alt: undefined,
-	timeout: UI_TIMING.IMAGE_LOAD_TIMEOUT,
-	fit: 'cover',
-	loading: 'lazy',
-	borderRadius: 12,
-	hasPlaceholder: true,
-	convertToWebp: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'placeholder',
-		'error',
-		'img',
-		'zoomOutButton',
-		'zoomOutIcon',
-		'zoomScale',
-		'zoomInButton',
-		'zoomInIcon',
-		'zoomResetButton',
-		'zoomResetIcon',
-		'rotateLeftButton',
-		'rotateLeftIcon',
-		'rotateRightButton',
-		'rotateRightIcon',
-		'zoomCloseButton',
-		'zoomCloseIcon',
-		'galleryPrevButton',
-		'galleryPrevIcon',
-		'galleryNextButton',
-		'galleryNextIcon',
-		'galleryCounter',
-	],
-})
-
-const { sizeScaleStyle: baseSizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-const sizeScaleStyle = computed((): Record<string, string> | undefined => {
-	return baseSizeScaleStyle.value as Record<string, string> | undefined
-})
-
+const props = withDefaults(
+	defineProps<BaseImageProps>(),
+	kitDefaults('BaseImage', {
+		src: undefined,
+		alt: undefined,
+		timeout: 5000,
+		fit: 'cover',
+		loading: 'lazy',
+		borderRadius: undefined,
+		hasPlaceholder: true,
+		convertToWebp: false,
+		convertToAvif: false,
+		seo: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseImageEmits>()
 defineSlots<BaseImageSlots>()
 
-const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
-const resolvedShowMinimap = computed((): boolean => props.zoomConfig?.showMinimap ?? true)
-
-const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
-
-const gallery = useImageGallery({
-	gallery: () => props.gallery,
-	src: () => props.src,
-	resetZoom: () => zoom.resetZoom(),
-})
-
-const zoom = useImageZoom({
-	initialScale: () => props.zoomConfig?.initialScale ?? 1,
-	zoomStep: () => props.zoomConfig?.zoomStep ?? 0.25,
-	minScale: () => props.zoomConfig?.minScale ?? 0.5,
-	maxScale: () => props.zoomConfig?.maxScale ?? 5,
-	closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? true,
-	onZoom: (scale: number) => emit('zoom', scale),
-	getZoomImgEl: () => zoomRef.value?.zoomImgRef ?? null,
-	getMinimapImgEl: () => zoomRef.value?.minimapImgRef ?? null,
-	onArrowLeft: () => gallery.handleGalleryPrev(),
-	onArrowRight: () => gallery.handleGalleryNext(),
-})
-
 const {
+	ui,
+	classes,
+	sizeScaleStyle,
+	customColorStyle,
+	resolvedHasZoom,
+	resolvedShowMinimap,
+	zoomTriggerAttrs,
+	zoomRef,
+	imgRef,
+	gallery,
+	zoom,
+	isZoomRendered,
+	handleZoomAfterLeave,
 	isLoaded,
 	hasError,
 	containerStyle,
-	borderRadiusStyle,
 	currentSrc,
 	avifSrc,
 	webpSrc,
@@ -156,24 +123,11 @@ const {
 	sizesValue,
 	handleLoad,
 	handleError,
-} = useImageState({
-	src: () => props.src,
-	fallbackSrc: () => props.fallbackSrc,
-	timeout: () => props.timeout,
-	width: () => props.width,
-	height: () => props.height,
-	aspectRatio: () => props.aspectRatio,
-	borderRadius: () => props.borderRadius,
-	srcWidth: () => props.srcWidth,
-	convertToWebp: () => props.convertToWebp,
-	onLoad: () => emit('load'),
-	onError: () => emit('error'),
-})
+	radiusStyle,
+	handleImageClick,
+	structuredData,
+	exposed,
+} = useBaseImage(props, emit)
 
-function handleImageClick(): void {
-	if (!resolvedHasZoom.value) return
-	const foundIndex = gallery.galleryList.value.indexOf(props.src)
-	gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
-	zoom.openZoom()
-}
+defineExpose<BaseImageExpose>(exposed)
 </script>

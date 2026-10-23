@@ -1,10 +1,6 @@
-/**
- * Unit-тесты для BaseChip.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseChip from '../ui/BaseChip.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseChip unit', () => {
 	it('должен рендерить контент слота', () => {
@@ -159,6 +155,21 @@ describe('BaseChip unit', () => {
 		})
 	})
 
+	describe('пропс color', () => {
+		it('должен красить только индикатор, не наследуясь содержимому слота', () => {
+			const { container } = render(BaseChip, {
+				props: { content: 5, color: { bg: { base: 'var(--rise-error)' }, text: { base: 'var(--rise-on-error)' } } },
+				slots: { default: '<button type="button">Уведомления</button>' },
+			})
+
+			const badge = container.querySelector('.base-chip__badge') as HTMLElement
+			const chip = container.querySelector('.base-chip') as HTMLElement
+			expect(badge.style.getPropertyValue('--custom-bg')).toBe('var(--rise-error)')
+			expect(badge.style.getPropertyValue('--custom-text')).toBe('var(--rise-on-error)')
+			expect(chip.style.getPropertyValue('--custom-bg')).toBe('')
+		})
+	})
+
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BaseChip, {
@@ -188,18 +199,14 @@ describe('BaseChip unit', () => {
 		it('должен вернуть null когда content не передан (undefined)', () => {
 			const { container } = render(BaseChip, { props: { sizeScale: 100 } })
 
-			// Индикатор не должен рендериться — isVisible вернёт false,
-			// потому что numericValue = null и content = undefined
 			expect(container.querySelector('.base-chip__badge')).not.toBeInTheDocument()
 		})
 
 		it('должен вернуть null для нечисловой строки в numericValue', () => {
-			// Проверяем что нечисловая строка не ломает numericValue
 			const { container } = render(BaseChip, {
 				props: { content: 'hello-world', hasOverflow: true, maxValue: 99 },
 			})
 
-			// Индикатор отображается с оригинальной строкой, не обрабатывая overflow
 			expect(container.querySelector('.base-chip__badge')).toBeInTheDocument()
 		})
 	})

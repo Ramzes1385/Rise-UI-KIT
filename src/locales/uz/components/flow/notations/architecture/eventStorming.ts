@@ -1,0 +1,26 @@
+/** Нотация Event Storming BaseFlowMap: виды, правила, предупреждения */
+export const uzFlowEventStorming = {
+	flowEventStorming: {
+		NOTATION: 'Event Storming',
+		RULES_SUMMARY: 'aktor buyruq beradi, agregat yoki tashqi tizim hodisa tugʻdiradi, siyosat keyingi buyruqni ishga tushiradi',
+		DOMAIN_EVENT: 'Domen hodisasi',
+		COMMAND: 'Buyruq',
+		ACTOR: 'Aktor',
+		AGGREGATE: 'Agregat',
+		POLICY: 'Siyosat',
+		READ_MODEL: 'Oʻqish modeli',
+		EXTERNAL_SYSTEM: 'Tashqi tizim',
+		HOTSPOT: 'Qaynoq nuqta',
+		OPPORTUNITY: 'Imkoniyat',
+		CONTEXT: 'Cheklangan kontekst',
+		FLOW: 'Oqim',
+		WARN_GRAMMAR: 'Oqimda “{source}” → “{target}” oʻtishi yoʻq: {expected}',
+		EXPECTED_ACTOR: 'aktor buyruq beradi',
+		EXPECTED_COMMAND: 'buyruqni agregat yoki tashqi tizim qabul qiladi',
+		EXPECTED_AGGREGATE: 'agregat hodisa tugʻdiradi',
+		EXPECTED_EXTERNAL: 'tashqi tizim hodisa tugʻdiradi',
+		EXPECTED_EVENT: 'hodisa siyosatni ishga tushiradi, oʻqish modelini yangilaydi yoki buyruqqa olib keladi',
+		EXPECTED_POLICY: 'siyosat buyruqni ishga tushiradi',
+		EXPECTED_READ_MODEL: 'oʻqish modeli aktorga koʻrsatiladi',
+	},
+}

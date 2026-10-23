@@ -1,0 +1,26 @@
+/** Нотация Event Storming BaseFlowMap: виды, правила, предупреждения */
+export const jaFlowEventStorming = {
+	flowEventStorming: {
+		NOTATION: 'イベントストーミング',
+		RULES_SUMMARY: 'アクターがコマンドを出し、集約または外部システムがイベントを生み、ポリシーが次のコマンドを起動する',
+		DOMAIN_EVENT: 'ドメインイベント',
+		COMMAND: 'コマンド',
+		ACTOR: 'アクター',
+		AGGREGATE: '集約',
+		POLICY: 'ポリシー',
+		READ_MODEL: 'リードモデル',
+		EXTERNAL_SYSTEM: '外部システム',
+		HOTSPOT: 'ホットスポット',
+		OPPORTUNITY: '機会',
+		CONTEXT: '境界づけられたコンテキスト',
+		FLOW: 'フロー',
+		WARN_GRAMMAR: 'フローに「{source}」→「{target}」の流れはありません：{expected}',
+		EXPECTED_ACTOR: 'アクターがコマンドを出します',
+		EXPECTED_COMMAND: 'コマンドは集約または外部システムが受け取ります',
+		EXPECTED_AGGREGATE: '集約がイベントを生みます',
+		EXPECTED_EXTERNAL: '外部システムがイベントを生みます',
+		EXPECTED_EVENT: 'イベントはポリシーを起動し、リードモデルを更新し、またはコマンドにつながります',
+		EXPECTED_POLICY: 'ポリシーがコマンドを起動します',
+		EXPECTED_READ_MODEL: 'リードモデルはアクターに表示されます',
+	},
+}

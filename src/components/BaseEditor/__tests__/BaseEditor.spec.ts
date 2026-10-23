@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BaseEditor.
- * Проверяют рендер и CSS-модификаторы.
- * Компонент сложный — тестируем базовый рендер.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
+import { nextTick } from 'vue'
 import BaseEditor from '../ui/BaseEditor.vue'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
-/** Стабаем дочерние компоненты для изоляции */
 const globalConfig = {
 	stubs: {
 		BaseTooltip: {
@@ -246,9 +240,9 @@ describe('BaseEditor unit', () => {
 
 			await pickers[0].vm.$emit('change', '#ff0000')
 
-			const textPicker = wrapper.find('.base-editor__color-picker--active')
+			const textPicker = wrapper.find('.base-color-picker__swatch--indicated')
 			expect(textPicker.exists()).toBe(true)
-			expect(textPicker.attributes('style')).toContain('--editor-swatch-color')
+			expect(textPicker.attributes('style')).toContain('--picker-swatch-color')
 		})
 
 		it('сбрасывает цвет текста и снимает индикатор при reset первого пикера', async () => {
@@ -262,10 +256,10 @@ describe('BaseEditor unit', () => {
 
 			const pickers = wrapper.findAllComponents(BaseColorPicker)
 			await pickers[0].vm.$emit('change', '#ff0000')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(true)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(true)
 
 			await pickers[0].vm.$emit('reset')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(false)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(false)
 		})
 
 		it('применяет цвет фона и активирует индикатор при change второго пикера', async () => {
@@ -281,9 +275,9 @@ describe('BaseEditor unit', () => {
 			await pickers[1].vm.$emit('update:modelValue', '#00ff00')
 			await pickers[1].vm.$emit('change', '#00ff00')
 
-			const bgPicker = wrapper.find('.base-editor__color-picker--active')
+			const bgPicker = wrapper.find('.base-color-picker__swatch--indicated')
 			expect(bgPicker.exists()).toBe(true)
-			expect(bgPicker.attributes('style')).toContain('--editor-swatch-color')
+			expect(bgPicker.attributes('style')).toContain('--picker-swatch-color')
 		})
 
 		it('сбрасывает цвет фона и снимает индикатор при reset второго пикера', async () => {
@@ -297,44 +291,27 @@ describe('BaseEditor unit', () => {
 
 			const pickers = wrapper.findAllComponents(BaseColorPicker)
 			await pickers[1].vm.$emit('change', '#00ff00')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(true)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(true)
 
 			await pickers[1].vm.$emit('reset')
-			expect(wrapper.find('.base-editor__color-picker--active').exists()).toBe(false)
+			expect(wrapper.find('.base-color-picker__swatch--indicated').exists()).toBe(false)
 		})
 	})
 
-	describe('mousedown по label медиа', () => {
-		it('останавливает всплытие mousedown на label изображения (модификатор .stop)', async () => {
-			const { container } = render(BaseEditor, {
-				props: { hasToolbar: true },
-				global: globalConfig,
-			})
+	describe('загрузка медиа с кнопок', () => {
+		it.each([
+			['Изображение', 'image/*'],
+			['Видео', 'video/*'],
+		])('кнопка «%s» открывает выбор файла скрытого поля', async (name, accept) => {
+			const { container } = render(BaseEditor, { props: { hasToolbar: true }, global: globalConfig })
+			const input = container.querySelector<HTMLInputElement>(`input[accept="${accept}"]`) as HTMLInputElement
+			const click = vi.spyOn(input, 'click')
 
-			const imageLabel = container.querySelector('input[accept="image/*"]')?.closest('label') as HTMLElement
-			expect(imageLabel).toBeInTheDocument()
+			await fireEvent.click(screen.getByRole('button', { name }))
 
-			const onParentMouseDown = vi.fn()
-			imageLabel.parentElement?.addEventListener('mousedown', onParentMouseDown)
-			await fireEvent.mouseDown(imageLabel)
-
-			expect(onParentMouseDown).not.toHaveBeenCalled()
-		})
-
-		it('останавливает всплытие mousedown на label видео (модификатор .stop)', async () => {
-			const { container } = render(BaseEditor, {
-				props: { hasToolbar: true },
-				global: globalConfig,
-			})
-
-			const videoLabel = container.querySelector('input[accept="video/*"]')?.closest('label') as HTMLElement
-			expect(videoLabel).toBeInTheDocument()
-
-			const onParentMouseDown = vi.fn()
-			videoLabel.parentElement?.addEventListener('mousedown', onParentMouseDown)
-			await fireEvent.mouseDown(videoLabel)
-
-			expect(onParentMouseDown).not.toHaveBeenCalled()
+			expect(click).toHaveBeenCalledOnce()
+			expect(input).toHaveAttribute('tabindex', '-1')
+			expect(input).toHaveAttribute('aria-hidden', 'true')
 		})
 	})
 
@@ -359,6 +336,174 @@ describe('BaseEditor unit', () => {
 			await fireEvent.input(editable)
 
 			expect(container.querySelector('.base-editor__content--empty')).toBeInTheDocument()
+		})
+	})
+
+	describe('v-model и автофокус', () => {
+		it('программная смена modelValue заменяет содержимое области текста и снимает признак пустоты', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, { props: { modelValue: '' }, global: globalConfig })
+			const content = wrapper.find('[role="textbox"]')
+			expect(content.classes()).toContain('base-editor__content--empty')
+
+			await wrapper.setProps({ modelValue: '<p>Обновлённый текст</p>' })
+
+			expect(content.element.innerHTML).toBe('<p>Обновлённый текст</p>')
+			expect(content.classes()).not.toContain('base-editor__content--empty')
+			wrapper.unmount()
+		})
+
+		it('isAutofocus ставит фокус в область текста при монтировании', () => {
+			const focus = vi.spyOn(HTMLElement.prototype, 'focus')
+			render(BaseEditor, { props: { isAutofocus: true, modelValue: '<p>Текст</p>' }, global: globalConfig })
+
+			expect(focus.mock.contexts).toContain(screen.getByRole('textbox', { name: 'Текстовый редактор' }))
+			focus.mockRestore()
+		})
+	})
+
+	describe('доступность', () => {
+		it('область текста — многострочное поле с именем и плейсхолдером', () => {
+			render(BaseEditor, { props: { placeholder: 'Опишите задачу' }, global: globalConfig })
+
+			const textbox = screen.getByRole('textbox', { name: 'Текстовый редактор' })
+			expect(textbox).toHaveAttribute('aria-multiline', 'true')
+			expect(textbox).toHaveAttribute('aria-placeholder', 'Опишите задачу')
+			expect(textbox).not.toHaveAttribute('aria-readonly')
+		})
+
+		it('в режиме чтения область текста помечена aria-readonly, пустой плейсхолдер не озвучивается', () => {
+			render(BaseEditor, { props: { isReadonly: true }, global: globalConfig })
+
+			const textbox = screen.getByRole('textbox', { name: 'Текстовый редактор' })
+			expect(textbox).toHaveAttribute('aria-readonly', 'true')
+			expect(textbox).not.toHaveAttribute('aria-placeholder')
+		})
+
+		it('тулбар — role="toolbar" с именем, кнопки-иконки названы и сообщают состояние через aria-pressed', () => {
+			render(BaseEditor, { global: globalConfig })
+
+			const toolbar = screen.getByRole('toolbar', { name: 'Форматирование' })
+			expect(within(toolbar).getByRole('button', { name: 'Жирный' })).toHaveAttribute('aria-pressed', 'false')
+			expect(within(toolbar).getByRole('button', { name: 'Цитата' })).toHaveAttribute('aria-pressed', 'false')
+			expect(within(toolbar).getByRole('button', { name: 'Ссылка' })).not.toHaveAttribute('aria-pressed')
+			expect(within(toolbar).getByRole('button', { name: 'Изображение' })).not.toHaveAttribute('aria-pressed')
+			expect(within(toolbar).getByRole('button', { name: 'Видео' })).not.toHaveAttribute('aria-pressed')
+			expect(within(toolbar).getByRole('button', { name: /^Цвет текста, выбран / })).toHaveAttribute('aria-expanded', 'false')
+			expect(within(toolbar).getByRole('button', { name: /^Цвет фона, выбран / })).toHaveAttribute('aria-expanded', 'false')
+		})
+
+		it('кнопка «Режим кода» нажата в режиме кода, поле HTML-кода подписано', async () => {
+			render(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global: globalConfig })
+			const toggle = screen.getByRole('button', { name: 'Режим кода' })
+
+			await fireEvent.click(toggle)
+
+			expect(toggle).toHaveAttribute('aria-pressed', 'true')
+			expect(screen.getByRole('textbox', { name: 'HTML-код' })).toHaveValue('<p>Текст</p>')
+		})
+	})
+
+	describe('режим только для чтения во время работы', () => {
+		it('включение isReadonly в режиме кода возвращает визуальный режим: без тулбара из режима кода не выйти', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, { props: { modelValue: '<p>Текст</p>' }, global: globalConfig })
+			await wrapper.find('button[aria-label="Режим кода"]').trigger('click')
+			expect(wrapper.find('textarea').exists()).toBe(true)
+
+			await wrapper.setProps({ isReadonly: true })
+			await nextTick()
+
+			expect(wrapper.find('textarea').exists()).toBe(false)
+			expect(wrapper.find('[role="textbox"]').attributes('aria-readonly')).toBe('true')
+			expect(wrapper.find('[role="textbox"]').element.innerHTML).toBe('<p>Текст</p>')
+			wrapper.unmount()
+		})
+
+		it('включение isReadonly закрывает открытое меню размера медиа', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseEditor, {
+				props: { modelValue: '<p><img src="data:," alt="Схема"></p>' },
+				global: globalConfig,
+				attachTo: document.body,
+			})
+			await wrapper.find('img').trigger('contextmenu')
+			expect(screen.getByRole('dialog', { name: 'Размер медиа' })).toBeInTheDocument()
+
+			await wrapper.setProps({ isReadonly: true })
+
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			wrapper.unmount()
+		})
+	})
+
+	describe('меню размера медиа', () => {
+		async function openMediaMenu() {
+			const utils = render(BaseEditor, {
+				props: { modelValue: '<p><img src="data:," alt="Схема"></p>' },
+				global: globalConfig,
+			})
+			const image = utils.container.querySelector('.base-editor__content img') as HTMLImageElement
+			await fireEvent.contextMenu(image)
+			const menu = await screen.findByRole('dialog', { name: 'Размер медиа' })
+			const width = within(menu).getByLabelText('Ширина')
+			await waitFor(() => expect(width).toHaveFocus())
+			return { ...utils, image, menu, width, content: screen.getByRole('textbox', { name: 'Текстовый редактор' }) }
+		}
+
+		it('открывается с подписанными полями «Ширина» и «Высота», фокус переходит в «Ширину»', async () => {
+			const { menu } = await openMediaMenu()
+
+			expect(within(menu).getByLabelText('Высота')).toHaveAttribute('type', 'number')
+			expect(within(menu).getByRole('button', { name: 'Применить' })).toBeInTheDocument()
+		})
+
+		it('Escape закрывает меню и возвращает фокус в текст', async () => {
+			const { content, emitted } = await openMediaMenu()
+
+			await fireEvent.keyDown(document, { key: 'Escape' })
+
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			expect(content).toHaveFocus()
+			expect(emitted()['update:modelValue']).toBeUndefined()
+		})
+
+		it('Enter в поле размера применяет размер, закрывает меню и возвращает фокус в текст', async () => {
+			const { width, image, content } = await openMediaMenu()
+
+			await fireEvent.update(width, '240')
+			await fireEvent.keyDown(width, { key: 'Enter' })
+
+			expect(image.style.width).toBe('240px')
+			expect(screen.queryByRole('dialog', { name: 'Размер медиа' })).toBeNull()
+			expect(content).toHaveFocus()
+		})
+
+		it.each([
+			['Chrome и Firefox: isComposing', { isComposing: true }],
+			['Safari: compositionend раньше keydown, keyCode 229', { keyCode: 229 }],
+		])('%s: Enter подтверждает слово IME и размер не применяет', async (_name, init) => {
+			const { width, image } = await openMediaMenu()
+
+			await fireEvent.update(width, '240')
+			const confirm = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, ...init })
+			width.dispatchEvent(confirm)
+
+			expect(confirm.defaultPrevented).toBe(false)
+			expect(image.style.width).toBe('')
+			expect(screen.getByRole('dialog', { name: 'Размер медиа' })).toBeInTheDocument()
+
+			await fireEvent.keyDown(width, { key: 'Enter', keyCode: 13 })
+			expect(image.style.width).toBe('240px')
+		})
+
+		it('«Удалить» убирает медиа из текста и возвращает фокус в текст', async () => {
+			const { menu, content } = await openMediaMenu()
+
+			await fireEvent.click(within(menu).getByRole('button', { name: 'Удалить' }))
+
+			expect(content.querySelector('img')).toBeNull()
+			expect(content).toHaveFocus()
 		})
 	})
 

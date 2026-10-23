@@ -1,11 +1,8 @@
-/**
- * Integration-тесты для BaseIcon.
- * Проверяют рендер с реальным useIcon (без мока).
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
+import { mount } from '@vue/test-utils'
 import BaseIcon from '../ui/BaseIcon.vue'
+import { createUiKitPlugin } from '@/plugin'
+import { render } from '@testing-library/vue'
 
 describe('BaseIcon integration', () => {
 	it('должен рендерить SVG-элемент с реальным useIcon', () => {
@@ -72,5 +69,14 @@ describe('BaseIcon integration', () => {
 		const svg = container.querySelector('.base-icon__svg')
 		expect(svg?.getAttribute('aria-hidden')).toBeNull()
 		expect(svg?.getAttribute('aria-label')).toBe('Закрыть')
+	})
+
+	it('должен ссылаться на спрайт по пути из createUiKitPlugin({ iconSpritePath })', () => {
+		const wrapper = mount(BaseIcon, {
+			props: { name: 'search' },
+			global: { plugins: [createUiKitPlugin({ iconSpritePath: '/static/sprite.svg' })] },
+		})
+
+		expect(wrapper.find('use').attributes('href')).toBe('/static/sprite.svg#search')
 	})
 })

@@ -1,68 +1,80 @@
 .base-tree {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
-	padding: sz(4px);
 	min-width: sz(200px);
+	padding: space(4px);
+	font-family: var(--rise-font-sans);
+	@include text-size(sm);
+	@include custom-bg(background-color, ct(tree, bg, transparent));
+	@include custom-text(color, var(--rise-text));
+	--tree-hover: var(--rise-bg-elevated);
 
-	// --- Варианты ---
+	&--ghost {
+		padding: 0;
+	}
+
+	&--outline,
+	&--shadow {
+		border-radius: sz(var(--rise-radius-lg));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-bg)));
+	}
 
 	&--outline {
-		outline: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
+		border: 1px solid ct(tree, border, var(--rise-border-accented));
 	}
 
 	&--shadow {
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		border-radius: var(--border-radius-base);
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-surface-floating)));
+		box-shadow: var(--rise-shadow-md);
 	}
 
 	&--soft {
-		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
-		backdrop-filter: blur(4px);
-		border-radius: var(--border-radius-base);
+		--tree-hover: var(--rise-bg-accented);
+		border-radius: sz(var(--rise-radius-lg));
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(tree, bg, var(--rise-bg-elevated)));
 	}
-
-	// --- Элементы ---
 
 	&__node {
 		display: flex;
 		flex-direction: column;
-
-		&--selected > .base-tree__header {
-			background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
-			color: var(--color-accent);
-
-			.base-tree__label {
-				font-weight: 500;
-			}
-		}
-
-		&--disabled {
-			opacity: 0.5;
-			pointer-events: none;
-		}
 	}
 
 	&__header {
-		display: flex;
-		align-items: center;
-		gap: sz(6px);
-		border-radius: var(--border-radius-sm);
-		cursor: pointer;
-		outline: none;
-		user-select: none;
-		min-height: sz(32px);
-		@include interactive;
+		@include menu-item;
+		min-height: ct(tree, item-height, auto);
+		gap: space(ct(tree, item-gap, 6px));
+		padding: space(6px ct(tree, item-padding-x, 8px));
+		border-radius: sz(ct(tree, item-radius, var(--rise-radius-sm)));
+		@include custom-text(color, ct(tree, item-text, var(--rise-text)));
+		@include focus-ring(-2px);
 
 		@include hover {
-			background-color: var(--color-surface-muted);
+			background-color: var(--custom-bg-hover, #{ct(tree, item-bg-hover, var(--tree-hover))});
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
+		}
+	}
+
+	&__node--selected > &__header {
+		background-color: ct(tree, item-bg-selected, var(--rise-primary-soft));
+		color: ct(tree, item-text-selected, var(--rise-primary-text));
+
+		@include hover {
+			background-color: ct(tree, item-bg-selected, var(--rise-primary-soft-hover));
+			color: ct(tree, item-text-selected, var(--rise-primary-text));
 		}
 
-		@include focus {
-			background-color: var(--color-surface-muted);
-			outline: 2px solid var(--color-accent);
-			outline-offset: -2px;
+		.base-tree__arrow,
+		.base-tree__icon {
+			color: inherit;
 		}
+	}
+
+	&__node--disabled > &__header {
+		@include disabled-state;
 	}
 
 	&__arrow {
@@ -70,88 +82,117 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		width: sz(20px);
-		height: sz(20px);
-		color: var(--color-text-muted);
-		will-change: transform;
-		@include interactive;
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-muted);
+		transition: transform var(--rise-duration-slow) var(--rise-ease-emphasized);
 
 		&--expanded {
-			transform: rotate(90deg);
-			color: var(--color-text);
-		}
-
-		&--right {
-			order: 1;
-			margin-left: auto;
-
-			&.base-tree__arrow--expanded {
-				transform: rotate(-90deg);
-			}
-		}
-
-		// Скрыть стрелку для листовых узлов, но сохранить место
-		.base-tree__node--leaf & {
-			visibility: hidden;
+			transform: rotate(dir-angle(90deg));
 		}
 	}
 
+	&__node--leaf > &__header &__arrow {
+		visibility: hidden;
+	}
+
+	&__checkbox-wrap {
+		display: inline-flex;
+		flex-shrink: 0;
+	}
+
+	&__label &__link {
+		font-size: inherit;
+	}
+
 	&__checkbox {
+		@include reset-custom-color;
 		flex-shrink: 0;
 	}
 
 	&__icon {
 		flex-shrink: 0;
-		color: var(--color-text-muted);
+		color: var(--rise-text-muted);
 	}
 
 	&__label {
+		@include reset-custom-color;
 		flex: 1;
-		color: var(--color-text);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		font-size: sz(14px);
-		line-height: 1.4;
+		min-width: 0;
+		@include truncate;
 	}
 
 	&__actions {
+		@include reset-custom-color;
 		display: flex;
 		align-items: center;
-		gap: sz(4px);
+		gap: space(4px);
 		flex-shrink: 0;
+		margin: sz(-4px) 0;
 		opacity: 0;
-		@include interactive;
-		order: 2;
+		@include transition(opacity);
 
-		.base-tree__header:hover & {
-			opacity: 1;
+		&:empty {
+			display: none;
 		}
 	}
 
-	&__children {
-		display: grid;
-		grid-template-rows: 0fr;
-		@include interactive;
-		margin-left: sz(10px);
-		padding-left: sz(12px);
-		border-left: 1px solid var(--color-border);
-		will-change: grid-template-rows;
+	&__header:hover &__actions,
+	&__header:focus-within &__actions {
+		opacity: 1;
 	}
 
-	&__children--open {
-		grid-template-rows: 1fr;
+	&__visually-hidden,
+	&__visually-hidden.base-text {
+		@include visually-hidden;
+	}
+
+	&__children {
+		@include expand-rows;
+		margin-inline-start: sz(15px);
+		padding-inline-start: space(ct(tree, children-padding-x, 4px));
+		border-inline-start: 1px solid ct(tree, children-border, var(--rise-border));
+
+		&--open {
+			@include expand-rows-open;
+		}
 	}
 
 	&__children-inner {
-		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 	}
+}
 
-	// --- Переопределения для вариантов ---
+.base-tree--virtual {
+	position: relative;
+	display: block;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	@include scrollbar-thin;
+}
 
-	&--outline &__header:focus-visible {
-		outline-offset: 0;
-	}
+.base-tree__virtual {
+	position: relative;
+}
+
+.base-tree__row {
+	position: absolute;
+	top: 0;
+	inset-inline: 0;
+}
+
+.base-tree__node--flat {
+	--base-tree-indent: calc(#{sz(16px)} + #{space(ct(tree, children-padding-x, 4px))});
+
+	padding-inline-start: calc(var(--base-tree-depth, 0) * var(--base-tree-indent));
+	background-image: repeating-linear-gradient(
+		dir-angle(90deg),
+		transparent 0 #{sz(15px)},
+		#{ct(tree, children-border, var(--rise-border))} #{sz(15px)} calc(#{sz(15px)} + 1px),
+		transparent calc(#{sz(15px)} + 1px) var(--base-tree-indent)
+	);
+	background-repeat: no-repeat;
+	background-position: dir-pos(0%) 0;
+	background-size: calc(var(--base-tree-depth, 0) * var(--base-tree-indent)) 100%;
 }

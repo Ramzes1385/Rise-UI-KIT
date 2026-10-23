@@ -1,0 +1,38 @@
+.base-split-button {
+	display: inline-flex;
+	align-items: stretch;
+	vertical-align: middle;
+
+	&__main,
+	&__toggle {
+		position: relative;
+
+		&:hover,
+		&:focus-visible {
+			z-index: 1;
+		}
+	}
+
+	&__main.base-button {
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
+	}
+
+	&__menu {
+		margin-inline-start: ct(split-button, gap, 2px);
+	}
+
+	&__toggle.base-button {
+		--btn-pad-top: var(--rise-control-padding-y);
+		--btn-pad-bottom: var(--rise-control-padding-y);
+		--btn-pad-left: #{ct(split-button-toggle, padding-x, 8px)};
+		--btn-pad-right: #{ct(split-button-toggle, padding-x, 8px)};
+
+		border-start-start-radius: 0;
+		border-end-start-radius: 0;
+	}
+
+	&--default &__toggle.base-button {
+		box-shadow: inset dir-x(1px) 0 0 ct(split-button-toggle, border, transparent);
+	}
+}

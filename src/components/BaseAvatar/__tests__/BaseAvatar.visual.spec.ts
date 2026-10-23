@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseAvatar.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'fallback', 'online-status', 'group', 'rings'] as const
 
-const COMPONENT = 'ui-baseavatar'
-const STORIES = ['default', 'with-image', 'size-scale', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseAvatar — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-avatar--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseAvatar · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseavatar--${story}`, { theme, height: 300 })
+				await expectStoryScreenshot(page, `base-avatar-${story}-${theme}.png`)
+			})
+		}
 	})
 }

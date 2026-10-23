@@ -1,16 +1,32 @@
-/**
- * Integration-тесты для BaseDropdown.
- * Проверяют взаимодействие: закрытие по Escape, click-outside,
- * сохранение фокуса при preventMousedown.
- * Компонент использует teleport to="body" — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseDropdown from '../ui/BaseDropdown.vue'
+import { BaseSelect } from '@components/BaseSelect'
+import userEvent from '@testing-library/user-event'
+import { defineComponent, h, nextTick, ref } from 'vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useDropdownPosition', () => ({
+function renderDropdownWithInput() {
+	const Host = defineComponent({
+		components: { BaseDropdown },
+		setup() {
+			const isOpen = ref(false)
+			return { isOpen }
+		},
+		template: `
+			<BaseDropdown v-model:is-open="isOpen">
+				<button type="button" @click="isOpen = !isOpen">Меню</button>
+				<template #dropdown>
+					<input aria-label="Фильтр" />
+					<div data-testid="item">Пункт</div>
+				</template>
+			</BaseDropdown>
+		`,
+	})
+	return render(Host)
+}
+
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: () => ({
 		panelStyle: { value: {} },
 		triggerWidth: { value: 0 },
@@ -53,6 +69,35 @@ describe('BaseDropdown integration', () => {
 		})
 	})
 
+	describe('closeOnEscape: родитель начал или перестал передавать проп после монтирования', () => {
+		it('закрытие по Escape следует за набором переданных пропсов', async () => {
+			const isPassed = ref(false)
+			const onClose = vi.fn()
+			const Host = defineComponent({
+				setup: () => () =>
+					h(
+						BaseDropdown,
+						{ isOpen: true, onClose, ...(isPassed.value ? { closeOnEscape: false } : {}) },
+						{ default: () => h('button', 'Триггер'), dropdown: () => h('p', 'Контент') },
+					),
+			})
+			render(Host)
+
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(1)
+
+			isPassed.value = true
+			await nextTick()
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(1)
+
+			isPassed.value = false
+			await nextTick()
+			await fireEvent.keyDown(document, { key: 'Escape' })
+			expect(onClose).toHaveBeenCalledTimes(2)
+		})
+	})
+
 	describe('preventMousedown и фокус', () => {
 		it('должен предотвращать preventDefault при mousedown когда preventMousedown=true', async () => {
 			render(BaseDropdown, {
@@ -88,5 +133,130 @@ describe('BaseDropdown integration', () => {
 			expect(event.defaultPrevented).toBe(false)
 		})
 	})
+
+	describe('поля ввода внутри панели при preventMousedown по умолчанию', () => {
+		it('BaseSelect с поиском: клик в поле поиска ставит фокус, ввод фильтрует опции', async () => {
+			const user = userEvent.setup()
+			render(BaseSelect, {
+				props: {
+					modelValue: '',
+					isSearchable: true,
+					options: [
+						{ value: 'msk', label: 'Москва' },
+						{ value: 'kzn', label: 'Казань' },
+					],
+				},
+			})
+
+			await user.click(document.querySelector('.base-select__trigger') as HTMLElement)
+			const search = await screen.findByPlaceholderText('Поиск...')
+			await user.click(search)
+
+			expect(search).toHaveFocus()
+			await user.keyboard('Каз')
+			expect(search).toHaveValue('Каз')
+			expect(screen.getByText('Казань')).toBeInTheDocument()
+			expect(screen.queryByText('Москва')).not.toBeInTheDocument()
+		})
+
+		it('фокус, переведённый в поле ввода панели, не возвращается на триггер', async () => {
+			const user = userEvent.setup()
+			renderDropdownWithInput()
+
+			await user.click(screen.getByRole('button', { name: 'Меню' }))
+			const filter = screen.getByRole('textbox', { name: 'Фильтр' })
+			filter.focus()
+
+			expect(filter).toHaveFocus()
+		})
+
+		it('при закрытии по Escape фокус из поля ввода панели возвращается на триггер, а не на body', async () => {
+			const user = userEvent.setup()
+			renderDropdownWithInput()
+			const trigger = screen.getByRole('button', { name: 'Меню' })
+
+			await user.click(trigger)
+			await user.click(screen.getByRole('textbox', { name: 'Фильтр' }))
+			await user.keyboard('{Escape}')
+
+			expect(screen.queryByRole('textbox', { name: 'Фильтр' })).not.toBeInTheDocument()
+			expect(trigger).toHaveFocus()
+		})
+
+		it('не перехватывает фокус, если к моменту закрытия он уже вне панели', async () => {
+			const user = userEvent.setup()
+			const outside = document.createElement('input')
+			outside.setAttribute('aria-label', 'Снаружи')
+			document.body.appendChild(outside)
+			renderDropdownWithInput()
+
+			await user.click(screen.getByRole('button', { name: 'Меню' }))
+			await user.click(screen.getByRole('textbox', { name: 'Фильтр' }))
+			outside.focus()
+			await user.keyboard('{Escape}')
+
+			expect(outside).toHaveFocus()
+			outside.remove()
+		})
+
+		it('BaseSelect с поиском: после выбора опции фокус возвращается на триггер селекта', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseSelect, {
+				props: {
+					modelValue: '',
+					isSearchable: true,
+					options: [
+						{ value: 'msk', label: 'Москва' },
+						{ value: 'kzn', label: 'Казань' },
+					],
+				},
+			})
+			const trigger = document.querySelector('.base-select__trigger') as HTMLElement
+
+			await user.click(trigger)
+			await user.click(await screen.findByPlaceholderText('Поиск...'))
+			await user.keyboard('Каз')
+			await user.click(screen.getByText('Казань'))
+
+			expect(emitted()['update:modelValue']).toEqual([['kzn']])
+			expect(trigger).toHaveFocus()
+		})
+
+		it('клик по нетекстовому содержимому панели по-прежнему не уводит фокус с триггера', async () => {
+			const user = userEvent.setup()
+			renderDropdownWithInput()
+			const trigger = screen.getByRole('button', { name: 'Меню' })
+
+			await user.click(trigger)
+			await user.click(screen.getByTestId('item'))
+
+			expect(trigger).toHaveFocus()
+		})
+	})
 })
 
+describe('BaseDropdown: тема области в телепортированной панели', () => {
+	it('панель получает data-theme и data-rise-theme ближайших предков триггера', async () => {
+		const Host = defineComponent({
+			components: { BaseDropdown },
+			setup: () => ({ isOpen: ref(false) }),
+			template: `
+				<div data-rise-theme="playful" data-theme="dark">
+					<section data-theme="light">
+						<BaseDropdown v-model:is-open="isOpen">
+							<button type="button" @click="isOpen = !isOpen">Меню</button>
+							<template #dropdown><div data-testid="item">Пункт</div></template>
+						</BaseDropdown>
+					</section>
+				</div>
+			`,
+		})
+		render(Host)
+
+		await userEvent.click(screen.getByRole('button', { name: 'Меню' }))
+		const panel = (await screen.findByTestId('item')).closest('.base-dropdown__panel')
+
+		expect(panel).toHaveAttribute('data-theme', 'light')
+		expect(panel).toHaveAttribute('data-rise-theme', 'playful')
+	})
+})

@@ -1,163 +1,238 @@
 .base-accordion {
+	@include custom-color-scope;
+	--accordion-pad-x: #{ct(accordion, header-padding-x, 0px)};
+	--accordion-divider: #{ct(accordion, border, var(--rise-border))};
+	--accordion-header-hover: #{ct(accordion, header-bg-hover, transparent)};
+	--accordion-divider-style: solid;
+	--accordion-pad-y: #{ct(accordion, header-padding-y, 14px)};
+
 	display: flex;
 	flex-direction: column;
-	outline: 1px solid var(--color-border);
-	border-radius: var(--border-radius-base);
-	overflow: hidden;
-	background-color: var(--color-surface);
-	@include transition(border-color, box-shadow);
-
-	// --- Варианты ---
-
-	&--ghost {
-		outline-color: transparent;
-		background-color: transparent;
-	}
-
-	&--outline {
-		outline-color: var(--color-text-muted);
-	}
-
-	&--shadow {
-		outline-color: transparent;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	}
-
-	&--soft {
-		outline-color: transparent;
-		background-color: color-mix(in srgb, var(--color-surface) 60%, transparent);
-		backdrop-filter: blur(4px);
-	}
-
-	// --- Элементы ---
+	width: 100%;
+	background-color: ct(accordion, bg, transparent);
 
 	&__item {
-		outline: 1px solid var(--color-border);
-		transition: outline-color var(--transition-base);
+		border-bottom: 1px var(--accordion-divider-style) var(--accordion-divider);
 
 		&:last-child {
-			outline: none;
+			border-bottom: none;
 		}
+	}
 
-		&--open {
-			outline-color: transparent;
-		}
-
-		&--disabled {
-			opacity: 0.5;
-			pointer-events: none;
-		}
+	&__heading {
+		margin: 0;
+		font: inherit;
 	}
 
 	&__header {
-		padding: sz(16px 20px);
-		font-size: sz(16px);
-		line-height: 1.4;
+		@include button-reset;
 		display: flex;
-		align-items: flex-start;
-		gap: sz(8px);
-		cursor: pointer;
-		outline: none;
-		@include custom-bg(background-color, var(--color-surface));
-		@include transition(background-color, color);
+		align-items: center;
+		gap: sz(6px);
+		width: 100%;
+		text-align: start;
+		padding: space(var(--accordion-pad-y) var(--accordion-pad-x));
+		border-radius: sz(var(--rise-radius-md));
+		@include text-size(sm);
+		font-size: sz(ct(accordion, header-font-size, var(--rise-font-size-sm)));
+		font-weight: ct(accordion, header-font-weight, var(--rise-font-weight-medium));
+		user-select: none;
+		@include custom-text(color, ct(accordion, header-text, var(--rise-text-highlighted)));
+		@include custom-bg-all(background-color, transparent, var(--accordion-header-hover), var(--accordion-header-hover));
+		@include transition-colors;
+		@include focus-ring;
 
-		@include custom-bg-hover(background-color, var(--color-surface-muted));
-
-		@include focus {
-			background-color: var(--custom-bg-hover, var(--custom-bg, var(--color-surface-muted)));
-			@include custom-text(color, var(--color-accent));
-			outline: 2px solid var(--color-accent);
-			outline-offset: -2px;
+		@include hover {
+			.base-accordion__arrow {
+				color: var(--rise-text-highlighted);
+			}
 		}
+	}
 
-		@include custom-bg-active(background-color, var(--color-border));
+	&__item--disabled &__header {
+		@include disabled-state;
 	}
 
 	&__icon {
-		align-self: flex-start;
 		flex-shrink: 0;
+		color: var(--rise-text-muted);
+	}
+
+	&__title {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
 	}
 
 	&__label {
-		flex: 1;
-		@include custom-text(color, var(--color-primary));
+		text-align: start;
+		overflow-wrap: anywhere;
+	}
+
+	&__description {
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-normal);
+		color: var(--rise-text-muted);
+		overflow-wrap: anywhere;
 	}
 
 	&__arrow {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-		align-self: center;
-		color: var(--color-text-muted);
-		@include transition(transform, color);
+		margin-inline-start: auto;
+		color: var(--rise-text-muted);
+		transition:
+			transform var(--rise-duration-slow) var(--rise-ease-emphasized),
+			color var(--rise-duration) var(--rise-ease);
 	}
 
 	&__item--open &__arrow {
 		transform: rotate(180deg);
-		@include custom-text(color, var(--color-accent));
 	}
 
-	/* Плавное раскрытие через CSS grid transition */
 	&__collapse {
-		display: grid;
-		grid-template-rows: 0fr;
-		transition: grid-template-rows var(--transition-base);
+		@include expand-rows;
 	}
 
 	&__collapse--open {
-		grid-template-rows: 1fr;
+		@include expand-rows-open;
 	}
 
 	&__content {
-		overflow: hidden;
-		padding: 0 sz(20px);
-		font-size: sz(14px);
-		line-height: 1.5;
-		outline: 1px solid transparent;
-		opacity: 0;
-		transition:
-			padding var(--transition-base),
-			outline var(--transition-base),
-			opacity var(--transition-base);
+		padding: 0 space(var(--accordion-pad-x));
+		@include text-size(sm);
+		color: ct(accordion, content-text, var(--rise-text-muted));
+
+		&::after {
+			content: '';
+			display: block;
+			height: space(var(--accordion-pad-y));
+		}
 	}
 
-	&__collapse--open &__content {
-		padding: sz(16px 20px);
-		outline: 1px solid var(--color-border);
-		opacity: 1;
-	}
-
-	&__content > * {
+	&__text {
 		margin: 0;
 	}
 
-	// --- Переопределения для вариантов ---
-
-	&--ghost &__item {
-		outline-color: transparent;
+	&--ghost {
+		--accordion-divider: transparent;
 	}
 
-	&--outline &__item {
-		outline-color: var(--color-text-muted);
+	&--outline,
+	&--shadow,
+	&--soft {
+		--accordion-pad-x: #{ct(accordion, header-padding-x, 16px)};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-elevated))};
+
+		overflow: hidden;
+		border: 1px solid transparent;
+		border-radius: sz(ct(accordion, radius, var(--rise-radius-lg)));
 	}
 
-	&--outline &__item--open {
-		outline-color: transparent;
+	&--outline &__header,
+	&--shadow &__header,
+	&--soft &__header {
+		border-radius: 0;
+		@include focus-ring(-2px);
 	}
 
-	&--shadow &__item {
-		outline-color: var(--color-border);
+	&--outline {
+		border-color: ct(accordion, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		background-color: ct(accordion, bg, var(--rise-bg));
 	}
 
-	&--shadow &__item--open {
-		outline-color: transparent;
+	&--shadow {
+		@include tonal-surface(floating);
+		background-color: ct(accordion, bg, var(--rise-surface-floating));
+		box-shadow: ct(accordion, shadow, var(--rise-shadow-md));
 	}
 
-	&--soft &__item {
-		outline-color: color-mix(in srgb, var(--color-border) 50%, transparent);
+	&--soft {
+		--accordion-divider: #{ct(accordion, border, var(--rise-border-accented))};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-accented))};
+
+		@include tonal-surface(elevated);
+		background-color: ct(accordion, bg, var(--rise-bg-elevated));
 	}
 
-	&--soft &__item--open {
-		outline-color: transparent;
+	&--separated {
+		--accordion-pad-x: #{ct(accordion, header-padding-x, 16px)};
+		--accordion-header-hover: #{ct(accordion, header-bg-hover, var(--rise-bg-elevated))};
+
+		gap: space(ct(accordion, gap, 8px));
+		background-color: transparent;
+	}
+
+	&--separated &__item {
+		overflow: hidden;
+		border: 1px solid ct(accordion, border, transparent);
+		border-radius: sz(ct(accordion, radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
+		background-color: ct(accordion, bg, var(--rise-bg-muted));
+		box-shadow: ct(accordion, shadow, none);
+		@include transition(border-color);
+
+		&:last-child {
+			border-bottom: 1px solid ct(accordion, border, transparent);
+		}
+	}
+
+	&--separated &__header {
+		border-radius: 0;
+		@include focus-ring(-2px);
+	}
+
+	&--divider-solid {
+		--accordion-divider: #{ct(accordion, border, var(--rise-border))};
+	}
+
+	&--divider-dashed {
+		--accordion-divider: #{ct(accordion, border, var(--rise-border-accented))};
+		--accordion-divider-style: dashed;
+	}
+
+	&--divider-none {
+		--accordion-divider: transparent;
+	}
+
+	&--density-compact {
+		--accordion-pad-y: 8px;
+	}
+
+	&--density-comfortable {
+		--accordion-pad-y: 20px;
+	}
+
+	&--arrow-start &__arrow {
+		order: -1;
+		margin-inline-start: 0;
+		transform: rotate(dir-angle(-90deg));
+	}
+
+	&--arrow-start &__item--open &__arrow {
+		transform: rotate(0deg);
+	}
+
+	&--arrow-start &__content {
+		padding-inline-start: calc((var(--accordion-pad-x) * var(--rise-density, 1) + 26px) * var(--size-scale, 1));
+	}
+
+	&--icon-swap &__arrow,
+	&--icon-swap &__item--open &__arrow {
+		transform: none;
+	}
+
+	&--accented &__item--open &__header,
+	&--accented &__item--open &__arrow {
+		color: var(--rise-primary-text);
+	}
+
+	&--accented#{&}--separated &__item--open {
+		border-color: var(--rise-primary);
 	}
 }

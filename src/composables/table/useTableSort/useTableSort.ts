@@ -1,0 +1,68 @@
+/** Composable: управление сортировкой таблицы */
+import { ref } from 'vue'
+import type { UseTableSortOptions, UseTableSortReturn } from './types/useTableSort.types'
+import type { SortDirection, SortState, TableColumn } from '@components/BaseTable/types/BaseTable.types'
+
+/** Следующее направление по клику: по возрастанию → по убыванию → без сортировки → снова по возрастанию */
+function nextSortDirection(current: SortDirection): SortDirection {
+	if (current === 'asc') return 'desc'
+	if (current === 'desc') return null
+	return 'asc'
+}
+
+function useTableSort(options: UseTableSortOptions): UseTableSortReturn {
+	const { isMultiSort, onSort } = options
+
+	const sortStates = ref<SortState[]>([])
+
+	function getSortDirection(key: string): SortDirection {
+		const state = sortStates.value.find(item => item.key === key)
+		return state ? state.direction : null
+	}
+
+	/** Получить индекс сортировки (для мульти-сортировки) */
+	function getSortIndex(key: string): number {
+		if (!isMultiSort() || sortStates.value.length <= 1) return 0
+		const index = sortStates.value.findIndex(item => item.key === key)
+		return index >= 0 ? index + 1 : 0
+	}
+
+	function handleSort(column: TableColumn): void {
+		if (!column.isSortable) return
+
+		const existingIndex = sortStates.value.findIndex(item => item.key === column.key)
+		let nextDirection: SortDirection = 'asc'
+
+		if (existingIndex >= 0) {
+			const currentDir = sortStates.value[existingIndex].direction
+			nextDirection = nextSortDirection(currentDir)
+		}
+
+		if (isMultiSort()) {
+			if (nextDirection === null) {
+				sortStates.value = sortStates.value.filter(item => item.key !== column.key)
+			} else if (existingIndex >= 0) {
+				sortStates.value[existingIndex].direction = nextDirection
+			} else {
+				sortStates.value.push({ key: column.key, direction: nextDirection })
+			}
+		} else {
+			if (nextDirection === null) {
+				sortStates.value = []
+			} else {
+				sortStates.value = [{ key: column.key, direction: nextDirection }]
+			}
+		}
+
+		if (onSort) onSort(sortStates.value.map(state => ({ ...state })))
+	}
+
+	return {
+		sortStates,
+		getSortDirection,
+		getSortIndex,
+		handleSort,
+	}
+}
+
+export { useTableSort }

@@ -1,0 +1,104 @@
+import { computed, ref, type Ref } from 'vue'
+import { UI_CHARTS } from '@/locales/messages'
+import { formatMessage } from '@/locales/state'
+import { isFiniteValue, type useChartData } from './useChartData'
+import { nearestIndex, xPosition, yPosition } from './chart/chartGeometry'
+import type { BaseChartProps, ChartMarker, ChartLayout, ChartPoint } from '../types/BaseChart.types'
+
+const PAGE_PARTS = 10
+const PERCENT = 100
+
+function nextIndex(key: string, current: number | null, count: number): number | null | undefined {
+	const page = Math.max(1, Math.round(count / PAGE_PARTS))
+	const from = current ?? -1
+	const moves: Record<string, () => number | null | undefined> = {
+		ArrowRight: () => Math.min(count - 1, from + 1),
+		ArrowLeft: () => Math.max(0, current === null ? count - 1 : from - 1),
+		PageDown: () => Math.min(count - 1, Math.max(0, from) + page),
+		PageUp: () => Math.max(0, (current ?? count - 1) - page),
+		Home: () => 0,
+		End: () => count - 1,
+		Escape: () => (current === null ? undefined : null),
+	}
+	return moves[key]?.()
+}
+
+function useActivePoint(
+	props: BaseChartProps,
+	data: ReturnType<typeof useChartData>,
+	active: { index: Ref<number | null>; layout: ChartLayout },
+) {
+	const activeIndex = active.index
+	const { view, width, height } = active.layout
+	const point = computed<ChartPoint | null>(() => {
+		const index = activeIndex.value
+		if (index === null || index >= data.count.value || data.isEmpty.value) return null
+		return {
+			index,
+			label: data.formatLabel(props.labels[index]),
+			values: data.visibleIndexes.value.map(seriesIndex => {
+				const raw = props.series[seriesIndex].values[index]
+				const value = isFiniteValue(raw) ? raw : null
+				const text = value === null ? UI_CHARTS.NO_VALUE : data.formatValue(value)
+				return { name: props.series[seriesIndex].name, color: data.colors.value[seriesIndex], value, text }
+			}),
+		}
+	})
+	const markers = computed<ChartMarker[]>(() => {
+		const index = activeIndex.value
+		if (index === null || props.variant === 'bar' || !point.value) return []
+		return data.visibleIndexes.value.flatMap(seriesIndex => {
+			const span = view.spans.value[seriesIndex][index]
+			if (!span) return []
+			const x = xPosition(index, view.frame.value)
+			const y = yPosition(span[1], view.frame.value)
+			return [
+				{
+					key: String(seriesIndex),
+					color: data.colors.value[seriesIndex],
+					x,
+					y,
+					offsetX: (x / PERCENT) * width.value,
+					offsetY: (y / PERCENT) * height.value,
+				},
+			]
+		})
+	})
+	return { point, markers }
+}
+
+export function useChartActive(props: BaseChartProps, data: ReturnType<typeof useChartData>, layout: ChartLayout) {
+	const activeIndex = ref<number | null>(null)
+	const announcement = ref('')
+	const { point, markers } = useActivePoint(props, data, { index: activeIndex, layout })
+	const guide = computed(() => (point.value ? xPosition(point.value.index, data.frame.value) : null))
+	const announce = (): void => {
+		if (!point.value) return
+		const values = point.value.values.map(value => `${value.name}: ${value.text}`).join(', ')
+		announcement.value = formatMessage(UI_CHARTS.CHART_POINT, { label: point.value.label, values })
+	}
+	return {
+		activeIndex,
+		announcement,
+		point,
+		markers,
+		guide,
+		guideOffset: computed(() => ((guide.value ?? 0) / PERCENT) * layout.width.value),
+		handlePointerMove(event: PointerEvent): void {
+			const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+			if (data.isEmpty.value || !rect.width) return
+			activeIndex.value = nearestIndex((event.clientX - rect.left) / rect.width, data.frame.value)
+		},
+		handlePointerLeave(): void {
+			activeIndex.value = null
+		},
+		handleKeydown(event: KeyboardEvent): void {
+			if (data.isEmpty.value) return
+			const next = nextIndex(event.key, activeIndex.value, data.count.value)
+			if (next === undefined) return
+			event.preventDefault()
+			activeIndex.value = next
+			announce()
+		},
+	}
+}

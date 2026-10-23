@@ -1,117 +1,114 @@
 <template>
 	<div
-		class="base-stepper"
-		:class="[`base-stepper--${orientation}`, `base-stepper--${shape}`, variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle, progressStyle]">
-		<div v-if="$slots.header" class="base-stepper__header" :class="classes.header">
+		:class="[ui('root'), `base-stepper--${orientation}`, `base-stepper--${shape}`, variantClass, motionClass, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		:data-summary="orientation === 'horizontal' && summary ? summary : undefined">
+		<div v-if="$slots.header" :class="[ui('header'), classes.header]">
 			<slot name="header" />
 		</div>
 
-		<div class="base-stepper__items" :class="classes.items">
-			<div
+		<ol ref="itemsRef" :class="[ui('items'), classes.items]" :tabindex="isItemsFocusable ? 0 : undefined">
+			<li
 				v-for="(step, index) in items"
 				:key="index"
-				class="base-stepper__step"
 				:class="[
+					ui('step'),
 					{
-						'base-stepper__step--active': modelValue === index + 1,
-						'base-stepper__step--completed': modelValue > index + 1,
-						'base-stepper__step--disabled': step.isDisabled,
+						'base-stepper__step--active': stepState(index).isActive,
+						'base-stepper__step--completed': stepState(index).isCompleted,
+						'base-stepper__step--passed': isStepPassed(index),
+						'base-stepper__step--error': stepState(index).isError,
+						'base-stepper__step--disabled': stepState(index).isDisabled,
 					},
 					classes.step,
-				]"
-				@click="handleStepClick(index + 1)">
-				<slot
-					name="item"
-					:item="step"
-					:index="index"
-					:step-number="index + 1"
-					:is-active="modelValue === index + 1"
-					:is-completed="modelValue > index + 1"
-					:is-disabled="Boolean(step.isDisabled)">
-					<div class="base-stepper__indicator-wrapper" :class="classes.indicatorWrapper">
-						<div v-if="shape !== 'empty'" class="base-stepper__indicator" :class="classes.indicator">
-							<span v-if="modelValue > index + 1" class="base-stepper__check" :class="classes.check">
-								<BaseIcon name="check" :size-scale="calcIconScale('sm', sizeScale)" />
+				]">
+				<component
+					:is="isStepClickable(index) ? 'button' : 'div'"
+					:class="[ui('trigger'), { 'base-stepper__trigger--clickable': isStepClickable(index) }, classes.trigger]"
+					:type="isStepClickable(index) ? 'button' : undefined"
+					:disabled="isStepClickable(index) && stepState(index).isDisabled ? true : undefined"
+					:aria-current="stepState(index).isActive ? 'step' : undefined"
+					@click="handleStepClick(index + 1)">
+					<slot name="item" :item="step" :index="index" :step-number="index + 1" v-bind="stepState(index)">
+						<span :class="[ui('indicator-wrapper'), classes.indicatorWrapper]" aria-hidden="true">
+							<span v-if="shape !== 'empty'" :class="[ui('indicator'), classes.indicator]">
+								<span v-if="stepState(index).isError" class="base-stepper__error-mark" aria-hidden="true">!</span>
+								<span v-else-if="stepState(index).isCompleted" :class="[ui('check'), classes.check]">
+									<BaseIcon name="check" :size-scale="calcIconScale('sm', sizeScale)" />
+								</span>
+								<span v-else-if="step.icon" class="base-stepper__icon">
+									<BaseIcon :name="step.icon" :size-scale="calcIconScale('sm', sizeScale)" />
+								</span>
+								<span v-else>{{ index + 1 }}</span>
 							</span>
-							<span v-else>{{ index + 1 }}</span>
-						</div>
-					</div>
-					<div class="base-stepper__content" :class="classes.content">
-						<BaseText
-							tag="span"
-							:size-scale="sizeScale"
-							:weight="UI_FONT_WEIGHT.MEDIUM"
-							class="base-stepper__label"
-							:custom-class="classes.label"
-							>{{ step.label }}</BaseText
-						>
-						<BaseText
-							v-if="step.description"
-							tag="p"
-							:size-scale="sizeScale"
-							class="base-stepper__description"
-							:custom-class="classes.description">
-							{{ step.description }}
-						</BaseText>
-					</div>
-				</slot>
-			</div>
-		</div>
+						</span>
+						<span :class="[ui('content'), classes.content]">
+							<span :class="[ui('label'), classes.label]"
+								>{{ step.label
+								}}<span v-if="statusText(index)" class="base-stepper__status">, {{ statusText(index) }}</span></span
+							>
+							<span v-if="step.isOptional" class="base-stepper__optional">{{ optionalLabel }}</span>
+							<span v-if="step.description" :class="[ui('description'), classes.description]">
+								{{ step.description }}
+							</span>
+						</span>
+					</slot>
+				</component>
+				<span
+					v-if="index > 0 && orientation === 'horizontal'"
+					:class="[ui('line-fill'), 'base-stepper__line-fill--start']"
+					aria-hidden="true" />
+				<span v-if="index < items.length - 1" :class="[ui('line-fill'), 'base-stepper__line-fill--end']" aria-hidden="true" />
+			</li>
+		</ol>
 
-		<div v-if="$slots.footer" class="base-stepper__footer" :class="classes.footer">
+		<div v-if="$slots.footer" :class="[ui('footer'), classes.footer]">
 			<slot name="footer" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseStepper.style.scss'
-import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../model/BaseStepper.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { useBaseStepper } from '../model/useBaseStepper'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseStepperEmits, BaseStepperProps, BaseStepperSlots } from '../types/BaseStepper.types'
 
-const props = withDefaults(defineProps<BaseStepperProps>(), {
-	orientation: 'horizontal',
-	shape: 'circle',
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseStepperProps>(),
+	kitDefaults('BaseStepper', {
+		variant: DEFAULT_VARIANT,
+		orientation: 'horizontal',
+		shape: 'circle',
+		summary: 'titled',
+		isLinear: false,
+		clickable: 'all',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseStepperEmits>()
 defineSlots<BaseStepperSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-stepper', props, [
-		'root',
-		'header',
-		'items',
-		'step',
-		'indicatorWrapper',
-		'indicator',
-		'check',
-		'content',
-		'label',
-		'description',
-		'footer',
-	])
-
-const progressStyle = computed(() => {
-	const count = props.items.length
-	if (count <= 1) return undefined
-	const scale = (props.modelValue - 1) / (count - 1)
-	const halfStep = 50 / count
-	return {
-		'--stepper-progress-scale': scale,
-		'--stepper-line-offset': `${halfStep}%`,
-	}
-})
-
-function handleStepClick(step: number): void {
-	if (props.items[step - 1].isDisabled) return
-	emit('update:modelValue', step)
-	emit('change', step)
-}
+const {
+	ui,
+	motionClass,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	itemsRef,
+	isItemsFocusable,
+	optionalLabel,
+	summary,
+	stepState,
+	isStepPassed,
+	statusText,
+	isStepClickable,
+	handleStepClick,
+} = useBaseStepper(props, emit)
 </script>

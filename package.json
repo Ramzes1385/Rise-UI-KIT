@@ -19,16 +19,25 @@
   "directories": {
     "test": "tests"
   },
+  "bin": {
+    "rise-ui-kit": "bin/rise-migrate.mjs"
+  },
   "files": [
+    "bin",
     "dist",
-    "types",
     "README.md"
   ],
   "publishConfig": {
     "access": "public"
   },
   "peerDependencies": {
+    "three": ">=0.180.0 <0.200.0",
     "vue": "^3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
   },
   "exports": {
     ".": {
@@ -51,67 +60,758 @@
       "types": "./dist/icons/index.d.ts",
       "import": "./dist/icons.js"
     },
-    "./plugins": {
-      "types": "./dist/plugins/index.d.ts",
-      "import": "./dist/plugins.js"
+    "./media": {
+      "types": "./dist/components/BaseMediaPlayer/index.d.ts",
+      "import": "./dist/media.js"
+    },
+    "./map3d": {
+      "types": "./dist/map3d.d.ts",
+      "import": "./dist/map3d.js"
+    },
+    "./roadmap3d": {
+      "types": "./dist/roadmap3d.d.ts",
+      "import": "./dist/roadmap3d.js"
+    },
+    "./flow3d": {
+      "types": "./dist/flow3d.d.ts",
+      "import": "./dist/flow3d.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
     },
     "./styles": {
-      "types": "./types/styles.d.ts",
+      "types": "./dist/styles.d.ts",
       "import": "./dist/styles.css",
       "default": "./dist/styles.css"
     },
     "./styles.css": {
-      "types": "./types/styles.d.ts",
+      "types": "./dist/styles.d.ts",
       "import": "./dist/styles.css",
       "default": "./dist/styles.css"
     },
+    "./styles.layer.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/styles.layer.css",
+      "default": "./dist/styles.layer.css"
+    },
+    "./media.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/media.css",
+      "default": "./dist/media.css"
+    },
+    "./media.layer.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/media.layer.css",
+      "default": "./dist/media.layer.css"
+    },
+    "./locales/zh": {
+      "types": "./dist/locales/zh/index.d.ts",
+      "import": "./dist/locales/zh.js"
+    },
+    "./locales/ja": {
+      "types": "./dist/locales/ja/index.d.ts",
+      "import": "./dist/locales/ja.js"
+    },
+    "./fonts/zh.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/fonts/cjk/zh.css",
+      "default": "./dist/fonts/cjk/zh.css"
+    },
+    "./fonts/ja.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/fonts/cjk/ja.css",
+      "default": "./dist/fonts/cjk/ja.css"
+    },
+    "./tokens.json": "./dist/tokens.json",
+    "./tokens/*.json": "./dist/tokens/*.json",
+    "./resolver": {
+      "types": "./dist/resolver.d.ts",
+      "import": "./dist/resolver.js"
+    },
+    "./nuxt": {
+      "types": "./dist/nuxt.d.ts",
+      "import": "./dist/nuxt.js"
+    },
+    "./global": {
+      "types": "./dist/global.d.ts"
+    },
+    "./tokens.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/tokens.css",
+      "default": "./dist/tokens.css"
+    },
+    "./tokens.layer.css": {
+      "types": "./dist/styles.d.ts",
+      "import": "./dist/tokens.layer.css",
+      "default": "./dist/tokens.layer.css"
+    },
+    "./BaseAccordion": {
+      "types": "./dist/components/BaseAccordion/index.d.ts",
+      "import": "./dist/components/BaseAccordion/index.js"
+    },
+    "./BaseAddressInput": {
+      "types": "./dist/components/BaseAddressInput/index.d.ts",
+      "import": "./dist/components/BaseAddressInput/index.js"
+    },
+    "./BaseAffix": {
+      "types": "./dist/components/BaseAffix/index.d.ts",
+      "import": "./dist/components/BaseAffix/index.js"
+    },
+    "./BaseAiMessage": {
+      "types": "./dist/components/BaseAiMessage/index.d.ts",
+      "import": "./dist/components/BaseAiMessage/index.js"
+    },
+    "./BaseAlert": {
+      "types": "./dist/components/BaseAlert/index.d.ts",
+      "import": "./dist/components/BaseAlert/index.js"
+    },
+    "./BaseAnchor": {
+      "types": "./dist/components/BaseAnchor/index.d.ts",
+      "import": "./dist/components/BaseAnchor/index.js"
+    },
+    "./BaseAnimation": {
+      "types": "./dist/components/BaseAnimation/index.d.ts",
+      "import": "./dist/components/BaseAnimation/index.js"
+    },
+    "./BaseApp": {
+      "types": "./dist/components/BaseApp/index.d.ts",
+      "import": "./dist/components/BaseApp/index.js"
+    },
+    "./BaseAudioPlayer": {
+      "types": "./dist/components/BaseAudioPlayer/index.d.ts",
+      "import": "./dist/components/BaseAudioPlayer/index.js"
+    },
+    "./BaseAutocomplete": {
+      "types": "./dist/components/BaseAutocomplete/index.d.ts",
+      "import": "./dist/components/BaseAutocomplete/index.js"
+    },
+    "./BaseAvatar": {
+      "types": "./dist/components/BaseAvatar/index.d.ts",
+      "import": "./dist/components/BaseAvatar/index.js"
+    },
+    "./BaseAvatarCropper": {
+      "types": "./dist/components/BaseAvatarCropper/index.d.ts",
+      "import": "./dist/components/BaseAvatarCropper/index.js"
+    },
+    "./BaseAvatarGroup": {
+      "types": "./dist/components/BaseAvatarGroup/index.d.ts",
+      "import": "./dist/components/BaseAvatarGroup/index.js"
+    },
+    "./BaseBackTop": {
+      "types": "./dist/components/BaseBackTop/index.d.ts",
+      "import": "./dist/components/BaseBackTop/index.js"
+    },
+    "./BaseBadge": {
+      "types": "./dist/components/BaseBadge/index.d.ts",
+      "import": "./dist/components/BaseBadge/index.js"
+    },
+    "./BaseBankCard": {
+      "types": "./dist/components/BaseBankCard/index.d.ts",
+      "import": "./dist/components/BaseBankCard/index.js"
+    },
+    "./BaseBanner": {
+      "types": "./dist/components/BaseBanner/index.d.ts",
+      "import": "./dist/components/BaseBanner/index.js"
+    },
+    "./BaseBottomNav": {
+      "types": "./dist/components/BaseBottomNav/index.d.ts",
+      "import": "./dist/components/BaseBottomNav/index.js"
+    },
+    "./BaseBreadcrumbs": {
+      "types": "./dist/components/BaseBreadcrumbs/index.d.ts",
+      "import": "./dist/components/BaseBreadcrumbs/index.js"
+    },
+    "./BaseButton": {
+      "types": "./dist/components/BaseButton/index.d.ts",
+      "import": "./dist/components/BaseButton/index.js"
+    },
+    "./BaseButtonGroup": {
+      "types": "./dist/components/BaseButtonGroup/index.d.ts",
+      "import": "./dist/components/BaseButtonGroup/index.js"
+    },
+    "./BaseCalendar": {
+      "types": "./dist/components/BaseCalendar/index.d.ts",
+      "import": "./dist/components/BaseCalendar/index.js"
+    },
+    "./BaseCard": {
+      "types": "./dist/components/BaseCard/index.d.ts",
+      "import": "./dist/components/BaseCard/index.js"
+    },
+    "./BaseCardInput": {
+      "types": "./dist/components/BaseCardInput/index.d.ts",
+      "import": "./dist/components/BaseCardInput/index.js"
+    },
+    "./BaseCascader": {
+      "types": "./dist/components/BaseCascader/index.d.ts",
+      "import": "./dist/components/BaseCascader/index.js"
+    },
+    "./BaseChart": {
+      "types": "./dist/components/BaseChart/index.d.ts",
+      "import": "./dist/components/BaseChart/index.js"
+    },
+    "./BaseChat": {
+      "types": "./dist/components/BaseChat/index.d.ts",
+      "import": "./dist/components/BaseChat/index.js"
+    },
+    "./BaseCheckbox": {
+      "types": "./dist/components/BaseCheckbox/index.d.ts",
+      "import": "./dist/components/BaseCheckbox/index.js"
+    },
+    "./BaseCheckboxGroup": {
+      "types": "./dist/components/BaseCheckboxGroup/index.d.ts",
+      "import": "./dist/components/BaseCheckboxGroup/index.js"
+    },
+    "./BaseChecklist": {
+      "types": "./dist/components/BaseChecklist/index.d.ts",
+      "import": "./dist/components/BaseChecklist/index.js"
+    },
+    "./BaseChip": {
+      "types": "./dist/components/BaseChip/index.d.ts",
+      "import": "./dist/components/BaseChip/index.js"
+    },
+    "./BaseCode": {
+      "types": "./dist/components/BaseCode/index.d.ts",
+      "import": "./dist/components/BaseCode/index.js"
+    },
+    "./BaseColorModeButton": {
+      "types": "./dist/components/BaseColorModeButton/index.d.ts",
+      "import": "./dist/components/BaseColorModeButton/index.js"
+    },
+    "./BaseColorPicker": {
+      "types": "./dist/components/BaseColorPicker/index.d.ts",
+      "import": "./dist/components/BaseColorPicker/index.js"
+    },
+    "./BaseCommandPalette": {
+      "types": "./dist/components/BaseCommandPalette/index.d.ts",
+      "import": "./dist/components/BaseCommandPalette/index.js"
+    },
+    "./BaseCommentThread": {
+      "types": "./dist/components/BaseCommentThread/index.d.ts",
+      "import": "./dist/components/BaseCommentThread/index.js"
+    },
+    "./BaseConfirm": {
+      "types": "./dist/components/BaseConfirm/index.d.ts",
+      "import": "./dist/components/BaseConfirm/index.js"
+    },
+    "./BaseContainer": {
+      "types": "./dist/components/BaseContainer/index.d.ts",
+      "import": "./dist/components/BaseContainer/index.js"
+    },
+    "./BaseContextMenu": {
+      "types": "./dist/components/BaseContextMenu/index.d.ts",
+      "import": "./dist/components/BaseContextMenu/index.js"
+    },
+    "./BaseCookieConsent": {
+      "types": "./dist/components/BaseCookieConsent/index.d.ts",
+      "import": "./dist/components/BaseCookieConsent/index.js"
+    },
+    "./BaseCountdown": {
+      "types": "./dist/components/BaseCountdown/index.d.ts",
+      "import": "./dist/components/BaseCountdown/index.js"
+    },
+    "./BaseCryptoProSign": {
+      "types": "./dist/components/BaseCryptoProSign/index.d.ts",
+      "import": "./dist/components/BaseCryptoProSign/index.js"
+    },
+    "./BaseDadataInput": {
+      "types": "./dist/components/BaseDadataInput/index.d.ts",
+      "import": "./dist/components/BaseDadataInput/index.js"
+    },
+    "./BaseDashboardGrid": {
+      "types": "./dist/components/BaseDashboardGrid/index.d.ts",
+      "import": "./dist/components/BaseDashboardGrid/index.js"
+    },
+    "./BaseDatePicker": {
+      "types": "./dist/components/BaseDatePicker/index.d.ts",
+      "import": "./dist/components/BaseDatePicker/index.js"
+    },
+    "./BaseDescriptions": {
+      "types": "./dist/components/BaseDescriptions/index.d.ts",
+      "import": "./dist/components/BaseDescriptions/index.js"
+    },
+    "./BaseDrawer": {
+      "types": "./dist/components/BaseDrawer/index.d.ts",
+      "import": "./dist/components/BaseDrawer/index.js"
+    },
+    "./BaseDropdown": {
+      "types": "./dist/components/BaseDropdown/index.d.ts",
+      "import": "./dist/components/BaseDropdown/index.js"
+    },
+    "./BaseDropdownMenu": {
+      "types": "./dist/components/BaseDropdownMenu/index.d.ts",
+      "import": "./dist/components/BaseDropdownMenu/index.js"
+    },
+    "./BaseEditor": {
+      "types": "./dist/components/BaseEditor/index.d.ts",
+      "import": "./dist/components/BaseEditor/index.js"
+    },
+    "./BaseEmojiPicker": {
+      "types": "./dist/components/BaseEmojiPicker/index.d.ts",
+      "import": "./dist/components/BaseEmojiPicker/index.js"
+    },
+    "./BaseEmpty": {
+      "types": "./dist/components/BaseEmpty/index.d.ts",
+      "import": "./dist/components/BaseEmpty/index.js"
+    },
+    "./BaseEventCalendar": {
+      "types": "./dist/components/BaseEventCalendar/index.d.ts",
+      "import": "./dist/components/BaseEventCalendar/index.js"
+    },
+    "./BaseFab": {
+      "types": "./dist/components/BaseFab/index.d.ts",
+      "import": "./dist/components/BaseFab/index.js"
+    },
+    "./BaseFileManager": {
+      "types": "./dist/components/BaseFileManager/index.d.ts",
+      "import": "./dist/components/BaseFileManager/index.js"
+    },
+    "./BaseFileUpload": {
+      "types": "./dist/components/BaseFileUpload/index.d.ts",
+      "import": "./dist/components/BaseFileUpload/index.js"
+    },
+    "./BaseFilterBuilder": {
+      "types": "./dist/components/BaseFilterBuilder/index.d.ts",
+      "import": "./dist/components/BaseFilterBuilder/index.js"
+    },
+    "./BaseFlowMap": {
+      "types": "./dist/components/BaseFlowMap/index.d.ts",
+      "import": "./dist/components/BaseFlowMap/index.js"
+    },
+    "./BaseFooter": {
+      "types": "./dist/components/BaseFooter/index.d.ts",
+      "import": "./dist/components/BaseFooter/index.js"
+    },
+    "./BaseForm": {
+      "types": "./dist/components/BaseForm/index.d.ts",
+      "import": "./dist/components/BaseForm/index.js"
+    },
+    "./BaseFormField": {
+      "types": "./dist/components/BaseFormField/index.d.ts",
+      "import": "./dist/components/BaseFormField/index.js"
+    },
+    "./BaseFormWizard": {
+      "types": "./dist/components/BaseFormWizard/index.d.ts",
+      "import": "./dist/components/BaseFormWizard/index.js"
+    },
+    "./BaseGantt": {
+      "types": "./dist/components/BaseGantt/index.d.ts",
+      "import": "./dist/components/BaseGantt/index.js"
+    },
+    "./BaseGrid": {
+      "types": "./dist/components/BaseGrid/index.d.ts",
+      "import": "./dist/components/BaseGrid/index.js"
+    },
+    "./BaseHeader": {
+      "types": "./dist/components/BaseHeader/index.d.ts",
+      "import": "./dist/components/BaseHeader/index.js"
+    },
+    "./BaseHeatmap": {
+      "types": "./dist/components/BaseHeatmap/index.d.ts",
+      "import": "./dist/components/BaseHeatmap/index.js"
+    },
+    "./BaseHoverCard": {
+      "types": "./dist/components/BaseHoverCard/index.d.ts",
+      "import": "./dist/components/BaseHoverCard/index.js"
+    },
+    "./BaseIcon": {
+      "types": "./dist/components/BaseIcon/index.d.ts",
+      "import": "./dist/components/BaseIcon/index.js"
+    },
+    "./BaseImage": {
+      "types": "./dist/components/BaseImage/index.d.ts",
+      "import": "./dist/components/BaseImage/index.js"
+    },
+    "./BaseImageCompare": {
+      "types": "./dist/components/BaseImageCompare/index.d.ts",
+      "import": "./dist/components/BaseImageCompare/index.js"
+    },
+    "./BaseImageMap": {
+      "types": "./dist/components/BaseImageMap/index.d.ts",
+      "import": "./dist/components/BaseImageMap/index.js"
+    },
+    "./BaseImageMapEditor": {
+      "types": "./dist/components/BaseImageMapEditor/index.d.ts",
+      "import": "./dist/components/BaseImageMapEditor/index.js"
+    },
+    "./BaseInfiniteScroll": {
+      "types": "./dist/components/BaseInfiniteScroll/index.d.ts",
+      "import": "./dist/components/BaseInfiniteScroll/index.js"
+    },
+    "./BaseInplace": {
+      "types": "./dist/components/BaseInplace/index.d.ts",
+      "import": "./dist/components/BaseInplace/index.js"
+    },
+    "./BaseInput": {
+      "types": "./dist/components/BaseInput/index.d.ts",
+      "import": "./dist/components/BaseInput/index.js"
+    },
+    "./BaseInputNumber": {
+      "types": "./dist/components/BaseInputNumber/index.d.ts",
+      "import": "./dist/components/BaseInputNumber/index.js"
+    },
+    "./BaseInputTags": {
+      "types": "./dist/components/BaseInputTags/index.d.ts",
+      "import": "./dist/components/BaseInputTags/index.js"
+    },
+    "./BaseJsonViewer": {
+      "types": "./dist/components/BaseJsonViewer/index.d.ts",
+      "import": "./dist/components/BaseJsonViewer/index.js"
+    },
+    "./BaseKanban": {
+      "types": "./dist/components/BaseKanban/index.d.ts",
+      "import": "./dist/components/BaseKanban/index.js"
+    },
+    "./BaseKbd": {
+      "types": "./dist/components/BaseKbd/index.d.ts",
+      "import": "./dist/components/BaseKbd/index.js"
+    },
+    "./BaseLayout": {
+      "types": "./dist/components/BaseLayout/index.d.ts",
+      "import": "./dist/components/BaseLayout/index.js"
+    },
+    "./BaseLink": {
+      "types": "./dist/components/BaseLink/index.d.ts",
+      "import": "./dist/components/BaseLink/index.js"
+    },
+    "./BaseList": {
+      "types": "./dist/components/BaseList/index.d.ts",
+      "import": "./dist/components/BaseList/index.js"
+    },
+    "./BaseLoader": {
+      "types": "./dist/components/BaseLoader/index.d.ts",
+      "import": "./dist/components/BaseLoader/index.js"
+    },
+    "./BaseMap": {
+      "types": "./dist/components/BaseMap/index.d.ts",
+      "import": "./dist/components/BaseMap/index.js"
+    },
+    "./BaseMarkdown": {
+      "types": "./dist/components/BaseMarkdown/index.d.ts",
+      "import": "./dist/components/BaseMarkdown/index.js"
+    },
+    "./BaseMarquee": {
+      "types": "./dist/components/BaseMarquee/index.d.ts",
+      "import": "./dist/components/BaseMarquee/index.js"
+    },
+    "./BaseMegaMenu": {
+      "types": "./dist/components/BaseMegaMenu/index.d.ts",
+      "import": "./dist/components/BaseMegaMenu/index.js"
+    },
+    "./BaseMention": {
+      "types": "./dist/components/BaseMention/index.d.ts",
+      "import": "./dist/components/BaseMention/index.js"
+    },
+    "./BaseMenu": {
+      "types": "./dist/components/BaseMenu/index.d.ts",
+      "import": "./dist/components/BaseMenu/index.js"
+    },
+    "./BaseModal": {
+      "types": "./dist/components/BaseModal/index.d.ts",
+      "import": "./dist/components/BaseModal/index.js"
+    },
+    "./BaseMoneyInput": {
+      "types": "./dist/components/BaseMoneyInput/index.d.ts",
+      "import": "./dist/components/BaseMoneyInput/index.js"
+    },
+    "./BaseNotification": {
+      "types": "./dist/components/BaseNotification/index.d.ts",
+      "import": "./dist/components/BaseNotification/index.js"
+    },
+    "./BaseNotificationCenter": {
+      "types": "./dist/components/BaseNotificationCenter/index.d.ts",
+      "import": "./dist/components/BaseNotificationCenter/index.js"
+    },
+    "./BasePagination": {
+      "types": "./dist/components/BasePagination/index.d.ts",
+      "import": "./dist/components/BasePagination/index.js"
+    },
+    "./BasePhoneInput": {
+      "types": "./dist/components/BasePhoneInput/index.d.ts",
+      "import": "./dist/components/BasePhoneInput/index.js"
+    },
+    "./BasePieChart": {
+      "types": "./dist/components/BasePieChart/index.d.ts",
+      "import": "./dist/components/BasePieChart/index.js"
+    },
+    "./BasePin": {
+      "types": "./dist/components/BasePin/index.d.ts",
+      "import": "./dist/components/BasePin/index.js"
+    },
+    "./BasePopconfirm": {
+      "types": "./dist/components/BasePopconfirm/index.d.ts",
+      "import": "./dist/components/BasePopconfirm/index.js"
+    },
+    "./BasePopover": {
+      "types": "./dist/components/BasePopover/index.d.ts",
+      "import": "./dist/components/BasePopover/index.js"
+    },
+    "./BaseProgress": {
+      "types": "./dist/components/BaseProgress/index.d.ts",
+      "import": "./dist/components/BaseProgress/index.js"
+    },
+    "./BasePromptInput": {
+      "types": "./dist/components/BasePromptInput/index.d.ts",
+      "import": "./dist/components/BasePromptInput/index.js"
+    },
+    "./BaseQrCode": {
+      "types": "./dist/components/BaseQrCode/index.d.ts",
+      "import": "./dist/components/BaseQrCode/index.js"
+    },
+    "./BaseRadio": {
+      "types": "./dist/components/BaseRadio/index.d.ts",
+      "import": "./dist/components/BaseRadio/index.js"
+    },
+    "./BaseRange": {
+      "types": "./dist/components/BaseRange/index.d.ts",
+      "import": "./dist/components/BaseRange/index.js"
+    },
+    "./BaseRating": {
+      "types": "./dist/components/BaseRating/index.d.ts",
+      "import": "./dist/components/BaseRating/index.js"
+    },
+    "./BaseReasoning": {
+      "types": "./dist/components/BaseReasoning/index.d.ts",
+      "import": "./dist/components/BaseReasoning/index.js"
+    },
+    "./BaseRequisiteInput": {
+      "types": "./dist/components/BaseRequisiteInput/index.d.ts",
+      "import": "./dist/components/BaseRequisiteInput/index.js"
+    },
+    "./BaseResult": {
+      "types": "./dist/components/BaseResult/index.d.ts",
+      "import": "./dist/components/BaseResult/index.js"
+    },
+    "./BaseRoadmap": {
+      "types": "./dist/components/BaseRoadmap/index.d.ts",
+      "import": "./dist/components/BaseRoadmap/index.js"
+    },
+    "./BaseScrollArea": {
+      "types": "./dist/components/BaseScrollArea/index.d.ts",
+      "import": "./dist/components/BaseScrollArea/index.js"
+    },
+    "./BaseSearch": {
+      "types": "./dist/components/BaseSearch/index.d.ts",
+      "import": "./dist/components/BaseSearch/index.js"
+    },
+    "./BaseSegmented": {
+      "types": "./dist/components/BaseSegmented/index.d.ts",
+      "import": "./dist/components/BaseSegmented/index.js"
+    },
+    "./BaseSelect": {
+      "types": "./dist/components/BaseSelect/index.d.ts",
+      "import": "./dist/components/BaseSelect/index.js"
+    },
+    "./BaseSeparator": {
+      "types": "./dist/components/BaseSeparator/index.d.ts",
+      "import": "./dist/components/BaseSeparator/index.js"
+    },
+    "./BaseSideBar": {
+      "types": "./dist/components/BaseSideBar/index.d.ts",
+      "import": "./dist/components/BaseSideBar/index.js"
+    },
+    "./BaseSignaturePad": {
+      "types": "./dist/components/BaseSignaturePad/index.d.ts",
+      "import": "./dist/components/BaseSignaturePad/index.js"
+    },
+    "./BaseSkeleton": {
+      "types": "./dist/components/BaseSkeleton/index.d.ts",
+      "import": "./dist/components/BaseSkeleton/index.js"
+    },
+    "./BaseSlideover": {
+      "types": "./dist/components/BaseSlideover/index.d.ts",
+      "import": "./dist/components/BaseSlideover/index.js"
+    },
+    "./BaseSlider": {
+      "types": "./dist/components/BaseSlider/index.d.ts",
+      "import": "./dist/components/BaseSlider/index.js"
+    },
+    "./BaseSparkline": {
+      "types": "./dist/components/BaseSparkline/index.d.ts",
+      "import": "./dist/components/BaseSparkline/index.js"
+    },
+    "./BaseSplitButton": {
+      "types": "./dist/components/BaseSplitButton/index.d.ts",
+      "import": "./dist/components/BaseSplitButton/index.js"
+    },
+    "./BaseSplitter": {
+      "types": "./dist/components/BaseSplitter/index.d.ts",
+      "import": "./dist/components/BaseSplitter/index.js"
+    },
+    "./BaseStack": {
+      "types": "./dist/components/BaseStack/index.d.ts",
+      "import": "./dist/components/BaseStack/index.js"
+    },
+    "./BaseStat": {
+      "types": "./dist/components/BaseStat/index.d.ts",
+      "import": "./dist/components/BaseStat/index.js"
+    },
+    "./BaseStepper": {
+      "types": "./dist/components/BaseStepper/index.d.ts",
+      "import": "./dist/components/BaseStepper/index.js"
+    },
+    "./BaseSubtitleEditor": {
+      "types": "./dist/components/BaseSubtitleEditor/index.d.ts",
+      "import": "./dist/components/BaseSubtitleEditor/index.js"
+    },
+    "./BaseSwitch": {
+      "types": "./dist/components/BaseSwitch/index.d.ts",
+      "import": "./dist/components/BaseSwitch/index.js"
+    },
+    "./BaseTable": {
+      "types": "./dist/components/BaseTable/index.d.ts",
+      "import": "./dist/components/BaseTable/index.js"
+    },
+    "./BaseTabs": {
+      "types": "./dist/components/BaseTabs/index.d.ts",
+      "import": "./dist/components/BaseTabs/index.js"
+    },
+    "./BaseTag": {
+      "types": "./dist/components/BaseTag/index.d.ts",
+      "import": "./dist/components/BaseTag/index.js"
+    },
+    "./BaseTagGroup": {
+      "types": "./dist/components/BaseTagGroup/index.d.ts",
+      "import": "./dist/components/BaseTagGroup/index.js"
+    },
+    "./BaseText": {
+      "types": "./dist/components/BaseText/index.d.ts",
+      "import": "./dist/components/BaseText/index.js"
+    },
+    "./BaseTextDiff": {
+      "types": "./dist/components/BaseTextDiff/index.d.ts",
+      "import": "./dist/components/BaseTextDiff/index.js"
+    },
+    "./BaseTextarea": {
+      "types": "./dist/components/BaseTextarea/index.d.ts",
+      "import": "./dist/components/BaseTextarea/index.js"
+    },
+    "./BaseTimePicker": {
+      "types": "./dist/components/BaseTimePicker/index.d.ts",
+      "import": "./dist/components/BaseTimePicker/index.js"
+    },
+    "./BaseTimeline": {
+      "types": "./dist/components/BaseTimeline/index.d.ts",
+      "import": "./dist/components/BaseTimeline/index.js"
+    },
+    "./BaseToolCall": {
+      "types": "./dist/components/BaseToolCall/index.d.ts",
+      "import": "./dist/components/BaseToolCall/index.js"
+    },
+    "./BaseToolbar": {
+      "types": "./dist/components/BaseToolbar/index.d.ts",
+      "import": "./dist/components/BaseToolbar/index.js"
+    },
+    "./BaseTooltip": {
+      "types": "./dist/components/BaseTooltip/index.d.ts",
+      "import": "./dist/components/BaseTooltip/index.js"
+    },
+    "./BaseTour": {
+      "types": "./dist/components/BaseTour/index.d.ts",
+      "import": "./dist/components/BaseTour/index.js"
+    },
+    "./BaseTransfer": {
+      "types": "./dist/components/BaseTransfer/index.d.ts",
+      "import": "./dist/components/BaseTransfer/index.js"
+    },
+    "./BaseTree": {
+      "types": "./dist/components/BaseTree/index.d.ts",
+      "import": "./dist/components/BaseTree/index.js"
+    },
+    "./BaseTreeSelect": {
+      "types": "./dist/components/BaseTreeSelect/index.d.ts",
+      "import": "./dist/components/BaseTreeSelect/index.js"
+    },
+    "./BaseUser": {
+      "types": "./dist/components/BaseUser/index.d.ts",
+      "import": "./dist/components/BaseUser/index.js"
+    },
+    "./BaseVirtualList": {
+      "types": "./dist/components/BaseVirtualList/index.d.ts",
+      "import": "./dist/components/BaseVirtualList/index.js"
+    },
+    "./BaseVoiceRecorder": {
+      "types": "./dist/components/BaseVoiceRecorder/index.d.ts",
+      "import": "./dist/components/BaseVoiceRecorder/index.js"
+    },
+    "./BaseWatermark": {
+      "types": "./dist/components/BaseWatermark/index.d.ts",
+      "import": "./dist/components/BaseWatermark/index.js"
+    },
+    "./BaseWaveform": {
+      "types": "./dist/components/BaseWaveform/index.d.ts",
+      "import": "./dist/components/BaseWaveform/index.js"
+    },
+    "./icons.svg": "./dist/icons.svg",
     "./package.json": "./package.json"
   },
   "scripts": {
     "prepare": "husky build/husky",
-    "dev": "vite",
-    "preview": "vite preview",
     "lint": "eslint \"src/**/*.{ts,vue}\"",
     "lint:fix": "eslint \"src/**/*.{ts,vue}\" --fix",
+    "lint:styles": "stylelint \"src/**/*.scss\" && node scripts/check-component-tokens.mjs",
+    "lint:unused": "knip --no-config-hints",
+    "lint:new": "node scripts/lint-new-files.mjs",
+    "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
+    "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .git/info/exclude",
     "storybook": "node scripts/storybook-dev.mjs",
     "build-storybook": "storybook build --config-dir build/storybook",
+    "typecheck": "vue-tsc -b",
+    "test:codemod": "vitest run --config build/tests/vitest.config.ts --project unit-integration --maxWorkers=1 build/tests/codemod --coverage --coverage.reportsDirectory=coverage/codemod --coverage.include=bin/migrate/*.mjs --coverage.thresholds.100",
+    "test:codemod-app": "node scripts/check-codemod-app.mjs",
     "test:unit": "vitest run --config build/tests/vitest.config.ts --project unit-integration",
     "test:a11y:coverage": "node scripts/check-a11y-coverage.mjs",
+    "test:stories": "node scripts/check-stories.mjs",
+    "test:rtl": "node scripts/check-rtl.mjs",
     "test:stories-coverage": "node scripts/check-stories-coverage.mjs",
+    "test:contrast": "node scripts/check-contrast.mjs --theme=all",
+    "test:l10n": "node scripts/check-l10n.mjs",
+    "test:story-source": "node scripts/check-story-source.mjs",
+    "test:slot-docs": "node scripts/check-slot-docs.mjs",
+    "test:ratchets": "node scripts/check-ratchets.mjs",
+    "test:fuzz": "node scripts/run-fuzz.mjs",
+    "test:css-split": "node scripts/check-css-split.mjs",
+    "test:subpaths": "node scripts/generate-subpath-exports.mjs --check && node scripts/check-subpaths-app.mjs",
+    "test:autoimport": "node scripts/check-autoimport-app.mjs",
+    "generate:subpath-exports": "node scripts/generate-subpath-exports.mjs",
+    "report:sizes": "node scripts/report-sizes.mjs",
+    "test:sizes": "node scripts/report-sizes.mjs --check",
+    "test:folders": "node scripts/check-folder-size.mjs",
+    "test:custom-color": "node scripts/check-custom-color-scope.mjs",
+    "create:component": "node scripts/create-component.mjs",
+    "generate:emoji-data": "node scripts/generate-emoji-data.mjs",
     "pretest:components:coverage": "node scripts/invalidate-merged-coverage.mjs",
-    "test:components:coverage": "cross-env COVERAGE_MODE=components CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.include=src/components/**/*.vue --coverage.include=src/components/BaseTour/useTourLogic.ts --coverage.exclude=src/components/BaseChat/** --coverage.exclude=src/components/BaseTable/** --coverage.exclude=src/components/BaseEditor/** --coverage.exclude=src/components/BaseCalendar/** --coverage.exclude=src/components/BaseDatePicker/** --coverage.exclude=src/components/BaseFileUpload/** --coverage.exclude=src/components/BaseImage/** --coverage.exclude=src/components/BaseSelect/** --coverage.exclude=src/components/BaseSlider/** --coverage.exclude=src/components/BaseRange/** --coverage.exclude=src/components/BaseTabs/** --coverage.exclude=src/components/BaseTooltip/** --coverage.exclude=src/components/BaseTree/** --coverage.exclude=src/components/BaseSlideover/** --coverage.exclude=src/components/BaseButton/** --coverage.exclude=src/components/BaseCheckbox/** --coverage.exclude=src/components/BaseColorPicker/** --coverage.exclude=src/components/BaseFormField/** --coverage.exclude=src/components/BasePin/** --coverage.exclude=src/components/BaseRadio/** --coverage.exclude=src/components/BaseSearch/** --coverage.exclude=src/components/BaseSwitch/** --coverage.exclude=src/components/BaseTextarea/** --coverage.thresholds.lines=100 --coverage.thresholds.functions=100 --coverage.thresholds.statements=100 --coverage.thresholds.branches=0 --coverage.thresholds.perFile",
+    "test:components:coverage": "cross-env COVERAGE_MODE=components CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.include=src/components/**/*.vue --coverage.include=src/components/**/model/use*.ts --coverage.include=src/components/BaseConfirm/useConfirm.ts --coverage.exclude=src/components/BaseChat/** --coverage.exclude=src/components/BaseTable/** --coverage.exclude=src/components/BaseEditor/** --coverage.exclude=src/components/BaseCalendar/** --coverage.exclude=src/components/BaseDatePicker/** --coverage.exclude=src/components/BaseFileUpload/** --coverage.exclude=src/components/BaseImage/** --coverage.exclude=src/components/BaseSelect/** --coverage.exclude=src/components/BaseSlider/** --coverage.exclude=src/components/BaseRange/** --coverage.exclude=src/components/BaseTabs/** --coverage.exclude=src/components/BaseTooltip/** --coverage.exclude=src/components/BaseTree/** --coverage.exclude=src/components/BaseSlideover/** --coverage.exclude=src/components/BaseButton/** --coverage.exclude=src/components/BaseCheckbox/** --coverage.exclude=src/components/BaseColorPicker/** --coverage.exclude=src/components/BaseFormField/** --coverage.exclude=src/components/BasePin/** --coverage.exclude=src/components/BaseRadio/** --coverage.exclude=src/components/BaseSearch/** --coverage.exclude=src/components/BaseSwitch/** --coverage.exclude=src/components/BaseTextarea/** --coverage.thresholds.lines=100 --coverage.thresholds.functions=100 --coverage.thresholds.statements=100 --coverage.thresholds.branches=0 --coverage.thresholds.perFile",
     "pretest:composables:coverage": "node scripts/invalidate-merged-coverage.mjs",
-    "test:composables:coverage": "cross-env COVERAGE_MODE=composables CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.exclude=src/composables/useColumnResize/useColumnResize.ts --coverage.exclude=src/composables/useFileUploadState/useFileUploadState.ts --coverage.exclude=src/composables/useDatePickerState/useDatePickerState.ts --coverage.exclude=src/composables/useRangeDrag/useRangeDrag.ts --coverage.exclude=src/composables/useRangeValues/useRangeValues.ts --coverage.exclude=src/composables/useTableComposition/useTableComposition.ts --coverage.exclude=src/composables/useTableExpand/useTableExpand.ts --coverage.exclude=src/composables/useTableToolbar/useTableToolbar.ts --coverage.exclude=src/composables/useTableColumns/useTableColumns.ts --coverage.exclude=src/composables/useTourCoordination/useTourCoordination.ts --coverage.exclude=src/composables/useSideBarNavigation/useSideBarNavigation.ts --coverage.exclude=src/composables/useTreeState/useTreeState.ts --coverage.exclude=src/composables/useSelect/useSelect.ts --coverage.exclude=src/composables/useCalendarInteraction/useCalendarInteraction.ts --coverage.exclude=src/composables/useCalendarPopover/useCalendarPopover.ts --coverage.exclude=src/composables/useCalendarResolvedProps/useCalendarResolvedProps.ts --coverage.exclude=src/composables/useChatActions/useChatActions.ts --coverage.exclude=src/composables/useChatInputState/useChatInputState.ts --coverage.exclude=src/composables/useChatMessageActions/useChatMessageActions.ts --coverage.exclude=src/composables/useClickOutside/useClickOutside.ts --coverage.exclude=src/composables/useExplicitPropDetection/useExplicitPropDetection.ts --coverage.exclude=src/composables/useFormField/useFormField.ts --coverage.exclude=src/composables/useImageGallery/useImageGallery.ts --coverage.exclude=src/composables/useImageState/useImageState.ts --coverage.exclude=src/composables/useImageZoom/useImageZoom.ts --coverage.exclude=src/composables/useImageZoom/useZoomMinimap.ts --coverage.exclude=src/composables/useInputMask/useMaskedInputHandlers.ts --coverage.reportsDirectory=coverage/composables --coverage.thresholds.100 --coverage.thresholds.perFile",
+    "test:composables:coverage": "cross-env COVERAGE_MODE=composables CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.reportsDirectory=coverage/composables --coverage.thresholds.100 --coverage.thresholds.perFile",
     "pretest:utils:coverage": "node scripts/invalidate-merged-coverage.mjs",
-    "test:utils:coverage": "cross-env COVERAGE_MODE=utils CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.exclude=src/utils/storybookUtils/** --coverage.exclude=src/utils/navigationUtils/** --coverage.reportsDirectory=coverage/utils --coverage.thresholds.100 --coverage.thresholds.perFile",
+    "test:utils:coverage": "cross-env COVERAGE_MODE=utils CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.reportsDirectory=coverage/utils --coverage.thresholds.100 --coverage.thresholds.perFile",
     "pretest:components-heavy:coverage": "node scripts/invalidate-merged-coverage.mjs",
-    "test:components-heavy:coverage": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.include=src/components/BaseChat/**/*.vue --coverage.include=src/components/BaseTable/**/*.vue --coverage.include=src/components/BaseEditor/**/*.vue --coverage.include=src/components/BaseCalendar/**/*.vue --coverage.include=src/components/BaseDatePicker/**/*.vue --coverage.include=src/components/BaseFileUpload/**/*.vue --coverage.include=src/components/BaseImage/**/*.vue --coverage.include=src/components/BaseSelect/**/*.vue --coverage.include=src/components/BaseSlider/**/*.vue --coverage.include=src/components/BaseRange/**/*.vue --coverage.include=src/components/BaseTabs/**/*.vue --coverage.include=src/components/BaseTooltip/**/*.vue --coverage.include=src/components/BaseTree/**/*.vue --coverage.include=src/components/BaseSlideover/**/*.vue --coverage.reportsDirectory=coverage/components-heavy --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.branches=0 --coverage.thresholds.statements=0",
+    "test:components-heavy:coverage": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage --coverage.include=src/components/BaseChat/**/*.vue --coverage.include=src/components/BaseTable/**/*.vue --coverage.include=src/components/BaseEditor/**/*.vue --coverage.include=src/components/BaseCalendar/**/*.vue --coverage.include=src/components/BaseDatePicker/**/*.vue --coverage.include=src/components/BaseFileUpload/**/*.vue --coverage.include=src/components/BaseImage/**/*.vue --coverage.include=src/components/BaseSelect/**/*.vue --coverage.include=src/components/BaseSlider/**/*.vue --coverage.include=src/components/BaseRange/**/*.vue --coverage.include=src/components/BaseTabs/**/*.vue --coverage.include=src/components/BaseTooltip/**/*.vue --coverage.include=src/components/BaseTree/**/*.vue --coverage.include=src/components/BaseSlideover/**/*.vue --coverage.include=src/components/**/model/**/*.ts --coverage.reportsDirectory=coverage/components-heavy --coverage.thresholds.lines=0 --coverage.thresholds.functions=0 --coverage.thresholds.branches=0 --coverage.thresholds.statements=0",
     "test:coverage:merged": "npm run test:components:coverage && npm run test:components-heavy:coverage && npm run test:composables:coverage && npm run test:utils:coverage && node scripts/merge-coverage.mjs",
     "test:vitest": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest run --config build/tests/vitest.config.ts --project unit-integration --coverage",
     "test:e2e": "playwright test --config build/tests/playwright.config.ts --project=e2e-chromium",
+    "test:e2e:dev": "cross-env STORYBOOK_SERVER=dev playwright test --config build/tests/playwright.config.ts --project=e2e-chromium",
     "test:visual": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium",
+    "test:visual:dev": "cross-env STORYBOOK_SERVER=dev playwright test --config build/tests/playwright.config.ts --project=visual-chromium",
     "test:visual:update": "playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots",
-    "test:all": "npm run test:components:coverage && npm run test:e2e && npm run test:visual",
+    "test:all": "npm run test:components:coverage && npm run test:composables:coverage && npm run test:utils:coverage && npm run test:e2e && npm run test:visual && npm run test:folders",
     "build": "npm run build:lib",
-    "build:app": "vue-tsc -b tsconfig.app.json && vite build",
-    "build:lib": "npm run build:lib:js && npm run build:lib:types && npm run build:lib:resolve-aliases && npm run clean:lib-dist",
-    "build:lib:js": "vite build --config build/lib/vite.lib.config.ts",
+    "build:lib": "npm run build:lib:js && npm run build:lib:types && npm run build:lib:resolve-aliases",
+    "build:lib:js": "vite build --config build/lib/vite.lib.config.ts && npm run build:lib:styles-css && npm run build:lib:media-css && npm run build:lib:subpath-css && npm run build:lib:tokens",
+    "build:lib:styles-css": "vite build --config build/lib/vite.styles-css.config.ts",
+    "build:lib:media-css": "vite build --config build/lib/vite.media-css.config.ts",
+    "build:lib:subpath-css": "vite build --config build/lib/vite.subpath-css.config.ts",
+    "build:lib:tokens": "node scripts/build-tokens.mjs",
     "build:lib:types": "vue-tsc -p build/lib/tsconfig.lib.json --declaration --emitDeclarationOnly",
     "build:lib:resolve-aliases": "node build/lib/resolve-aliases.mjs",
-    "clean:lib-dist": "node build/lib/clean-lib-dist.mjs",
     "pack:dry": "npm run build:lib && npm pack --dry-run",
     "release": "semantic-release --extends ./build/release/semantic-release.config.cjs",
     "release:dry": "semantic-release --dry-run --extends ./build/release/semantic-release.local.config.cjs",
-    "ci:validate": "npm run lint && npm run test:unit && npm run pack:dry",
+    "ci:validate": "npm run lint && npm run lint:styles && npm run lint:unused && npm run format:check && npm run typecheck && npm run test:unit && npm run pack:dry && npm run test:css-split && npm run test:subpaths -- --no-screenshot && npm run test:sizes && npm run test:ratchets && npm run test:folders && npm run test:custom-color",
     "ci:release": "npm run release"
   },
-  "dependencies": {
-    "@fontsource-variable/inter": "^5.2.8",
-    "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "vue": "^3.5.0"
-  },
   "devDependencies": {
-    "@chromatic-com/storybook": "^5.2.1",
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^10.0.1",
@@ -124,49 +824,47 @@
     "@semantic-release/release-notes-generator": "^14.1.1",
     "@storybook/addon-a11y": "^10.4.1",
     "@storybook/addon-docs": "^10.4.1",
-    "@storybook/addon-onboarding": "^10.4.1",
     "@storybook/vue3-vite": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^14.6.1",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^25.9.1",
     "@types/react": "^19",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-vue": "^6.0.7",
-    "@vitest/coverage-istanbul": "^4.1.7",
-    "@vitest/coverage-v8": "^4.1.7",
+    "@vitest/coverage-istanbul": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.11",
     "@vue/test-utils": "^2.4.10",
     "@vue/tsconfig": "^0.9.1",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-perfectionist": "^5.9.1",
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
     "istanbul-lib-coverage": "^3.2.2",
     "istanbul-lib-report": "^3.0.1",
-    "istanbul-lib-source-maps": "^5.0.6",
     "istanbul-reports": "^3.2.0",
     "jsdom": "^29.1.1",
-    "lighthouse": "^13.3.0",
+    "knip": "^6.38.0",
     "lightningcss": "^1.32.0",
     "playwright": "^1.60.0",
+    "prettier": "^3.9.9",
     "rollup-plugin-visualizer": "^7.0.1",
     "sass-embedded": "^1.100.0",
     "semantic-release": "^25.0.5",
-    "sharp": "^0.34.5",
-    "start-server-and-test": "^3.0.5",
     "storybook": "^10.4.1",
-    "svgo": "^4.0.1",
-    "tsc-alias": "^1.8.17",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "three": "0.186.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.60.0",
     "vite": "^8.0.15",
-    "vite-plugin-compression2": "^2.5.3",
-    "vite-plugin-image-optimizer": "^2.0.3",
-    "vite-plugin-svgo": "^1.0.5",
     "vite-svg-loader": "^5.1.1",
-    "vitest": "^4.1.7",
+    "vitest": "^4.1.11",
+    "vue": "^3.5.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.3.3"
   },
@@ -177,6 +875,238 @@
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
-    "**/*.vue"
-  ]
+    "**/*.vue",
+    "./dist/components/*/index.js",
+    "./dist/locales/*.js"
+  ],
+  "prettier": {
+    "useTabs": true,
+    "tabWidth": 4,
+    "printWidth": 140,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "arrowParens": "avoid",
+    "bracketSameLine": true,
+    "endOfLine": "lf"
+  },
+  "stylelint": {
+    "extends": [
+      "stylelint-config-standard-scss"
+    ],
+    "rules": {
+      "selector-class-pattern": [
+        "^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+        {
+          "message": "Класс по БЭМ: block__element--modifier в kebab-case"
+        }
+      ],
+      "value-keyword-case": [
+        "lower",
+        {
+          "ignoreProperties": [
+            "/^--rise-font-/"
+          ]
+        }
+      ],
+      "media-feature-range-notation": "prefix",
+      "selector-pseudo-class-disallowed-list": [
+        [
+          "dir"
+        ],
+        {
+          "message": ":dir() ломается в сборке — используйте [dir='rtl'] &"
+        }
+      ],
+      "at-rule-empty-line-before": null,
+      "declaration-empty-line-before": null,
+      "custom-property-empty-line-before": null,
+      "scss/double-slash-comment-empty-line-before": null,
+      "scss/comment-no-empty": null,
+      "scss/at-if-no-null": null,
+      "declaration-property-value-disallowed-list": [
+        {
+          "/^transition(-property)?$/": [
+            "/(^|[\\s,])(min-|max-)?(width|height|top|left|right|bottom|inset|margin|padding)(-[a-z-]+)?($|[\\s,])/"
+          ],
+          "/^(transition|animation)(-duration|-delay)?$/": [
+            "/(^|[\\s,(])(\\d*\\.)?\\d*[1-9]\\d*m?s($|[\\s,)])/"
+          ],
+          "/^(text-align|float|clear)$/": [
+            "/^(left|right)$/"
+          ],
+          "/^(left|right)$/": [
+            "/^(?!50%$)/"
+          ]
+        },
+        {
+          "severity": "error",
+          "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»). RTL: text-align, float, clear — start/end, left/right — логические свойства, исключение 50% (DESIGN_SYSTEM, «Письмо справа налево»). Исключение — отключение на строку с причиной"
+        }
+      ],
+      "property-disallowed-list": [
+        [
+          "/^(margin|padding|scroll-margin|scroll-padding)-(left|right)$/",
+          "/^border-(left|right)(-(width|style|color))?$/",
+          "/^border-(top|bottom)-(left|right)-radius$/"
+        ],
+        {
+          "message": "RTL: логические свойства (margin-inline-start, border-inline-end, border-start-start-radius …); физические — только в файлах из списка «физических по устройству» (стрелки поповеров, индикаторы под JS, графики), см. DESIGN_SYSTEM, «Письмо справа налево»"
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "src/components/**/*.scss"
+        ],
+        "rules": {
+          "comment-pattern": [
+            "(?!)",
+            {
+              "message": "Комментариев в стилях компонентов нет"
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/components/BasePin/styles/BasePin.style.scss"
+        ],
+        "rules": {
+          "property-no-vendor-prefix": [
+            true,
+            {
+              "ignoreProperties": [
+                "-webkit-appearance",
+                "-moz-appearance"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/components/BaseDropdown/styles/BaseDropdown.style.scss",
+          "src/components/BaseTooltip/styles/BaseTooltip.style.scss",
+          "src/components/BaseTour/styles/BaseTour.style.scss",
+          "src/components/BaseCalendar/styles/BaseCalendar.style.scss",
+          "src/components/BaseMediaPlayer/styles/BaseMediaPlayer.style.scss",
+          "src/components/BaseAnchor/styles/BaseAnchor.style.scss",
+          "src/styles/_mixins.scss"
+        ],
+        "rules": {
+          "property-disallowed-list": null,
+          "declaration-property-value-disallowed-list": [
+            {
+              "/^(transition|animation)(-duration|-delay)?$/": [
+                "/(^|[\\s,(])(\\d*\\.)?\\d*[1-9]\\d*m?s($|[\\s,)])/"
+              ],
+              "/^transition(-property)?$/": [
+                "/(^|[\\s,])(min-|max-)?(width|height|top|left|right|bottom|inset|margin|padding)(-[a-z-]+)?($|[\\s,])/"
+              ]
+            },
+            {
+              "severity": "error",
+              "message": "Движение: переходы только по transform и opacity, длительности — токены var(--rise-duration…) (DESIGN_SYSTEM, «Движение»); исключение — отключение на строку с причиной"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "@parcel/watcher": false
+  },
+  "knip": {
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "entry": [
+      "src/index.ts",
+      "src/components/index.ts",
+      "src/composables/index.ts",
+      "src/utils/index.ts",
+      "src/icons/index.ts",
+      "src/components/BaseCryptoProSign/model/emulation/cryptoProSignEmulation.ts",
+      "src/components/BaseMediaPlayer/index.ts",
+      "src/map3d.ts",
+      "src/roadmap3d.ts",
+      "src/flow3d.ts",
+      "src/config.ts",
+      "src/resolver.ts",
+      "src/nuxt.ts",
+      "src/integrations/nuxt/runtimePlugin.ts",
+      "src/composables/crypto/useCryptoPro/emulation/index.ts",
+      "scripts/*.mjs",
+      "build/packages/extract.mjs",
+      "src/scene3d/**/*.ts",
+      "src/components/BaseFlowMap/model/notations/services/servicesIcon.ts"
+    ],
+    "project": [
+      "src/**/*.{ts,vue,mdx}",
+      "build/**/*.{ts,mjs,cjs}",
+      "scripts/**/*.mjs",
+      "*.{ts,js}"
+    ],
+    "vite": {
+      "config": [
+        "build/lib/vite.lib.config.ts",
+        "build/lib/vite.styles-css.config.ts",
+        "build/lib/vite.media-css.config.ts",
+        "build/lib/vite.subpath-css.config.ts"
+      ]
+    },
+    "vitest": {
+      "config": [
+        "build/tests/vitest.config.ts",
+        "vitest.config.ts"
+      ]
+    },
+    "playwright": {
+      "config": [
+        "build/tests/playwright.config.ts"
+      ]
+    },
+    "storybook": {
+      "config": [
+        "build/storybook/main.ts"
+      ],
+      "entry": [
+        "build/storybook/{manager,preview}.ts",
+        "src/**/*.stories.ts",
+        "src/**/*.mdx"
+      ]
+    },
+    "commitlint": {
+      "config": [
+        "build/commitlint/commitlint.config.cjs"
+      ]
+    },
+    "semantic-release": {
+      "config": [
+        "build/release/*.cjs"
+      ]
+    },
+    "husky": {
+      "config": [
+        "build/husky/*"
+      ]
+    },
+    "ignoreDependencies": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/github",
+      "@semantic-release/npm",
+      "@semantic-release/release-notes-generator",
+      "conventional-changelog-conventionalcommits",
+      "lightningcss"
+    ],
+    "ignore": [
+      "build/packages/templates/**"
+    ],
+    "ignoreIssues": {
+      "src/plugin/plugin.ts": [
+        "duplicates"
+      ]
+    }
+  }
 }

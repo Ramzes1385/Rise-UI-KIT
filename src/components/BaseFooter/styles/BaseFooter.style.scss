@@ -1,0 +1,102 @@
+.base-footer {
+	@include custom-color-scope;
+	box-sizing: border-box;
+	width: 100%;
+	border-top: 1px solid ct(footer, border, var(--rise-border));
+	@include custom-bg(background-color, ct(footer, bg, var(--rise-bg)));
+	@include custom-text(color, ct(footer, text, var(--rise-text-muted)));
+	font-size: sz(ct(footer, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	box-shadow: ct(footer, shadow, none);
+
+	&--soft {
+		border-top-color: transparent;
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost {
+		border-top-color: transparent;
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		--base-footer-bar-padding: #{sz(ct(footer, padding-y, 24px))};
+
+		gap: sz(12px) sz(ct(footer, gap, 24px));
+		padding-block: var(--base-footer-bar-padding);
+
+		@media (max-width: 767.98px) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+
+	&__start,
+	&__center,
+	&__end {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px) sz(16px);
+	}
+
+	&__top {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(32px) sz(48px);
+		padding-block: sz(40px) sz(32px);
+	}
+
+	&__top + &__inner {
+		background-image: linear-gradient(ct(footer, border, var(--rise-border)), ct(footer, border, var(--rise-border)));
+		background-repeat: no-repeat;
+		background-position: 0 calc(-1 * var(--base-footer-bar-padding));
+		background-size: 100% 1px;
+		background-origin: content-box;
+	}
+
+	&__about {
+		display: grid;
+		flex: 1 1 sz(240px);
+		align-content: start;
+		gap: sz(12px);
+		max-width: sz(360px);
+	}
+
+	&__columns {
+		display: grid;
+		flex: 2 1 sz(420px);
+		grid-template-columns: repeat(auto-fit, minmax(sz(140px), 1fr));
+		gap: sz(24px);
+	}
+
+	&__column-title {
+		margin: 0 0 sz(12px);
+		@include caps-label;
+		font-weight: ct(footer-column-title, font-weight, var(--rise-font-weight-normal));
+		@include custom-text(color, ct(footer-column-title, text, var(--rise-text-muted)));
+	}
+
+	&__links {
+		display: grid;
+		gap: sz(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&--compact &__inner {
+		--base-footer-bar-padding: #{sz(12px)};
+
+		gap: sz(8px) sz(16px);
+	}
+
+	&--compact &__top {
+		padding-block: sz(24px) sz(20px);
+	}
+}

@@ -1,0 +1,52 @@
+import type { Meta } from '@storybook/vue3-vite'
+import type BaseFlowMap3D from '../ui/BaseFlowMap3D.vue'
+import { SCENE_3D_CAMERA_PRESETS } from '@/scene3d/types/scene3d.types'
+import { ARG_GROUP, hiddenArgTypes, propGroup } from '@/stories/helpers'
+import { FLOW_MAP_3D_MODES, FLOW_MAP_3D_QUALITIES, FLOW_MAP_3D_VIEWS } from '../types/BaseFlowMap3D.types'
+
+export const argTypes = {
+	data: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	models: { control: false, table: propGroup(ARG_GROUP.content) },
+	modelResolver: { control: false, table: propGroup(ARG_GROUP.content) },
+	notations: { control: false, table: propGroup(ARG_GROUP.content) },
+	scenario: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	view: { control: 'inline-radio', options: FLOW_MAP_3D_VIEWS, table: propGroup(ARG_GROUP.appearance) },
+	camera: { control: 'select', options: [...SCENE_3D_CAMERA_PRESETS], table: propGroup(ARG_GROUP.appearance) },
+	quality: { control: 'inline-radio', options: FLOW_MAP_3D_QUALITIES, table: propGroup(ARG_GROUP.appearance) },
+	isLayered: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	particles: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+	has2dToggle: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	hasLayersToggle: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	hasCameraControls: { control: 'boolean', table: propGroup(ARG_GROUP.appearance) },
+	mode: { control: 'inline-radio', options: [...FLOW_MAP_3D_MODES], table: propGroup(ARG_GROUP.state) },
+	modes: { control: 'check', options: [...FLOW_MAP_3D_MODES], table: propGroup(ARG_GROUP.behavior) },
+	isAutoplay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	wheelZoom: { control: 'inline-radio', options: ['ctrl', 'always', 'none'], table: propGroup(ARG_GROUP.behavior) },
+	minZoom: { control: { type: 'number', min: 0.1, max: 1, step: 0.1 }, table: propGroup(ARG_GROUP.behavior) },
+	maxZoom: { control: { type: 'number', min: 1, max: 8, step: 0.5 }, table: propGroup(ARG_GROUP.behavior) },
+	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
+	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+	...hiddenArgTypes(
+		'rendererFactory',
+		'configureLoader',
+		'onSceneReady',
+		'onBeforeRender',
+		'onModelReady',
+		'selection',
+		'beforeChange',
+		'beforeCreate',
+		'beforeConnect',
+		'beforeDelete',
+		'beforeEditLabel',
+		'beforeImport',
+		'resolveChoice',
+		'live',
+		'layout',
+		'plugins',
+		'choices',
+		'ui',
+	),
+} satisfies Meta<typeof BaseFlowMap3D>['argTypes']

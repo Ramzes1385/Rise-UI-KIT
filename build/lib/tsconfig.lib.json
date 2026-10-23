@@ -2,6 +2,7 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"target": "ES2020",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"moduleResolution": "Bundler",
 
@@ -15,11 +16,8 @@
 			"@/*": ["../../src/*"],
 			"@components/*": ["../../src/components/*"],
 			"@composables/*": ["../../src/composables/*"],
-			"@constants": ["../../src/constants/index.ts"],
-			"@constants/*": ["../../src/constants/*"],
 			"@utils/*": ["../../src/utils/*"],
-			"@icons/*": ["../../src/icons/*"],
-			"@plugins/*": ["../../src/plugins/*"]
+			"@icons/*": ["../../src/icons/*"]
 		},
 
 		"noEmit": false,
@@ -32,8 +30,15 @@
 	},
 	"include": [
 		"../../src/index.ts",
-		"../../src/plugin.ts",
-		"../../src/vite-env.d.ts",
+		"../../src/map3d.ts",
+		"../../src/roadmap3d.ts",
+		"../../src/flow3d.ts",
+		"../../src/config.ts",
+		"../../src/resolver.ts",
+		"../../src/nuxt.ts",
+		"../../src/integrations/**/*.ts",
+		"../../src/plugin/**/*.ts",
+		"../../src/types/vite-env.d.ts",
 		"../../src/**/*.d.ts",
 
 		"../../src/components/**/*.ts",
@@ -44,21 +49,15 @@
 		"../../src/icons/**/*.ts",
 		"../../src/icons/**/*.vue",
 
-		"../../src/plugins/**/*.ts",
-
 		"../../src/utils/**/*.ts"
 	],
 	"exclude": [
-		"../../src/main.ts",
-		"../../src/App.vue",
-		"../../src/playground/**",
-
 		"../../src/**/*.test.ts",
 		"../../src/**/*.spec.ts",
 		"../../src/**/*.stories.ts",
 		"../../src/**/*.stories.tsx",
-
-		"../../src/utils/storybookUtils/**",
+		"../../src/**/stories/**",
+		"../../src/**/__tests__/**",
 
 		"../../tests",
 		"../../node_modules",

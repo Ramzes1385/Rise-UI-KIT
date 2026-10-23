@@ -1,0 +1,3 @@
+import { MediaIcon, BaseMediaPlayer as Player } from '@ramzes1385/rise-ui-kit/media'
+
+export { MediaIcon, Player }

@@ -1,0 +1,74 @@
+$gaps: (
+	'xs': 4px,
+	'sm': 8px,
+	'md': 16px,
+	'lg': 24px,
+	'xl': 32px,
+);
+$aligns: (
+	'start': flex-start,
+	'center': center,
+	'end': flex-end,
+	'stretch': stretch,
+	'baseline': baseline,
+);
+$justifies: (
+	'start': flex-start,
+	'center': center,
+	'end': flex-end,
+	'between': space-between,
+	'around': space-around,
+	'evenly': space-evenly,
+);
+
+.base-stack {
+	display: flex;
+	box-sizing: border-box;
+	min-width: 0;
+
+	&--inline {
+		display: inline-flex;
+	}
+
+	&--wrap {
+		flex-wrap: wrap;
+	}
+
+	&--column {
+		flex-direction: column;
+	}
+
+	&--row {
+		flex-direction: row;
+	}
+
+	&--column-reverse {
+		flex-direction: column-reverse;
+	}
+
+	&--row-reverse {
+		flex-direction: row-reverse;
+	}
+
+	&--gap-none {
+		gap: 0;
+	}
+
+	@each $name, $size in $gaps {
+		&--gap-#{$name} {
+			gap: space(ct(stack, gap, $size));
+		}
+	}
+
+	@each $name, $value in $aligns {
+		&--align-#{$name} {
+			align-items: $value;
+		}
+	}
+
+	@each $name, $value in $justifies {
+		&--justify-#{$name} {
+			justify-content: $value;
+		}
+	}
+}

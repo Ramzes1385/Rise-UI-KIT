@@ -1,44 +1,23 @@
-/**
- * Visual Regression тесты для BaseColorPicker.
- * Снимают baseline-скриншоты swatch и состояний через Storybook.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['sizes', 'disabled', 'trigger-slot'] as const
+const OPEN_STORIES = ['presets', 'minimal'] as const
 
-/** Базовый путь к stories BaseColorPicker в Storybook */
-const STORY_PATH = '/iframe.html?id=ui-basecolorpicker'
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseColorPicker · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basecolorpicker--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-color-picker-${story}-${theme}.png`)
+			})
+		}
 
-test.describe('BaseColorPicker visual regression', () => {
-	test('Default: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--default`)
-		await page.setViewportSize({ width: 400, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-color-picker-default.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
+		for (const story of OPEN_STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basecolorpicker--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-color-picker-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
-
-	test('Disabled: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--disabled`)
-		await page.setViewportSize({ width: 400, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-color-picker-disabled.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-
-	test('DarkTheme: визуальный baseline', async ({ page }) => {
-		await page.goto(`${STORY_PATH}--dark-theme`)
-		await page.setViewportSize({ width: 400, height: 200 })
-
-		await expect(page.locator('#storybook-root')).toHaveScreenshot('base-color-picker-dark.png', {
-			animations: 'disabled',
-			caret: 'hide',
-			scale: 'css',
-		})
-	})
-})
+}

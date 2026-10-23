@@ -1,0 +1,130 @@
+.base-transfer {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	@include text-size(sm);
+	@include custom-text(color, var(--rise-text));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		gap: space(ct(transfer, gap, 12px));
+		align-items: center;
+	}
+
+	&__panel {
+		display: flex;
+		flex-direction: column;
+		gap: space(ct(transfer, panel-gap, 8px));
+		box-sizing: border-box;
+		min-width: 0;
+		padding: space(ct(transfer, panel-padding, 10px));
+		border: 1px solid ct(transfer, panel-border, transparent);
+		border-radius: sz(ct(transfer, panel-radius, var(--rise-radius-lg)));
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg-muted)));
+	}
+
+	&--soft &__panel {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline &__panel {
+		border-color: ct(transfer, panel-border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(transfer, panel-bg, var(--rise-bg)));
+	}
+
+	&--ghost &__panel {
+		padding: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--error &__panel {
+		border-color: var(--rise-error);
+	}
+
+	&__header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: sz(8px);
+	}
+
+	&__title {
+		font-weight: ct(transfer, title-font-weight, var(--rise-font-weight-semibold));
+		@include truncate;
+		@include custom-text(color, ct(transfer, title-text, var(--rise-text-highlighted)));
+	}
+
+	&__count {
+		flex-shrink: 0;
+		@include custom-text(color, ct(transfer, count-text, var(--rise-text-toned)));
+		font-variant-numeric: tabular-nums;
+	}
+
+	& &__all {
+		@include inherit-custom-color;
+	}
+
+	& &__all .base-checkbox__label {
+		@include inherit-custom-color;
+		@include custom-text(color, var(--rise-text));
+	}
+
+	&__search-icon {
+		color: var(--rise-text-toned);
+	}
+
+	&__list {
+		position: relative;
+		min-width: 0;
+	}
+
+	& &__ghost {
+		position: absolute;
+		box-sizing: border-box;
+		margin: 0;
+		pointer-events: none;
+	}
+
+	&__actions {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+
+	&__hint,
+	&__status {
+		@include visually-hidden;
+	}
+
+	@include respond-below(mobile) {
+		&__body {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		&__actions {
+			flex-direction: row;
+			justify-content: center;
+		}
+
+		&__move-icon {
+			transform: rotate(dir-angle(90deg));
+		}
+	}
+}

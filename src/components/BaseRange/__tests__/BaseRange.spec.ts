@@ -1,16 +1,10 @@
-/**
- * Unit-тесты для BaseRange.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
-import { describe, expect, it, vi } from 'vitest'
-import { BaseText } from '@components/BaseText'
-import { BaseTooltip } from '@components/BaseTooltip'
 import BaseRange from '../ui/BaseRange.vue'
+import { BaseText } from '@components/BaseText'
+import { describe, expect, it, vi } from 'vitest'
+import { BaseTooltip } from '@components/BaseTooltip'
+import { render, screen } from '@testing-library/vue'
 
-/** Общие глобальные компоненты для всех тестов */
 const globalComponents = { components: { BaseText, BaseTooltip } }
 
 describe('BaseRange unit', () => {
@@ -82,6 +76,50 @@ describe('BaseRange unit', () => {
 			})
 
 			expect(container.querySelector('.base-range')?.classList.contains('base-range--disabled')).toBe(true)
+		})
+
+		it('должен помечать ползунки aria-disabled и убирать их из порядка Tab', () => {
+			render(BaseRange, { props: { isDisabled: true, rangeValue: [20, 80] }, global: globalComponents })
+
+			for (const thumb of screen.getAllByRole('slider')) {
+				expect(thumb).toHaveAttribute('aria-disabled', 'true')
+				expect(thumb).toHaveAttribute('tabindex', '-1')
+			}
+		})
+	})
+
+	describe('доступные имена ползунков (ariaLabel)', () => {
+		it('одиночный ползунок без ariaLabel называется «Значение», с ariaLabel — его текстом', async () => {
+			const { rerender } = render(BaseRange, { props: { modelValue: 40 }, global: globalComponents })
+			expect(screen.getByRole('slider', { name: 'Значение' })).toHaveAttribute('tabindex', '0')
+
+			await rerender({ ariaLabel: 'Громкость' })
+			expect(screen.getByRole('slider', { name: 'Громкость' })).toHaveAttribute('aria-valuenow', '40')
+		})
+
+		it('ползунки диапазона — «Минимум» и «Максимум», с ariaLabel — «Цена: минимум» и «Цена: максимум»', async () => {
+			const { rerender } = render(BaseRange, { props: { rangeValue: [10, 90] }, global: globalComponents })
+			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual(['Минимум', 'Максимум'])
+
+			await rerender({ ariaLabel: 'Цена' })
+			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual([
+				'Цена: минимум',
+				'Цена: максимум',
+			])
+		})
+
+		it('точки нумеруются: «Точка N», с ariaLabel — «Громкость: точка N»', async () => {
+			const { rerender } = render(BaseRange, { props: { points: [10, 50, 90] }, global: globalComponents })
+			expect(screen.getAllByRole('slider').map(thumb => thumb.getAttribute('aria-label'))).toEqual(['Точка 1', 'Точка 2', 'Точка 3'])
+
+			await rerender({ ariaLabel: 'Громкость' })
+			expect(screen.getByRole('slider', { name: 'Громкость: точка 2' })).toHaveAttribute('aria-valuenow', '50')
+		})
+
+		it('вертикальный ползунок сообщает ориентацию', () => {
+			render(BaseRange, { props: { isVertical: true }, global: globalComponents })
+
+			expect(screen.getByRole('slider')).toHaveAttribute('aria-orientation', 'vertical')
 		})
 	})
 
@@ -392,7 +430,7 @@ describe('BaseRange unit', () => {
 		it('должен вызывать focus на первом thumb через exposed.focus()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseRange, { global: globalComponents })
-			const thumb = wrapper.find('.base-range__thumb').element
+			const thumb = wrapper.find('.base-range__thumb').element as HTMLElement
 			const focusSpy = vi.spyOn(thumb, 'focus')
 
 			const exposed = wrapper.vm as unknown as { focus: () => void }
@@ -405,7 +443,7 @@ describe('BaseRange unit', () => {
 		it('должен вызывать blur на первом thumb через exposed.blur()', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const wrapper = mount(BaseRange, { global: globalComponents })
-			const thumb = wrapper.find('.base-range__thumb').element
+			const thumb = wrapper.find('.base-range__thumb').element as HTMLElement
 			const blurSpy = vi.spyOn(thumb, 'blur')
 
 			const exposed = wrapper.vm as unknown as { blur: () => void }

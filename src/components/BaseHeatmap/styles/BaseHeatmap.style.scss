@@ -1,0 +1,94 @@
+$heatmap-mark: var(--heatmap-color, #{ct(heatmap-mark, bg, var(--rise-chart-3))});
+$heatmap-empty: ct(heatmap-cell, bg, var(--rise-bg-elevated));
+$heatmap-radius: ct(heatmap-cell, radius, var(--rise-radius-xs));
+$heatmap-levels: (
+	1: color-mix(in srgb, #{$heatmap-mark} 30%, #{$heatmap-empty}),
+	2: color-mix(in srgb, #{$heatmap-mark} 55%, #{$heatmap-empty}),
+	3: color-mix(in srgb, #{$heatmap-mark} 80%, #{$heatmap-empty}),
+	4: $heatmap-mark,
+);
+
+.base-heatmap {
+	display: flex;
+	flex-direction: column;
+	gap: space(ct(heatmap, gap, 8px));
+	box-sizing: border-box;
+	max-width: 100%;
+	color: var(--rise-text-muted);
+	@include text-size(xs);
+
+	&__scroll {
+		max-width: 100%;
+		overflow-x: auto;
+		border-radius: ct(heatmap-scroll, radius, var(--rise-radius-sm));
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+	}
+
+	&__svg {
+		display: block;
+	}
+
+	&__caption {
+		fill: ct(heatmap-caption, text, var(--rise-text-muted));
+		font-size: ct(heatmap-caption, font-size, var(--rise-font-size-2xs));
+	}
+
+	&__cell,
+	&__swatch {
+		rx: $heatmap-radius;
+		fill: $heatmap-empty;
+	}
+
+	&__cell {
+		@include transition-colors(var(--rise-duration-slow));
+	}
+
+	@each $level, $color in $heatmap-levels {
+		&__cell--#{$level} {
+			fill: $color;
+		}
+	}
+
+	&__cell--active {
+		stroke: ct(heatmap-cell, border-active, var(--rise-text-highlighted));
+		stroke-width: 1.5px;
+	}
+
+	&--square &__cell {
+		rx: 0;
+	}
+
+	&__footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		min-height: sz(18px);
+	}
+
+	&__tooltip {
+		color: ct(heatmap-tooltip, text, var(--rise-text));
+	}
+
+	&__scale {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(3px);
+	}
+
+	&__swatch {
+		display: inline-block;
+		width: 11px;
+		height: 11px;
+		border-radius: $heatmap-radius;
+		background-color: $heatmap-empty;
+
+		@each $level, $color in $heatmap-levels {
+			&.base-heatmap__cell--#{$level} {
+				background-color: $color;
+			}
+		}
+	}
+}

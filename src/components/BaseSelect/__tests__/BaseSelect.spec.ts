@@ -1,14 +1,9 @@
-/**
- * Unit-тесты для BaseSelect.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { mount } from '@vue/test-utils'
 import BaseSelect from '../ui/BaseSelect.vue'
-import type { BaseSelectOption } from '../model/BaseSelect.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import type { BaseSelectOption } from '../types/BaseSelect.types'
 
-/** Стандартный набор опций для тестов */
 const OPTIONS: BaseSelectOption[] = [
 	{ value: 'metal', label: 'Металл' },
 	{ value: 'wood', label: 'Дерево' },
@@ -191,7 +186,6 @@ describe('BaseSelect unit', () => {
 			expect(document.querySelector('.base-select__search')).toBeInTheDocument()
 			expect(document.querySelector('.base-select__search-input')).toBeInTheDocument()
 		})
-
 	})
 
 	describe('пропс sizeScale', () => {
@@ -202,6 +196,15 @@ describe('BaseSelect unit', () => {
 
 			const select = container.querySelector('.base-select') as HTMLElement
 			expect(select.style.getPropertyValue('--size-scale')).toBe('1.5')
+		})
+
+		it('должен фиксировать размер стрелки при sizeScale=125', () => {
+			const { container } = render(BaseSelect, {
+				props: { modelValue: '', options: OPTIONS, sizeScale: 125 },
+			})
+
+			const arrow = container.querySelector('.base-select__arrow') as HTMLElement
+			expect(arrow.style.getPropertyValue('--size-scale')).toBe('1.0001')
 		})
 
 		it('не должен устанавливать --size-scale при sizeScale=100', () => {
@@ -359,6 +362,22 @@ describe('BaseSelect unit', () => {
 			expect(container.querySelector('.base-select__label')).toHaveClass('custom-label')
 			expect(container.querySelector('.base-select__trigger')).toHaveClass('custom-trigger')
 			expect(container.querySelector('.base-select__error-text')).toHaveClass('custom-error')
+		})
+	})
+
+	describe('defineExpose', () => {
+		it('focus и blur управляют фокусом триггера', () => {
+			const wrapper = mount(BaseSelect, {
+				props: { modelValue: '', options: OPTIONS, ariaLabel: 'Материал' },
+				attachTo: document.body,
+			})
+			const trigger = wrapper.get('.base-select__trigger').element
+
+			wrapper.vm.focus()
+			expect(trigger).toHaveFocus()
+			wrapper.vm.blur()
+			expect(trigger).not.toHaveFocus()
+			wrapper.unmount()
 		})
 	})
 })

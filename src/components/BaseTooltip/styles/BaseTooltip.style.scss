@@ -4,179 +4,135 @@
 }
 
 .base-tooltip-popup {
-	position: fixed;
-	@include custom-bg(background-color, var(--color-primary));
-	@include custom-text(color, var(--color-white));
-	padding: sz(6px) sz(12px);
-	border-radius: sz(4px);
-	white-space: pre-wrap;
-	max-width: sz(280px);
-	overflow-wrap: break-word;
-	z-index: 9999;
-	pointer-events: none;
-	will-change: transform, opacity;
-  display: flex;
+	@include custom-bg(--tooltip-bg, ct(tooltip, bg, var(--rise-bg-inverted)));
+	--tooltip-border: transparent;
+	--tooltip-offset: #{sz(2px)};
+	--tooltip-shadow: #{ct(tooltip, shadow, 0 0 transparent)};
 
-	/* BaseText внутри тултипа наследует цвет и размер */
+	position: fixed;
+	z-index: var(--rise-z-tooltip);
+	display: flex;
+	box-sizing: border-box;
+	max-width: sz(ct(tooltip, width, 280px));
+	padding: space(ct(tooltip, padding-y, 6px) ct(tooltip, padding-x, 8px));
+	border-radius: sz(ct(tooltip, radius, var(--rise-radius-sm)));
+	background-color: var(--tooltip-bg);
+	box-shadow:
+		inset 0 0 0 1px var(--tooltip-border),
+		var(--tooltip-shadow);
+	@include custom-text(color, ct(tooltip, text, var(--rise-text-inverted)));
+	font-size: sz(ct(tooltip, font-size, var(--rise-font-size-xs)));
+	line-height: sz(var(--rise-line-height-xs));
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+
 	.base-text {
 		color: inherit;
-		font-size: sz(12px);
+		font-size: inherit;
+		line-height: inherit;
 	}
 
-	/* Финальные трансформы по позициям */
-	&--top {
-		transform: translate(-50%, -120%);
-	}
-
-	&--bottom {
-		transform: translate(-50%, 20%);
-	}
-
-	&--left {
-		transform: translate(-100%, -50%);
-	}
-
-	&--right {
-		transform: translate(0%, -50%);
-	}
-
-	/* Стрелка */
 	&::after {
 		content: '';
 		position: absolute;
-		border: sz(5px) solid transparent;
+		z-index: -1;
+		box-sizing: border-box;
+		width: sz(8px);
+		height: sz(8px);
+		border: 1px solid var(--tooltip-border);
+		background-color: var(--tooltip-bg);
 	}
 
-	/* Стрелка сверху (тултип снизу) */
-	&--bottom::after {
-		bottom: calc(100% - 1px * var(--size-scale, 1));
-		left: 50%;
-		transform: translateX(-50%);
-		@include custom-bg(border-bottom-color, var(--color-primary));
-	}
+	&--top {
+		--overlay-slide: 0 var(--rise-motion-distance);
 
-	/* Стрелка снизу (тултип сверху) */
-	&--top::after {
-		top: calc(100% - 1px * var(--size-scale, 1));
-		left: 50%;
-		transform: translateX(-50%);
-		@include custom-bg(border-top-color, var(--color-primary));
-	}
-
-	/* Стрелка справа (тултип слева) */
-	&--left::after {
-		left: calc(100% - 1px * var(--size-scale, 1));
-		top: 50%;
-		transform: translateY(-50%);
-		@include custom-bg(border-left-color, var(--color-primary));
-	}
-
-	/* Стрелка слева (тултип справа) */
-	&--right::after {
-		right: calc(100% - 1px * var(--size-scale, 1));
-		top: 50%;
-		transform: translateY(-50%);
-		@include custom-bg(border-right-color, var(--color-primary));
-	}
-
-	// Варианты
-	&--ghost {
-		@include custom-bg(background-color, var(--color-surface-muted));
-		@include custom-text(color, var(--color-text));
+		transform: translate(-50%, calc(-100% - var(--tooltip-offset)));
+		transform-origin: var(--tooltip-arrow-offset, 0) calc(var(--tooltip-offset) * -1);
 
 		&::after {
-			display: none;
+			top: 100%;
+			left: calc(50% + var(--tooltip-arrow-offset, 0px));
+			border-top-color: transparent;
+			border-left-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
 		}
 	}
 
-	&--outline {
-		@include custom-bg(background-color, var(--color-bg));
-		@include custom-text(color, var(--color-text));
-		border: 1px solid var(--color-border);
+	&--bottom {
+		--overlay-slide: 0 calc(var(--rise-motion-distance) * -1);
+
+		transform: translate(-50%, var(--tooltip-offset));
+		transform-origin: var(--tooltip-arrow-offset, 0) var(--tooltip-offset);
 
 		&::after {
-			display: none;
+			bottom: 100%;
+			left: calc(50% + var(--tooltip-arrow-offset, 0px));
+			border-right-color: transparent;
+			border-bottom-color: transparent;
+			transform: translate(-50%, 50%) rotate(45deg);
 		}
 	}
 
-	&--shadow {
-		box-shadow: var(--shadow-lg);
+	&--left {
+		--overlay-slide: var(--rise-motion-distance) 0;
+
+		transform: translate(calc(-100% - var(--tooltip-offset)), -50%);
+		transform-origin: calc(var(--tooltip-offset) * -1) var(--tooltip-arrow-offset, 0);
+
+		&::after {
+			top: calc(50% + var(--tooltip-arrow-offset, 0px));
+			left: 100%;
+			border-bottom-color: transparent;
+			border-left-color: transparent;
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+	}
+
+	&--right {
+		--overlay-slide: calc(var(--rise-motion-distance) * -1) 0;
+
+		transform: translate(var(--tooltip-offset), -50%);
+		transform-origin: var(--tooltip-offset) var(--tooltip-arrow-offset, 0);
+
+		&::after {
+			top: calc(50% + var(--tooltip-arrow-offset, 0px));
+			right: 100%;
+			border-top-color: transparent;
+			border-right-color: transparent;
+			transform: translate(50%, -50%) rotate(45deg);
+		}
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
+		@include custom-bg(--tooltip-bg, var(--rise-primary-soft));
+		--tooltip-border: var(--rise-primary-border);
 
-		&.base-tooltip-popup--bottom::after {
-			@include custom-bg(border-bottom-color, var(--color-primary-soft));
-		}
+		@include custom-text(color, var(--rise-primary-text));
+	}
 
-		&.base-tooltip-popup--top::after {
-			@include custom-bg(border-top-color, var(--color-primary-soft));
-		}
+	&--outline {
+		@include custom-bg(--tooltip-bg, var(--rise-bg));
+		--tooltip-border: var(--rise-border-accented);
 
-		&.base-tooltip-popup--left::after {
-			@include custom-bg(border-left-color, var(--color-primary-soft));
-		}
+		@include custom-text(color, var(--rise-text));
+	}
 
-		&.base-tooltip-popup--right::after {
-			@include custom-bg(border-right-color, var(--color-primary-soft));
+	&--shadow {
+		@include custom-bg(--tooltip-bg, var(--rise-surface-floating));
+
+		--tooltip-shadow: #{ct(tooltip, shadow, var(--rise-shadow-md))};
+
+		@include custom-text(color, var(--rise-text));
+	}
+
+	&--ghost {
+		@include custom-bg(--tooltip-bg, var(--rise-bg-elevated));
+		@include custom-text(color, var(--rise-text));
+
+		&::after {
+			display: none;
 		}
 	}
 }
 
-/* === Vue Transition: tooltip-top === */
-.tooltip-top-enter-active,
-.tooltip-top-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-top-enter-from,
-.tooltip-top-leave-to {
-	opacity: 0;
-	transform: translate(-50%, calc(-100% + 4px));
-}
-
-/* === Vue Transition: tooltip-bottom === */
-.tooltip-bottom-enter-active,
-.tooltip-bottom-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-bottom-enter-from,
-.tooltip-bottom-leave-to {
-	opacity: 0;
-	transform: translateX(-50%) translateY(-4px);
-}
-
-/* === Vue Transition: tooltip-left === */
-.tooltip-left-enter-active,
-.tooltip-left-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-left-enter-from,
-.tooltip-left-leave-to {
-	opacity: 0;
-	transform: translate(calc(-100% + 4px), -50%);
-}
-
-/* === Vue Transition: tooltip-right === */
-.tooltip-right-enter-active,
-.tooltip-right-leave-active {
-	transition:
-		opacity var(--transition-base),
-		transform var(--transition-base);
-}
-
-.tooltip-right-enter-from,
-.tooltip-right-leave-to {
-	opacity: 0;
-	transform: translateX(-4px) translateY(-50%);
-}
+@include overlay-animation(base-tooltip, '.base-tooltip-popup', null, var(--rise-duration-fast));

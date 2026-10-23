@@ -1,0 +1,100 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { BaseEditorPart } from './BaseEditor.types'
+import type { BaseSelectOption } from '@components/BaseSelect'
+
+interface EditorActiveStates {
+	isBold: boolean
+	isItalic: boolean
+	isUnderline: boolean
+	isStrike: boolean
+	isJustifyLeft: boolean
+	isJustifyCenter: boolean
+	isJustifyRight: boolean
+	isJustifyFull: boolean
+	isUnorderedList: boolean
+	isOrderedList: boolean
+	isBlockquote: boolean
+	isPre: boolean
+	/** Блок под кареткой: `p`, `h1`–`h6`, `blockquote`, `pre`; пусто — каретка вне блока */
+	formatBlock: string
+}
+
+export interface BaseEditorToolbarProps {
+	/** Состояния активности кнопок форматирования */
+	activeStates: EditorActiveStates
+	/** Масштаб размера */
+	sizeScale: number
+	/** Объект CSS-классов для кастомизации элементов тулбара */
+	classes: Record<string, string | undefined>
+	/** Режим кода */
+	isCodeMode: boolean
+	/** Только чтение */
+	isReadonly: boolean
+	/** Показывать тулбар */
+	hasToolbar: boolean
+	/** Опции заголовков */
+	headingOptions: BaseSelectOption[]
+	/** Цвет текста */
+	textColor: string
+	/** Цвет фона */
+	backgroundColor: string
+	/** Активен ли цвет текста */
+	isTextColorActive: boolean
+	/** Активен ли цвет фона */
+	isBackgroundColorActive: boolean
+	/** Задан `uploadMedia`: кнопки изображения и видео принимают несколько файлов за один выбор */
+	isMultipleUpload?: boolean
+	/** Изображение или видео выделено целиком: кнопка размера и удаления медиа доступна */
+	isMediaSelected: boolean
+	/** Показывать группу кнопок «Отменить» и «Повторить» */
+	hasHistoryButtons: boolean
+	/** Есть что отменить: кнопка «Отменить» доступна */
+	canUndo: boolean
+	/** Есть что повторить: кнопка «Повторить» доступна */
+	canRedo: boolean
+	/** Классы частей из пропа `ui` редактора (`toolbar`, `group`, `btn`) */
+	ui?: UiProp<BaseEditorPart>
+}
+
+export interface BaseEditorToolbarEmits {
+	(event: 'undo'): void
+	(event: 'redo'): void
+	(event: 'applyFormat', command: string): void
+	(event: 'applyBlock', tag: string): void
+	(event: 'handleHeadingChange', value: string | number): void
+	(event: 'insertLink'): void
+	(event: 'handleImageUpload', payload: Event): void
+	(event: 'handleVideoUpload', payload: Event): void
+	(event: 'clearAllFormatting'): void
+	(event: 'insertSeparator'): void
+	(event: 'openMediaMenu'): void
+	(event: 'toggleCodeMode'): void
+	(event: 'saveSelection'): void
+	(event: 'handleTextColor', color: string): void
+	(event: 'handleBackgroundColor', color: string): void
+	(event: 'resetTextColor'): void
+	(event: 'resetBackgroundColor'): void
+}
+
+export interface BaseEditorToolbarSlots {
+	toolbar?: () => unknown
+}
+
+export interface HistoryButton {
+	action: 'undo' | 'redo'
+	icon: string
+	label: string
+	/** Подсказка: имя и сочетание клавиш */
+	tip: string
+	/** Сочетание для `aria-keyshortcuts` */
+	shortcut: string
+	isEnabled: boolean
+}
+
+export interface ToolbarButton {
+	icon: string
+	label: string
+	activeKey: Exclude<keyof EditorActiveStates, 'formatBlock'>
+	action: string
+	type: 'format' | 'block'
+}

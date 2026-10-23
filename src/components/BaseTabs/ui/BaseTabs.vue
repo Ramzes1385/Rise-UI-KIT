@@ -1,40 +1,55 @@
 <template>
 	<div
-		class="base-tabs"
 		:class="[
+			ui('root'),
 			classes.root,
 			variantClass,
-			{ 'base-tabs--full-width': isFullWidth, 'base-tabs--scrollable': isScrollable },
+			{
+				'base-tabs--full-width': isFullWidth,
+				'base-tabs--scrollable': isScrollable,
+				'base-tabs--fade-start': isFadeStart,
+				'base-tabs--fade-end': isFadeEnd,
+				'base-tabs--indicator-ready': isIndicatorVisible,
+			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div class="base-tabs__nav" :class="classes.nav">
-			<BaseButton
-				v-if="isScrollable && canScrollLeft"
-				variant="ghost"
-				class="base-tabs__scroll-btn base-tabs__scroll-btn--left"
-				:class="classes.scrollBtn"
-				:size-scale="sizeScale"
-				@click="handleScrollLeft">
-				<template #left><BaseIcon name="chevron-left" :size-scale="sizeScale" /></template>
-			</BaseButton>
+		<div :class="[ui('nav'), classes.nav]">
+			<Transition name="base-tabs-scroll">
+				<BaseButton
+					v-if="isScrollable && canScrollLeft"
+					variant="ghost"
+					:class="[ui('scroll-btn'), 'base-tabs__scroll-btn--left', classes.scrollBtn]"
+					:size-scale="sizeScale"
+					:aria-label="UI_ARIA.TABS_SCROLL_LEFT"
+					@click="handleScrollLeft">
+					<template #left><BaseIcon name="chevron-left" :size-scale="sizeScale" /></template>
+				</BaseButton>
+			</Transition>
 			<div
 				ref="listRef"
-				class="base-tabs__list"
-				:class="[classes.list, { 'base-tabs__list--dragging': isDragging }]"
+				:class="[ui('list'), classes.list, { 'base-tabs__list--dragging': isDragging }]"
+				:style="indicatorStyle"
 				role="tablist"
+				@keydown="handleListKeydown"
 				@scroll="handleListScroll"
 				@pointerdown="handlePointerDown"
 				@pointermove="handlePointerMove"
 				@pointerup="handlePointerUp"
 				@pointercancel="handlePointerUp"
 				@pointerleave="handlePointerUp">
+				<span
+					v-if="isIndicatorVisible"
+					:class="[ui('indicator'), { 'base-tabs__indicator--instant': isIndicatorInstant }]"
+					aria-hidden="true"></span>
 				<BaseButton
-					v-for="item in items"
+					v-for="(item, index) in items"
+					:id="getTabId(index)"
 					:key="item.id"
 					variant="ghost"
 					role="tab"
-					class="base-tabs__tab"
+					data-indicator-item
 					:class="[
+						ui('tab'),
 						classes.tab,
 						{
 							'base-tabs__tab--active': modelValue === item.id,
@@ -42,164 +57,98 @@
 					]"
 					:is-disabled="item.isDisabled"
 					:aria-selected="modelValue === item.id"
+					:aria-controls="hasPanel() ? panelId : undefined"
+					:tabindex="index === rovingIndex ? 0 : -1"
 					:size-scale="sizeScale"
 					@click="handleTabClick(item.id)">
-					<span v-if="item.icon" class="base-tabs__icon" :class="classes.icon" v-html="item.icon"></span>
-					<BaseText tag="span" class="base-tabs__label" :class="classes.label" :size-scale="sizeScale">
-						{{ item.label }}
-					</BaseText>
+					<span v-if="item.icon || $slots.icon" :class="[ui('icon'), classes.icon]" aria-hidden="true">
+						<slot name="icon" :item="item">
+							<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="sizeScale" />
+						</slot>
+					</span>
+					<span :class="[ui('label'), classes.label]">{{ item.label }}</span>
 				</BaseButton>
 			</div>
-			<BaseButton
-				v-if="isScrollable && canScrollRight"
-				variant="ghost"
-				class="base-tabs__scroll-btn base-tabs__scroll-btn--right"
-				:class="classes.scrollBtn"
-				:size-scale="sizeScale"
-				@click="handleScrollRight">
-				<template #left><BaseIcon name="chevron-right" :size-scale="sizeScale" /></template>
-			</BaseButton>
+			<Transition name="base-tabs-scroll">
+				<BaseButton
+					v-if="isScrollable && canScrollRight"
+					variant="ghost"
+					:class="[ui('scroll-btn'), 'base-tabs__scroll-btn--right', classes.scrollBtn]"
+					:size-scale="sizeScale"
+					:aria-label="UI_ARIA.TABS_SCROLL_RIGHT"
+					@click="handleScrollRight">
+					<template #left><BaseIcon name="chevron-right" :size-scale="sizeScale" /></template>
+				</BaseButton>
+			</Transition>
 		</div>
-		<div class="base-tabs__content" :class="classes.content">
-			<slot></slot>
+		<div
+			:id="panelId"
+			:class="[ui('content'), classes.content]"
+			:role="hasPanel() ? 'tabpanel' : undefined"
+			:aria-labelledby="hasPanel() && selectedIndex !== -1 ? getTabId(selectedIndex) : undefined"
+			:tabindex="hasPanel() ? 0 : undefined">
+			<Transition name="base-tabs-panel" @before-leave="handlePanelBeforeLeave">
+				<div v-if="hasCurrentPanel()" :key="modelValue" :class="ui('panel')">
+					<slot :name="panelSlot()"></slot>
+				</div>
+			</Transition>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
 import '../styles/BaseTabs.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../model/BaseTabs.types'
+import { UI_ARIA } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
+import { useBaseTabs } from '../model/useBaseTabs'
+import { BaseButton } from '@components/BaseButton'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseTabsEmits, BaseTabsProps, BaseTabsSlots } from '../types/BaseTabs.types'
 
-const props = withDefaults(defineProps<BaseTabsProps>(), {
-	isFullWidth: false,
-	isScrollable: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	variant: 'underline',
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent(
-	'base-tabs',
-	props,
-	['root', 'nav', 'scrollBtn', 'list', 'tab', 'icon', 'label', 'content'],
+const props = withDefaults(
+	defineProps<BaseTabsProps>(),
+	kitDefaults('BaseTabs', {
+		isFullWidth: false,
+		isScrollable: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		variant: 'underline',
+	}),
 )
-
 const emit = defineEmits<BaseTabsEmits>()
 defineSlots<BaseTabsSlots>()
 
-const listRef = ref<HTMLElement | null>(null)
-const canScrollLeft = ref(false)
-const canScrollRight = ref(false)
-const isDragging = ref(false)
-
-let dragStartX = 0
-let dragStartScrollLeft = 0
-let hasDragMoved = false
-
-function handleTabClick(id: string): void {
-	/* istanbul ignore next -- hasDragMoved выставляется только при drag-to-scroll (e2e) */
-	if (hasDragMoved) {
-		hasDragMoved = false
-		return
-	}
-
-	const tab = props.items.find(item => item.id === id)
-	/* istanbul ignore next — defensive: id всегда из items (template v-for) */
-	if (tab?.isDisabled) return
-
-	emit('update:modelValue', id)
-	emit('change', id)
-}
-
-/** Обновить состояние кнопок навигации */
-function updateScrollState(): void {
-	const el = listRef.value
-	/* istanbul ignore next — defensive: listRef доступен после mount template-ссылки */
-	if (!el) return
-	canScrollLeft.value = el.scrollLeft > 0
-	canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
-}
-
-/* istanbul ignore next -- scroll-обработчики тестируются e2e: jsdom не реализует scroll events с layout */
-function handleListScroll(): void {
-	updateScrollState()
-}
-
-/* istanbul ignore next -- scrollBy недоступен в jsdom без layout */
-function handleScrollLeft(): void {
-	const el = listRef.value
-	if (!el) return
-	el.scrollBy({ left: -el.clientWidth * 0.6, behavior: 'smooth' })
-}
-
-/* istanbul ignore next -- scrollBy недоступен в jsdom без layout */
-function handleScrollRight(): void {
-	const el = listRef.value
-	if (!el) return
-	el.scrollBy({ left: el.clientWidth * 0.6, behavior: 'smooth' })
-}
-
-/* istanbul ignore next -- drag-to-scroll опирается на layout/scrollLeft, тестируется e2e */
-function handlePointerDown(event: PointerEvent): void {
-	if (event.pointerType === 'touch') return
-	const el = listRef.value
-	if (!el || el.scrollWidth <= el.clientWidth) return
-	isDragging.value = true
-	hasDragMoved = false
-	dragStartX = event.clientX
-	dragStartScrollLeft = el.scrollLeft
-}
-
-/* istanbul ignore next -- drag-to-scroll опирается на layout/scrollLeft, тестируется e2e */
-function handlePointerMove(event: PointerEvent): void {
-	if (!isDragging.value) return
-	const el = listRef.value
-	if (!el) return
-	const delta = event.clientX - dragStartX
-	if (Math.abs(delta) > 3) hasDragMoved = true
-	el.scrollLeft = dragStartScrollLeft - delta
-}
-
-/* istanbul ignore next -- drag-to-scroll опирается на layout/scrollLeft, тестируется e2e */
-function handlePointerUp(): void {
-	if (!isDragging.value) return
-	isDragging.value = false
-}
-
-let resizeObserver: ResizeObserver | null = null
-
-/** Подключить/переподключить ResizeObserver */
-function setupObserver(): void {
-	resizeObserver?.disconnect()
-	resizeObserver = null
-	if (props.isScrollable && listRef.value) {
-		resizeObserver = new ResizeObserver(updateScrollState)
-		resizeObserver.observe(listRef.value)
-		nextTick(updateScrollState)
-	} else {
-		canScrollLeft.value = false
-		canScrollRight.value = false
-	}
-}
-
-onMounted(() => {
-	setupObserver()
-})
-
-/* istanbul ignore next -- переключение isScrollable во время жизни компонента: ResizeObserver callbacks тестируются e2e */
-watch(
-	() => props.isScrollable,
-	() => {
-		setupObserver()
-	},
-)
-
-onUnmounted(() => {
-	resizeObserver?.disconnect()
-})
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	listRef,
+	panelId,
+	getTabId,
+	selectedIndex,
+	rovingIndex,
+	handleTabClick,
+	handlePanelBeforeLeave,
+	handleListKeydown,
+	isDragging,
+	handlePointerDown,
+	handlePointerMove,
+	handlePointerUp,
+	canScrollLeft,
+	canScrollRight,
+	isFadeStart,
+	isFadeEnd,
+	handleListScroll,
+	handleScrollLeft,
+	handleScrollRight,
+	hasPanel,
+	hasCurrentPanel,
+	panelSlot,
+	indicatorStyle,
+	isIndicatorVisible,
+	isIndicatorInstant,
+} = useBaseTabs(props, emit)
 </script>

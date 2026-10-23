@@ -1,61 +1,93 @@
 <template>
-	<div class="base-tree__node" :class="[nodeClasses, treeContext.classes.value.node]">
+	<div
+		:class="[treeContext.ui('node'), nodeClasses, treeContext.classes.value.node]"
+		:style="isFlat ? { '--base-tree-depth': depth } : undefined"
+		role="none">
 		<div
-			class="base-tree__header"
-			:class="treeContext.classes.value.header"
-			tabindex="0"
+			:ref="setHeaderElement"
+			:class="[treeContext.ui('header'), treeContext.classes.value.header]"
+			role="treeitem"
+			:tabindex="tabIndex"
+			:aria-labelledby="labelId"
+			:aria-level="depth + 1"
+			:aria-setsize="setSize"
+			:aria-posinset="posInSet"
+			:aria-expanded="hasChildren ? isExpanded : undefined"
+			:aria-selected="treeContext.selectionMode.value === 'single' && isSelected ? true : undefined"
+			:aria-checked="ariaChecked"
+			:aria-disabled="node.isDisabled ? 'true' : undefined"
 			@click="handleHeaderClick"
-			@keydown.enter="handleHeaderClick">
+			@focusin="treeContext.setActive(node.id)">
 			<span
 				v-if="treeContext.arrowPosition.value === 'left'"
-				class="base-tree__arrow"
-				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
+				:class="[treeContext.ui('arrow'), { 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
+				aria-hidden="true"
 				@click.stop="handleArrowClick">
 				<slot name="arrow" :node="node" :is-expanded="isExpanded">
-					<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
+					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
 				</slot>
 			</span>
-			<BaseCheckbox
-				v-if="treeContext.selectionMode.value === 'multiple'"
-				class="base-tree__checkbox"
-				:custom-class="treeContext.classes.value.checkbox"
-				:model-value="isSelected"
-				:size-scale="sizeScale"
-				@click.stop
-				@update:model-value="handleCheckboxChange" />
+			<span v-if="treeContext.selectionMode.value === 'multiple'" class="base-tree__checkbox-wrap" aria-hidden="true" inert>
+				<BaseCheckbox
+					:class="treeContext.ui('checkbox')"
+					:custom-class="checkboxClasses"
+					:model-value="isSelected"
+					:is-indeterminate="isIndeterminate"
+					:label="node.label"
+					:is-disabled="node.isDisabled"
+					:size-scale="sizeScale" />
+			</span>
 			<slot name="icon" :node="node">
 				<BaseIcon
 					v-if="node.icon"
 					:name="node.icon"
-					class="base-tree__icon"
+					:class="treeContext.ui('icon')"
 					:custom-class="treeContext.classes.value.icon"
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</slot>
-			<BaseText tag="span" :size-scale="sizeScale" class="base-tree__label" :class="treeContext.classes.value.label">
+			<span :id="labelId" :class="[treeContext.ui('label'), treeContext.classes.value.label]">
 				<slot name="label" :node="node" :depth="depth" :is-selected="isSelected" :is-expanded="isExpanded">
-					{{ node.label }}
-				</slot>
-			</BaseText>
-			<span
-				v-if="treeContext.arrowPosition.value === 'right'"
-				class="base-tree__arrow base-tree__arrow--right"
-				:class="[{ 'base-tree__arrow--expanded': isExpanded }, treeContext.classes.value.arrow]"
-				@click.stop="handleArrowClick">
-				<slot name="arrow" :node="node" :is-expanded="isExpanded">
-					<BaseIcon name="chevron-right" :size-scale="calcIconScale('xs', sizeScale)" />
+					<BaseLink
+						v-if="(node.to || node.href) && !node.isDisabled"
+						:class="treeContext.ui('link')"
+						variant="ghost"
+						tabindex="-1"
+						:to="node.to"
+						:href="node.href"
+						:target="node.target"
+						@mousedown="handleLinkMousedown"
+						@click="handleLinkClick">
+						{{ node.label }}
+					</BaseLink>
+					<template v-else>{{ node.label }}</template>
 				</slot>
 			</span>
-			<div class="base-tree__actions" :class="treeContext.classes.value.actions">
+			<span
+				v-if="treeContext.arrowPosition.value === 'right'"
+				:class="[
+					treeContext.ui('arrow'),
+					'base-tree__arrow--right',
+					{ 'base-tree__arrow--expanded': isExpanded },
+					treeContext.classes.value.arrow,
+				]"
+				aria-hidden="true"
+				@click.stop="handleArrowClick">
+				<slot name="arrow" :node="node" :is-expanded="isExpanded">
+					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
+				</slot>
+			</span>
+			<div ref="actionsRef" :class="[treeContext.ui('actions'), treeContext.classes.value.actions]" @click.stop>
 				<slot name="actions" :node="node" />
 			</div>
 		</div>
 		<BaseTreeChildren
-			v-if="hasChildren"
+			v-if="hasChildren && !isFlat"
 			:children="childNodes"
 			:depth="depth + 1"
 			:size-scale="sizeScale"
 			:is-expanded="isExpanded"
-			:was-expanded="wasExpanded">
+			:was-expanded="wasExpanded"
+			:is-open="isOpen">
 			<template #icon="slotProps">
 				<slot name="icon" :node="slotProps.node" />
 			</template>
@@ -78,98 +110,37 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
-import { BaseCheckbox } from '@components/BaseCheckbox'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { calcIconScale } from '@utils/iconUtils'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import BaseTreeChildren from './BaseTreeChildren.vue'
-import type { TreeContext } from '../model/BaseTree.types'
-import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../model/BaseTreeNode.types'
 import '../styles/BaseTree.style.scss'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
+import BaseTreeChildren from './BaseTreeChildren.vue'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseCheckbox } from '@components/BaseCheckbox'
+import { useBaseTreeNode } from '../model/useBaseTreeNode'
+import type { BaseTreeNodeProps, BaseTreeNodeSlots } from '../types/BaseTreeNode.types'
 
 const props = defineProps<BaseTreeNodeProps>()
 defineSlots<BaseTreeNodeSlots>()
 
-const treeContext = getTreeContext()
-
-function getTreeContext(): TreeContext {
-	const context = inject(TREE_CONTEXT_KEY, undefined)
-	/* istanbul ignore if -- defensive: BaseTreeNode всегда рендерится внутри BaseTree, контекст предоставляется родителем */
-	if (!context) {
-		throw new Error('BaseTreeNode: TreeContext not found. Ensure BaseTreeNode is rendered inside BaseTree.')
-	}
-	return context
-}
-
-const hasChildren = computed(function getHasChildren() {
-	return Boolean(props.node.children?.length)
-})
-
-/** Дочерние узлы для рендера — рендерится только при hasChildren, поэтому всегда непустой. */
-const childNodes = computed(function getChildNodes() {
-	/* istanbul ignore next -- defensive: childNodes читается только при hasChildren=true */
-	return props.node.children ?? []
-})
-
-const isExpanded = computed(function getIsExpanded() {
-	return treeContext.expandedSet.value.has(props.node.id)
-})
-
-const isSelected = computed(function getIsSelected() {
-	return treeContext.selectedSet.value.has(props.node.id)
-})
-
-/** Узел был раскрыт хотя бы раз — для ленивого рендеринга детей */
-const wasExpanded = ref(isExpanded.value)
-
-/** Запомнить что узел раскрывался */
-watch(isExpanded, function handleExpandedWatch(expanded) {
-	if (expanded && !wasExpanded.value) {
-		wasExpanded.value = true
-	}
-})
-
-const nodeClasses = computed(function getNodeClasses() {
-	return {
-		'base-tree__node--expanded': isExpanded.value,
-		'base-tree__node--selected': isSelected.value,
-		'base-tree__node--disabled': props.node.isDisabled,
-		'base-tree__node--leaf': !hasChildren.value,
-	}
-})
-
-/** Клик по стрелке — только раскрытие/скрытие */
-function handleArrowClick(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	treeContext.toggleNode(props.node.id)
-}
-
-/** Клик по заголовку узла */
-function handleHeaderClick(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	const mode = treeContext.selectionMode.value
-
-	if (mode === 'none') {
-		if (hasChildren.value) {
-			treeContext.toggleNode(props.node.id)
-		}
-		return
-	}
-
-	treeContext.selectNode(props.node.id)
-}
-
-/** Клик по чекбоксу */
-function handleCheckboxChange(): void {
-	if (props.node.isDisabled) {
-		return
-	}
-	treeContext.selectNode(props.node.id)
-}
+const {
+	treeContext,
+	labelId,
+	setHeaderElement,
+	hasChildren,
+	isExpanded,
+	isSelected,
+	isIndeterminate,
+	ariaChecked,
+	actionsRef,
+	wasExpanded,
+	isOpen,
+	childNodes,
+	tabIndex,
+	nodeClasses,
+	checkboxClasses,
+	handleArrowClick,
+	handleLinkMousedown,
+	handleLinkClick,
+	handleHeaderClick,
+} = useBaseTreeNode(props)
 </script>

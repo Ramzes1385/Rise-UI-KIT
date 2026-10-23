@@ -1,60 +1,88 @@
+$gap: sz(ct(form-field, gap, 6px));
+
 .base-form-field {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
-	gap: sz(6px);
+	gap: $gap;
+	box-sizing: border-box;
 	width: 100%;
-	@include interactive;
-
-	@include custom-text(color, var(--color-text));
+	min-width: 0;
+	@include custom-bg(background-color, ct(form-field, bg, transparent));
 
 	&__label {
-		font-size: sz(14px);
-		font-weight: 600;
-		@include custom-text(color, var(--color-text));
-		display: flex;
-		align-items: center;
-		gap: sz(4px);
+		@include field-label;
+		@include custom-text(color, ct(form-field, label-text, var(--rise-text)));
+		font-weight: ct(form-field, label-font-weight, var(--rise-font-weight-medium));
 	}
 
 	&__required {
-		color: var(--color-error);
+		@include field-required;
 	}
 
-	&__description {
-		font-size: sz(12px);
-		@include custom-text(color, var(--color-text-muted));
+	&__content {
+		min-width: 0;
 	}
 
-	&__error {
-		font-size: sz(12px);
-		@include custom-text(color, var(--color-error));
-		font-weight: 500;
-	}
+	&__message {
+		@include expand-rows;
+		margin-top: calc(-1 * #{$gap});
 
-	// Варианты
-	&--ghost {
-		opacity: 0.8;
-
-		@include hover {
-			opacity: 1;
+		&--open {
+			@include expand-rows-open;
 		}
 	}
 
-	&--outline {
-		border: 1px solid var(--color-border);
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
+	&__message-body::before {
+		content: '';
+		display: block;
+		height: $gap;
 	}
 
+	&__description {
+		margin: 0;
+		@include field-hint;
+		color: ct(form-field, description-text, var(--rise-text-muted));
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+		color: ct(form-field, error-text, var(--rise-error-text));
+	}
+
+	&--outline,
+	&--soft,
 	&--shadow {
-		box-shadow: var(--shadow-sm);
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
+		padding: space(ct(form-field, padding-y, 12px) ct(form-field, padding-x, 16px));
+		border-radius: sz(ct(form-field, radius, var(--rise-radius-lg)));
+	}
+
+	&--outline {
+		border: 1px solid ct(form-field, border, var(--rise-border-accented));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		padding: sz(12px);
-		border-radius: var(--border-radius-base);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(form-field, bg, var(--rise-bg-elevated)));
 	}
+
+	&--shadow {
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(form-field, bg, var(--rise-surface-floating)));
+		box-shadow: ct(form-field, shadow, var(--rise-shadow-md));
+	}
+}
+
+.base-form-field-message-enter-active {
+	transition: opacity var(--rise-duration) var(--rise-ease-out);
+}
+
+.base-form-field-message-leave-active {
+	transition: opacity var(--rise-duration-slow) var(--rise-ease-in);
+}
+
+.base-form-field-message-enter-from,
+.base-form-field-message-leave-to {
+	opacity: 0;
 }

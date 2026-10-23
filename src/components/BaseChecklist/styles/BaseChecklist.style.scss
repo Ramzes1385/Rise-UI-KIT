@@ -1,0 +1,160 @@
+.base-checklist {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: space(ct(checklist, gap, 12px));
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	padding: space(ct(checklist, padding-y, 16px) ct(checklist, padding-x, 16px));
+	border: 1px solid ct(checklist, border, transparent);
+	border-radius: sz(ct(checklist, radius, var(--rise-radius-lg)));
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(checklist, text, var(--rise-text)));
+
+	&__header {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: sz(12px);
+	}
+
+	&__title {
+		min-width: 0;
+		@include heading;
+		@include text-size(md);
+		font-weight: ct(checklist, title-font-weight, var(--rise-font-weight-semibold));
+	}
+
+	&__count {
+		flex: none;
+		@include caps-label;
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&__list {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: space(4px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		display: flex;
+		align-items: flex-start;
+		gap: sz(10px);
+		padding: space(8px);
+		border-radius: sz(ct(checklist, item-radius, var(--rise-radius-sm)));
+		@include transition-colors;
+	}
+
+	&__item--next {
+		background-color: ct(checklist, item-bg-active, var(--rise-primary-soft));
+	}
+
+	&__item--next &__description {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	@include enter-slide(base-checklist__item, down);
+
+	& &__item-move {
+		transition: transform var(--rise-duration) var(--rise-ease-emphasized);
+	}
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	&__checkbox.base-checkbox {
+		flex: none;
+		margin: sz(1px) 0 0;
+	}
+
+	&__body {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&__label {
+		color: ct(checklist, label-text, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-medium);
+		text-decoration: line-through transparent;
+		cursor: pointer;
+		@include transition-colors;
+	}
+
+	&__item--done &__label {
+		color: ct(checklist, label-text-checked, var(--rise-text-muted));
+		text-decoration-color: currentcolor;
+	}
+
+	&__next {
+		flex-shrink: 0;
+	}
+
+	&__description {
+		margin: 0;
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+	}
+
+	&__action {
+		margin-top: sz(4px);
+	}
+
+	@include enter-slide(base-checklist__done, up);
+
+	&__done {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+		margin: 0;
+		color: var(--rise-success-text);
+		font-weight: var(--rise-font-weight-medium);
+
+		.base-icon {
+			width: sz(18px);
+			height: sz(18px);
+		}
+	}
+
+	&--disabled &__label {
+		cursor: default;
+	}
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(checklist, bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline {
+		border-color: ct(checklist, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(checklist, bg, transparent));
+	}
+
+	&--ghost {
+		padding: 0;
+		border-radius: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+}

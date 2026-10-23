@@ -4,6 +4,8 @@
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "noEmit": true,
+    /* JS кодмода (bin/migrate) — только вывод типов для его тестов, без проверки самого JS */
+    "allowJs": true,
     "ignoreDeprecations": "6.0",
     "types": [
       "vite/client",
@@ -26,35 +28,17 @@
       "@composables/*": [
         "src/composables/*"
       ],
-      "@constants": [
-        "src/constants/index.ts"
-      ],
-      "@constants/*": [
-        "src/constants/*"
-      ],
       "@icons": [
         "src/icons/index.ts"
       ],
       "@icons/*": [
         "src/icons/*"
       ],
-      "@plugins": [
-        "src/plugins/index.ts"
-      ],
-      "@plugins/*": [
-        "src/plugins/*"
-      ],
       "@styles": [
         "src/styles/index.scss"
       ],
       "@styles/*": [
         "src/styles/*"
-      ],
-      "@ui": [
-        "src/components/index.ts"
-      ],
-      "@ui/*": [
-        "src/components/*"
       ],
       "@utils": [
         "src/utils/index.ts"
@@ -71,6 +55,24 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "build/storybook/preview.ts",
+    "build/storybook/manager.ts",
+    "build/storybook/theme.ts",
+    "build/tests/setup-vitest.ts",
+    "build/tests/visual.ts",
+    "build/tests/*.spec.ts",
+    "build/tests/fuzz/*.ts",
+    "build/tokens/*.ts",
+    "bin/migrate/*.mjs",
+    "build/plugins/slotDocs.ts",
+    "build/plugins/cssSplit.ts",
+    "build/config/cssSplit.ts",
+    "build/plugins/subpaths.ts",
+    "build/plugins/fonts.ts",
+    "build/plugins/subpathCss.ts",
+    "build/config/subpaths.ts",
+    "build/config/css.ts",
+    "build/utils/helpers.ts"
   ]
 }

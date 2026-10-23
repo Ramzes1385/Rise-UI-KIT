@@ -1,14 +1,8 @@
-/**
- * Integration-тесты для BaseRating.
- * Проверяют двусторонний v-model через родителя, дробный выбор и реакцию
- * на внешнее изменение значения.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { defineComponent, ref } from 'vue'
 import BaseRating from '../ui/BaseRating.vue'
+import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function mockStarRect(star: HTMLElement, width = 20): void {
 	star.getBoundingClientRect = () =>
@@ -36,7 +30,6 @@ describe('BaseRating integration', () => {
 		const { container } = render(Host)
 		const star = stars(container)[3]
 		mockStarRect(star)
-		// clientX: 20 дает ratio = 1.0, что для 4-й звезды (index 3) дает значение 4
 		await fireEvent.click(star, { clientX: 20 })
 
 		expect(screen.getByTestId('value')).toHaveTextContent('4')
@@ -64,7 +57,7 @@ describe('BaseRating integration', () => {
 		expect(screen.getByTestId('value')).toHaveTextContent('2.5')
 	})
 
-	it('должен записывать точное значение позиции через v-model (точечный клик)', async () => {
+	it('должен записывать через v-model оценку с привязкой к шагу при клике в середину звезды', async () => {
 		const Host = defineComponent({
 			components: { BaseRating },
 			setup() {
@@ -83,7 +76,7 @@ describe('BaseRating integration', () => {
 		mockStarRect(star)
 		await fireEvent.click(star, { clientX: 13 })
 
-		expect(screen.getByTestId('value')).toHaveTextContent('2.65')
+		expect(screen.getByTestId('value').textContent).toBe('3')
 	})
 
 	it('должен отражать внешнее дробное значение в заливке звезды', async () => {
@@ -108,7 +101,9 @@ describe('BaseRating integration', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Установить 3.5' }))
 
-		const fillWidths = stars(container).map(s => s.querySelector<HTMLElement>('.base-rating__star-fill')!.style.width)
+		const fillWidths = stars(container).map(s =>
+			s.querySelector<HTMLElement>('.base-rating__star-fill')!.style.getPropertyValue('--rating-fill-size'),
+		)
 		expect(fillWidths[2]).toBe('100%')
 		expect(fillWidths[3]).toBe('50%')
 	})

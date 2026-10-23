@@ -1,12 +1,7 @@
-/**
- * E2E smoke-тест для BaseAccordion.
- * Проверяет ключевой пользовательский сценарий: открытие/закрытие элементов.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('аккордеон: открывает и закрывает элемент по клику', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseaccordion--default')
+	await page.goto('/iframe.html?id=data-baseaccordion--default')
 	await page.waitForSelector('.base-accordion', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -22,7 +17,7 @@ test('аккордеон: открывает и закрывает элемен�
 })
 
 test('аккордеон: отключённый элемент не открывается', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseaccordion--disabled')
+	await page.goto('/iframe.html?id=data-baseaccordion--disabled')
 	await page.waitForSelector('.base-accordion', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -35,7 +30,7 @@ test('аккордеон: отключённый элемент не откры�
 })
 
 test('аккордеон: режим multiple позволяет открыть несколько элементов', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-baseaccordion--multiple')
+	await page.goto('/iframe.html?id=data-baseaccordion--multiple')
 	await page.waitForSelector('.base-accordion', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 500 })
 

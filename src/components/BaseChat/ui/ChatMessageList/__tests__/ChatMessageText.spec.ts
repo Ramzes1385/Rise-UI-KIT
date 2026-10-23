@@ -1,12 +1,7 @@
-/**
- * Unit-тесты для компонента ChatMessageText.
- * Проверяют рендеринг текста, ссылок, упоминаний, команд и подсветку поиска.
- */
-
 import '@testing-library/jest-dom/vitest'
+import { describe, expect, it } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import { describe, expect, it } from 'vitest'
 import ChatMessageText from '../ui/ChatMessageText.vue'
 
 describe('ChatMessageText', () => {
@@ -21,7 +16,7 @@ describe('ChatMessageText', () => {
 		render(ChatMessageText, {
 			props: { text: 'Смотри https://example.com', sizeScale: 100 },
 		})
-		const link = screen.getByRole('link', { name: 'https://example.com' })
+		const link = screen.getByRole('link', { name: /^https:\/\/example\.com\s*\(откроется в новой вкладке\)$/ })
 		expect(link).toHaveAttribute('href', 'https://example.com')
 		expect(link).toHaveAttribute('target', '_blank')
 	})

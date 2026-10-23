@@ -1,61 +1,59 @@
 <template>
 	<div
-		class="base-empty"
-		:class="[variantClass, classes.root]"
+		:class="[ui('root'), variantClass, { 'base-empty--compact': isCompact }, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div class="base-empty__icon-wrapper" :class="classes.iconWrapper">
+		<div v-if="hasIcon" :class="[ui('icon-wrapper'), classes.iconWrapper]">
 			<slot name="icon">
-				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale('lg', sizeScale)" :custom-class="classes.icon" />
+				<BaseIcon :name="emptyIcon" :size-scale="calcIconScale(isCompact ? 'sm' : 'lg', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
-		<div class="base-empty__content" :class="classes.content">
+		<div :class="[ui('content'), classes.content]">
 			<BaseText
 				v-if="title"
 				tag="h3"
-				:weight="UI_FONT_WEIGHT.SEMIBOLD"
+				:weight="TEXT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
-				class="base-empty__title"
+				:class="ui('title')"
 				:custom-class="classes.title">
 				{{ title }}
 			</BaseText>
 
-			<BaseText
-				v-if="description"
-				tag="p"
-				:size-scale="sizeScale - 10"
-				class="base-empty__description"
-				:custom-class="classes.description">
+			<BaseText v-if="description" tag="p" :size-scale="sizeScale" :class="ui('description')" :custom-class="classes.description">
 				{{ description }}
 			</BaseText>
 
-			<div v-if="$slots.default" class="base-empty__body" :class="classes.body">
+			<div v-if="$slots.default" :class="[ui('body'), classes.body]">
 				<slot />
 			</div>
 		</div>
 
-		<div v-if="$slots.actions" class="base-empty__actions" :class="classes.actions">
+		<div v-if="$slots.actions" :class="[ui('actions'), classes.actions]">
 			<slot name="actions" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseEmpty.style.scss'
-import type { BaseEmptyProps, BaseEmptySlots } from '../model/BaseEmpty.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { useBaseEmpty } from '../model/useBaseEmpty'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import type { BaseEmptyProps, BaseEmptySlots } from '../types/BaseEmpty.types'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
-const props = withDefaults(defineProps<BaseEmptyProps>(), {
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseEmptyProps>(),
+	kitDefaults('BaseEmpty', {
+		variant: DEFAULT_VARIANT,
+		isCompact: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-empty', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'body', 'actions'])
 defineSlots<BaseEmptySlots>()
 
-const emptyIcon = computed((): string => props.icon || 'inbox')
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, emptyIcon, hasIcon } = useBaseEmpty(props)
 </script>

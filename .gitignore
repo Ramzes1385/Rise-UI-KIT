@@ -30,7 +30,7 @@ storybook-static
 src/**/*.js
 src/**/*.js.map
 src/**/*.d.ts
-!src/vite-env.d.ts
+!src/types/vite-env.d.ts
 build/**/*.d.ts
 vite.config.d.ts
 
@@ -40,21 +40,18 @@ coverage-run.log
 .playwright-mcp/
 lighthouse-report.*
 lighthouse-report-mobile.*
-# tests/ — точечные исключения вместо broad 'tests/': broad не работает с '!' re-include
-# (Git запрещает re-include файла, если родительская директория исключена).
+
+# tests
 tests/**/__screenshots__/
 tests/**/*-diff.png
 tests/**/*-actual.png
 tests/**/*-expected.png
-# Visual baselines (Playwright snapshot) — коммитим, CI диффит против них
 !tests/visual-snapshots/
 !tests/visual-snapshots/**/*.png
 
 # === Tooling caches & analyzer output ===
 .eslintcache
 *.tsbuildinfo
-
-public/icons.svg
 
 # Storybook / reports
 storybook-static/
@@ -83,4 +80,8 @@ stats.html
 .env
 .env.*
 !.env.example
-!build/ci/env/*.example
+CLAUDE.local.md
+
+.claude/
+CLAUDE.md
+docs

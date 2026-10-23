@@ -1,9 +1,14 @@
-@use './root';
-@use './toolbar';
-@use './wrapper';
-@use './table';
-@use './header';
-@use './row';
-@use './cell';
-@use './settings';
-@use './footer-bar';
+@use './layout/root';
+@use './panels/toolbar';
+@use './layout/wrapper';
+@use './body/table';
+@use './body/header';
+@use './body/row';
+@use './body/cell';
+@use './panels/settings';
+@use './panels/footer-bar';
+
+.base-table__spacer-cell {
+	padding: 0;
+	border: 0;
+}

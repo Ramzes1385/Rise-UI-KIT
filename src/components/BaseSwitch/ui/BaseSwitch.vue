@@ -1,106 +1,117 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-switch"
 		:class="[
+			ui('root'),
 			classes.root,
 			variantClass,
 			{
-				'base-switch--error': formField.error,
+				'base-switch--error': control.hasError.value,
 				'base-switch--disabled': isDisabled,
 				'base-switch--reverse': reverse,
 			},
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<label class="base-switch__row" :class="classes.row" :for="inputId">
-			<span class="base-switch__wrapper" :class="classes.wrapper">
+		<div :class="[ui('row'), classes.row]" @click="handleRowClick">
+			<span :class="[ui('wrapper'), classes.wrapper]">
 				<input
-					:id="inputId"
+					v-bind="nativeAttrs"
+					ref="inputRef"
 					type="checkbox"
-					class="base-switch__input"
-					:class="classes.input"
+					role="switch"
+					:class="[ui('input'), classes.input]"
 					:checked="modelValue"
 					:disabled="isDisabled"
 					@change="handleChange" />
-				<span class="base-switch__slider" :class="classes.slider">
-					<span class="base-switch__handle" :class="classes.handle"></span>
+				<span :class="[ui('slider'), classes.slider]" aria-hidden="true">
+					<span :class="[ui('handle'), classes.handle]"></span>
 				</span>
 			</span>
-			<span class="base-switch__content" :class="classes.content">
-				<slot name="label">
-					<FormFieldLabel
-						v-if="label"
+			<span :class="[ui('content'), classes.content]">
+				<label v-if="hasCaption || isRequired" :class="[ui('caption'), classes.caption]" :for="inputId">
+					<slot name="label">
+						<FormFieldLabel
+							v-if="label"
+							tag="span"
+							:label="label"
+							:class-name="ui('label')"
+							:custom-class="classes.label"
+							:size-scale="sizeScale" />
+					</slot>
+					<BaseText
+						v-if="isRequired"
 						tag="span"
-						:label="label"
-						class-name="base-switch__label"
-						:custom-class="classes.label"
-						:size-scale="sizeScale" />
-				</slot>
-				<BaseText
-					v-if="isRequired"
-					tag="span"
-					class="base-switch__required"
-					:custom-class="classes.required"
-					:size-scale="sizeScale"
-					>*</BaseText
-				>
-				<slot />
+						:class="ui('required')"
+						:custom-class="classes.required"
+						:size-scale="sizeScale"
+						aria-hidden="true"
+						>*</BaseText
+					>
+					<slot v-if="!hasLabel" />
+				</label>
+				<span v-if="hasDescription" :id="descriptionId" :class="[ui('description'), classes.description]">
+					<slot />
+				</span>
 			</span>
-		</label>
-		<slot name="error">
-			<FormFieldError
-				:error="formField.error"
-				class-name="base-switch__error-text"
-				:custom-class="classes.errorText"
-				:size-scale="sizeScale" />
-		</slot>
+		</div>
+		<div :id="errorId" :class="ui('error')">
+			<slot name="error">
+				<FormFieldError
+					:error="formField.error"
+					:class-name="ui('error-text')"
+					:custom-class="classes.errorText"
+					:size-scale="sizeScale" />
+			</slot>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, useId } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import { toHTMLInputElement } from '@utils/domUtils'
 import '../styles/BaseSwitch.style.scss'
-import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../model/BaseSwitch.types'
+import { BaseText } from '@components/BaseText'
+import { useBaseSwitch } from '../model/useBaseSwitch'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseSwitchEmits, BaseSwitchProps, BaseSwitchSlots } from '../types/BaseSwitch.types'
 
-const props = withDefaults(defineProps<BaseSwitchProps>(), {
-	modelValue: false,
-	isDisabled: false,
-	isRequired: false,
-	reverse: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const inputId = useId()
-const rootRef = ref<HTMLElement | null>(null)
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-switch', props, ['root', 'row', 'wrapper', 'input', 'slider', 'handle', 'content', 'label', 'required', 'errorText'])
+const props = withDefaults(
+	defineProps<BaseSwitchProps>(),
+	kitDefaults('BaseSwitch', {
+		variant: DEFAULT_VARIANT,
+		modelValue: false,
+		isDisabled: false,
+		isRequired: false,
+		reverse: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseSwitchEmits>()
 defineSlots<BaseSwitchSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-function handleChange(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	emit('update:modelValue', target.checked)
-	emit('change', target.checked)
-}
-
-defineExpose({
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	inputId,
+	errorId,
+	descriptionId,
+	hasLabel,
+	hasDescription,
+	hasCaption,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	inputRef,
+	formField,
+	control,
+	nativeAttrs,
+	handleChange,
+	handleRowClick,
+	exposed,
+} = useBaseSwitch(props, emit)
+
+defineExpose(exposed)
 </script>

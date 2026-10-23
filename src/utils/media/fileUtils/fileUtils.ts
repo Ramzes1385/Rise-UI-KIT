@@ -1,0 +1,168 @@
+/** Утилиты: валидация и обработка файлов */
+
+import { warn } from '@/locales/warn'
+import { UI_TEXT, UI_WARNINGS } from '@/locales/messages'
+import { formatMessage, formatNumber } from '@/locales/state'
+import { DOWNLOAD_PROTOCOLS, isSafeUrl } from '@utils/data/urlUtils'
+import type { FileValidationOptions, FileValidationResult } from './types/fileUtils.types'
+
+function getExtension(name: string): string {
+	const parts = name.split('.')
+	return parts.length > 1 ? parts.pop()! : ''
+}
+
+function formatFileSize(bytes: number): string {
+	if (bytes < 1024) return `${formatNumber(bytes)} ${UI_TEXT.SIZE_B}`
+	const fraction = { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+	if (bytes < 1024 * 1024) return `${formatNumber(bytes / 1024, fraction)} ${UI_TEXT.SIZE_KB}`
+	return `${formatNumber(bytes / (1024 * 1024), fraction)} ${UI_TEXT.SIZE_MB}`
+}
+
+/** Получить эмодзи-иконку по расширению файла */
+function getFileIcon(extension: string): string {
+	const icons: Record<string, string> = {
+		PDF: '📄',
+		DOC: '📝',
+		DOCX: '📝',
+		XLS: '📊',
+		XLSX: '📊',
+		ZIP: '📦',
+		RAR: '📦',
+		'7Z': '📦',
+		MP3: '🎵',
+		WAV: '🎵',
+		OGG: '🎵',
+		MP4: '🎬',
+		AVI: '🎬',
+		MOV: '🎬',
+		JPG: '🖼️',
+		JPEG: '🖼️',
+		PNG: '🖼️',
+		GIF: '🖼️',
+		SVG: '🖼️',
+		WEBP: '🖼️',
+		TXT: '📃',
+		CSV: '📃',
+	}
+	return icons[extension.toUpperCase()] || '📎'
+}
+
+/** Карта расширений в имена SVG-иконок файлов */
+const FILE_ICON_NAME_MAP: Record<string, string> = {
+	png: 'file-img',
+	jpg: 'file-img',
+	jpeg: 'file-img',
+	gif: 'file-img',
+	webp: 'file-img',
+	svg: 'file-svg',
+	js: 'file-js',
+	ts: 'file-ts',
+	vue: 'file-vue',
+	scss: 'file-scss',
+	css: 'file-css',
+	html: 'file-html',
+	json: 'file-json',
+	md: 'file-md',
+	txt: 'file-txt',
+	xml: 'file-xml',
+	yaml: 'file-yaml',
+	yml: 'file-yaml',
+	sh: 'file-sh',
+	py: 'file-py',
+	sql: 'file-sql',
+	pdf: 'file-txt',
+	doc: 'file-txt',
+	docx: 'file-txt',
+	xls: 'file-txt',
+	xlsx: 'file-txt',
+	ppt: 'file-txt',
+	pptx: 'file-txt',
+	mp3: 'file-config',
+	wav: 'file-config',
+	mp4: 'file-config',
+	mkv: 'file-config',
+	zip: 'file-lock',
+	rar: 'file-lock',
+	'7z': 'file-lock',
+}
+
+function getFileIconName(filename: string): string {
+	const ext = getExtension(filename).toLowerCase()
+	return FILE_ICON_NAME_MAP[ext] || 'file-config'
+}
+
+/** Токены `accept` в нижнем регистре, без пустых (висячая запятая не разрешает файлы без MIME-типа) */
+function parseAccept(accept: string): string[] {
+	return accept
+		.split(',')
+		.map(token => token.trim().toLowerCase())
+		.filter(Boolean)
+}
+
+/** Файл подходит под токен `accept`: `.tar.gz` — по окончанию имени, `image/*` — по группе, `*` и `*\/*` — любой */
+function matchesAcceptToken(file: File, token: string): boolean {
+	if (token === '*' || token === '*/*') return true
+	if (token.startsWith('.')) return file.name.toLowerCase().endsWith(token)
+	const mime = file.type.toLowerCase()
+	if (token.endsWith('/*')) return mime.startsWith(token.slice(0, -1))
+	return mime === token
+}
+
+/** Валидировать файл по размеру и допустимым типам */
+function validateFile(file: File, options: FileValidationOptions): FileValidationResult {
+	const errors: string[] = []
+
+	if (options.maxSize && file.size > options.maxSize * 1024 * 1024) {
+		errors.push(formatMessage(UI_TEXT.FILE_TOO_LARGE, { name: file.name, size: formatNumber(options.maxSize) }))
+	}
+
+	const accept = options.accept ?? ''
+	const acceptedTypes = parseAccept(accept)
+	if (acceptedTypes.length > 0 && !acceptedTypes.some(token => matchesAcceptToken(file, token))) {
+		errors.push(formatMessage(UI_TEXT.FILE_WRONG_FORMAT, { name: file.name, formats: formatAcceptHint(accept) }))
+	}
+
+	return { isValid: errors.length === 0, errors }
+}
+
+/** Подсказка о допустимых типах: расширения — прописными (`.PDF`), MIME-типы — как есть (`image/*`) */
+function formatAcceptHint(accept: string): string {
+	return parseAccept(accept)
+		.map(token => (token.startsWith('.') ? token.toUpperCase() : token))
+		.join(', ')
+}
+
+/** Создать превью для изображения через FileReader */
+function createImagePreview(file: File): Promise<string | null> {
+	return new Promise(resolve => {
+		if (!file.type.startsWith('image/')) {
+			resolve(null)
+			return
+		}
+		const reader = new FileReader()
+		reader.onload = () => resolve(reader.result as string)
+		reader.onerror = reader.onload
+		reader.readAsDataURL(file)
+	})
+}
+
+/**
+ * Скачать файл по URL через программное создание ссылки.
+ * URL вложений приходит из данных сообщений: клик по `<a href="javascript:…">` исполнил бы код,
+ * поэтому допускаются только http(s), blob:, data: и относительные адреса.
+ */
+function downloadFile(url: string, filename: string): void {
+	if (!isSafeUrl(url, DOWNLOAD_PROTOCOLS)) {
+		warn(UI_WARNINGS.DOWNLOAD_UNSAFE_URL, { url: String(url).slice(0, 80) })
+		return
+	}
+	const link = document.createElement('a')
+	link.href = url
+	link.download = filename
+	link.target = '_blank'
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
+}
+
+export { createImagePreview, downloadFile, formatAcceptHint, formatFileSize, getExtension, getFileIcon, getFileIconName, validateFile }

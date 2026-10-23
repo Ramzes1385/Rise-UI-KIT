@@ -1,16 +1,23 @@
-/**
- * Visual regression тесты для BaseSearch.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'with-error'] as const
+const OPEN_STORIES = ['with-images', 'loading', 'modal-mode'] as const
 
-const COMPONENT = 'ui-basesearch'
-const STORIES = ['default', 'with-image-results', 'loading', 'dark-theme']
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSearch · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basesearch--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-search-${story}-${theme}.png`)
+			})
+		}
 
-for (const story of STORIES) {
-	test(`BaseSearch — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-search')
-		await expect(root).toHaveScreenshot(`base-search--${story}.png`)
+		for (const story of OPEN_STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-basesearch--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-search-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

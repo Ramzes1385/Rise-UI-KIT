@@ -1,13 +1,8 @@
-/**
- * Integration-тесты для BaseTabs.
- * Проверяют взаимодействие: переключение табов, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseTabs from '../ui/BaseTabs.vue'
-import type { TabItem } from '../model/BaseTabs.types'
+import userEvent from '@testing-library/user-event'
+import type { TabItem } from '../types/BaseTabs.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },
@@ -51,6 +46,231 @@ describe('BaseTabs integration', () => {
 			await user.click(screen.getByText('Характеристики'))
 
 			expect(emitted()).toHaveProperty('change')
+		})
+	})
+
+	describe('клавиатура (APG Tabs)', () => {
+		const KEYBOARD_TABS: TabItem[] = [
+			{ id: 'a', label: 'Первая' },
+			{ id: 'b', label: 'Вторая', isDisabled: true },
+			{ id: 'c', label: 'Третья' },
+			{ id: 'd', label: 'Четвёртая' },
+		]
+
+		it('ArrowRight переносит фокус и выбор на следующую вкладку', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, {
+				props: { modelValue: 'info', items: TABS },
+			})
+
+			screen.getByRole('tab', { name: 'Информация' }).focus()
+			await user.keyboard('{ArrowRight}')
+
+			expect(screen.getByRole('tab', { name: 'Характеристики' })).toHaveFocus()
+			expect(emitted()['update:modelValue']).toEqual([['specs']])
+			expect(emitted().change).toEqual([['specs']])
+		})
+
+		it('ArrowRight пропускает отключённую вкладку и зацикливается на первую', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, {
+				props: { modelValue: 'specs', items: TABS },
+			})
+
+			screen.getByRole('tab', { name: 'Характеристики' }).focus()
+			await user.keyboard('{ArrowRight}')
+
+			expect(screen.getByRole('tab', { name: 'Информация' })).toHaveFocus()
+			expect(emitted()['update:modelValue']).toEqual([['info']])
+		})
+
+		it('ArrowLeft пропускает отключённые вкладки, а с первой зацикливается на последнюю', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, {
+				props: { modelValue: 'c', items: KEYBOARD_TABS },
+			})
+
+			screen.getByRole('tab', { name: 'Третья' }).focus()
+			await user.keyboard('{ArrowLeft}')
+
+			expect(screen.getByRole('tab', { name: 'Первая' })).toHaveFocus()
+			await user.keyboard('{ArrowLeft}')
+
+			expect(screen.getByRole('tab', { name: 'Четвёртая' })).toHaveFocus()
+			expect(emitted()['update:modelValue']).toEqual([['a'], ['d']])
+		})
+
+		it('Home и End переносят фокус на первую и последнюю вкладки', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, {
+				props: { modelValue: 'c', items: KEYBOARD_TABS },
+			})
+
+			screen.getByRole('tab', { name: 'Третья' }).focus()
+			await user.keyboard('{Home}')
+			expect(screen.getByRole('tab', { name: 'Первая' })).toHaveFocus()
+
+			await user.keyboard('{End}')
+			expect(screen.getByRole('tab', { name: 'Четвёртая' })).toHaveFocus()
+			expect(emitted()['update:modelValue']).toEqual([['a'], ['d']])
+		})
+
+		it('в порядке Tab участвует только выбранная вкладка (roving tabindex)', async () => {
+			const user = userEvent.setup()
+			render(BaseTabs, {
+				props: { modelValue: 'specs', items: TABS },
+			})
+
+			await user.tab()
+			expect(screen.getByRole('tab', { name: 'Характеристики' })).toHaveFocus()
+
+			await user.tab()
+			expect(screen.getAllByRole('tab')).not.toContain(document.activeElement)
+		})
+	})
+
+	describe('панель вкладки', () => {
+		it('панель имеет role=tabpanel, подписана выбранной вкладкой и связана через aria-controls', async () => {
+			const { rerender } = render(BaseTabs, {
+				props: { modelValue: 'info', items: TABS },
+				slots: { default: '<p>Содержимое вкладки</p>' },
+			})
+
+			const panel = screen.getByRole('tabpanel', { name: 'Информация' })
+			expect(panel).toHaveTextContent('Содержимое вкладки')
+			expect(screen.getByRole('tab', { name: 'Информация' })).toHaveAttribute('aria-controls', panel.id)
+
+			await rerender({ modelValue: 'specs' })
+
+			expect(screen.getByRole('tabpanel', { name: 'Характеристики' })).toBe(panel)
+		})
+	})
+
+	describe('список шире контейнера', () => {
+		function overflowing(): HTMLElement {
+			const list = screen.getByRole('tablist')
+			Object.defineProperty(list, 'scrollWidth', { configurable: true, value: 600 })
+			Object.defineProperty(list, 'clientWidth', { configurable: true, value: 300 })
+			return list
+		}
+
+		it('клик мышью по вкладке выбирает её: режима перетаскивания без сдвига нет', async () => {
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 100 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 102 })
+			expect(list).not.toHaveClass('base-tabs__list--dragging')
+			await fireEvent.pointerUp(tab, { pointerType: 'mouse', clientX: 102 })
+			await fireEvent.click(tab)
+
+			expect((emitted()['update:modelValue'] as string[][]).at(-1)?.[0]).toBe('specs')
+		})
+
+		it('перетаскивание прокручивает список и не выбирает вкладку; следующий клик выбирает', async () => {
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 200 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 150 })
+			expect(list).toHaveClass('base-tabs__list--dragging')
+			expect(list.scrollLeft).toBe(50)
+			await fireEvent.pointerUp(list, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.click(tab)
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+			expect(list).not.toHaveClass('base-tabs__list--dragging')
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.pointerUp(tab, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.click(tab)
+			expect((emitted()['update:modelValue'] as string[][]).at(-1)?.[0]).toBe('specs')
+		})
+	})
+
+	describe('перетаскивание: сброс (TAB-6)', () => {
+		function overflowing(): HTMLElement {
+			const list = screen.getByRole('tablist')
+			Object.defineProperty(list, 'scrollWidth', { configurable: true, value: 600 })
+			Object.defineProperty(list, 'clientWidth', { configurable: true, value: 300 })
+			return list
+		}
+
+		it('перетаскивание, отпущенное вне вкладки, не съедает следующий Enter', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', clientX: 200 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 150 })
+			await fireEvent.pointerLeave(list, { pointerType: 'mouse', clientX: 150 })
+			await new Promise(resolve => setTimeout(resolve, 0))
+
+			tab.focus()
+			await user.keyboard('{Enter}')
+			expect((emitted()['update:modelValue'] as string[][]).at(-1)?.[0]).toBe('specs')
+		})
+
+		it('правая кнопка мыши не начинает перетаскивание', async () => {
+			render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const list = overflowing()
+			const tab = screen.getByRole('tab', { name: 'Характеристики' })
+
+			await fireEvent.pointerDown(tab, { pointerType: 'mouse', button: 2, clientX: 200 })
+			await fireEvent.pointerMove(tab, { pointerType: 'mouse', clientX: 150 })
+			expect(list).not.toHaveClass('base-tabs__list--dragging')
+			expect(list.scrollLeft).toBe(0)
+		})
+	})
+
+	describe('выбранная вкладка (TAB-8)', () => {
+		it('клик и Enter по выбранной вкладке не эмитят change и update:modelValue', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			const active = screen.getByRole('tab', { name: 'Информация' })
+
+			await user.click(active)
+			await user.keyboard('{Enter}')
+
+			expect(emitted()).not.toHaveProperty('change')
+			expect(emitted()).not.toHaveProperty('update:modelValue')
+		})
+	})
+
+	describe('значок вкладки (TAB-3)', () => {
+		it('icon — имя BaseIcon, значок скрыт от диктора, имя вкладки — label', () => {
+			render(BaseTabs, { props: { modelValue: 'a', items: [{ id: 'a', label: 'Главная', icon: 'home' }] } })
+			const tab = screen.getByRole('tab', { name: 'Главная' })
+			const icon = tab.querySelector('.base-tabs__icon')
+			expect(icon).toHaveAttribute('aria-hidden', 'true')
+			expect(icon?.querySelector('.base-icon')).toBeInTheDocument()
+		})
+
+		it('HTML в icon не вставляется как разметка', () => {
+			render(BaseTabs, { props: { modelValue: 'a', items: [{ id: 'a', label: 'Главная', icon: '<img src="x" alt="">' }] } })
+			expect(screen.getByRole('tab').querySelector('img')).not.toBeInTheDocument()
+		})
+
+		it('слот icon получает вкладку и показывается у каждой', () => {
+			render(BaseTabs, {
+				props: {
+					modelValue: 'a',
+					items: [
+						{ id: 'a', label: 'Первая' },
+						{ id: 'b', label: 'Вторая' },
+					],
+				},
+				slots: { icon: '<template #icon="{ item }"><i data-testid="custom-icon">{{ item.id }}</i></template>' },
+			})
+			expect(screen.getAllByTestId('custom-icon').map(element => element.textContent)).toEqual(['a', 'b'])
+			expect(screen.getByRole('tab', { name: 'Первая' })).toBeInTheDocument()
+		})
+
+		it('без icon и без слота значка нет', () => {
+			render(BaseTabs, { props: { modelValue: 'a', items: [{ id: 'a', label: 'Первая' }] } })
+			expect(screen.getByRole('tab').querySelector('.base-tabs__icon')).not.toBeInTheDocument()
 		})
 	})
 

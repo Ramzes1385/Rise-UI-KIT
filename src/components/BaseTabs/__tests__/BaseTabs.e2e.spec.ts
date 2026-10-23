@@ -1,12 +1,7 @@
-/**
- * E2E smoke-тест для BaseTabs.
- * Проверяет: переключение → disabled вкладка.
- */
-
 import { expect, test } from '@playwright/test'
 
 test('табы: переключают активную вкладку по клику', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetabs--underline')
+	await page.goto('/iframe.html?id=navigation-basetabs--default')
 	await page.waitForSelector('.base-tabs', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -21,7 +16,7 @@ test('табы: переключают активную вкладку по кл
 })
 
 test('табы: отключённая вкладка не переключается', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetabs--with-disabled')
+	await page.goto('/iframe.html?id=navigation-basetabs--disabled')
 	await page.waitForSelector('.base-tabs', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -34,7 +29,7 @@ test('табы: отключённая вкладка не переключае�
 })
 
 test('табы: вариант pills рендерится корректно', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetabs--pills')
+	await page.goto('/iframe.html?id=navigation-basetabs--default&args=variant:pills')
 	await page.waitForSelector('.base-tabs', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -46,7 +41,7 @@ test('табы: вариант pills рендерится корректно', a
 })
 
 test('табы: перетаскивание мышью прокручивает список', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetabs--scroll-buttons')
+	await page.goto('/iframe.html?id=navigation-basetabs--scrollable')
 	await page.waitForSelector('.base-tabs', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -72,7 +67,7 @@ test('табы: перетаскивание мышью прокручивает
 })
 
 test('табы: перетаскивание не переключает активную вкладку', async ({ page }) => {
-	await page.goto('/iframe.html?id=ui-basetabs--scroll-buttons')
+	await page.goto('/iframe.html?id=navigation-basetabs--scrollable')
 	await page.waitForSelector('.base-tabs', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 400 })
 
@@ -90,4 +85,18 @@ test('табы: перетаскивание не переключает акт�
 	await page.mouse.up()
 
 	await expect(firstTab).toHaveClass(/--active/)
+})
+
+test('табы: кнопка прокрутки вправо сдвигает список и показывает кнопку влево', async ({ page }) => {
+	await page.goto('/iframe.html?id=navigation-basetabs--scrollable')
+	await page.waitForSelector('.base-tabs', { timeout: 25000 })
+	await page.setViewportSize({ width: 800, height: 400 })
+
+	const list = page.getByRole('tablist')
+	await expect(page.getByRole('button', { name: 'Прокрутить вкладки влево' })).toHaveCount(0)
+
+	await page.getByRole('button', { name: 'Прокрутить вкладки вправо' }).click()
+
+	await expect.poll(() => list.evaluate(el => el.scrollLeft)).toBeGreaterThan(0)
+	await expect(page.getByRole('button', { name: 'Прокрутить вкладки влево' })).toBeVisible()
 })

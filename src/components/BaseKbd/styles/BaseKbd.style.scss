@@ -1,0 +1,39 @@
+.base-kbd {
+	@include custom-color-scope;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: sz(ct(kbd, height, 20px));
+	height: sz(ct(kbd, height, 20px));
+	padding: 0 sz(ct(kbd, padding-x, 6px));
+	border: 1px solid ct(kbd, border, transparent);
+	border-radius: sz(ct(kbd, radius, var(--rise-radius-sm)));
+	box-shadow: ct(kbd, shadow, none);
+	@include custom-bg(background-color, ct(kbd, bg, var(--rise-bg-elevated)));
+	@include custom-text(color, ct(kbd, text, var(--rise-text-toned)));
+	font-family: var(--rise-font-mono);
+	font-size: sz(ct(kbd, font-size, 11px));
+	line-height: sz(var(--rise-line-height-xs));
+	font-weight: ct(kbd, font-weight, var(--rise-font-weight-normal));
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+	vertical-align: middle;
+
+	&__name {
+		@include visually-hidden;
+	}
+
+	&--outline {
+		border-color: ct(kbd, border, var(--rise-border-accented));
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--ghost {
+		@include custom-bg(background-color, transparent);
+		color: var(--rise-text-muted);
+	}
+}

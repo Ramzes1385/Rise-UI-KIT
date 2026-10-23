@@ -1,0 +1,13 @@
+export { TRANSFER_PARTS, TRANSFER_SIDES, TRANSFER_VARIANTS } from './types/BaseTransfer.types'
+export type {
+	BaseTransferPart,
+	BaseTransferEmits,
+	BaseTransferExpose,
+	BaseTransferProps,
+	BaseTransferSlots,
+	TransferChange,
+	TransferItemSlotProps,
+	TransferSide,
+	TransferVariant,
+} from './types/BaseTransfer.types'
+export { default as BaseTransfer } from './ui/BaseTransfer.vue'

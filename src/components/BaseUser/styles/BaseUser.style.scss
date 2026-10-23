@@ -1,0 +1,54 @@
+.base-user {
+	@include custom-color-scope;
+	display: inline-flex;
+	align-items: center;
+	gap: space(ct(user, gap, 8px));
+	max-width: 100%;
+	min-width: 0;
+	@include custom-text(color, ct(user, text, var(--rise-text-highlighted)));
+	text-align: start;
+
+	&--vertical {
+		flex-direction: column;
+		text-align: center;
+	}
+
+	&__text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__name {
+		font-size: sz(ct(user, name-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(user, name-font-weight, var(--rise-font-weight-medium));
+		@include truncate;
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__description {
+		font-size: sz(ct(user, description-font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+		color: ct(user, description-text, var(--rise-text-muted));
+		@include truncate;
+	}
+
+	&--link.base-link {
+		display: inline-flex;
+		font-size: inherit;
+		text-decoration: none;
+		border-radius: sz(ct(user, radius, var(--rise-radius-md)));
+
+		@include hover {
+			text-decoration: none;
+
+			.base-user__name {
+				text-decoration: underline;
+			}
+		}
+	}
+}

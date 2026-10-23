@@ -1,0 +1,43 @@
+import { fn } from 'storybook/test'
+import type { Meta } from '@storybook/vue3-vite'
+import { DEMO_COVER, DEMO_SOURCES } from './shared'
+import type BaseMediaPlayer from '../ui/BaseMediaPlayer.vue'
+
+export const args = {
+	sources: DEMO_SOURCES,
+	title: 'Демо-ролик Rise UI Kit',
+	hasTitle: true,
+	logoPosition: 'top-right',
+	poster: DEMO_COVER,
+	preload: 'metadata',
+	aspectRatio: '16 / 9',
+	mode: 'auto',
+	isAutoplay: false,
+	isLoop: false,
+	hasKeyboardShortcuts: true,
+	seekStep: 5,
+	seekStepLarge: 10,
+	volumeStep: 0.05,
+	idleTimeout: 3000,
+	hasCaptionUpload: true,
+	nextCountdown: 5,
+	errorEffect: 'retro',
+	sizeScale: 100,
+	onPlay: fn(),
+	onPause: fn(),
+	onEnded: fn(),
+	onError: fn(),
+	'onFullscreen-change': fn(),
+	'onUpdate:isTheater': fn(),
+	'onUpdate:textTrack': fn(),
+	'onUpdate:audioTrack': fn(),
+	'onUpdate:episode': fn(),
+	'onUpdate:isAutoNext': fn(),
+	onReport: fn(),
+	onAd: fn(),
+	onBanner: fn(),
+	onAchievement: fn(),
+	'onWatch-sync': fn(),
+	'onWatch-invite': fn(),
+	onShare: fn(),
+} satisfies Meta<typeof BaseMediaPlayer>['args']

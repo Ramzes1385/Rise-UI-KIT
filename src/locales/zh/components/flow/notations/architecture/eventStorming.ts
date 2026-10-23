@@ -1,0 +1,26 @@
+/** Нотация Event Storming BaseFlowMap: виды, правила, предупреждения */
+export const zhFlowEventStorming = {
+	flowEventStorming: {
+		NOTATION: 'Event Storming',
+		RULES_SUMMARY: '参与者发出命令，聚合或外部系统产生事件，策略触发下一条命令',
+		DOMAIN_EVENT: '领域事件',
+		COMMAND: '命令',
+		ACTOR: '参与者',
+		AGGREGATE: '聚合',
+		POLICY: '策略',
+		READ_MODEL: '读模型',
+		EXTERNAL_SYSTEM: '外部系统',
+		HOTSPOT: '热点',
+		OPPORTUNITY: '机会',
+		CONTEXT: '限界上下文',
+		FLOW: '流',
+		WARN_GRAMMAR: '流程中没有“{source}” → “{target}”这一步：{expected}',
+		EXPECTED_ACTOR: '参与者发出命令',
+		EXPECTED_COMMAND: '命令由聚合或外部系统处理',
+		EXPECTED_AGGREGATE: '聚合产生事件',
+		EXPECTED_EXTERNAL: '外部系统产生事件',
+		EXPECTED_EVENT: '事件触发策略、更新读模型或引出命令',
+		EXPECTED_POLICY: '策略触发命令',
+		EXPECTED_READ_MODEL: '读模型展示给参与者',
+	},
+}

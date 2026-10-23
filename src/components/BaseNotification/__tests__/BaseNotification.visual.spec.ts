@@ -1,16 +1,16 @@
-/**
- * Visual regression тесты для BaseNotification.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['types', 'variants', 'custom-color', 'long-content', 'positions', 'actions', 'persistent'] as const
 
-const COMPONENT = 'ui-basenotification'
-const STORIES = ['default']
-
-for (const story of STORIES) {
-	test(`BaseNotification — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-notification')
-		await expect(root).toHaveScreenshot(`base-notification--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseNotification · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-basenotification--${story}`, { theme, height: 500 })
+				await page.locator('.base-notification-item').first().waitFor({ state: 'visible' })
+				await expectStoryScreenshot(page, `base-notification-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

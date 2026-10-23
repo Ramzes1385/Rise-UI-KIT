@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BasePagination.
- * Проверяют рендер, пропсы и вычисления.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BasePagination from '../ui/BasePagination.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BasePagination unit', () => {
 	describe('рендер', () => {
@@ -22,7 +17,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 50, pageSize: 10 },
 			})
 
-			// 5 страниц без многоточий: 1, 2, 3, 4, 5
 			expect(screen.getByText('1')).toBeInTheDocument()
 			expect(screen.getByText('5')).toBeInTheDocument()
 		})
@@ -51,7 +45,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 25, pageSize: 10 },
 			})
 
-			// 25 / 10 = 3 страницы
 			expect(screen.getByText('3')).toBeInTheDocument()
 		})
 	})
@@ -62,7 +55,6 @@ describe('BasePagination unit', () => {
 				props: { modelValue: 1, total: 50 },
 			})
 
-			// Кнопки навигации с иконками (chevron-left / chevron-right)
 			const svgs = container.querySelectorAll('svg')
 			expect(svgs.length).toBeGreaterThanOrEqual(2)
 		})
@@ -145,9 +137,7 @@ describe('BasePagination unit', () => {
 			expect(container.querySelector('.base-pagination > button:last-child')).toHaveClass('custom-next')
 			expect(container.querySelector('.base-pagination__pages')).toHaveClass('custom-pages')
 			expect(container.querySelector('.base-pagination__pages button')).toHaveClass('custom-button')
-			expect(container.querySelector('.base-notification, .base-pagination__ellipsis')).toHaveClass(
-				'custom-ellipsis',
-			)
+			expect(container.querySelector('.base-notification, .base-pagination__ellipsis')).toHaveClass('custom-ellipsis')
 		})
 	})
 
@@ -162,7 +152,6 @@ describe('BasePagination unit', () => {
 				},
 			})
 
-			// Находим первую кнопку (Prev) и эмитим клик, когда она отключена
 			const prevButton = wrapper.findComponent({ name: 'BaseButton' })
 			await prevButton.vm.$emit('click')
 

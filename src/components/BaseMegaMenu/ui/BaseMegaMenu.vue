@@ -1,245 +1,199 @@
 <template>
-	<div
-		class="base-mega-menu"
-		:class="[
-			[
-				`base-mega-menu--${layout}`,
-				{ 'base-mega-menu--hover': effectiveTrigger === 'hover', 'base-mega-menu--accordion': isMobile },
-				variantClass,
-			],
-			classes.root,
-		]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<!-- ── Columns layout ── -->
-		<div v-if="layout === 'columns'" class="base-mega-menu__container" :class="classes.container">
-			<div
-				v-for="column in columns"
-				:key="column.title"
-				class="base-mega-menu__column"
-				:class="classes.column"
-				@mouseenter="handleColumnEnter(column.title)"
-				@mouseleave="handleColumnLeave">
-				<slot name="column-title" :column="column">
-					<BaseText
-						tag="h4"
-						tabindex="0"
-						:size-scale="sizeScale"
-						:weight="UI_FONT_WEIGHT.SEMIBOLD"
-						class="base-mega-menu__title"
-						:class="[{ 'base-mega-menu__title--open': isColumnOpen(column.title) }, classes.title]"
-						@click="toggleColumn(column.title)">
-						<BaseIcon v-if="column.icon" :name="column.icon" :size-scale="iconScale" class="base-mega-menu__title-icon" />
-						{{ column.title }}
-						<BaseIcon class="base-mega-menu__title-arrow" name="chevron-down" :size-scale="iconScale" />
-					</BaseText>
-				</slot>
+	<nav
+		ref="rootRef"
+		:class="[ui('root'), variantClass, { 'base-mega-menu--mobile': isMobileMode, 'base-mega-menu--open': openItem }, classes.root]"
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		:aria-label="navLabel"
+		@focusout="handleFocusOut">
+		<div :class="[ui('bar'), classes.bar]">
+			<BaseButton
+				v-if="isMobileMode"
+				variant="ghost"
+				:class="ui('toggle')"
+				:size-scale="sizeScale"
+				:aria-expanded="isMobileOpen"
+				:aria-controls="listId"
+				@click="toggleMobile">
+				<template #left><BaseIcon :name="isMobileOpen ? 'close' : 'menu'" :size-scale="iconScale" /></template>
+				{{ mobileToggleLabel }}
+			</BaseButton>
 
-				<ul v-if="isColumnOpen(column.title)" class="base-mega-menu__list" :class="classes.list">
-					<BaseMegaMenuNode
-						v-for="item in column.items"
-						:key="item.label"
-						:item="item"
-						:level="0"
-						:parent-path="column.title"
-						:trigger="effectiveTrigger"
-						:layout="layout"
-						:is-mobile="isMobile"
-						:hover-delay="hoverDelay"
-						:size-scale="sizeScale"
-						@navigate="emit('navigate', $event)"
-						@item-click="emit('item-click', $event)">
-						<template #item="slotProps">
-							<slot name="item" v-bind="slotProps" />
-						</template>
-					</BaseMegaMenuNode>
+			<Transition name="base-mega-menu-reveal" :css="!isMotionReduced">
+				<ul v-show="!isMobileMode || isMobileOpen" :id="listId" ref="listRef" :class="[ui('list'), classes.list]" role="list">
+					<li
+						v-for="item in items"
+						:key="getItemKey(item)"
+						:class="ui('item')"
+						@pointerenter="handleItemEnter(item, $event)"
+						@pointerleave="handleLeave">
+						<button
+							v-if="hasPanel(item)"
+							:id="triggerId(item)"
+							type="button"
+							:class="[
+								ui('trigger'),
+								{ 'base-mega-menu__trigger--open': isOpen(item), 'base-mega-menu__trigger--active': item.isActive },
+								classes.trigger,
+							]"
+							:disabled="item.isDisabled"
+							:aria-current="item.isActive || undefined"
+							:aria-expanded="isOpen(item)"
+							:aria-controls="panelId(item)"
+							@click="handleTriggerClick(item)"
+							@keydown="handleTriggerKeydown($event, item, items ?? [])">
+							<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__trigger-icon" />
+							<span class="base-mega-menu__trigger-label">{{ item.label }}</span>
+							<BaseIcon name="chevron-down" :size-scale="iconScale" class="base-mega-menu__chevron" />
+						</button>
+
+						<BaseLink
+							v-else
+							:id="triggerId(item)"
+							:class="[ui('trigger'), { 'base-mega-menu__trigger--active': item.isActive }, classes.trigger]"
+							:aria-current="item.isActive ? 'page' : undefined"
+							variant="ghost"
+							:to="item.to"
+							:href="item.href"
+							:target="item.target"
+							:is-disabled="item.isDisabled"
+							@click="select(item, $event)"
+							@keydown="handleTriggerKeydown($event, item, items ?? [])">
+							<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__trigger-icon" />
+							<span class="base-mega-menu__trigger-label">{{ item.label }}</span>
+						</BaseLink>
+
+						<Transition name="base-mega-menu-reveal" :css="!isMotionReduced">
+							<div
+								v-if="isMobileMode && isOpen(item)"
+								:id="panelId(item)"
+								:class="[ui('panel'), 'base-mega-menu__panel--inline', classes.panel]"
+								@keydown="handlePanelKeydown">
+								<MegaMenuPanel
+									:item="item"
+									:classes="classes"
+									:ui="ui"
+									:is-motion-reduced="isMotionReduced"
+									:hover-delays="hoverDelays"
+									@select="select">
+									<template v-if="$slots.link" #link="slotProps">
+										<slot name="link" v-bind="slotProps" />
+									</template>
+
+									<template v-if="$slots.promo" #promo="slotProps">
+										<slot name="promo" v-bind="slotProps" />
+									</template>
+								</MegaMenuPanel>
+							</div>
+						</Transition>
+					</li>
 				</ul>
+			</Transition>
+
+			<div v-if="$slots.end" :class="ui('end')">
+				<slot name="end" />
 			</div>
 		</div>
 
-		<!-- ── Dropdown layout ── -->
-		<ul v-else class="base-mega-menu__nav" :class="classes.nav">
-			<li
-				v-for="item in items"
-				:key="item.label"
-				class="base-mega-menu__nav-item"
-				:class="[
-					{
-						'base-mega-menu__nav-item--open': isNavOpen(item.label),
-						'base-mega-menu__nav-item--disabled': item.isDisabled,
-					},
-					classes.navItem,
-				]"
-				@mouseenter="handleNavEnter(item)"
-				@mouseleave="handleNavLeave">
-				<slot name="nav-item" :item="item">
-					<BaseButton
-						variant="ghost"
-						class="base-mega-menu__nav-link"
-						:is-disabled="item.isDisabled"
-						:size-scale="sizeScale"
-						:custom-class="classes.navLink"
-						@click="handleNavClick(item)">
-						<BaseIcon v-if="item.icon" :name="item.icon" :size-scale="iconScale" class="base-mega-menu__nav-icon" />
-						<BaseText tag="span" :size-scale="sizeScale">{{ item.label }}</BaseText>
-						<BaseIcon v-if="hasChildren(item)" name="chevron-down" :size-scale="iconScale" class="base-mega-menu__nav-arrow" />
-					</BaseButton>
-				</slot>
+		<Transition name="base-mega-menu-panel" :css="!isMotionReduced">
+			<div
+				v-if="openItem && !isMobileMode"
+				:id="panelId(openItem)"
+				:class="[ui('panel'), classes.panel]"
+				@pointerenter="handlePanelEnter"
+				@pointerleave="handleLeave"
+				@keydown="handlePanelKeydown">
+				<Transition name="base-mega-menu-swap" :css="!isMotionReduced">
+					<MegaMenuPanel
+						:key="getItemKey(openItem)"
+						:item="openItem"
+						:classes="classes"
+						:ui="ui"
+						:is-motion-reduced="isMotionReduced"
+						:is-drilldown="isDrilldownItem(openItem)"
+						:hover-delays="hoverDelays"
+						@select="select">
+						<template v-if="$slots.link" #link="slotProps">
+							<slot name="link" v-bind="slotProps" />
+						</template>
 
-				<div v-if="hasChildren(item) && isNavOpen(item.label)" class="base-mega-menu__dropdown" :class="classes.dropdown">
-					<ul class="base-mega-menu__list">
-						<BaseMegaMenuNode
-							v-for="child in item.children"
-							:key="child.label"
-							:item="child"
-							:level="0"
-							:parent-path="item.label"
-							:trigger="effectiveTrigger"
-							:layout="layout"
-							:is-mobile="isMobile"
-							:hover-delay="hoverDelay"
-							:size-scale="sizeScale"
-							@navigate="emit('navigate', $event)"
-							@item-click="emit('item-click', $event)">
-							<template #item="slotProps">
-								<slot name="item" v-bind="slotProps" />
-							</template>
-						</BaseMegaMenuNode>
-					</ul>
-				</div>
-			</li>
-		</ul>
-	</div>
+						<template v-if="$slots.promo" #promo="slotProps">
+							<slot name="promo" v-bind="slotProps" />
+						</template>
+					</MegaMenuPanel>
+				</Transition>
+			</div>
+		</Transition>
+	</nav>
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useBreakpoint } from '@composables/useBreakpoint'
-import { useMegaMenuTreeProvider } from '@composables/useMegaMenuTree'
-import { UI_FONT_WEIGHT, UI_TIMING, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import { navigateAndEmit } from '@utils/navigationUtils'
-import BaseMegaMenuNode from './BaseMegaMenuNode.vue'
+import '@components/BaseIcon/styles/BaseIcon.style.scss'
+import '@components/BaseLink/styles/BaseLink.style.scss'
 import '../styles/BaseMegaMenu.style.scss'
-import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots, MegaMenuItem } from '../model/BaseMegaMenu.types'
+import MegaMenuPanel from './MegaMenuPanel.vue'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
+import { BaseButton } from '@components/BaseButton'
+import { useBaseMegaMenu } from '../model/useBaseMegaMenu'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseMegaMenuEmits, BaseMegaMenuProps, BaseMegaMenuSlots } from '../types/BaseMegaMenu.types'
 
-const props = withDefaults(defineProps<BaseMegaMenuProps>(), {
-	trigger: 'click',
-	layout: 'columns',
-	hoverDelay: UI_TIMING.HOVER_DELAY,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+defineOptions({ name: 'BaseMegaMenu' })
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-mega-menu', props, ['root', 'container', 'column', 'title', 'list', 'nav', 'navItem', 'navLink', 'dropdown'])
-
+const props = withDefaults(
+	defineProps<BaseMegaMenuProps>(),
+	kitDefaults('BaseMegaMenu', {
+		variant: DEFAULT_VARIANT,
+		items: () => [],
+		trigger: 'hover',
+		openDelay: 150,
+		closeDelay: 300,
+		mobileBreakpoint: 'md',
+		drilldown: 'never',
+		drilldownFrom: 3,
+		drilldownBelow: 480,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseMegaMenuEmits>()
 defineSlots<BaseMegaMenuSlots>()
 
-/** Реестр раскрытия дерева: гарантирует, что открыт только один узел на уровень */
-useMegaMenuTreeProvider()
+const {
+	ui,
+	isMotionReduced,
+	rootRef,
+	listRef,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	navLabel,
+	mobileToggleLabel,
+	iconScale,
+	listId,
+	openItem,
+	isMobileMode,
+	isMobileOpen,
+	toggleMobile,
+	getItemKey,
+	hasPanel,
+	isDrilldownItem,
+	hoverDelays,
+	isOpen,
+	triggerId,
+	panelId,
+	select,
+	close,
+	handleTriggerClick,
+	handleTriggerKeydown,
+	handlePanelKeydown,
+	handleItemEnter,
+	handleLeave,
+	handlePanelEnter,
+	handleFocusOut,
+} = useBaseMegaMenu(props, emit)
 
-const { isMobile } = useBreakpoint()
-
-/** На мобильном hover недоступен — раскрытие всегда по клику */
-const effectiveTrigger = computed(() => (isMobile.value ? 'click' : props.trigger))
-
-/** Единый масштаб иконки для корневого уровня */
-const iconScale = computed(() => calcIconScale('sm', props.sizeScale))
-
-/** Открытые колонки (columns layout) */
-const openColumns = ref<string[]>([])
-/** Открытые навигационные пункты (dropdown layout) */
-const openNavItems = ref<string[]>([])
-
-let hoverTimer: ReturnType<typeof setTimeout> | null = null
-
-/** Очистить таймер hover */
-function clearTimer(): void {
-	if (hoverTimer) {
-		clearTimeout(hoverTimer)
-		hoverTimer = null
-	}
-}
-
-onBeforeUnmount(clearTimer)
-
-/** Есть ли у узла дочерние элементы */
-function hasChildren(item: MegaMenuItem): boolean {
-	return Boolean(item.children && item.children.length > 0)
-}
-
-function navigate(to?: string, href?: string, target?: '_blank' | '_self'): void {
-	navigateAndEmit({ to, href, target }, (url) => emit('navigate', url))
-}
-
-// ── Columns ──
-
-function toggleColumn(title: string): void {
-	if (effectiveTrigger.value === 'hover') return
-	const index = openColumns.value.indexOf(title)
-	if (index > -1) {
-		openColumns.value.splice(index, 1)
-	} else {
-		openColumns.value.push(title)
-	}
-	const column = props.columns?.find(c => c.title === title)
-	/* istanbul ignore else -- defensive: title всегда соответствует существующей колонке */
-	if (column) emit('column-click', column)
-}
-
-function isColumnOpen(title: string): boolean {
-	return openColumns.value.includes(title) || !isMobile.value
-}
-
-function handleColumnEnter(title: string): void {
-	if (effectiveTrigger.value !== 'hover') return
-	clearTimer()
-	if (!openColumns.value.includes(title)) {
-		openColumns.value.push(title)
-	}
-}
-
-function handleColumnLeave(): void {
-	/* istanbul ignore next -- defensive: handleColumnLeave вызывается только при trigger='hover' */
-	if (effectiveTrigger.value !== 'hover') return
-	hoverTimer = setTimeout(() => {
-		openColumns.value = []
-	}, props.hoverDelay)
-}
-
-// ── Dropdown ──
-
-function handleNavClick(item: MegaMenuItem): void {
-	/* istanbul ignore next -- defensive: disabled-элементы не вызывают click в template */
-	if (item.isDisabled) return
-	emit('item-click', item)
-	if (hasChildren(item)) {
-		openNavItems.value = openNavItems.value.includes(item.label) ? [] : [item.label]
-	} else {
-		navigate(item.to, item.href, item.target)
-	}
-}
-
-function handleNavEnter(item: MegaMenuItem): void {
-	if (effectiveTrigger.value !== 'hover') return
-	clearTimer()
-	if (hasChildren(item) && !openNavItems.value.includes(item.label)) {
-		openNavItems.value = [item.label]
-	}
-}
-
-function handleNavLeave(): void {
-	/* istanbul ignore next -- defensive: handleNavLeave вызывается только при trigger='hover' */
-	if (effectiveTrigger.value !== 'hover') return
-	hoverTimer = setTimeout(() => {
-		openNavItems.value = []
-	}, props.hoverDelay)
-}
-
-function isNavOpen(label: string): boolean {
-	return openNavItems.value.includes(label)
-}
+defineExpose({ close })
 </script>

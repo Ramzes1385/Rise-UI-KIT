@@ -1,110 +1,59 @@
-/**
- * Конфигурация Storybook для Vue 3 + Vite.
- * Использует aliases и SCSS-модули структуры UI-библиотеки.
- */
+/** Структура: src/stories/ — вводная и Foundations; src/components/<X>/stories/ — stories компонентов; preview.ts — тема и a11y; manager.ts — интерфейс Storybook. */
 
-import { cpSync, existsSync, mkdirSync } from 'node:fs'
 import type { StorybookConfig } from '@storybook/vue3-vite'
 import vue from '@vitejs/plugin-vue'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import type { Plugin } from 'vite'
-import { mergeConfig } from 'vite'
-import { resolvePathInStorybookCache } from 'storybook/internal/common'
+import { mergeConfig, type PluginOption } from 'vite'
 import svgLoader from 'vite-svg-loader'
+import { createAliasConfig } from '../config/alias.ts'
+import { createScssOptions } from '../config/css.ts'
 import { createSpritePlugin } from '../plugins/sprite.ts'
+import { createSlotDocsPlugin } from '../plugins/slotDocs.ts'
+import { createVueDocgenPlugin, STORYBOOK_DOCGEN_PLUGIN_NAME } from '../plugins/vueDocgen.ts'
+import { createTtsPlugin } from './tts.ts'
 
 const PROJECT_ROOT = resolve(process.cwd())
-const COVERAGE_DIR = resolve(PROJECT_ROOT, 'coverage')
-const ADDON_VITEST_CACHE = resolvePathInStorybookCache('coverage')
 
-type StaticDir = { from: string; to: string }
+/** Шрифты кита в интерфейсе Storybook (боковая панель, панели аддонов): @font-face из src/styles/fonts/_fonts.scss, файлы — `staticDirs` */
+const MANAGER_FONTS_DIR = 'rise-fonts'
 
-/**
- * Отдаёт /coverage из проектной папки coverage/.
- *
- * Addon-vitest при нажатии «Run tests» пишет HTML-отчёт в свой внутренний кеш
- * (node_modules/.cache/storybook/.../coverage/), а не в coverage/.
- * Vite-миддлвар syncCoverageFromCache синхронизирует кеш → coverage/
- * при первом запросе /coverage/, чтобы /coverage/index.html всегда был доступен.
- *
- * CLI-прогоны (test:storybook:coverage, test:coverage:merged) пишут напрямую
- * в coverage/, миддлвар для них — no-op.
- */
-function serveProjectCoverage(staticDirs: StaticDir[]): StaticDir[] {
-	mkdirSync(COVERAGE_DIR, { recursive: true })
-	const others = staticDirs.filter(dir => dir.to !== '/coverage')
-	return [{ from: COVERAGE_DIR, to: '/coverage' }, ...others]
+function managerFontFaces(): string {
+	const source = readFileSync(resolve(PROJECT_ROOT, 'src/styles/fonts/_fonts.scss'), 'utf8')
+	return source
+		.replace(/^\/\/.*$/gm, '')
+		.replaceAll('./files/', `./${MANAGER_FONTS_DIR}/`)
+		.replaceAll('?no-inline', '')
 }
 
-/**
- * Vite-плагин: при запросе /coverage/ синхронизирует отчёт из кеша
- * addon-vitest в coverage/, если в coverage/ ещё нет index.html.
- */
-function syncCoverageFromCache(): Plugin {
-	return {
-		name: 'sync-coverage-from-cache',
-		configureServer(server) {
-			server.middlewares.use((req, _res, next) => {
-				const url = req.url ?? ''
-				if (!url.startsWith('/coverage')) return next()
-
-				if (!existsSync(resolve(COVERAGE_DIR, 'index.html')) && existsSync(resolve(ADDON_VITEST_CACHE, 'index.html'))) {
-					cpSync(ADDON_VITEST_CACHE, COVERAGE_DIR, { recursive: true, force: true })
-				}
-
-				next()
-			})
-		},
-	}
+/** Штатный docgen Storybook не знает алиасов (`@composables/…`) — подменяем его своим с теми же алиасами, на том же месте. */
+function replaceDocgenPlugin(plugins: PluginOption[] | undefined): PluginOption[] {
+	return (plugins ?? []).flat(Infinity as 1).map(plugin => (isDocgenPlugin(plugin) ? createVueDocgenPlugin() : plugin))
 }
 
-/** Alias проекта, продублированные из build/config/alias.ts. */
-const ALIASES: Record<string, string> = {
-	'@': resolve(PROJECT_ROOT, 'src'),
-	'@components': resolve(PROJECT_ROOT, 'src/components'),
-	'@composables': resolve(PROJECT_ROOT, 'src/composables'),
-	'@constants': resolve(PROJECT_ROOT, 'src/constants'),
-	'@icons': resolve(PROJECT_ROOT, 'src/icons'),
-	'@plugins': resolve(PROJECT_ROOT, 'src/plugins'),
-	'@styles': resolve(PROJECT_ROOT, 'src/styles'),
-	'@ui': resolve(PROJECT_ROOT, 'src/components'),
-	'@utils': resolve(PROJECT_ROOT, 'src/utils'),
-}
-
-/** Глобальный SCSS prelude — продублирован из build/config/css.ts. */
-const GLOBAL_SCSS_PRELUDE = [
-	'@use "@styles/variables" as *;',
-	'@use "@styles/mixins" as *;',
-	'@use "@styles/functions" as *;',
-	'',
-].join('\n')
-
-// Глобальные SCSS-файлы не импортируют сами себя — иначе зацикливание.
-const GLOBAL_SCSS_FILES = ['_variables.scss', '_mixins.scss', '_functions.scss']
-
-function shouldSkipImport(filename: string): boolean {
-	return GLOBAL_SCSS_FILES.some(file => filename.endsWith(file))
-}
-
-function addGlobalImports(source: string, filename: string): string {
-	if (shouldSkipImport(filename)) return source
-	return `${GLOBAL_SCSS_PRELUDE}${source}`
+function isDocgenPlugin(plugin: PluginOption): boolean {
+	return typeof plugin === 'object' && plugin !== null && 'name' in plugin && plugin.name === STORYBOOK_DOCGEN_PLUGIN_NAME
 }
 
 const config: StorybookConfig = {
-	stories: ['../../src/components/**/*.stories.ts'],
+	stories: ['../../src/stories/**/*.mdx', '../../src/stories/**/*.stories.ts', '../../src/components/**/*.stories.ts'],
 
-	addons: ['@storybook/addon-a11y', '@storybook/addon-docs', '@storybook/addon-onboarding', '@storybook/addon-vitest'],
+	addons: ['@storybook/addon-a11y', '@storybook/addon-docs'],
 
 	framework: {
 		name: '@storybook/vue3-vite',
 		options: {},
 	},
 
-	staticDirs: (dirs = []) => serveProjectCoverage(dirs as StaticDir[]),
+	core: {
+		disableTelemetry: true,
+	},
 
-		viteFinal(config) {
-		const isVitest = !!process.env.VITEST
+	staticDirs: [{ from: '../../src/styles/fonts/files', to: `/${MANAGER_FONTS_DIR}` }],
+
+	managerHead: head => `${head}<style>${managerFontFaces()}</style>`,
+
+	viteFinal(config, { configType }) {
 		const merged = mergeConfig(config, {
 			root: PROJECT_ROOT,
 			server: {
@@ -113,22 +62,27 @@ const config: StorybookConfig = {
 				},
 			},
 			resolve: {
-				alias: ALIASES,
+				alias: createAliasConfig(),
 				extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
 			},
 			css: {
 				preprocessorOptions: {
-					scss: {
-						api: 'modern-compiler',
-						additionalData: addGlobalImports,
-						charset: false,
-					},
+					scss: createScssOptions(),
 				},
 			},
 		})
-		const plugins = [...[config.plugins], svgLoader({ defaultImport: 'component', svgo: true })]
-		if (!isVitest) plugins.push(vue(), syncCoverageFromCache(), createSpritePlugin())
-		merged.plugins = plugins
+		// vite:vue должен идти раньше storybook:vue-docgen-plugin из config.plugins: docgen дописывает
+		// `_sfc_main.__docgenInfo = …` к уже скомпилированному JS. Если vue() стоит после него, docgen дописывается
+		// к исходнику SFC и молча теряется (в Docs нет описаний props), а JSDoc с HTML-тегами ломает сборку.
+		merged.plugins = [
+			vue(),
+			...replaceDocgenPlugin(config.plugins),
+			createSlotDocsPlugin(),
+			svgLoader({ defaultImport: 'component', svgo: true }),
+			createSpritePlugin(),
+			// Озвучка SpeechKit для истории SpeechYandex — только dev-сервер: ключ из .env.local не должен попасть в сборку
+			...(configType === 'DEVELOPMENT' ? [createTtsPlugin(PROJECT_ROOT)] : []),
+		]
 		return merged
 	},
 }

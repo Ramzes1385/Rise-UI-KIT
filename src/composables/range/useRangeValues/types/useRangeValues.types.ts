@@ -1,0 +1,43 @@
+import type { ComputedRef } from 'vue'
+import type { BaseRangeEmits, BaseRangeProps } from '@components/BaseRange/types/BaseRange.types'
+
+export type RangeMode = 'single' | 'range' | 'points'
+
+type RequiredRangeFields = Required<Pick<BaseRangeProps, 'min' | 'max' | 'step' | 'modelValue'>>
+
+export interface UseRangeValuesOptions {
+	props: Omit<BaseRangeProps, 'min' | 'max' | 'step' | 'modelValue'> & RequiredRangeFields
+	emit: BaseRangeEmits
+}
+
+/** Проверенные границы и шаг: конечные числа, `max ≥ min`, `step > 0` */
+export interface RangeBounds {
+	min: number
+	max: number
+	step: number
+}
+
+export interface UseRangeValuesReturn {
+	mode: ComputedRef<RangeMode>
+	/** Границы и шаг после проверки пропсов: ими пользуются подписи, aria и клавиатура */
+	bounds: ComputedRef<RangeBounds>
+	pointValues: ComputedRef<number[]>
+	labelText: ComputedRef<string>
+	tooltipPosition: ComputedRef<'top' | 'right'>
+	fillSegments: ComputedRef<Record<string, string>[]>
+	thumbStyle: (value: number) => Record<string, string>
+	markStyle: (value: number) => Record<string, string>
+	thumbMin: (index: number) => number
+	thumbMax: (index: number) => number
+	snapToStepValue: (value: number) => number
+	setPointValue: (index: number, rawValue: number) => void
+	/** Эмитить change; values — значения точек после изменения (по умолчанию — текущие props) */
+	emitChange: (values?: number[]) => void
+}
+
+/** Что нужно для эмита значений range-слайдера: emit, режим и значения точек */
+export interface RangeEmitContext {
+	emit: BaseRangeEmits
+	mode: RangeMode
+	values: number[]
+}

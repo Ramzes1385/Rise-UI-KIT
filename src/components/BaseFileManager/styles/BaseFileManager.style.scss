@@ -1,0 +1,396 @@
+.base-file-manager {
+	@include custom-color-scope;
+	--file-manager-columns: #{sz(28px)} minmax(0, 1fr) #{sz(96px)} #{sz(168px)};
+
+	display: flex;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	border: 1px solid ct(file-manager, border, transparent);
+	border-radius: sz(ct(file-manager, radius, var(--rise-radius-lg)));
+	container-type: inline-size;
+	font-family: var(--rise-font-sans);
+	--file-manager-hover: var(--rise-bg-elevated);
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg-muted)));
+	@include custom-text(color, var(--rise-text));
+
+	&--outline {
+		border-color: ct(file-manager, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg)));
+	}
+
+	&--soft {
+		--file-manager-hover: var(--rise-bg-accented);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-bg-elevated)));
+	}
+
+	&--ghost {
+		@include tonal-surface(none);
+		@include custom-bg(background-color, ct(file-manager, bg, transparent));
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&__sidebar {
+		flex: 0 0 sz(ct(file-manager, sidebar-width, 220px));
+		box-sizing: border-box;
+		min-width: 0;
+		padding: space(8px);
+		overflow: auto;
+		border-inline-end: 1px solid var(--rise-border);
+		@include scrollbar-thin;
+	}
+
+	&__sidebar .base-tree {
+		min-width: 0;
+	}
+
+	&__drop {
+		display: block;
+		border-radius: sz(var(--rise-radius-sm));
+		@include truncate;
+
+		&--active {
+			outline: 2px dashed var(--rise-primary);
+			outline-offset: 1px;
+		}
+	}
+
+	&__main {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__toolbar {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+		padding: space(8px 12px);
+		border-bottom: 1px solid var(--rise-border);
+	}
+
+	&__nav {
+		display: flex;
+		flex: 1 1 100%;
+		align-items: center;
+		gap: sz(8px);
+		min-width: 0;
+	}
+
+	& &__path {
+		flex: 1;
+		min-width: 0;
+	}
+
+	& &__search {
+		flex: 1 1 sz(200px);
+		min-width: 0;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		flex: 0 1 auto;
+		align-items: center;
+		gap: sz(6px);
+	}
+
+	&__menu {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	&__area {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		@include scrollbar-thin;
+	}
+
+	&__header {
+		display: grid;
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		grid-template-columns: var(--file-manager-columns);
+		align-items: center;
+		padding: space(4px 12px);
+		border-bottom: 1px solid var(--rise-border);
+		@include custom-bg(background-color, ct(file-manager, bg, var(--rise-surface-bg, var(--rise-bg))));
+	}
+
+	& &__sort {
+		justify-self: start;
+		@include caps-label(10px);
+
+		&[aria-pressed='true'] {
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__sort--name {
+		grid-column: 2;
+	}
+
+	&__sort--size {
+		grid-column: 3;
+	}
+
+	&__sort--modified-at {
+		grid-column: 4;
+	}
+
+	&__list-wrap {
+		position: relative;
+		flex: none;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		padding: space(4px);
+	}
+
+	&__entry {
+		display: grid;
+		grid-template-columns: var(--file-manager-columns);
+		align-items: center;
+		gap: sz(8px);
+		box-sizing: border-box;
+		min-height: sz(36px);
+		padding: space(4px 8px);
+		border-radius: sz(ct(file-manager, entry-radius, var(--rise-radius-sm)));
+		cursor: pointer;
+		user-select: none;
+		outline: none;
+		@include transition-colors;
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: ct(file-manager, entry-bg-hover, var(--file-manager-hover));
+		}
+
+		&--selected {
+			background-color: ct(file-manager, entry-bg-selected, var(--rise-primary-soft));
+			color: ct(file-manager, entry-text-selected, var(--rise-primary-text));
+
+			@include hover {
+				background-color: ct(file-manager, entry-bg-selected, var(--rise-primary-soft-hover));
+			}
+		}
+
+		&--dragging {
+			opacity: var(--rise-disabled-opacity);
+		}
+
+		&--drop {
+			outline: 2px dashed var(--rise-primary);
+			outline-offset: -2px;
+		}
+
+		&--editing {
+			cursor: default;
+		}
+
+		&--hidden {
+			visibility: hidden;
+		}
+
+		&--overlay {
+			position: absolute;
+			z-index: 1;
+			@include custom-bg(background-color, ct(file-manager, bg, var(--rise-surface-bg, var(--rise-bg))));
+		}
+
+		&--inline {
+			margin: space(4px 4px 0);
+		}
+	}
+
+	&__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--rise-text-toned);
+	}
+
+	&__entry--folder &__icon {
+		color: var(--rise-primary);
+	}
+
+	&__entry--selected &__icon {
+		color: inherit;
+	}
+
+	&__name {
+		min-width: 0;
+		color: inherit;
+		font-weight: var(--rise-font-weight-medium);
+		@include truncate;
+	}
+
+	&__meta {
+		min-width: 0;
+		color: var(--rise-text-toned);
+		font-variant-numeric: tabular-nums;
+		@include text-size(xs);
+		@include truncate;
+	}
+
+	&__entry--selected &__meta {
+		color: inherit;
+	}
+
+	&__size {
+		text-align: end;
+	}
+
+	& &__editor {
+		grid-column: 2 / -1;
+		min-width: 0;
+	}
+
+	&--grid &__header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(4px);
+	}
+
+	&--grid &__sort--name,
+	&--grid &__sort--size,
+	&--grid &__sort--modified-at {
+		grid-column: auto;
+	}
+
+	&--grid &__list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(sz(ct(file-manager, tile-min-width, 120px)), 1fr));
+		align-content: start;
+		gap: sz(8px);
+		padding: space(12px);
+	}
+
+	&--grid &__entry {
+		grid-template-columns: minmax(0, 1fr);
+		justify-items: center;
+		gap: sz(4px);
+		padding: space(12px 8px);
+		text-align: center;
+	}
+
+	&--grid &__name {
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: normal;
+		overflow-wrap: anywhere;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+	}
+
+	&--grid &__entry--inline {
+		grid-template-columns: var(--file-manager-columns);
+		justify-items: stretch;
+		margin: space(12px 12px 0);
+		padding: space(4px 8px);
+		text-align: start;
+	}
+
+	&--grid &__entry--inline &__editor {
+		grid-column: 2 / -1;
+	}
+
+	&--grid &__editor {
+		grid-column: auto;
+		width: 100%;
+	}
+
+	&--grid &__size {
+		text-align: center;
+	}
+
+	&--grid &__modified {
+		display: none;
+	}
+
+	&__state {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		padding: space(16px);
+	}
+
+	&__state--loading {
+		justify-content: flex-start;
+		padding: space(8px 12px);
+	}
+
+	&__skeleton-row {
+		display: flex;
+		align-items: center;
+		gap: sz(12px);
+		padding: space(8px);
+
+		&:nth-of-type(3n + 1) > :last-child {
+			max-width: 55%;
+		}
+
+		&:nth-of-type(3n + 2) > :last-child {
+			max-width: 72%;
+		}
+	}
+
+	&__status {
+		margin: 0;
+		padding: space(6px 12px);
+		border-top: 1px solid var(--rise-border);
+		color: var(--rise-text-toned);
+		@include text-size(xs);
+	}
+
+	&__hint {
+		margin: 0 0 space(12px);
+		color: var(--rise-text-toned);
+	}
+
+	&__sr {
+		@include visually-hidden;
+	}
+
+	@container (max-width: 640px) {
+		.base-file-manager__sidebar {
+			display: none;
+		}
+	}
+
+	@container (max-width: 480px) {
+		.base-file-manager__modified,
+		.base-file-manager__sort--modified-at {
+			display: none;
+		}
+
+		.base-file-manager__list--list,
+		.base-file-manager__header {
+			--file-manager-columns: #{sz(28px)} minmax(0, 1fr) #{sz(80px)};
+		}
+	}
+}

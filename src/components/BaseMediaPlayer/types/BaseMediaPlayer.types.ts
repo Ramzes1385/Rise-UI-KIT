@@ -1,0 +1,346 @@
+import type { UiProp } from '@composables/base/useUi'
+import type { MediaErrorEffect } from './overlays/MediaError.types'
+import type { MediaHlsConstructor } from './playback/MediaHls.types'
+import type { MediaAudioTrackItem } from './content/MediaAudio.types'
+import type { PropsWithDefaults } from '@composables/base/useDefaults'
+import type { MediaTextTrackItem } from './content/MediaSubtitles.types'
+import type { SeoComponentProps } from '@composables/seo/useStructuredData'
+import type { BaseComponentProps } from '@composables/base/useBaseComponent'
+import type { createPlayerContext } from '../model/player/useBaseMediaPlayer'
+import type { MediaWatchEvent, MediaWatchParty } from './panels/MediaWatch.types'
+import type { MediaShareEvent, MediaShareNetwork } from './panels/MediaShare.types'
+import type { MediaClip, MediaChapter, MediaPlaylist } from './content/MediaPlaylist.types'
+import type { MediaAdBreak, MediaAdEvent, MediaAdSegment } from './overlays/MediaAds.types'
+import type { MediaBanner, MediaAchievement, MediaBannerEvent } from './overlays/MediaNotices.types'
+import type { MediaActions, MediaPlayerError, MediaSourceItem, MediaState } from './playback/MediaCore.types'
+
+/** Вариант оформления один: панель управления лежит поверх кадра на тёмной подложке в обеих темах */
+export const MEDIA_PLAYER_VARIANTS = ['default'] as const
+
+export const MEDIA_PRELOAD_MODES = ['none', 'metadata', 'auto'] as const
+
+export const MEDIA_LOGO_POSITIONS = ['top-left', 'top-right'] as const
+
+/** Вид плеера: auto — по источнику (аудиофайл — audio), video — кадр с панелью поверх, audio — компактная панель без кадра */
+export const MEDIA_PLAYER_MODES = ['auto', 'video', 'audio'] as const
+
+/** Угол кадра с логотипом */
+export type MediaLogoPosition = (typeof MEDIA_LOGO_POSITIONS)[number]
+
+export const MEDIA_REPORT_REASONS = ['no-sound', 'no-video', 'buffering', 'out-of-sync', 'other'] as const
+
+/** Причина жалобы зрителя: нет звука, нет изображения, тормозит, не совпадают субтитры или озвучка, другое */
+export type MediaReportReason = (typeof MEDIA_REPORT_REASONS)[number]
+
+export interface MediaReport {
+	/** Что случилось */
+	reason: MediaReportReason
+	/** Комментарий зрителя */
+	comment: string
+	/** Позиция записи в момент отправки, секунды */
+	time: number
+	/** Адрес воспроизводимого источника */
+	source: string
+	/** Отчёт для отладки: время, браузер, страница, показатели плеера и последние события */
+	details: string
+}
+
+/** Что загружать до запуска: ничего, только длительность и первый кадр или запись целиком */
+export type MediaPreload = (typeof MEDIA_PRELOAD_MODES)[number]
+
+export type MediaPlayerMode = (typeof MEDIA_PLAYER_MODES)[number]
+
+/**
+ * Части BaseMediaPlayer для пропа `ui` (БЭМ-элементы `.base-media-player__<часть>`, `root` — весь плеер): media — `<video>`,
+ * cover — обложка до запуска, paused — экран паузы, start — экран запуска, big-play — большая кнопка «Смотреть»,
+ * captions — слой субтитров, top — верхняя полоса, title — название, logo — логотип, loader — индикатор загрузки,
+ * resume — плашка «Продолжить с …», skip — «Пропустить заставку», controls — панель управления, seek — шкала перемотки.
+ */
+export const MEDIA_PLAYER_PARTS = [
+	'media',
+	'cover',
+	'paused',
+	'start',
+	'big-play',
+	'captions',
+	'top',
+	'title',
+	'logo',
+	'loader',
+	'resume',
+	'skip',
+	'controls',
+	'seek',
+] as const
+
+export type BaseMediaPlayerPart = (typeof MEDIA_PLAYER_PARTS)[number]
+
+export interface BaseMediaPlayerProps
+	extends
+		SeoComponentProps,
+		BaseComponentProps<
+			(typeof MEDIA_PLAYER_VARIANTS)[number],
+			'root' | 'media' | 'overlay' | 'controls' | 'seek' | 'volume' | 'time' | 'title' | 'logo'
+		> {
+	/**
+	 * Источник: адрес или список с MIME. Играет первый источник, который поддерживает браузер (`canPlayType`).
+	 * Абсолютные адреса — только со схемами из `allowedProtocols`. С `playlists` источники берутся из выбранной серии.
+	 */
+	sources?: MediaSourceItem[] | string
+	/** Название записи: доступное имя плеера и подпись поверх кадра */
+	title: string
+	/** Показывать название поверх кадра вместе с панелью управления */
+	hasTitle?: boolean
+	/** Логотип в углу кадра: относительный адрес или http:, https:, blob:, data:; виден и при скрытой панели */
+	logo?: string
+	/** Текст логотипа для скринридера; без него логотип декоративный */
+	logoAlt?: string
+	/** Ссылка логотипа (http: или https:), открывается в новой вкладке */
+	logoHref?: string
+	/** Угол кадра с логотипом */
+	logoPosition?: MediaLogoPosition
+	/**
+	 * Обложка до первого запуска: относительный адрес или http:, https:, blob:, data:.
+	 * Анимированные GIF, WebP, APNG и AVIF проигрываются; картинка заполняет кадр (`object-fit: cover`)
+	 */
+	poster?: string
+	/** Видео-обложка до первого запуска: короткий ролик без звука по кругу (WebM, MP4); `poster` показывается, пока он грузится */
+	posterVideo?: string
+	/** Запустить без звука сразу после загрузки: браузеры разрешают автозапуск только без звука */
+	isAutoplay?: boolean
+	/** Начинать заново после окончания */
+	isLoop?: boolean
+	/** Что загружать до запуска */
+	preload?: MediaPreload
+	/** CORS-режим загрузки: нужен, если записи и субтитры лежат на другом домене */
+	crossorigin?: 'anonymous' | 'use-credentials'
+	/** Пропорции кадра — значение CSS `aspect-ratio`; в аудиорежиме не действуют */
+	aspectRatio?: string
+	/**
+	 * Цвет плеера — любой цвет CSS: большая кнопка, шкала, переключатели, значки и выбранные пункты меню.
+	 * Для кнопок с текстом берётся затемнённый вариант. Без свойства — оранжевый `#f97316` (палитра кита)
+	 */
+	accentColor?: string
+	/**
+	 * Вид: `auto` — по выбранному источнику (MIME `audio/*` или расширение .mp3, .m4a, .aac, .ogg, .opus, .wav, .flac —
+	 * аудиорежим), `video` — кадр с панелью поверх, `audio` — компактная панель без кадра: без полного и широкого экрана,
+	 * субтитров и жестов по кадру, панель не прячется
+	 */
+	mode?: MediaPlayerMode
+	/** Горячие клавиши, пока фокус внутри плеера: Space/K, ←/→, J/L, Home/End, 0–9, ↑/↓, M, F, T, C, Shift+, и Shift+. */
+	hasKeyboardShortcuts?: boolean
+	/** Шаг перемотки стрелками ←/→, секунды */
+	seekStep?: number
+	/** Шаг перемотки J/L и PageUp/PageDown, секунды */
+	seekStepLarge?: number
+	/** Шаг громкости стрелками ↑/↓, от 0 до 1 */
+	volumeStep?: number
+	/** Скорости, между которыми переключают Shift+, и Shift+. (клавиши Б и Ю в русской раскладке) */
+	playbackRates?: number[]
+	/** Через сколько миллисекунд бездействия во время воспроизведения скрывается панель управления */
+	idleTimeout?: number
+	/** Разрешённые схемы адресов источников; по умолчанию http:, https:, blob: */
+	allowedProtocols?: readonly string[]
+	/** Позиция в секундах (`v-model:current-time`): обновляется не чаще 4 раз в секунду и сразу после перемотки */
+	currentTime?: number
+	/** Громкость от 0 до 1 (`v-model:volume`) */
+	volume?: number
+	/** Звук выключен (`v-model:is-muted`) */
+	isMuted?: boolean
+	/** Скорость воспроизведения (`v-model:playback-rate`) */
+	playbackRate?: number
+	/** Широкий экран (`v-model:is-theater`): раскладку страницы меняет приложение, плеер — свою кнопку и вид */
+	isTheater?: boolean
+	/** Ключ записи для запоминания позиции в браузере (localStorage): без него позиция не запоминается */
+	storageKey?: string
+	/** Ссылка для «Поделиться» и «Копировать ссылку»; по умолчанию — адрес страницы */
+	shareUrl?: string
+	/**
+	 * Кнопка «Поделиться» на панели и пункт «Поделиться…» в контекстном меню: окно со ссылками в соцсети и мессенджеры,
+	 * копированием ссылки, переключателем «Начать с …» и системным окном «Поделиться» там, где оно есть (Web Share API)
+	 */
+	hasShare?: boolean
+	/** Соцсети окна «Поделиться» и их порядок; по умолчанию — все из `MEDIA_SHARE_NETWORKS` */
+	shareNetworks?: readonly MediaShareNetwork[]
+	/** Параметр адреса с позицией в секундах: `?t=754` */
+	timeParam?: string
+	/** Начать с позиции из адреса страницы (`timeParam`), если она там есть */
+	hasUrlTime?: boolean
+	/**
+	 * Субтитры: файлы WebVTT (.vtt) или SubRip (.srt) в UTF-8, UTF-16 или Windows-1251.
+	 * Файлы с другого домена загружаются по CORS: сервер должен отвечать заголовком Access-Control-Allow-Origin
+	 */
+	tracks?: MediaTextTrackItem[]
+	/** Выбранные субтитры (`v-model:text-track`): `src` дорожки или null — выключены; без значения — дорожка с `isDefault` */
+	textTrack?: string | null
+	/** Зритель может добавить свой файл .srt или .vtt: пунктом меню или перетаскиванием на плеер */
+	hasCaptionUpload?: boolean
+	/**
+	 * Озвучки отдельными аудиофайлами: играют синхронно с видео, переключаются с той же позиции.
+	 * Пункт без `src` — звук самого видео. Без списка меню «Озвучка» показывает дорожки внутри файла, если их видит браузер
+	 */
+	audioTracks?: MediaAudioTrackItem[]
+	/** Выбранная озвучка (`v-model:audio-track`): `src` дорожки, null — звук самого видео, `embedded:<id>` — дорожка внутри файла */
+	audioTrack?: string | null
+	/**
+	 * Класс `Hls` из пакета hls.js для потоков .m3u8 там, где браузер не играет HLS сам (везде, кроме Safari):
+	 * качество «Авто» и вручную, озвучки и субтитры потока. В ките hls.js нет — его подключает приложение
+	 */
+	hls?: MediaHlsConstructor
+	/** Настройки hls.js: передаются в `new Hls(config)` */
+	hlsConfig?: Record<string, unknown>
+	/**
+	 * Плейлисты (сезоны) с сериями. Источники, обложка, субтитры, озвучки и главы берутся из выбранной серии,
+	 * если они у неё есть; позиция запоминается для каждой серии отдельно (`storageKey:<id серии>`)
+	 */
+	playlists?: MediaPlaylist[]
+	/** Выбранная серия (`v-model:episode`): `id` серии; без значения — первая */
+	episode?: string
+	/** Главы записи: цветные отрезки на шкале, список глав, «Пропустить опенинг» (у серии — свои главы) */
+	chapters?: MediaChapter[]
+	/**
+	 * Миниатюры для превью на шкале: файл WebVTT, где каждому отрезку времени соответствует картинка
+	 * или её часть (`sprite.jpg#xywh=0,0,160,90`). Без файла превью берёт кадры из самой записи
+	 */
+	thumbnails?: string
+	/** Превью кадра над шкалой при наведении; кадры из записи загружаются отдельным скрытым видео */
+	hasSeekPreview?: boolean
+	/**
+	 * Мини-плеер: если идущая запись прокручена за пределы экрана, плеер переезжает в правый нижний угол окна
+	 * и возвращается на место, когда место плеера снова видно
+	 */
+	hasMiniPlayer?: boolean
+	/**
+	 * Анимированный фон экрана ошибки: `retro` — ретро-сетка с солнцем, `aurora` — переливы, `noise` — помехи «нет сигнала»,
+	 * `glitch` — сбой картинки, `none` — затемнение без анимации. При `prefers-reduced-motion` фон неподвижен
+	 */
+	errorEffect?: MediaErrorEffect
+	/**
+	 * Совместный просмотр: ссылка-приглашение и участники. Кнопка в панели открывает окно со ссылкой, приглашением по почте
+	 * и списком участников; запуск, пауза, перемотка и скорость приходят событием `watch-sync`, команды других участников
+	 * плеер применяет через `applyWatchEvent`. Письма и сервер, через который участники обмениваются командами, — у приложения
+	 */
+	watchParty?: MediaWatchParty
+	/** Интро — отдельный ролик перед серией или записью: играет при запуске с начала, с «Пропустить» */
+	intro?: MediaClip
+	/** Аутро — отдельный ролик после серии или записи: играет до отсчёта следующей серии */
+	outro?: MediaClip
+	/** Переходить к следующей серии после окончания (`v-model:is-auto-next`); переключатель «Автовоспроизведение» — в панели */
+	isAutoNext?: boolean
+	/** Отсчёт перед следующей серией, секунды; 0 — переход сразу */
+	nextCountdown?: number
+	/** Рекламные паузы: перед видео, на заданной секунде и после; ролики и картинки с «Пропустить через N с» */
+	adBreaks?: MediaAdBreak[]
+	/** Рекламные интеграции внутри ролика: отрезки на шкале и «Пропустить рекламу» */
+	adSegments?: MediaAdSegment[]
+	/** Баннеры поверх кадра в заданное время: текст, картинка, ссылка, угол, «Закрыть»; свой вид — слот `banner` */
+	banners?: MediaBanner[]
+	/** Достижения: выдаются, когда зритель досмотрел до секунды `at` или до конца; всплывают уведомлением один раз */
+	achievements?: MediaAchievement[]
+	/** Уже полученные достижения (например, с сервера); плеер ещё помнит полученные в браузере */
+	earnedAchievements?: string[]
+	/** Приложение-приёмник Google Cast, если приложение подключило скрипт Cast; по умолчанию Default Media Receiver */
+	castReceiverId?: string
+	/**
+	 * Классы частей (`root`, `media`, `controls`, `seek`, `title`… — см. `MEDIA_PLAYER_PARTS`) — добавляются к классам кита.
+	 * Глобально — `defaults.BaseMediaPlayer.ui` плагина, классы склеиваются.
+	 *
+	 * @example
+	 * <BaseMediaPlayer :ui="{ root: 'rounded-none', controls: 'backdrop-blur' }" />
+	 */
+	ui?: UiProp<BaseMediaPlayerPart>
+}
+
+export interface BaseMediaPlayerEmits {
+	/** Воспроизведение началось или продолжилось */
+	(event: 'play'): void
+	/** Воспроизведение остановлено, в том числе в конце записи */
+	(event: 'pause'): void
+	/** Запись доиграла до конца */
+	(event: 'ended'): void
+	/** Ошибка загрузки или запуска: код и исходная ошибка */
+	(event: 'error', error: MediaPlayerError): void
+	(event: 'update:currentTime', value: number): void
+	(event: 'update:volume', value: number): void
+	(event: 'update:isMuted', value: boolean): void
+	(event: 'update:playbackRate', value: number): void
+	(event: 'update:isTheater', value: boolean): void
+	(event: 'update:textTrack', value: string | null): void
+	(event: 'update:audioTrack', value: string | null): void
+	(event: 'update:episode', value: string): void
+	(event: 'update:isAutoNext', value: boolean): void
+	/** Реклама: показ, досмотр, пропуск, переход по ссылке или ошибка — для статистики приложения */
+	(event: 'ad', data: MediaAdEvent): void
+	/** Баннер показан, по нему перешли или его закрыли */
+	(event: 'banner', data: MediaBannerEvent): void
+	/** Зритель получил достижение: приложение сохраняет его на сервере */
+	(event: 'achievement', achievement: MediaAchievement): void
+	/** Плеер развернулся на весь экран или свернулся */
+	(event: 'fullscreen-change', isFullscreen: boolean): void
+	/** Зритель отправил сообщение о проблеме: отправляет его приложение */
+	(event: 'report', report: MediaReport): void
+	/** Зритель поделился записью: соцсеть, копирование ссылки или системное окно — для статистики приложения */
+	(event: 'share', data: MediaShareEvent): void
+	/** Совместный просмотр: зритель пригласил участника по почте — письмо со ссылкой отправляет приложение */
+	(event: 'watch-invite', email: string): void
+	/** Совместный просмотр: зритель запустил, остановил, перемотал запись или сменил скорость — разошлите участникам */
+	(event: 'watch-sync', data: MediaWatchEvent): void
+}
+
+export interface BaseMediaPlayerSlots {
+	/** Своё сообщение об ошибке вместо текста и кнопки «Повторить» */
+	error?: (props: { error: MediaPlayerError; retry: () => void }) => unknown
+	/** Своё содержимое баннера; `close` закрывает его */
+	banner?: (props: { banner: MediaBanner; close: () => void }) => unknown
+}
+
+export interface BaseMediaPlayerExpose extends MediaActions {
+	/** Состояние воспроизведения: позиция, длительность, пауза, громкость, ошибка */
+	state: Readonly<MediaState>
+	/** Медиаэлемент — для интеграций: аналитика, MSE; до монтирования null */
+	getMediaElement: () => HTMLMediaElement | null
+	/** Выдать достижение из `achievements` по ключу (например, по событию приложения) */
+	awardAchievement: (id: string) => void
+	/** Применить команду другого участника совместного просмотра: без повторного `watch-sync` */
+	applyWatchEvent: (event: MediaWatchEvent) => void
+}
+
+export type MediaPlayerProps = PropsWithDefaults<
+	BaseMediaPlayerProps,
+	| 'preload'
+	| 'aspectRatio'
+	| 'mode'
+	| 'hasKeyboardShortcuts'
+	| 'seekStep'
+	| 'seekStepLarge'
+	| 'volumeStep'
+	| 'playbackRates'
+	| 'idleTimeout'
+	| 'hasTitle'
+	| 'logoPosition'
+	| 'timeParam'
+	| 'hasUrlTime'
+	| 'hasCaptionUpload'
+	| 'nextCountdown'
+	| 'hasSeekPreview'
+	| 'hasMiniPlayer'
+	| 'errorEffect'
+>
+
+/** Связь `v-model` плеера со значением медиаэлемента */
+export interface PlayerModelSync<T> {
+	/** Значение из props; undefined — плеер не управляется снаружи */
+	prop: () => T | undefined
+	/** Значение медиаэлемента */
+	current: () => T
+	/** Передать значение элементу */
+	apply: (value: T) => void
+	/** Сообщить новое значение элемента */
+	emit: (value: T) => void
+	isSame: (a: T, b: T) => boolean
+	/** Не передавать значение из props при монтировании */
+	skipOnMount?: () => boolean
+}
+
+/** Всё, что плеер отдаёт своим частям (панели управления): состояние, команды, подписи, меню */
+export type MediaPlayerContext = ReturnType<typeof createPlayerContext>

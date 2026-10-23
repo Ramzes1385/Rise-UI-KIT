@@ -1,0 +1,188 @@
+.base-filter-builder {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: space(ct(filter-builder, gap, 10px));
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	padding: space(ct(filter-builder, padding-y, 12px) ct(filter-builder, padding-x, 12px));
+	border: 1px solid ct(filter-builder, border, transparent);
+	border-radius: sz(ct(filter-builder, radius, var(--rise-radius-lg)));
+	@include text-size(sm);
+	@include custom-text(color, ct(filter-builder, text, var(--rise-text)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(filter-builder, bg, var(--rise-bg-muted)));
+
+	&__match {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+	}
+
+	&__empty {
+		margin: 0;
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&__list {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: space(8px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@include enter-transform(base-filter-builder__item, translateY(calc(var(--rise-motion-distance) * -1)), none);
+
+	& &__item-move {
+		transition: transform var(--rise-duration) var(--rise-ease-emphasized);
+	}
+
+	& &__item-leave-active {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	&__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+	}
+
+	&__joiner {
+		flex: none;
+		width: sz(36px);
+		@include caps-label(10px);
+		@include custom-text(color, ct(filter-builder, joiner-text, var(--rise-text-muted)));
+		text-align: end;
+	}
+
+	&__select {
+		position: relative;
+		display: inline-flex;
+		min-width: 0;
+	}
+
+	&__select select {
+		box-sizing: border-box;
+		height: sz(32px);
+		margin: 0;
+		padding: 0 sz(10px);
+		color: var(--rise-text-highlighted);
+		font: inherit;
+		@include control-text;
+		outline: none;
+		@include field-box(filter-builder-field);
+	}
+
+	&__select select {
+		max-width: 100%;
+		padding-inline-end: sz(30px);
+		appearance: none;
+		cursor: pointer;
+	}
+
+	&__select .base-icon {
+		position: absolute;
+		top: 50%;
+		inset-inline-end: sz(8px);
+		width: sz(16px);
+		height: sz(16px);
+		color: var(--rise-text-muted);
+		pointer-events: none;
+		transform: translateY(-50%);
+	}
+
+	&__select--inline select {
+		height: sz(28px);
+	}
+
+	&__value {
+		width: sz(160px);
+	}
+
+	&__input.base-input {
+		flex: none;
+		width: sz(160px);
+	}
+
+	&__input .base-input__wrapper {
+		@include field-box(filter-builder-field);
+	}
+
+	&__input .base-input__field {
+		height: sz(30px);
+		padding: 0 sz(10px);
+	}
+
+	&__value select {
+		width: 100%;
+	}
+
+	&__remove.base-button,
+	&__button.base-button {
+		color: var(--rise-text-muted);
+
+		.base-icon {
+			width: sz(16px);
+			height: sz(16px);
+		}
+
+		@include hover {
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__remove.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		flex: none;
+		width: sz(32px);
+		height: sz(32px);
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: space(4px);
+		margin-inline-start: sz(-8px);
+	}
+
+	&__button.base-button {
+		color: var(--rise-text);
+	}
+
+	&__add.base-button {
+		color: var(--rise-primary-text);
+	}
+
+	&--disabled &__select select {
+		@include disabled-state;
+	}
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(filter-builder, bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline {
+		border-color: ct(filter-builder, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(filter-builder, bg, transparent));
+	}
+
+	&--ghost {
+		padding: 0;
+		border-radius: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+}

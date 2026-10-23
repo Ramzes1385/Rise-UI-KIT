@@ -1,0 +1,185 @@
+.base-emoji-picker {
+	@include custom-color-scope;
+	--emoji-cell: #{sz(36px)};
+	--emoji-font: sans-serif;
+
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	width: calc(var(--emoji-columns, 8) * var(--emoji-cell) + #{space(16px)});
+	max-width: 100%;
+	overflow: hidden;
+	@include floating-surface(null);
+	border: 1px solid ct(emoji-picker, border, transparent);
+	border-radius: sz(ct(emoji-picker, radius, var(--rise-radius-lg)));
+	@include text-size(sm);
+	@include custom-text(color, ct(emoji-picker, text, var(--rise-text)));
+	@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-surface-floating)));
+
+	&__search.base-input {
+		width: auto;
+		margin: space(8px 8px 0);
+	}
+
+	&__nav {
+		display: flex;
+		justify-content: space-between;
+		gap: sz(2px);
+		padding: space(6px 8px 0);
+		border-bottom: 1px solid var(--rise-border);
+	}
+
+	&__tab {
+		display: inline-flex;
+		flex: 1 1 0;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		height: sz(32px);
+		padding: 0;
+		border: 0;
+		border-bottom: sz(2px) solid transparent;
+		border-radius: sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0 0;
+		background-color: transparent;
+		font-family: var(--emoji-font);
+		font-size: sz(18px);
+		line-height: 1;
+		cursor: pointer;
+		opacity: 0.65;
+		@include transition-colors;
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: ct(emoji-picker, tab-bg-hover, var(--rise-surface-floating-hover));
+			opacity: 1;
+		}
+
+		&[aria-current='true'] {
+			border-bottom-color: ct(emoji-picker, tab-border-selected, var(--rise-primary));
+			opacity: 1;
+		}
+	}
+
+	&__grid {
+		position: relative;
+		height: sz(264px);
+		padding: space(0 8px 8px);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		@include scrollbar-thin;
+	}
+
+	&__heading {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		margin: 0;
+		padding: sz(8px) sz(4px) sz(4px);
+		@include custom-bg(background-color, ct(emoji-picker, bg, var(--rise-surface-bg)));
+		@include caps-label(10px);
+		@include custom-text(color, ct(emoji-picker, heading-text, var(--rise-text-muted)));
+	}
+
+	&__items {
+		display: grid;
+		grid-template-columns: repeat(var(--emoji-columns, 8), var(--emoji-cell));
+	}
+
+	&__emoji {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: var(--emoji-cell);
+		height: var(--emoji-cell);
+		padding: 0;
+		border: 0;
+		border-radius: sz(ct(emoji-picker, emoji-radius, var(--rise-radius-sm)));
+		background-color: transparent;
+		font-family: var(--emoji-font);
+		font-size: sz(ct(emoji-picker, emoji-font-size, 22px));
+		line-height: 1;
+		cursor: pointer;
+		@include transition-colors;
+		transition-property: color, background-color, box-shadow, transform;
+		@include focus-ring(-2px);
+
+		@include hover {
+			background-color: ct(emoji-picker, emoji-bg-hover, var(--rise-surface-floating-hover));
+		}
+
+		@include motion-safe {
+			&:active {
+				transform: scale(0.9);
+			}
+		}
+	}
+
+	&__empty {
+		margin: 0;
+		@include custom-text(color, var(--rise-text-muted));
+		text-align: center;
+
+		&:not(:empty) {
+			padding: sz(32px) sz(8px);
+		}
+	}
+
+	&__preview {
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		min-height: sz(48px);
+		padding: space(6px 12px);
+		border-top: 1px solid var(--rise-border);
+	}
+
+	&__preview-emoji {
+		flex: none;
+		font-family: var(--emoji-font);
+		font-size: sz(28px);
+		line-height: 1;
+	}
+
+	&__preview-label {
+		min-width: 0;
+		@include custom-text(color, var(--rise-text-muted));
+		@include truncate;
+
+		&::first-letter {
+			text-transform: uppercase;
+		}
+	}
+
+	&--soft {
+		box-shadow: none;
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--soft &__heading {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: ct(emoji-picker, border, var(--rise-border-accented));
+		box-shadow: none;
+		@include tonal-surface(page);
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&--ghost {
+		border-radius: 0;
+		box-shadow: none;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost &__heading {
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&--disabled &__tab,
+	&--disabled &__emoji {
+		@include disabled-state;
+	}
+}

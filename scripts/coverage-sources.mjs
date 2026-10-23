@@ -1,5 +1,4 @@
-// Зоны покрытия: каждый тест-прогон пишет свой отчёт в coverage/<zone>/.
-// Общий список для merge-coverage.mjs и invalidate-merged-coverage.mjs.
+// Общий список зон для merge-coverage.mjs и invalidate-merged-coverage.mjs — каждый прогон пишет отчёт в coverage/<zone>/.
 
 export const COVERAGE_ZONES = ['components', 'components-heavy', 'composables', 'utils']
 

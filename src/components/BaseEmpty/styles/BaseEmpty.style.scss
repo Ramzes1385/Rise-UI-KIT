@@ -1,64 +1,103 @@
 .base-empty {
+	@include custom-color-scope;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	text-align: center;
-	padding: calc(2rem * var(--size-scale, 100) / 100);
-	border-radius: 8px;
-	width: 100%;
+	gap: space(ct(empty, gap, 16px));
 	box-sizing: border-box;
-
-	// default-вариант (базовые стили)
-	background-color: transparent;
-	border: 1px dashed var(--color-border);
-
-	&--ghost {
-		background-color: transparent;
-		border: none;
-		padding: 0;
-	}
+	width: 100%;
+	padding: space(ct(empty, padding-y, 32px) ct(empty, padding-x, 24px));
+	border: 1px solid ct(empty, border, transparent);
+	border-radius: sz(ct(empty, radius, var(--rise-radius-lg)));
+	text-align: center;
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(empty, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(empty, text, var(--rise-text-muted)));
 
 	&--soft {
-		background-color: var(--color-bg-soft);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(empty, bg, var(--rise-bg-elevated)));
+	}
+
+	&--ghost {
+		padding: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, ct(empty, bg, transparent));
+	}
+
+	&--compact {
+		flex-flow: row wrap;
+		gap: space(ct(empty, compact-gap, 8px));
+		padding: space(ct(empty, compact-padding-y, 8px) ct(empty, compact-padding-x, 12px));
 		border: none;
+		border-radius: sz(var(--rise-radius-md));
+	}
+
+	&--compact &__icon-wrapper {
+		padding: 0;
+		background-color: transparent;
+	}
+
+	&--compact &__icon-wrapper .base-icon__svg {
+		width: ct(empty, compact-icon-size, sz(16px));
+		height: ct(empty, compact-icon-size, sz(16px));
+	}
+
+	&--compact &__content {
+		flex-flow: row wrap;
+		justify-content: center;
+		gap: space(4px);
+		max-width: none;
+	}
+
+	&--compact &__body {
+		margin-top: 0;
 	}
 
 	&__icon-wrapper {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: calc(1rem * var(--size-scale, 100) / 100);
-		color: var(--color-text-muted);
+		padding: sz(10px);
+		border-radius: sz(var(--rise-radius-lg));
+		background-color: var(--rise-field-bg);
+		@include custom-text(color, ct(empty, icon-text, var(--rise-text-dimmed)));
+	}
+
+	&__icon-wrapper .base-icon__svg {
+		width: ct(empty, icon-size, sz(20px));
+		height: ct(empty, icon-size, sz(20px));
 	}
 
 	&__content {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: calc(0.5rem * var(--size-scale, 100) / 100);
-		max-width: 400px;
+		gap: space(4px);
+		max-width: sz(384px);
+		overflow-wrap: break-word;
 	}
 
-	&__title {
-		margin: 0;
-		color: var(--color-text);
+	& &__title {
+		@include inherit-custom-color;
+		@include heading;
+		font-size: sz(ct(empty, title-font-size, var(--rise-font-size-sm)));
+		@include custom-text(color, ct(empty, title-text, var(--rise-text-highlighted)));
 	}
 
-	&__description {
-		margin: 0;
-		color: var(--color-text-muted);
+	& &__description {
+		color: inherit;
+		font-size: sz(ct(empty, description-font-size, var(--rise-font-size-sm)));
 	}
 
 	&__body {
-		margin-top: calc(0.75rem * var(--size-scale, 100) / 100);
+		margin-top: space(4px);
 	}
 
 	&__actions {
 		display: flex;
-		align-items: center;
+		flex-wrap: wrap;
 		justify-content: center;
-		gap: calc(0.75rem * var(--size-scale, 100) / 100);
-		margin-top: calc(1.5rem * var(--size-scale, 100) / 100);
+		gap: space(8px);
 	}
 }

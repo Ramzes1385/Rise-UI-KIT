@@ -1,0 +1,118 @@
+<template>
+	<div :id="`${treeId}-panel`" :class="[ui('panel'), classes.panel]" :style="sizeScaleStyle">
+		<div v-if="isSearchable" :class="[ui('search'), classes.search]">
+			<BaseIcon name="search" class="base-tree-select__search-icon" :size-scale="calcIconScale('sm', sizeScale)" />
+			<input
+				ref="searchRef"
+				v-model="searchQuery"
+				type="text"
+				:placeholder="UI_TEXT.SEARCH_PLACEHOLDER"
+				:aria-label="UI_ARIA.SEARCH"
+				aria-autocomplete="list"
+				:aria-controls="popupId"
+				:aria-activedescendant="activeIndex >= 0 && !isLoading ? getRowId(activeIndex) : undefined"
+				autocomplete="off"
+				:class="[ui('search-input'), classes.searchInput]"
+				@click.stop
+				@keydown="$emit('search-keydown', $event)" />
+		</div>
+
+		<div v-if="isLoading" :class="[ui('status'), classes.status]" role="status">
+			<BaseText tag="span" :size-scale="sizeScale">{{ UI_TEXT.LOADING }}</BaseText>
+		</div>
+		<div v-else-if="!rows.length" :class="[ui('status'), classes.status]">
+			<slot name="empty">
+				<BaseText tag="span" :size-scale="sizeScale">{{ searchQuery ? UI_TEXT.NO_RESULTS : UI_TEXT.EMPTY }}</BaseText>
+			</slot>
+		</div>
+		<TransitionGroup
+			v-else
+			:id="treeId"
+			tag="ul"
+			name="base-tree-select-row"
+			:class="[ui('tree'), classes.tree]"
+			role="tree"
+			:aria-labelledby="labelledby"
+			:aria-label="labelledby ? undefined : treeLabel"
+			:aria-multiselectable="isMultiple ? 'true' : undefined"
+			@before-leave="pinLeavingRow">
+			<li
+				v-for="(row, index) in rows"
+				:id="getRowId(index)"
+				:key="row.node.id"
+				:class="[
+					ui('node'),
+					{
+						'base-tree-select__node--active': index === activeIndex,
+						'base-tree-select__node--selected': selectedSet.has(row.node.id),
+						'base-tree-select__node--disabled': row.node.isDisabled,
+					},
+					classes.node,
+				]"
+				:style="{ '--base-tree-select-depth': row.depth }"
+				role="treeitem"
+				:aria-level="row.depth + 1"
+				:aria-setsize="row.setSize"
+				:aria-posinset="row.posInSet"
+				:aria-expanded="ariaExpanded(row)"
+				:aria-selected="ariaSelected(row.node.id)"
+				:aria-checked="ariaChecked(row.node.id)"
+				:aria-disabled="row.node.isDisabled ? 'true' : undefined"
+				@click="$emit('select', row)"
+				@mousemove="index !== activeIndex && $emit('activate', index)">
+				<span
+					:class="[
+						ui('toggle'),
+						{ 'base-tree-select__toggle--expanded': row.isExpanded, 'base-tree-select__toggle--leaf': !row.hasChildren },
+						classes.toggle,
+					]"
+					aria-hidden="true"
+					@click.stop="row.hasChildren ? $emit('toggle', row) : $emit('select', row)">
+					<BaseIcon name="chevron-right" :size-scale="calcIconScale('sm', sizeScale)" />
+				</span>
+				<span
+					v-if="isMultiple"
+					:class="[ui('checkbox'), { 'base-tree-select__checkbox--mixed': indeterminateSet.has(row.node.id) }, classes.checkbox]"
+					aria-hidden="true">
+					<BaseIcon v-if="indeterminateSet.has(row.node.id)" name="minus" :size-scale="calcIconScale('xs', sizeScale)" />
+					<BaseIcon v-else-if="selectedSet.has(row.node.id)" name="check" :size-scale="calcIconScale('xs', sizeScale)" />
+				</span>
+				<BaseIcon
+					v-if="row.node.icon"
+					:name="row.node.icon"
+					:class="ui('icon')"
+					:custom-class="classes.icon"
+					:size-scale="calcIconScale('sm', sizeScale)" />
+				<span :class="[ui('node-label'), classes.nodeLabel]">
+					<slot name="node" :node="row.node" :is-selected="selectedSet.has(row.node.id)" :depth="row.depth">{{
+						row.node.label
+					}}</slot>
+				</span>
+				<BaseIcon
+					v-if="!isMultiple && selectedSet.has(row.node.id)"
+					name="check"
+					:class="ui('check')"
+					:size-scale="calcIconScale('sm', sizeScale)" />
+			</li>
+		</TransitionGroup>
+	</div>
+</template>
+
+<script setup lang="ts">
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseText } from '@components/BaseText'
+import { UI_ARIA, UI_TEXT } from '@/locales/messages'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { useBaseTreeSelectPanel } from '../model/useBaseTreeSelectPanel'
+import type { BaseTreeSelectPanelEmits, BaseTreeSelectPanelProps, BaseTreeSelectPanelSlots } from '../types/BaseTreeSelectPanel.types'
+
+const props = defineProps<BaseTreeSelectPanelProps>()
+
+defineEmits<BaseTreeSelectPanelEmits>()
+
+defineSlots<BaseTreeSelectPanelSlots>()
+
+const searchQuery = defineModel<string>('searchQuery', { default: '' })
+
+const { searchRef, ariaChecked, ariaSelected, ariaExpanded, pinLeavingRow } = useBaseTreeSelectPanel(props)
+</script>

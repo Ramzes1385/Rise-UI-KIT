@@ -1,90 +1,48 @@
 <template>
-	<div ref="emojiWrapperRef" class="base-chat-input__emoji-wrapper">
-		<BaseButton
-			variant="ghost"
-			:padding="2"
-			:size-scale="sizeScale"
-			class="base-chat-input__emoji-btn"
-			:aria-label="UI_CHAT_TEXT.EMOJI_ARIA"
-			@click="toggleEmoji">
-			<template #left>
+	<BasePopover
+		v-model:is-open="isEmojiOpen"
+		class="base-chat-input__emoji-wrapper"
+		position="top"
+		variant="ghost"
+		max-height="none"
+		:size-scale="sizeScale"
+		:aria-label="UI_CHAT_TEXT.EMOJI_LIST"
+		:ui="{ inner: 'base-chat-input__emoji-popover' }">
+		<template #trigger>
+			<BaseButton
+				ref="triggerRef"
+				variant="ghost"
+				:size-scale="sizeScale"
+				class="base-chat-input__emoji-btn"
+				:aria-label="UI_CHAT_TEXT.EMOJI_ARIA">
 				<BaseIcon name="smile" :size-scale="sizeScale" />
-			</template>
-		</BaseButton>
+			</BaseButton>
+		</template>
 
-		<div v-if="isEmojiOpen" ref="emojiPopoverRef" class="base-chat-input__emoji-popover">
-			<div class="base-chat-input__emoji-list">
-				<BaseButton
-					v-for="emoji in popularEmojis"
-					:key="emoji"
-					variant="ghost"
-					:padding="{ x: 4, y: 4 }"
-					custom-class="base-chat-input__emoji-item"
-					:aria-label="`${UI_CHAT_TEXT.INSERT_EMOJI} ${emoji}`"
-					@click="selectEmoji(emoji)">
-					{{ emoji }}
-				</BaseButton>
-			</div>
+		<div ref="popoverRef">
+			<BaseEmojiPicker
+				v-model:recent="recentEmojis"
+				variant="ghost"
+				:size-scale="sizeScale"
+				:has-preview="false"
+				class="base-chat-input__emoji-picker"
+				@select="selectEmoji" />
 		</div>
-	</div>
+	</BasePopover>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
 import { BaseIcon } from '@components/BaseIcon'
-import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CHAT_TEXT } from '@constants'
-import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './ChatEmojiPicker.types'
+import { UI_CHAT_TEXT } from '@/locales/messages'
+import { BaseButton } from '@components/BaseButton'
+import { BasePopover } from '@components/BasePopover'
+import { BaseEmojiPicker } from '@components/BaseEmojiPicker'
+import { useChatEmojiPicker } from './model/useChatEmojiPicker'
+import type { ChatEmojiPickerEmits, ChatEmojiPickerProps } from './types/ChatEmojiPicker.types'
 
 defineProps<ChatEmojiPickerProps>()
 
 const emit = defineEmits<ChatEmojiPickerEmits>()
 
-const isEmojiOpen = ref(false)
-const emojiWrapperRef = ref<HTMLElement | null>(null)
-
-useClickOutside({
-	targets: [emojiWrapperRef],
-	callback: () => {
-		isEmojiOpen.value = false
-	},
-	isActive: () => isEmojiOpen.value,
-})
-
-function toggleEmoji(): void {
-	isEmojiOpen.value = !isEmojiOpen.value
-}
-
-function selectEmoji(emoji: string): void {
-	emit('select', emoji)
-	isEmojiOpen.value = false
-}
-
-const popularEmojis = [
-	'😀',
-	'😂',
-	'😊',
-	'😍',
-	'👍',
-	'👎',
-	'🔥',
-	'🎉',
-	'❤️',
-	'🤔',
-	'😎',
-	'🙌',
-	'👏',
-	'🚀',
-	'✨',
-	'👀',
-	'😢',
-	'😡',
-	'💩',
-	'💯',
-	'🙏',
-	'💡',
-	'📌',
-	'📎',
-]
+const { isEmojiOpen, triggerRef, popoverRef, recentEmojis, selectEmoji } = useChatEmojiPicker(emit)
 </script>

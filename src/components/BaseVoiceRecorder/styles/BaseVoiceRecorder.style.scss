@@ -1,0 +1,96 @@
+.base-voice-recorder {
+	@include custom-color-scope;
+	display: flex;
+	align-items: center;
+	gap: space(ct(voice-recorder, gap, 8px));
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	min-height: sz(ct(voice-recorder, height, 48px));
+	padding: space(ct(voice-recorder, padding-y, 6px) ct(voice-recorder, padding-x, 8px));
+	border: 1px solid ct(voice-recorder, border, transparent);
+	border-radius: sz(ct(voice-recorder, radius, var(--rise-radius-lg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(voice-recorder, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(voice-recorder, text, var(--rise-text)));
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--idle,
+	&--error {
+		justify-content: flex-end;
+	}
+
+	&__dot {
+		flex: none;
+		width: sz(10px);
+		height: sz(10px);
+		border-radius: var(--rise-radius-xs);
+		background-color: ct(voice-recorder-dot, bg, var(--rise-error));
+
+		@include motion-safe {
+			animation: base-voice-recorder-pulse calc(var(--rise-duration-loop) * 1.2) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		:where([data-rise-motion='none'], [data-rise-reduced-motion='always']) & {
+			animation: none;
+		}
+	}
+
+	&--requesting &__dot {
+		animation: none;
+		opacity: 0.4;
+	}
+
+	&__time {
+		min-width: sz(36px);
+		font-family: var(--rise-font-mono);
+		font-variant-numeric: tabular-nums;
+		@include text-size(sm);
+	}
+
+	&__meter {
+		display: flex;
+		flex: 1 1 auto;
+		align-items: center;
+		gap: sz(2px);
+		min-width: 0;
+		height: sz(ct(voice-recorder-meter, height, 28px));
+	}
+
+	&__level {
+		flex: 1 1 0;
+		align-self: stretch;
+		min-width: 1px;
+		max-width: sz(4px);
+		border-radius: ct(voice-recorder-level, radius, calc(var(--rise-radius-xs) / 2));
+		@include custom-text(background-color, ct(voice-recorder-level, bg, var(--rise-primary)));
+		transform-origin: center;
+		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
+	}
+
+	&__preview {
+		flex: 1 1 auto;
+	}
+
+	&__error {
+		flex: 1 1 auto;
+		margin: 0;
+		@include text-size(sm);
+		color: ct(voice-recorder-error, text, var(--rise-error-text));
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}
+
+@keyframes base-voice-recorder-pulse {
+	50% {
+		opacity: 0.3;
+	}
+}

@@ -1,0 +1,21 @@
+.card-brand-mark {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+
+	&__icon,
+	&__image {
+		width: auto;
+		height: 1.75em;
+	}
+
+	&__name {
+		padding: 0.1em 0.5em;
+		border: 1px solid currentcolor;
+		border-radius: var(--rise-radius-sm);
+		font-size: 0.75em;
+		font-weight: var(--rise-font-weight-semibold);
+		letter-spacing: 0.02em;
+		white-space: nowrap;
+	}
+}

@@ -1,23 +1,17 @@
-/**
- * Unit-тесты для BaseDatePicker.
- * Проверяют рендер, пропсы, формат отображения, clear-кнопку.
- * Дочерние компоненты заменены stub'ами.
- * Мокаем только DOM-зависимые composables.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { h, nextTick, ref } from 'vue'
 import BaseDatePicker from '../ui/BaseDatePicker.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 const clickOutsideOptions: { isActive?: () => boolean } = {}
 const escapeKeyOptions: { isActive?: () => boolean } = {}
 
-vi.mock('@composables/useClickOutside', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({
 	useClickOutside: vi.fn((opts: { isActive?: () => boolean }) => {
 		clickOutsideOptions.isActive = opts.isActive
 	}),
 }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: (opts: {
 		position?: () => unknown
 		gap?: () => unknown
@@ -35,7 +29,7 @@ vi.mock('@composables/useDropdownPosition', () => ({
 		}
 	},
 }))
-vi.mock('@composables/useEscapeKey', () => ({
+vi.mock('@composables/overlay/useEscapeKey', () => ({
 	useEscapeKey: vi.fn((opts: { isActive?: () => boolean }) => {
 		escapeKeyOptions.isActive = opts.isActive
 	}),
@@ -277,7 +271,6 @@ describe('BaseDatePicker unit', () => {
 				global: { stubs },
 			})
 
-			/** Панель не открыта по умолчанию — проверяем через открытие */
 			const field = container.querySelector('.date-picker-field-stub')
 			expect(field).toBeInTheDocument()
 		})
@@ -394,7 +387,6 @@ describe('BaseDatePicker unit', () => {
 				global: { stubs },
 			})
 			const input = screen.getByPlaceholderText('Выберите дату') as HTMLInputElement
-			// В 12-часовом формате 14:30 отображается как 2:30 PM
 			expect(input.value).toMatch(/PM|pm/i)
 		})
 	})
@@ -408,7 +400,6 @@ describe('BaseDatePicker unit', () => {
 
 			const field = container.querySelector('.date-picker-field-stub')
 			expect(field).toBeInTheDocument()
-			// Stub рендерит input с readonly, проверяем что он есть
 			const input = field?.querySelector('input')
 			expect(input?.hasAttribute('readonly')).toBe(true)
 		})
@@ -642,5 +633,30 @@ describe('BaseDatePicker unit', () => {
 			await fireEvent.click(container.querySelector<HTMLElement>('.icon-btn-stub')!)
 			expect(escapeKeyOptions.isActive?.()).toBe(true)
 		})
+	})
+})
+
+describe('BaseDatePicker: пропсы, которые родитель начал или перестал передавать после монтирования', () => {
+	it('isReadonly и пропсы календаря (locale) следуют за набором переданных', async () => {
+		const isPassed = ref(false)
+		const Host = {
+			setup: () => () => h(BaseDatePicker, { ...(isPassed.value ? { isReadonly: false, locale: 'en-US' } : {}) }),
+		}
+		const { container } = render(Host, { global: { stubs } })
+		const input = (): HTMLInputElement => container.querySelector('input')!
+		await fireEvent.click(container.querySelector('.date-picker-field-stub')!)
+		const panel = (): Element => container.querySelector('.date-picker-panel-stub')!
+		expect(input().readOnly).toBe(true)
+		expect(panel()).toHaveAttribute('data-locale', 'ru-RU')
+
+		isPassed.value = true
+		await nextTick()
+		expect(input().readOnly).toBe(false)
+		expect(panel()).toHaveAttribute('data-locale', 'en-US')
+
+		isPassed.value = false
+		await nextTick()
+		expect(input().readOnly).toBe(true)
+		expect(panel()).toHaveAttribute('data-locale', 'ru-RU')
 	})
 })

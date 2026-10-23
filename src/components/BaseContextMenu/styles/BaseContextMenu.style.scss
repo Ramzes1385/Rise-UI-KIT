@@ -1,0 +1,26 @@
+.base-context-menu {
+	&__layer {
+		display: contents;
+	}
+
+	&__anchor {
+		position: fixed;
+		width: 0;
+		height: 0;
+		pointer-events: none;
+	}
+}
+
+.base-context-menu__panel.base-dropdown-menu__panel {
+	--dm-panel-width: #{ct(context-menu-panel, width, 180px)};
+	--dm-item-text: #{ct(context-menu-item, text, var(--rise-text))};
+	--dm-item-bg-hover: #{ct(context-menu-item, bg-hover, var(--rise-surface-floating-hover))};
+	--dm-item-radius: #{ct(context-menu-item, radius, var(--rise-radius-sm))};
+	--dm-item-padding-x: #{ct(context-menu-item, padding-x, 8px)};
+	--dm-item-padding-y: #{ct(context-menu-item, padding-y, 6px)};
+	--dm-item-font-size: #{ct(context-menu-item, font-size, var(--rise-font-size-sm))};
+	--dm-item-icon-size: #{ct(context-menu-item, icon-size, 16px)};
+	--dm-label-text: #{ct(context-menu-label, text, var(--rise-text-muted))};
+	--dm-separator-border: #{ct(context-menu-separator, border, var(--rise-border))};
+	--dm-shortcut-text: #{ct(context-menu-shortcut, text, var(--rise-text-muted))};
+}

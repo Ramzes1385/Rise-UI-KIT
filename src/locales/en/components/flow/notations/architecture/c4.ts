@@ -1,0 +1,25 @@
+/** Нотация C4 BaseFlowMap: виды, правила, предупреждения */
+export const enFlowC4 = {
+	flowC4: {
+		NOTATION: 'C4',
+		RULES_SUMMARY: 'every relationship is labeled; boundaries hold containers and components; people stay outside',
+		LEVEL_CONTEXT: 'Context',
+		LEVEL_CONTAINERS: 'Containers',
+		LEVEL_COMPONENTS: 'Components',
+		PERSON: 'Person',
+		SOFTWARE_SYSTEM: 'Software system',
+		CONTAINER: 'Container',
+		COMPONENT: 'Component',
+		EXTERNAL_PERSON: 'External person',
+		EXTERNAL_SYSTEM: 'External system',
+		ENTERPRISE_BOUNDARY: 'Enterprise boundary',
+		SYSTEM_BOUNDARY: 'System boundary',
+		CONTAINER_BOUNDARY: 'Container boundary',
+		RELATIONSHIP: 'Relationship',
+		PROP_TECHNOLOGY: 'Technology',
+		CARD_LINE: '[{kind}: {technology}]',
+		CARD_LINE_PLAIN: '[{kind}]',
+		RULE_CONTAIN: '“{group}” can only hold: {kinds}',
+		WARN_NO_LABEL: 'The relationship “{source}” → “{target}” has no label: every C4 line is labeled',
+	},
+}

@@ -1,151 +1,93 @@
 .base-textarea {
-	display: flex;
-	flex-direction: column;
-	gap: sz(6px);
+	@include custom-color-scope;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
+	gap: sz(6px 12px);
 	width: 100%;
-	@include transition(opacity);
+	@include custom-text(color, ct(textarea, text, var(--rise-text-highlighted)));
 
-	@include custom-text(color, var(--color-text));
-
-	&--error {
-		.base-textarea__field {
-			border-color: var(--color-error);
-
-			&:hover {
-				border-color: var(--color-error);
-				background-color: var(--color-surface-muted);
-			}
-
-			&:focus {
-				border-color: var(--color-error);
-				box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
-			}
-		}
-	}
-
-	&--disabled {
-		opacity: 0.5;
-		pointer-events: none;
+	&--has-counter {
+		grid-template-columns: minmax(0, 1fr) auto;
 	}
 
 	&__label {
-		font-size: sz(13px);
-		font-weight: 600;
-		color: var(--color-text);
+		grid-column: 1 / -1;
+		@include field-label;
 	}
 
 	&__required {
-		color: var(--color-error);
-		margin-left: sz(2px);
+		@include field-required;
 	}
 
 	&__field {
+		grid-column: 1 / -1;
+		display: block;
+		box-sizing: border-box;
 		width: 100%;
-		padding: sz(10px) sz(14px);
-		border: 1px solid var(--color-border);
-		border-radius: var(--border-radius-base);
-		@include custom-bg(background-color, var(--color-surface));
-		font-size: sz(14px);
-		@include custom-text(color, var(--color-text));
+		min-width: 0;
+		margin: 0;
+		padding: sz(ct(textarea, padding-y, var(--rise-control-padding-y))) sz(ct(textarea, padding-x, var(--rise-control-padding-x)));
+		color: inherit;
+		font: inherit;
+		@include control-text;
 		resize: vertical;
-		box-shadow: var(--shadow-sm);
 		outline: none;
-		@include interactive;
+		@include field-box(textarea);
 
 		&::placeholder {
-			color: var(--color-text-muted);
-		}
-
-		@include hover {
-			border-color: var(--color-text-muted);
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-
-		@include focus {
-			border-color: var(--color-accent);
-			@include custom-bg(background-color, var(--color-surface));
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
-
-		@include active {
-			@include custom-bg(background-color, var(--color-surface-muted));
+			color: var(--rise-text-dimmed);
+			opacity: 1;
 		}
 	}
 
 	&--autosize &__field {
 		resize: none;
 		overflow: hidden;
-	}
-
-	&--disabled &__field {
-		background-color: var(--color-surface-muted);
-		cursor: not-allowed;
-	}
-
-	&__error-text {
-		font-size: sz(12px);
-		color: var(--color-error);
-		font-weight: 500;
-	}
-
-	// ============================================================
-	// Варианты
-	// ============================================================
-
-	&--ghost &__field {
-		border-color: transparent;
-		@include custom-bg(background-color, transparent);
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-surface-muted));
-		}
-	}
-
-	&--outline &__field {
-		@include custom-bg(background-color, transparent);
-		border-width: 2px;
-	}
-
-	&--shadow &__field {
-		box-shadow: var(--shadow-lg);
-
-		@include hover {
-			box-shadow: var(--shadow-xl);
-		}
+		transition-property:
+			color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, height; // stylelint-disable-line declaration-property-value-disallowed-list, comment-pattern -- авторост меняет height от px к px: transform не раздвинет содержимое под полем
 	}
 
 	&--soft &__field {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
-		border-color: transparent;
-
-		@include hover {
-			@include custom-bg(background-color, var(--color-primary-soft-hover));
-		}
+		@include field-variant(textarea, soft);
 	}
 
-	// ============================================================
-	// Ошибка для вариантов
-	// ============================================================
-
-	&--outline.base-textarea--error &__field {
-		border-color: var(--color-error);
-		border-width: 2px;
+	&--outline &__field {
+		@include field-variant(textarea, outline);
 	}
 
-	&--ghost.base-textarea--error &__field {
-		border-color: var(--color-error);
+	&--ghost &__field {
+		@include field-variant(textarea, ghost);
 	}
 
-	&--soft.base-textarea--error &__field {
-		border-color: var(--color-error);
-		background-color: rgba(239, 68, 68, 0.06);
+	&--shadow &__field {
+		@include field-variant(textarea, shadow);
 	}
 
-	&--shadow.base-textarea--error &__field {
-		border-color: var(--color-error);
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+	&--error &__field {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--readonly &__field {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+		cursor: default;
+	}
+
+	&--disabled &__field {
+		@include disabled-state;
+		resize: none;
+	}
+
+	&__error-text {
+		grid-column: 1;
+		align-self: baseline;
+		@include field-error;
+	}
+
+	&__counter {
+		grid-column: 2;
+		place-self: baseline end;
+		@include field-counter(ct(textarea, counter-text, var(--rise-text-muted)));
 	}
 }

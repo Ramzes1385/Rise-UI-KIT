@@ -1,0 +1,122 @@
+.base-reasoning {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	font-size: sz(ct(reasoning, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(reasoning, text, var(--rise-text-muted)));
+	@include custom-bg(background-color, ct(reasoning, bg, transparent));
+
+	&__trigger {
+		display: inline-flex;
+		align-self: flex-start;
+		align-items: center;
+		gap: sz(ct(reasoning, trigger-gap, 6px));
+		max-width: 100%;
+		@include button-reset;
+		padding-block: sz(4px);
+		padding-inline: 0 sz(6px);
+		border-radius: sz(var(--rise-radius-sm));
+		font-weight: ct(reasoning, trigger-font-weight, var(--rise-font-weight-medium));
+		text-align: start;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			color: ct(reasoning, trigger-text-hover, var(--rise-text-highlighted));
+		}
+	}
+
+	&__title {
+		min-width: 0;
+		@include caps-label;
+		color: inherit;
+		@include truncate;
+	}
+
+	&--streaming &__title {
+		@include motion-safe {
+			background-image: linear-gradient(
+				90deg,
+				var(--rise-text-muted) 0%,
+				var(--rise-text-muted) 35%,
+				var(--rise-text-highlighted) 50%,
+				var(--rise-text-muted) 65%,
+				var(--rise-text-muted) 100%
+			);
+			background-size: 250% 100%;
+			background-clip: text;
+			color: transparent;
+			animation: base-reasoning-shimmer calc(var(--rise-duration-loop) * 2) linear infinite;
+			@include loop-state;
+		}
+	}
+
+	&__arrow {
+		flex: none;
+		width: sz(16px);
+		height: sz(16px);
+		@include transition(transform);
+	}
+
+	&--open &__arrow {
+		transform: rotate(180deg);
+	}
+
+	&__collapse {
+		@include expand-rows;
+	}
+
+	&--open &__collapse {
+		@include expand-rows-open;
+	}
+
+	&__content {
+		min-height: 0;
+		margin-top: sz(4px);
+		padding-inline-start: sz(12px);
+		overflow: hidden;
+		border-inline-start: sz(2px) solid ct(reasoning, content-border, var(--rise-border));
+	}
+
+	&--soft,
+	&--outline {
+		padding: space(ct(reasoning, padding-y, 8px) ct(reasoning, padding-x, 12px));
+		border-radius: sz(ct(reasoning, radius, var(--rise-radius-md)));
+	}
+
+	&--soft {
+		@include tonal-surface(muted);
+		@include custom-bg(background-color, ct(reasoning, bg, var(--rise-bg-muted)));
+	}
+
+	&--outline {
+		border: 1px solid ct(reasoning, border, var(--rise-border-accented));
+	}
+
+	&--soft &__trigger,
+	&--outline &__trigger {
+		align-self: stretch;
+		justify-content: space-between;
+	}
+
+	&--soft &__content,
+	&--outline &__content,
+	&--ghost &__content {
+		padding-inline-start: 0;
+		border-inline-start: 0;
+	}
+}
+
+@keyframes base-reasoning-shimmer {
+	from {
+		background-position: 100% 0;
+	}
+
+	to {
+		background-position: 0 0;
+	}
+}

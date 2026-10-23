@@ -1,8 +1,3 @@
-/**
- * Integration-тесты для BaseSkeleton.
- * Проверяют рендер с реальными стилями и вычисляемыми размерами.
- */
-
 import '@testing-library/jest-dom/vitest'
 import { render } from '@testing-library/vue'
 import BaseSkeleton from '../ui/BaseSkeleton.vue'

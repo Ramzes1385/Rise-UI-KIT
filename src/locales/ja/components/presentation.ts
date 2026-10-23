@@ -1,0 +1,25 @@
+/** Презентация с озвучкой BasePresentationPlayer (японский) */
+export const jaPresentation = {
+	presentation: {
+		PREVIOUS: '前のスライド',
+		NEXT: '次のスライド',
+		SLIDES: 'スライド',
+		STATUS: 'スライド {n} / {total}：{title}',
+		SLIDE_HINT: '{n}. {title}',
+		REPLAY: 'もう一度見る',
+		LOCKED: '{n} 秒後に利用できます',
+		LOCKED_AUDIO: 'ナレーションの再生後に利用できます',
+		RESUME: 'スライド {n} から続けますか？',
+		RESUME_YES: '続ける',
+		RESUME_NO: '最初から',
+		DONE: '完了',
+		FINISHED: 'プレゼンテーションが終了しました',
+		DONE_TEXT: '完了したスライド：{completed} / {total}',
+		LOCKED_QUIZ: '質問に答えると次に進めます',
+		SLIDE_LIST: 'スライド一覧',
+		NOTES: 'スクリプト',
+		NOTES_EMPTY: 'このスライドにはスクリプトがありません',
+		SLIDE_DONE: '完了',
+		SLIDE_LOCKED: 'ロック中',
+	},
+}

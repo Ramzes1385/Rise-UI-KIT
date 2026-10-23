@@ -1,0 +1,51 @@
+import { OPTIONS } from '../shared'
+import { expect } from 'storybook/test'
+import type meta from '../Sizing.stories'
+import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
+import { BaseSelect } from '@components/BaseSelect'
+import type { StoryObj } from '@storybook/vue3-vite'
+import { isStoryBranded, literal, staticStorySource, useStorySetup } from '@/stories/helpers'
+
+const STATE = { text: '', lang: 'ru' }
+
+const template = `
+	<div class="story-row" style="flex-wrap: nowrap; align-items: flex-start;">
+		<div style="width: 220px;"><BaseInput v-model="text" placeholder="Название проекта" /></div>
+		<div style="width: 160px;"><BaseSelect v-model="lang" :options="options" /></div>
+		<BaseButton variant="outline">Отмена</BaseButton>
+		<BaseButton>Создать</BaseButton>
+	</div>
+`
+
+export const Alignment: StoryObj<typeof meta> = {
+	parameters: {
+		docs: {
+			description: {
+				story: [
+					'Выравнивание: при одинаковом sizeScale кнопка, поле и селект одной высоты (36px при 100).',
+					'Play-функция сверяет высоты — если стили компонента разойдутся со шкалой, проверка упадёт.',
+				].join('\n'),
+			},
+			source: staticStorySource({
+				template,
+				imports: ['BaseButton', 'BaseInput', 'BaseSelect'],
+				state: STATE,
+				script: `const options = ${literal(OPTIONS)}`,
+			}),
+		},
+	},
+	render: args => ({
+		components: { BaseButton, BaseInput, BaseSelect },
+		setup: useStorySetup(args, { state: STATE, data: { options: OPTIONS } }),
+		template,
+	}),
+	play: async ({ canvasElement }) => {
+		const height = (selector: string) =>
+			Math.round((canvasElement.querySelector(selector) as HTMLElement).getBoundingClientRect().height)
+		const button = height('.base-button')
+		if (!isStoryBranded()) await expect(button).toBe(36)
+		await expect(height('.base-input__wrapper')).toBe(button)
+		await expect(height('.base-select__trigger')).toBe(button)
+	},
+}

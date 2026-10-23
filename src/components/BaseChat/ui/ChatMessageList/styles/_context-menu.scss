@@ -1,74 +1,72 @@
-@use "@styles/functions" as *;
+@use '@styles/functions' as *;
+@use '@styles/mixins' as *;
+@use '../../../styles/chat' as *;
 
 .base-chat-context-menu {
 	position: fixed;
-	background: var(--color-surface);
-	border: sz(1px) solid var(--color-border);
-	border-radius: sz(12px);
-	box-shadow: 0 sz(10px) sz(30px) rgba(0, 0, 0, 0.15);
-	padding: sz(6px);
-	z-index: 9999;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 	display: flex;
 	flex-direction: column;
-	min-width: sz(180px);
-	animation: context-menu-fade 0.15s ease-out;
+	gap: sz(2px);
+	min-width: sz(200px);
+	padding: sz(4px);
+	@include floating-surface;
+	font-family: var(--rise-font-sans);
 
 	&__reactions {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: sz(4px) sz(8px);
-		gap: sz(4px);
+		gap: sz(2px);
 	}
 
 	&__reaction-btn {
-		background: transparent;
-		border: none;
-		font-size: sz(20px);
-		cursor: pointer;
-		padding: sz(4px);
-		border-radius: sz(8px);
-		transition: all var(--transition-slow);
+		@include button-reset;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(var(--rise-radius-sm));
+		@include text-size(lg);
+		@include transition-colors;
+		@include focus-ring(-2px);
 
-		&:hover {
-			background: var(--color-surface-hover);
-			transform: scale(1.2);
-		}
-
-		&:active {
-			transform: scale(0.9);
+		@include hover {
+			background-color: var(--rise-surface-floating-hover);
 		}
 	}
 
 	&__divider {
-		height: sz(1px);
-		background: var(--color-border);
-		margin: sz(6px) 0;
+		height: 1px;
+		margin: sz(2px) sz(-4px);
+		background-color: var(--rise-border);
 	}
 
 	&__item {
-		display: flex;
-		align-items: center;
-		gap: sz(10px);
-		padding: sz(8px) sz(12px);
-		background: transparent;
-		border: none;
-		border-radius: sz(8px);
-		cursor: pointer;
-		color: var(--color-text);
-		text-align: left;
-		transition:
-			background-color var(--transition-slow),
-			color var(--transition-slow);
+		@include button-reset;
+		@include menu-item;
 		width: 100%;
+		@include focus-ring(-2px);
+	}
 
-		&:hover {
-			background: var(--color-surface-hover);
-			color: var(--color-accent);
-		}
+	&__icon {
+		color: var(--rise-text-muted);
+	}
 
-		&:active {
-			background: var(--color-border);
+	&__item--danger,
+	&__item--danger &__icon {
+		color: var(--rise-error-text);
+	}
+
+	&__item--danger {
+		@include hover {
+			background-color: var(--rise-error-soft);
+			color: var(--rise-error-text);
+
+			.base-chat-context-menu__icon {
+				color: var(--rise-error-text);
+			}
 		}
 	}
 }

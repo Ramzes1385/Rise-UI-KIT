@@ -1,33 +1,29 @@
-@keyframes fadeIn {
-	from {
-		opacity: 0;
-		transform: scale(0.9);
-	}
-	to {
-		opacity: 1;
-		transform: scale(1);
+@use '@styles/mixins' as *;
+
+.base-chat-context-menu {
+	@include motion-safe {
+		animation: base-chat-context-menu-in var(--rise-duration-fast) var(--rise-ease-out);
 	}
 }
 
-@keyframes message-highlight {
-	0% {
-		background-color: transparent;
-	}
-	20% {
-		background-color: rgba(var(--color-accent-rgb, 99, 102, 241), 0.2);
-	}
-	100% {
-		background-color: transparent;
-	}
-}
-
-@keyframes context-menu-fade {
+@keyframes base-chat-context-menu-in {
 	from {
 		opacity: 0;
 		transform: scale(0.95);
 	}
+
 	to {
 		opacity: 1;
 		transform: scale(1);
 	}
+}
+
+@include enter-slide('base-chat-message', up);
+
+.base-chat-message-move {
+	transition: transform var(--rise-duration) var(--rise-ease);
+}
+
+.base-chat-message-leave-active {
+	position: absolute;
 }

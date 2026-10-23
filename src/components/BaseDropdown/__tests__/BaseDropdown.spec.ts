@@ -1,36 +1,27 @@
-/**
- * Unit-тесты для BaseDropdown.
- * Проверяют рендер, пропсы, CSS-модификаторы, эмит update:isOpen,
- * preventMousedown и sizeScale.
- * Компонент использует teleport to="body" — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseDropdown from '../ui/BaseDropdown.vue'
+import { render, screen } from '@testing-library/vue'
 
 const { clickOutsideMock, escapeKeyMock } = vi.hoisted(() => ({
 	clickOutsideMock: { callback: null as (() => void) | null, isActive: null as (() => boolean) | null },
 	escapeKeyMock: { callback: null as (() => void) | null, isActive: null as (() => boolean) | null },
 }))
 
-vi.mock('@composables/useClickOutside', () => ({
+vi.mock('@composables/overlay/useClickOutside', () => ({
 	useClickOutside: (options: { callback: () => void; isActive: () => boolean }) => {
 		clickOutsideMock.callback = options.callback
 		clickOutsideMock.isActive = options.isActive
-		// Вызываем геттеры для coverage
 		options.isActive()
 	},
 }))
-vi.mock('@composables/useEscapeKey', () => ({
+vi.mock('@composables/overlay/useEscapeKey', () => ({
 	useEscapeKey: (options: { callback: () => void; isActive: () => boolean }) => {
 		escapeKeyMock.callback = options.callback
 		escapeKeyMock.isActive = options.isActive
-		// Вызываем геттер для coverage
 		options.isActive()
 	},
 }))
-vi.mock('@composables/useDropdownPosition', () => ({
+vi.mock('@composables/overlay/useDropdownPosition', () => ({
 	useDropdownPosition: (options: {
 		position: () => string
 		gap: () => number
@@ -38,7 +29,6 @@ vi.mock('@composables/useDropdownPosition', () => ({
 		maxHeight: () => string
 		isOpen: () => boolean
 	}) => {
-		// Вызываем все геттеры для coverage стрелочных функций
 		options.position()
 		options.gap()
 		options.matchWidth()
@@ -46,8 +36,11 @@ vi.mock('@composables/useDropdownPosition', () => ({
 		options.isOpen()
 		return {
 			panelStyle: { value: {} },
+			arrow: { value: { side: 'top', offset: 30 } },
+			arrowStyle: { value: { '--dd-arrow-offset': '30px' } },
 			triggerWidth: { value: 0 },
 			coords: { value: { top: 0, left: 0 } },
+			placement: { value: 'bottom-start' },
 			updatePosition: vi.fn(),
 		}
 	},
@@ -339,6 +332,34 @@ describe('BaseDropdown unit', () => {
 		})
 	})
 
+	describe('пропс showArrow', () => {
+		it('по умолчанию стрелки нет', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel.querySelector('.base-dropdown__arrow')).not.toBeInTheDocument()
+			expect(panel).not.toHaveClass('base-dropdown__panel--arrow')
+			expect(panel.style.getPropertyValue('--dd-arrow-offset')).toBe('')
+		})
+
+		it('стрелка на крае, обращённом к триггеру, со своим классом и местом', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true, showArrow: true, customClass: { arrow: 'custom-arrow' } },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel).toHaveClass('base-dropdown__panel--arrow', 'base-dropdown__panel--arrow-top')
+			expect(panel.style.getPropertyValue('--dd-arrow-offset')).toBe('30px')
+			const arrow = panel.querySelector('.base-dropdown__arrow')
+			expect(arrow).toHaveClass('custom-arrow')
+			expect(arrow).toHaveAttribute('aria-hidden', 'true')
+		})
+	})
+
 	describe('пропс variant', () => {
 		it('не должен добавлять модификатор для варианта default', () => {
 			render(BaseDropdown, {
@@ -429,9 +450,20 @@ describe('BaseDropdown unit', () => {
 	})
 
 	describe('пропс padding', () => {
-		it('должен устанавливать CSS-переменные padding по умолчанию (8)', () => {
+		it('без пропа не задаёт inline-переменные: отступ 4px берётся из стилей', () => {
 			render(BaseDropdown, {
 				props: { isOpen: true },
+				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
+			})
+
+			const panel = document.querySelector('.base-dropdown__panel') as HTMLElement
+			expect(panel.style.getPropertyValue('--dd-pad-top')).toBe('')
+			expect(panel.style.getPropertyValue('--dd-pad-left')).toBe('')
+		})
+
+		it('должен устанавливать CSS-переменные padding при padding=8', () => {
+			render(BaseDropdown, {
+				props: { isOpen: true, padding: 8 },
 				slots: { default: '<button>Триггер</button>', dropdown: '<p>Контент</p>' },
 			})
 

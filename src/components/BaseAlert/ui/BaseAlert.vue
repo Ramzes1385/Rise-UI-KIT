@@ -1,89 +1,77 @@
 <template>
 	<div
-		class="base-alert"
-		:class="[`base-alert--${type}`, variantClass, classes.root]"
+		:class="[ui('root'), `base-alert--${type}`, variantClass, classes.root]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
-		role="alert"
-		aria-live="polite">
-		<div class="base-alert__icon-wrapper" :class="classes.iconWrapper">
+		:role="liveRole">
+		<div :class="[ui('icon-wrapper'), classes.iconWrapper]">
 			<slot name="icon">
 				<BaseIcon :name="alertIcon" :size-scale="calcIconScale('md', sizeScale)" :custom-class="classes.icon" />
 			</slot>
 		</div>
 
-		<div class="base-alert__content" :class="classes.content">
+		<div :class="[ui('content'), classes.content]">
 			<BaseText
 				v-if="title"
 				tag="h4"
-				:weight="UI_FONT_WEIGHT.SEMIBOLD"
+				:weight="TEXT_WEIGHT.MEDIUM"
 				:size-scale="sizeScale"
-				class="base-alert__title"
+				:class="ui('title')"
 				:custom-class="classes.title">
 				{{ title }}
 			</BaseText>
 
-			<div class="base-alert__description" :class="classes.description">
+			<div :class="[ui('description'), classes.description]">
 				<slot>
-					<BaseText v-if="description" tag="p" :size-scale="sizeScale - SIZE_SCALE_OFFSET" :custom-class="classes.text">
+					<BaseText v-if="description" tag="p" :size-scale="sizeScale" :class="ui('text')" :custom-class="classes.text">
 						{{ description }}
 					</BaseText>
 				</slot>
 			</div>
 		</div>
 
-		<div v-if="isClosable || $slots.actions" class="base-alert__actions" :class="classes.actions">
+		<div v-if="isClosable || $slots.actions" :class="[ui('actions'), classes.actions]">
 			<slot name="actions" />
 
 			<BaseButton
 				v-if="isClosable"
 				variant="ghost"
-				:size-scale="sizeScale - SIZE_SCALE_OFFSET"
-				class="base-alert__close"
+				:size-scale="sizeScale"
+				:padding="closeButtonPadding"
+				:class="ui('close')"
 				:custom-class="classes.close"
+				:aria-label="UI_ARIA.CLOSE"
 				@click="handleClose">
-				<BaseIcon name="close" :size-scale="calcIconScale('xs', sizeScale)" :custom-class="classes.closeIcon" />
+				<BaseIcon name="close" :custom-class="classes.closeIcon" />
 			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { UI_FONT_WEIGHT, SIZE_SCALE_DEFAULT, SIZE_SCALE_OFFSET } from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseAlert.style.scss'
-import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../model/BaseAlert.types'
+import { UI_ARIA } from '@/locales/messages'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseButton } from '@components/BaseButton'
+import { useBaseAlert } from '../model/useBaseAlert'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { BaseText, TEXT_WEIGHT } from '@components/BaseText'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseAlertEmits, BaseAlertProps, BaseAlertSlots } from '../types/BaseAlert.types'
 
-const props = withDefaults(defineProps<BaseAlertProps>(), {
-	type: 'info',
-	isClosable: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseAlertProps>(),
+	kitDefaults('BaseAlert', {
+		variant: DEFAULT_VARIANT,
+		type: 'info',
+		isClosable: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseAlertEmits>()
 defineSlots<BaseAlertSlots>()
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-alert', props, ['root', 'iconWrapper', 'icon', 'content', 'title', 'description', 'text', 'actions', 'close', 'closeIcon'])
-
-/** Иконка оповещения по умолчанию на основе типа */
-const alertIcon = computed((): string => {
-	if (props.icon) return props.icon
-
-	const icons: Record<string, string> = {
-		info: 'info',
-		success: 'check-circle',
-		warning: 'alert-triangle',
-		error: 'x-circle',
-	}
-	return icons[props.type] || 'info'
-})
-
-/** Обработка клика по кнопке закрытия */
-function handleClose(): void {
-	emit('close')
-}
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, closeButtonPadding, liveRole, alertIcon, handleClose } =
+	useBaseAlert(props, emit)
 </script>

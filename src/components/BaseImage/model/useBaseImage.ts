@@ -1,0 +1,149 @@
+import type { Ref } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { UI_ARIA } from '@/locales/messages'
+import { useUi } from '@composables/base/useUi'
+import type BaseImageZoom from '../ui/BaseImageZoom.vue'
+import { useSizeScale } from '@composables/base/useSizeScale'
+import { useImageZoom } from '@composables/image/useImageZoom'
+import { useImageState } from '@composables/image/useImageState'
+import { useCustomClass } from '@composables/base/useCustomClass'
+import { useCustomColor } from '@composables/base/useCustomColor'
+import { useImageGallery } from '@composables/image/useImageGallery'
+import type { StructuredData } from '@utils/seo/structuredDataUtils'
+import { useStructuredData } from '@composables/seo/useStructuredData'
+import type { BaseImageEmits, ImageProps } from '../types/BaseImage.types'
+
+const IMAGE_ELEMENTS = [
+	'root',
+	'placeholder',
+	'error',
+	'img',
+	'zoomOutButton',
+	'zoomOutIcon',
+	'zoomScale',
+	'zoomInButton',
+	'zoomInIcon',
+	'zoomResetButton',
+	'zoomResetIcon',
+	'rotateLeftButton',
+	'rotateLeftIcon',
+	'rotateRightButton',
+	'rotateRightIcon',
+	'zoomCloseButton',
+	'zoomCloseIcon',
+	'galleryPrevButton',
+	'galleryPrevIcon',
+	'galleryNextButton',
+	'galleryNextIcon',
+	'galleryCounter',
+]
+
+function useZoomViewer(
+	props: ImageProps,
+	emit: BaseImageEmits,
+	{ zoomRef, zoomSrc }: { zoomRef: Ref<InstanceType<typeof BaseImageZoom> | null>; zoomSrc: () => string },
+) {
+	const gallery = useImageGallery({
+		gallery: () => props.gallery,
+		src: zoomSrc,
+		resetZoom: () => zoom.resetView(),
+	})
+	const zoom = useImageZoom({
+		initialScale: () => props.zoomConfig?.initialScale ?? 1,
+		zoomStep: () => props.zoomConfig?.zoomStep ?? 0.25,
+		minScale: () => props.zoomConfig?.minScale ?? 0.5,
+		maxScale: () => props.zoomConfig?.maxScale ?? 5,
+		closeOnOverlay: () => props.zoomConfig?.closeOnOverlay ?? true,
+		onZoom: (scale: number) => emit('zoom', scale),
+		getZoomImgEl: () => zoomRef.value?.zoomImgRef ?? null,
+		getMinimapImgEl: () => zoomRef.value?.minimapImgRef ?? null,
+		onArrowLeft: () => gallery.handleGalleryPrev(),
+		onArrowRight: () => gallery.handleGalleryNext(),
+	})
+	const isZoomRendered = ref(false)
+	watch(zoom.isZoomOpen, opened => {
+		if (!opened) return emit('zoom-close')
+		isZoomRendered.value = true
+		emit('zoom-open')
+	})
+	return {
+		gallery,
+		zoom,
+		isZoomRendered,
+		handleZoomAfterLeave: (): void => {
+			if (!zoom.isZoomOpen.value) isZoomRendered.value = false
+		},
+	}
+}
+
+function useLoadState(props: ImageProps, emit: BaseImageEmits, imgRef: Ref<HTMLImageElement | null>) {
+	return useImageState({
+		src: () => props.src,
+		fallbackSrc: () => props.fallbackSrc,
+		timeout: () => props.timeout,
+		width: () => props.width,
+		height: () => props.height,
+		aspectRatio: () => props.aspectRatio,
+		borderRadius: () => props.borderRadius,
+		srcWidth: () => props.srcWidth,
+		convertToWebp: () => props.convertToWebp,
+		convertToAvif: () => props.convertToAvif,
+		loading: () => props.loading,
+		imgRef,
+		onLoad: () => emit('load'),
+		onError: () => emit('error'),
+	})
+}
+
+function imageSchema(props: ImageProps, url: (value?: string) => string | undefined): StructuredData {
+	return { '@type': 'ImageObject', contentUrl: url(props.src), caption: props.alt || undefined }
+}
+
+export function useBaseImage(props: ImageProps, emit: BaseImageEmits) {
+	const { classes } = useCustomClass({ getClass: () => props.customClass, elementKeys: IMAGE_ELEMENTS })
+	const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
+	const { customColorStyle } = useCustomColor({ getColor: () => props.color })
+	const resolvedHasZoom = computed((): boolean => props.zoomConfig?.hasZoom ?? false)
+	const zoomRef = ref<InstanceType<typeof BaseImageZoom> | null>(null)
+	const imgRef = ref<HTMLImageElement | null>(null)
+	const { borderRadiusStyle, ...state } = useLoadState(props, emit, imgRef)
+	const isShowingFallback = (): boolean => !!props.fallbackSrc && state.currentSrc.value === props.fallbackSrc
+	const { gallery, zoom, isZoomRendered, handleZoomAfterLeave } = useZoomViewer(props, emit, {
+		zoomRef,
+		zoomSrc: () => (isShowingFallback() ? props.fallbackSrc! : props.src),
+	})
+	function openZoom(): void {
+		if (!resolvedHasZoom.value) return
+		const foundIndex = gallery.galleryList.value.indexOf(props.src)
+		gallery.galleryIndex.value = foundIndex >= 0 ? foundIndex : 0
+		zoom.openZoom()
+	}
+
+	return {
+		ui: useUi(props, 'base-image'),
+		classes,
+		sizeScaleStyle,
+		customColorStyle,
+		resolvedHasZoom,
+		resolvedShowMinimap: computed((): boolean => props.zoomConfig?.showMinimap ?? true),
+		zoomTriggerAttrs: computed(() => {
+			if (!resolvedHasZoom.value) return undefined
+			return { type: 'button', 'aria-haspopup': 'dialog', 'aria-label': props.alt ? undefined : UI_ARIA.IMAGE_VIEWER }
+		}),
+		zoomRef,
+		imgRef,
+		gallery,
+		zoom,
+		isZoomRendered,
+		handleZoomAfterLeave,
+		...state,
+		...useStructuredData(
+			'BaseImage',
+			() => props.seo,
+			({ url }) => imageSchema(props, url),
+		),
+		radiusStyle: computed(() => (props.borderRadius === undefined ? undefined : borderRadiusStyle.value)),
+		handleImageClick: openZoom,
+		exposed: { openZoom, closeZoom: (): void => zoom.closeZoom() },
+	}
+}

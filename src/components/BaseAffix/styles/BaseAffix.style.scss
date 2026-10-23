@@ -1,0 +1,14 @@
+.base-affix {
+	position: sticky;
+	z-index: calc(var(--rise-z-overlay) - 3);
+	box-sizing: border-box;
+	min-width: 0;
+
+	@include motion-safe {
+		@include transition(box-shadow);
+	}
+
+	&--shadow.base-affix--fixed {
+		box-shadow: ct(affix, shadow, var(--rise-shadow-md));
+	}
+}

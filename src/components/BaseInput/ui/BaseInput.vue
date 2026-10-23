@@ -1,59 +1,70 @@
 <template>
 	<div
-		class="base-input"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
-				'base-input--error': formField.error,
+				'base-input--error': control.hasError.value,
 				'base-input--disabled': isDisabled,
 				'base-input--readonly': isReadonly,
+				'base-input--has-icon': iconName,
 				'base-input--has-prefix': prefix || $slots.prefix,
 				'base-input--has-postfix': postfix || $slots.postfix,
 				'base-input--password': type === 'password',
+				'base-input--clearable': isClearVisible,
 			},
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
 		<FormFieldLabel
 			v-if="label"
+			:for-id="inputId"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-input__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-input__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div class="base-input__wrapper" :class="classes.wrapper">
+		<div :class="[ui('wrapper'), classes.wrapper]">
+			<span v-if="iconName" :class="[ui('icon'), classes.icon]">
+				<BaseIcon :name="iconName" :size-scale="calcIconScale('sm', sizeScale)" />
+			</span>
 			<slot name="prefix">
-				<BaseText
-					v-if="prefix"
-					tag="span"
-					class="base-input__prefix"
-					:custom-class="classes.prefix"
-					:size-scale="sizeScale"
-					>{{ prefix }}</BaseText
-				>
+				<BaseText v-if="prefix" tag="span" :class="ui('prefix')" :custom-class="classes.prefix" :size-scale="sizeScale">{{
+					prefix
+				}}</BaseText>
 			</slot>
 			<input
+				v-bind="nativeAttrs"
+				:id="inputId"
 				ref="inputRef"
-				class="base-input__field"
-				:class="classes.field"
+				:class="[ui('field'), classes.field]"
 				:type="inputType"
 				:value="displayValue"
 				:placeholder="placeholder"
 				:disabled="isDisabled"
 				:readonly="isReadonly"
 				@input="masked.handleInput"
-				@keydown="masked.handleKeydown"
+				@keydown="handleKeydown"
 				@blur="handleBlur"
 				@focus="handleFocus" />
 			<BaseButton
+				v-if="isClearVisible"
+				variant="ghost"
+				:class="ui('clear')"
+				:custom-class="classes.clear"
+				:aria-label="UI_ARIA.CLEAR_VALUE"
+				:size-scale="sizeScale"
+				@click="clearSearch">
+				<BaseIcon name="x-mark" :size-scale="calcIconScale('sm', sizeScale)" />
+			</BaseButton>
+			<BaseButton
 				v-if="type === 'password'"
 				variant="ghost"
-				class="base-input__password-toggle"
+				:class="ui('password-toggle')"
 				:custom-class="classes.passwordToggle"
-				tabindex="-1"
 				:aria-label="isPasswordVisible ? UI_ARIA.PASSWORD_HIDE : UI_ARIA.PASSWORD_SHOW"
 				:size-scale="sizeScale"
 				@click="togglePasswordVisibility">
@@ -63,132 +74,100 @@
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</BaseButton>
 			<slot name="postfix">
-				<BaseText
-					v-if="postfix"
-					tag="span"
-					class="base-input__postfix"
-					:custom-class="classes.postfix"
-					:size-scale="sizeScale"
-					>{{ postfix }}</BaseText
-				>
+				<BaseText v-if="postfix" tag="span" :class="ui('postfix')" :custom-class="classes.postfix" :size-scale="sizeScale">{{
+					postfix
+				}}</BaseText>
 			</slot>
 			<slot name="suffix" />
 		</div>
 
-		<div v-if="passwordRuleResults.length > 0" class="base-input__password-rules" :class="classes.passwordRules">
-			<div
-				v-for="rule in passwordRuleResults"
-				:key="rule.key"
-				class="base-input__password-rule"
-				:class="[{ 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
-				<span class="base-input__password-rule-icon"
-					><BaseIcon
-						:name="rule.isValid ? 'check' : 'x-mark'"
-						:custom-class="classes.passwordRuleIcon"
-						:size-scale="calcIconScale('xs', sizeScale)"
-				/></span>
-				<span class="base-input__password-rule-label">{{ rule.label }}</span>
+		<Transition name="base-input-rules">
+			<div v-if="passwordRuleResults.length > 0" :class="[ui('password-rules'), classes.passwordRules]">
+				<div
+					v-for="rule in passwordRuleResults"
+					:key="rule.key"
+					:class="[ui('password-rule'), { 'base-input__password-rule--valid': rule.isValid }, classes.passwordRule]">
+					<span :class="ui('password-rule-icon')"
+						><Transition name="base-input-rule-icon"
+							><BaseIcon
+								:key="rule.isValid ? 'check' : 'x-mark'"
+								:name="rule.isValid ? 'check' : 'x-mark'"
+								:custom-class="classes.passwordRuleIcon"
+								:size-scale="calcIconScale('xs', sizeScale)" /></Transition
+					></span>
+					<span :class="ui('password-rule-label')">{{ rule.label }}</span>
+				</div>
 			</div>
-		</div>
+		</Transition>
 
 		<FormFieldError
+			:id="errorId"
 			:error="formField.error"
-			class-name="base-input__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRef } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import '@components/BaseText/styles/BaseText.style.scss'
+import '../styles/BaseInput.style.scss'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
-import { useMaskedInputHandlers } from '@composables/useInputMask'
-import { usePasswordVisibility } from '@composables/usePasswordVisibility'
-import { UI_ARIA, SIZE_SCALE_DEFAULT} from '@constants'
-import { calcIconScale } from '@utils/iconUtils'
-import '../styles/BaseInput.style.scss'
-import type { BaseInputEmits, BaseInputProps, BaseInputSlots, PasswordRuleResult } from '../model/BaseInput.types'
+import { BaseButton } from '@components/BaseButton'
+import { useBaseInput } from '../model/useBaseInput'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseInputEmits, BaseInputProps, BaseInputSlots } from '../types/BaseInput.types'
 
-const props = withDefaults(defineProps<BaseInputProps>(), {
-	type: 'text',
-	placeholder: '',
-	isDisabled: false,
-	isReadonly: false,
-	isRequired: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-	prefix: '',
-	postfix: '',
-	mask: '',
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-input', props, [
-	'root', 'label', 'required', 'wrapper', 'prefix', 'field',
-	'passwordToggle', 'passwordIcon', 'postfix', 'passwordRules',
-	'passwordRule', 'passwordRuleIcon', 'errorText',
-])
-
+const props = withDefaults(
+	defineProps<BaseInputProps>(),
+	kitDefaults('BaseInput', {
+		variant: DEFAULT_VARIANT,
+		type: 'text',
+		placeholder: '',
+		isDisabled: false,
+		isReadonly: false,
+		isRequired: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		prefix: '',
+		postfix: '',
+		mask: '',
+	}),
+)
 const emit = defineEmits<BaseInputEmits>()
 defineSlots<BaseInputSlots>()
-const inputRef = ref<HTMLInputElement | null>(null)
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-const masked = useMaskedInputHandlers({
-	getMask: () => props.mask,
-	getValue: () => props.modelValue,
-	isPassword: () => props.type === 'password',
-	emit: (event, value) => emit(event, value),
-	onKeydown: (e) => emit('keydown', e),
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	inputRef,
-})
+	iconName,
+	errorId,
+	formField,
+	control,
+	inputId,
+	nativeAttrs,
+	masked,
+	displayValue,
+	isPasswordVisible,
+	inputType,
+	togglePasswordVisibility,
+	isClearVisible,
+	clearSearch,
+	handleKeydown,
+	passwordRuleResults,
+	handleBlur,
+	handleFocus,
+	exposed,
+} = useBaseInput(props, emit)
 
-const { isPasswordVisible, inputType, togglePasswordVisibility } = usePasswordVisibility({
-	type: toRef(props, 'type'),
-})
-
-const passwordRuleResults = computed<PasswordRuleResult[]>(() => {
-	if (!props.passwordRules) return []
-	const val = props.modelValue == null ? '' : String(props.modelValue)
-	return props.passwordRules.map(rule => ({
-		key: rule.key,
-		label: rule.label,
-		isValid: rule.validate(val),
-	}))
-})
-
-const displayValue = computed(() => {
-	const val = props.modelValue == null ? '' : String(props.modelValue)
-	if (props.type === 'password') return val
-	if (!props.mask) return val
-	return masked.applyMask(val, props.mask)
-})
-
-function handleBlur(e: FocusEvent): void {
-	formField.onBlur()
-	emit('blur', e)
-}
-
-function handleFocus(e: FocusEvent): void {
-	emit('focus', e)
-}
-
-defineExpose({
-	rootRef: inputRef,
-	inputRef,
-	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
-	focus: () => inputRef.value?.focus(),
-	/* istanbul ignore next — defensive: optional chaining для public API на unmount */
-	blur: () => inputRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

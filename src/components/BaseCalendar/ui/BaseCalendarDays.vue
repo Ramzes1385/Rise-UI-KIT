@@ -1,103 +1,76 @@
 <template>
-	<template v-if="currentView === 'days'">
-		<div class="base-calendar__weekdays" :class="classes.weekdays">
-			<span v-if="showWeekNumber" class="base-calendar__week-num-header">
-				<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="sizeScale"
-					>№</BaseText
-				>
-			</span>
-			<span v-for="(name, index) in orderedWeekdays" :key="index" class="base-calendar__weekday">
-				<BaseText
-					tag="span"
-					:weight="UI_FONT_WEIGHT.SEMIBOLD"
-					:color="{ text: { base: 'var(--color-text-muted)' } }"
-					:size-scale="sizeScale"
-					>{{ name }}</BaseText
-				>
-			</span>
+	<div :class="ui('days')">
+		<div :class="[ui('weekdays'), classes.weekdays]">
+			<span v-if="showWeekNumber" :class="ui('week-num-header')">№</span>
+			<span v-for="(name, index) in orderedWeekdays" :key="index" :class="ui('weekday')">{{ name }}</span>
 		</div>
-		<div class="base-calendar__grid" :class="classes.grid" role="grid">
-			<template v-for="(date, index) in calendarDays" :key="index">
-				<span v-if="showWeekNumber && index % 7 === 0" class="base-calendar__week-num">
-					<BaseText tag="span" :color="{ text: { base: 'var(--color-text-muted)' } }" :size-scale="sizeScale">{{
-						getRowWeekNumber(index)
-					}}</BaseText>
-				</span>
-				<div class="base-calendar__day-wrapper" :class="classes.dayWrapper">
-					<BaseButton
-						variant="ghost"
-						class="base-calendar__day"
-						:class="[dayClasses(date, !!$slots.day), classes.day]"
-						:is-disabled="isDayDisabled(date) || isDisabled"
-						:size-scale="sizeScale"
-						@click="emit('dayClick', date)">
-						<slot
-							name="day"
-							:date="date"
-							:is-today="isToday(date)"
-							:is-selected="isSelected(date)"
-							:is-disabled="isDayDisabled(date)"
-							:is-weekend="isWeekend(date)"
-							:is-in-range="isInRange(date)">
-							<BaseText tag="span" :size-scale="sizeScale">{{ date.getDate() }}</BaseText>
-						</slot>
-						<span
-							v-if="getHighlight(date)"
-							class="base-calendar__day-dot"
-							:style="{ backgroundColor: getHighlight(date)?.color || 'var(--color-accent)' }" />
-					</BaseButton>
-					<div
-						v-if="popoverDate && isSameDay(date, popoverDate)"
-						ref="popoverRef"
-						class="base-calendar__popover"
-						:class="classes.popover"
-						:style="popoverStyle"
-						@mousedown.stop
-						@click.stop>
-						<div class="base-calendar__popover-arrow" />
-						<slot name="date-popover" :date="popoverDate" :close="closePopover" :highlights="popoverHighlights">
-							<div class="base-calendar__popover-content">
-								<BaseText tag="span" class="base-calendar__popover-date" :size-scale="sizeScale">{{
-									formatPopoverDate({ date: popoverDate, locale })
-								}}</BaseText>
-							</div>
-							<div v-if="popoverHighlights.length > 0" class="base-calendar__popover-highlights">
-								<div v-for="(hl, hlIdx) in popoverHighlights" :key="hlIdx" class="base-calendar__popover-highlight">
-									<span
-										class="base-calendar__popover-highlight-dot"
-										:style="{ backgroundColor: hl.color || 'var(--color-accent)' }" />
-									<BaseText tag="span" :size-scale="sizeScale">{{ hl.label || UI_CALENDAR.EVENT_TEXT }}</BaseText>
-								</div>
-							</div>
-						</slot>
+		<Transition :name="slideName" :css="isAnimated" @before-leave="hideLeaving">
+			<div :key="period" :class="[ui('grid'), classes.grid]">
+				<template v-for="cell in cells" :key="cell.key">
+					<span v-if="cell.weekNumber !== null" :class="ui('week-num')">{{ cell.weekNumber }}</span>
+					<div :class="[ui('day-wrapper'), classes.dayWrapper]">
+						<button
+							type="button"
+							:class="[ui('day'), cell.classes, classes.day]"
+							:disabled="cell.isDisabled || isDisabled"
+							:aria-label="hasDaySlot ? undefined : cell.label"
+							:aria-pressed="cell.isPressed"
+							:aria-current="cell.isToday ? 'date' : undefined"
+							@click="emit('dayClick', cell.date)">
+							<slot
+								name="day"
+								:date="cell.date"
+								:is-today="cell.isToday"
+								:is-selected="isSelected(cell.date)"
+								:is-disabled="cell.isDisabled"
+								:is-weekend="isWeekend(cell.date)"
+								:is-in-range="isInRange(cell.date)">
+								{{ cell.date.getDate() }}
+							</slot>
+							<span
+								v-if="cell.highlight"
+								:class="ui('day-dot')"
+								:style="{ '--calendar-dot-color': cell.highlight.color }"
+								aria-hidden="true" />
+						</button>
+						<div
+							v-if="popoverDate && isSameDay(cell.date, popoverDate)"
+							ref="popoverRef"
+							:class="[ui('popover'), cell.popoverClass, classes.popover]"
+							@mousedown.stop
+							@click.stop>
+							<div :class="ui('popover-arrow')" />
+							<slot name="date-popover" :date="popoverDate" :close="closePopover" :highlights="popoverHighlights">
+								<span :class="ui('popover-date')">{{ formatPopoverDate({ date: popoverDate, locale }) }}</span>
+								<ul v-if="popoverHighlights.length > 0" :class="ui('popover-highlights')">
+									<li v-for="(hl, hlIdx) in popoverHighlights" :key="hlIdx" :class="ui('popover-highlight')">
+										<span
+											:class="ui('popover-highlight-dot')"
+											:style="{ '--calendar-dot-color': hl.color }"
+											aria-hidden="true" />
+										{{ hl.label || UI_CALENDAR.EVENT_TEXT }}
+									</li>
+								</ul>
+							</slot>
+						</div>
 					</div>
-				</div>
-			</template>
-		</div>
-	</template>
+				</template>
+			</div>
+		</Transition>
+	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
-import { BaseText } from '@components/BaseText'
-import { useClickOutside } from '@composables/useClickOutside'
-import { UI_CALENDAR, UI_FONT_WEIGHT } from '@constants'
-import { formatPopoverDate } from '@utils/dateUtils'
-import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../model/BaseCalendarDays.types'
+import { UI_CALENDAR } from '@/locales/messages'
+import { formatPopoverDate } from '@utils/data/dateUtils'
+import { useBaseCalendarDays } from '../model/useBaseCalendarDays'
+import type { BaseCalendarDaysEmits, BaseCalendarDaysProps, BaseCalendarDaysSlots } from '../types/BaseCalendarDays.types'
 
 const props = defineProps<BaseCalendarDaysProps>()
-
-const popoverRef = ref<HTMLElement | null>(null)
-
-useClickOutside({
-	targets: [popoverRef],
-	callback: () => props.closePopover(),
-	isActive: () => !!props.popoverDate,
-	isCapture: true,
-})
 
 const emit = defineEmits<BaseCalendarDaysEmits>()
 
 defineSlots<BaseCalendarDaysSlots>()
+
+const { ui, hideLeaving, popoverRef, hasDaySlot, cells } = useBaseCalendarDays(props)
 </script>

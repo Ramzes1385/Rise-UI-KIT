@@ -1,0 +1,143 @@
+.base-descriptions {
+	@include custom-color-scope;
+	--base-descriptions-gap-x: #{space(24px)};
+	--base-descriptions-gap-y: #{space(ct(descriptions, gap, 12px))};
+
+	position: relative;
+	box-sizing: border-box;
+	min-width: 0;
+	padding: space(ct(descriptions, padding-y, 16px) ct(descriptions, padding-x, 16px));
+	border: 1px solid ct(descriptions, border, transparent);
+	border-radius: sz(ct(descriptions, radius, var(--rise-radius-lg)));
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(descriptions, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(descriptions, text, var(--rise-text)));
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: ct(descriptions, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: space(8px 16px);
+		margin-bottom: space(12px);
+	}
+
+	&__title {
+		min-width: 0;
+		@include heading;
+		@include text-size(md);
+	}
+
+	&__extra {
+		display: flex;
+		flex-wrap: wrap;
+		gap: sz(8px);
+		margin-inline-start: auto;
+	}
+
+	&__list {
+		--base-descriptions-track: calc(
+			(100% - (var(--base-descriptions-columns) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-columns)
+		);
+
+		display: grid;
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(min(100%, max(var(--base-descriptions-min-item-width), var(--base-descriptions-track))), 1fr)
+		);
+		gap: var(--base-descriptions-gap-y) var(--base-descriptions-gap-x);
+		margin: 0;
+	}
+
+	&__item {
+		--base-descriptions-span: 1;
+
+		display: flex;
+		flex-wrap: wrap;
+		gap: space(2px 12px);
+		min-width: 0;
+	}
+
+	&--vertical &__item {
+		flex-direction: column;
+	}
+
+	&__label {
+		flex: 0 1
+			var(
+				--base-descriptions-label-width,
+				calc((100% - (var(--base-descriptions-span) - 1) * var(--base-descriptions-gap-x)) / var(--base-descriptions-span) * 0.4)
+			);
+		min-width: 0;
+		@include caps-label;
+		background-color: ct(descriptions, label-bg, transparent);
+		color: ct(descriptions, label-text, var(--rise-text-muted));
+		font-weight: ct(descriptions, label-font-weight, inherit);
+		overflow-wrap: break-word;
+	}
+
+	&__value {
+		display: flex;
+		flex: 1 1 sz(120px);
+		align-items: flex-start;
+		gap: sz(4px);
+		min-width: 0;
+		margin: 0;
+		color: ct(descriptions, value-text, var(--rise-text-highlighted));
+		font-weight: ct(descriptions, value-font-weight, inherit);
+	}
+
+	&--vertical &__label,
+	&--vertical &__value {
+		flex: none;
+	}
+
+	&__content {
+		min-width: 0;
+		overflow-wrap: break-word;
+		white-space: pre-line;
+	}
+
+	&__empty-value {
+		color: var(--rise-text-toned);
+	}
+
+	& &__copy {
+		flex: none;
+		margin-block: sz(-4px);
+		color: var(--rise-text-muted);
+	}
+
+	&__copy .base-icon__svg {
+		width: sz(14px);
+		height: sz(14px);
+	}
+
+	&__empty {
+		color: var(--rise-text-toned);
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	@include enter-pop(base-descriptions__copy-icon, calc(var(--rise-motion-scale-from) * 0.5));
+}

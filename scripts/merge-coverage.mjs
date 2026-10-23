@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// Сливает отчёты покрытия всех тест-прогонов в общий отчёт coverage/index.html.
 
 import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'

@@ -25,7 +25,17 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "vite.config.ts",
-    "build/**/*.ts"
+    "build/**/*.ts",
+    "src/plugin/registry/lazyNames.ts"
+  ],
+  /* Код для браузера и jsdom (превью Storybook, настройка Vitest) проверяется в tsconfig.app.json */
+  "exclude": [
+    "build/storybook/preview.ts",
+    "build/storybook/manager.ts",
+    "build/storybook/theme.ts",
+    "build/tests/setup-vitest.ts",
+    "build/tests/visual.ts",
+    "build/tests/*.spec.ts",
+    "build/tests/fuzz/*.ts"
   ]
 }

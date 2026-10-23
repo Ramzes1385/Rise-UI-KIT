@@ -1,0 +1,46 @@
+<template>
+	<ImageMapEditorSection id="scene3d" :title="UI_IMAGE_MAP_EDITOR.SECTION_3D" :sections="sections" :ui="ui">
+		<fieldset v-if="panel.layer3dFields.value.length" :class="ui('fieldset')">
+			<legend :class="ui('legend')">
+				{{ formatMessage(UI_IMAGE_MAP_EDITOR.LAYER_3D, { title: layerTitle ?? '' }) }}
+			</legend>
+			<ImageMapEditorField
+				v-for="field in panel.layer3dFields.value"
+				:key="field.key"
+				:field="field"
+				:is-disabled="isDisabled"
+				@update="panel.setLayer3dField(field.key, $event)" />
+		</fieldset>
+		<fieldset v-if="selected?.type === 'svg'" :class="ui('fieldset')">
+			<legend :class="ui('legend')">{{ UI_IMAGE_MAP_EDITOR.PARTS_3D }}</legend>
+			<ImageMapEditorRows
+				:rows="panel.partRows.value"
+				:add-label="UI_IMAGE_MAP_EDITOR.ADD_PART"
+				:empty-text="UI_IMAGE_MAP_EDITOR.NO_PARTS"
+				:is-disabled="isDisabled"
+				@update="panel.setPartField"
+				@add="panel.addPart"
+				@remove="panel.removePart" />
+		</fieldset>
+		<fieldset :class="ui('fieldset')">
+			<legend :class="ui('legend')">{{ UI_IMAGE_MAP_EDITOR.SCENE_3D }}</legend>
+			<ImageMapEditorField
+				v-for="field in panel.scene3dFields.value"
+				:key="field.key"
+				:field="field"
+				:is-disabled="isDisabled"
+				@update="panel.setScene3dField(field.key, $event)" />
+		</fieldset>
+	</ImageMapEditorSection>
+</template>
+
+<script setup lang="ts">
+import { formatMessage } from '@/locales/state'
+import { UI_IMAGE_MAP_EDITOR } from '@/locales/messages'
+import ImageMapEditorRows from './ImageMapEditorRows.vue'
+import ImageMapEditorField from './ImageMapEditorField.vue'
+import ImageMapEditorSection from './ImageMapEditorSection.vue'
+import type { ImageMapEditorPanel3dProps } from '../types/ImageMapEditorPanel.types'
+
+defineProps<ImageMapEditorPanel3dProps>()
+</script>

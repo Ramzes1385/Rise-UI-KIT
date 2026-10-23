@@ -31,8 +31,53 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Stylelint
+        run: npm run lint:styles
+
+      - name: Unused code (knip)
+        run: npm run lint:unused
+
+      - name: Format check
+        run: npm run format:check
+
+      # В папке src не больше 7 файлов; корень компонента сбрасывает --custom-*
+      - name: Folder size (≤ 7 files)
+        run: npm run test:folders
+
+      - name: Custom color scope
+        run: npm run test:custom-color
+
+      # vue-tsc -b: исходники вместе с тестами и stories (tsconfig.app.json) и конфиги сборки (tsconfig.node.json).
+      # Сборка ниже проверяет только tsconfig.lib.json (без *.spec.ts), поэтому ошибки типов в тестах туда не попадают.
+      - name: Type check (app, tests, build configs)
+        run: npm run typecheck
+
       - name: Type check & build
         run: npm run build
+
+      # Состав npm-пакета (pack:dry без повторной сборки)
+      - name: Package contents (npm pack --dry-run)
+        run: npm pack --dry-run
+
+      # Разбиение CSS: в dist/styles.css нет стилей плеера, в dist/media.css есть и нет токенов кита
+      - name: CSS split (styles.css / media.css)
+        run: npm run test:css-split
+
+      # Точечная установка: exports подпутей совпадают со списком компонентов, приложение из tarball берёт только BaseButton / BaseSelect
+      - name: Subpaths (exports, app from tarball imports one component)
+        run: npm run test:subpaths -- --no-screenshot
+
+      # Вес компонентов: docs/reference/SIZES.md совпадает со сборкой (мини-приложение на компонент, ≈20–50 с)
+      - name: Component sizes (docs/reference/SIZES.md is up to date)
+        run: npm run test:sizes
+
+      # Храповики (build/ratchets.json): размер входов dist в gzip — в бюджете, исключений покрытия и предупреждений ESLint — не больше базы
+      - name: Ratchets (bundle size, coverage excludes, lint warnings)
+        run: npm run test:ratchets
+
+      # Кодмод перехода 1.x → 2.0 (bin/migrate): фикстуры приложения 1.x, идемпотентность, покрытие 100 % (≈20–50 с)
+      - name: Codemod (rise-ui-kit migrate, coverage 100%)
+        run: npm run test:codemod
 
   quality-gates:
     name: Stories & A11y Coverage
@@ -52,6 +97,89 @@ jobs:
 
       - name: Check missing play/keyboard a11y
         run: node scripts/check-a11y-coverage.mjs
+
+      - name: Check UI strings go through the locale dictionaries
+        run: npm run test:l10n
+
+      - name: Check slot descriptions in Docs
+        run: npm run test:slot-docs
+
+      - name: Check «Show code» is the exact preview code
+        run: npm run test:story-source
+
+  # Storybook собирается один раз: stories-run и e2e-and-visual берут готовую сборку из артефакта
+  storybook-build:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Upload built Storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
+          retention-days: 1
+
+  stories-run:
+    name: Stories Run (render, play, axe, page width)
+    needs: storybook-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Download built Storybook
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
+
+      # Каждая story в светлой и тёмной теме на ширинах окна 375 и 1280 px: рендер, play-функция, axe,
+      # без внешних запросов и без горизонтальной прокрутки страницы
+      - name: Run all stories
+        run: |
+          node scripts/serve-storybook-static.mjs &
+          npx wait-on http://localhost:6006
+          npm run test:stories -- --widths=375,1280 --concurrency=3 --report=test-results/stories-report.json
+
+      - name: Upload stories report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: stories-report
+          path: test-results/stories-report.json
+          retention-days: 14
+
+      # Пары «текст/фон» дизайн-токенов обеих тем — не ниже WCAG AA (docs/design/contrast.md)
+      - name: Check design token contrast
+        run: npm run test:contrast
 
   unit-tests:
     name: Unit & Integration
@@ -85,9 +213,20 @@ jobs:
 
   e2e-and-visual:
     name: E2E & Visual Regression
+    needs: storybook-build
     runs-on: ubuntu-latest
+    # contents: write нужен только шагу auto-commit обновлённых baseline (он запускается лишь по метке, см. ниже)
+    permissions:
+      contents: write
+    env:
+      # Обновление baseline — осознанное действие: только PR из этого репозитория с меткой visual:update-baselines.
+      # Без метки упавший visual-тест остаётся падением, а не превращается в автокоммит новых скриншотов.
+      UPDATE_VISUAL_BASELINES: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && contains(github.event.pull_request.labels.*.name, 'visual:update-baselines') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # git-auto-commit-action не может запушить из merge-коммита PR (detached HEAD) — для обновления baseline нужна ветка PR
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || '' }}
 
       - uses: actions/setup-node@v4
         with:
@@ -105,34 +244,36 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium --with-deps
 
-      - name: Build Storybook
-        run: npm run build-storybook
+      - name: Download built Storybook
+        uses: actions/download-artifact@v4
+        with:
+          name: storybook-static
+          path: storybook-static
 
+      # Playwright сам поднимает scripts/serve-storybook-static.mjs на собранном Storybook (STORYBOOK_SERVER=static по умолчанию):
+      # dev-сервер Storybook на медленных машинах не успевал стартовать
+      # Эталоны снимков хранятся только у владельца (tests/ не в git): без них сверка скриншотов пропускается
       - name: Run E2E & visual against built Storybook
         run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
           npm run test:e2e
-          npm run test:visual
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
+          if [ -d tests/visual-snapshots ]; then
+            npm run test:visual
+          else
+            echo "::notice::Нет tests/visual-snapshots — эталоны снимков хранятся локально, сверка скриншотов пропущена"
+          fi
 
       # === Cross-platform baseline regeneration ===
       # Без `if: always()` этот шаг skipped бы по дефолту, когда visual-тесты
       # упали на platform-различиях (как раз та ситуация, ради которой шаг
-      # и нужен). Только на pull_request: никогда не на main, и head.repo.full_name
-      # == github.repository защищает от форков.
+      # и нужен). Только на pull_request с меткой visual:update-baselines: никогда не на main,
+      # head.repo.full_name == github.repository защищает от форков, а метка — от автоматического
+      # «лечения» настоящей визуальной регрессии коммитом новых скриншотов.
       - name: Regenerate visual baselines on Linux
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          node scripts/serve-storybook-static.mjs &
-          npx wait-on http://localhost:6006
-          npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots
-        env:
-          PLAYWRIGHT_REUSE_SERVER: "true"
+        if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
+        run: npx playwright test --config build/tests/playwright.config.ts --project=visual-chromium --update-snapshots
 
       - name: Commit updated baselines to PR
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && env.UPDATE_VISUAL_BASELINES == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(visual): regenerate baselines for Linux CI (auto)"

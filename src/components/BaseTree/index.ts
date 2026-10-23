@@ -1,10 +1,11 @@
-export { TREE_VARIANTS } from './model/BaseTree.types'
+export { TREE_PARTS, TREE_VARIANTS } from './types/BaseTree.types'
 export type {
 	BaseTreeEmits,
+	BaseTreePart,
 	BaseTreeProps,
 	BaseTreeSlots,
 	TreeArrowPosition,
 	TreeNode,
 	TreeSelectionMode,
-} from './model/BaseTree.types'
+} from './types/BaseTree.types'
 export { default as BaseTree } from './ui/BaseTree.vue'

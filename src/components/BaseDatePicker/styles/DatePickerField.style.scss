@@ -1,0 +1,29 @@
+.date-picker-field {
+	&__suffix {
+		@include reset-custom-color;
+		display: flex;
+		flex-shrink: 0;
+		align-items: center;
+		gap: sz(2px);
+		padding-inline-end: sz(4px);
+	}
+
+	&__clear-btn.base-button,
+	&__icon-btn.base-button {
+		--btn-pad-top: 3px;
+		--btn-pad-right: 3px;
+		--btn-pad-bottom: 3px;
+		--btn-pad-left: 3px;
+
+		flex: none;
+		color: ct(date-picker, icon-text, var(--rise-text-muted));
+
+		@include hover {
+			color: ct(date-picker, icon-text-hover, var(--rise-text-highlighted));
+		}
+	}
+
+	&:not(&--disabled) .base-input__field {
+		cursor: pointer;
+	}
+}

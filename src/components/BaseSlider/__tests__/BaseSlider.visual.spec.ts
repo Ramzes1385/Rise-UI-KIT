@@ -1,20 +1,15 @@
-/**
- * Visual regression тесты для BaseSlider.
- * BaseSlider рендерит BaseImage-слайды с удалёнными src — без networkidle
- * скриншот ловит пустой viewport вместо загруженных картинок.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['default', 'thumbnails', 'arrow-positions', 'slides-per-view', 'vertical', 'coverflow', 'cards'] as const
 
-const COMPONENT = 'ui-baseslider'
-const STORIES = ['default', 'fade', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseSlider — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		await page.waitForLoadState('networkidle')
-		await page.evaluate(() => document.fonts.ready)
-		const root = page.locator('.base-slider')
-		await expect(root).toHaveScreenshot(`base-slider--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSlider · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `data-baseslider--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-slider-${story}-${theme}.png`)
+			})
+		}
 	})
 }

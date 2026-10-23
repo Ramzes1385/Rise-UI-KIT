@@ -1,68 +1,95 @@
 .base-rating {
+	@include custom-color-scope;
+	--rating-empty: #{ct(rating, star-text, var(--rise-border-accented))};
+	@include custom-text(--rating-fill, ct(rating, star-fill-text, var(--rise-primary)));
+	--rating-fill-hover: var(--custom-text-hover, var(--custom-text, #{ct(rating, star-fill-text-hover, var(--rise-primary-hover))}));
+
 	display: inline-flex;
 	align-items: center;
-	gap: sz(2px);
-	border-radius: var(--border-radius-sm);
-	@include transition(box-shadow);
-
-	@include focus {
-		box-shadow:
-			0 0 0 2px var(--color-bg),
-			0 0 0 4px var(--color-accent);
-	}
-
-	&--readonly {
-		pointer-events: none;
-	}
+	gap: sz(ct(rating, gap, 2px));
+	vertical-align: middle;
+	border-radius: sz(ct(rating, radius, var(--rise-radius-sm)));
+	@include custom-bg(background-color, transparent);
+	@include transition-colors;
+	@include focus-ring;
 
 	&__star {
 		position: relative;
 		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		box-sizing: border-box;
-		cursor: pointer;
-		color: var(--color-border);
-		@include transition(transform);
-
-		@include hover {
-			transform: scale(1.15);
-		}
-
-		@include active {
-			transform: scale(0.92);
-		}
+		flex-shrink: 0;
+		color: var(--rating-empty);
+		transition: transform var(--rise-duration-fast) var(--rise-ease-out);
 	}
 
 	&__star-fill {
 		position: absolute;
-		top: 0;
-		left: 0;
-		bottom: 0;
+		inset: 0;
 		display: inline-flex;
 		align-items: center;
-		box-sizing: border-box;
 		overflow: hidden;
+		color: var(--rating-fill);
 		white-space: nowrap;
 		pointer-events: none;
-		@include custom-text(color, var(--color-accent));
-		@include transition(width);
+		clip-path: inset(0 calc(100% - var(--rating-fill-size, 0%)) 0 0);
+		@include transition(clip-path, color);
 	}
 
-	&--ghost &__star {
-		opacity: 0.85;
+	&__value {
+		min-width: max(3ch, calc(var(--rating-value-chars, 3) * 1ch));
+		margin-inline-start: sz(6px);
+		color: ct(rating, value-text, var(--rise-text-toned));
+		font-size: sz(ct(rating, value-font-size, 14px));
+		font-weight: ct(rating, value-font-weight, var(--rise-font-weight-medium));
+		font-variant-numeric: tabular-nums;
+		line-height: 1;
 	}
 
-	&--outline &__star {
-		border: sz(1px) solid var(--color-border);
-		border-radius: var(--border-radius-sm);
+	&--interactive &__star {
+		cursor: pointer;
+
+		@include hover {
+			transform: scale(calc(2 - var(--rise-motion-scale-from)));
+		}
+
+		@include active {
+			transform: scale(var(--rise-motion-scale-from));
+		}
 	}
 
-	&--shadow &__star-fill {
-		filter: drop-shadow(var(--shadow-sm));
+	&--interactive {
+		@include hover {
+			--rating-fill: var(--rating-fill-hover);
+		}
 	}
 
-	&--soft &__star-fill {
-		@include custom-text(color, var(--color-primary));
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&--outline,
+	&--soft,
+	&--ghost,
+	&--shadow {
+		padding: sz(ct(rating, padding-y, var(--rise-control-padding-y))) sz(ct(rating, padding-x, var(--rise-control-padding-x)));
+		border: 1px solid transparent;
+		border-radius: sz(ct(rating, radius, var(--rise-control-radius)));
+	}
+
+	&--outline {
+		border-color: ct(rating, border, var(--rise-border-accented));
+	}
+
+	&--shadow {
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		box-shadow: ct(rating, shadow, var(--rise-shadow-sm));
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-bg-muted));
+	}
+
+	&--soft.base-rating--interactive,
+	&--ghost.base-rating--interactive {
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
 	}
 }

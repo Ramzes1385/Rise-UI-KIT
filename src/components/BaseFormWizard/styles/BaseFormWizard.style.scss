@@ -1,0 +1,88 @@
+.base-form-wizard {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: space(ct(form-wizard, gap, 20px));
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	@include custom-bg(background-color, ct(form-wizard, bg, transparent));
+	@include custom-text(color, ct(form-wizard, text, var(--rise-text)));
+
+	&--disabled {
+		opacity: var(--rise-disabled-opacity);
+	}
+
+	&--outline,
+	&--soft {
+		padding: space(ct(form-wizard, padding-y, 20px) ct(form-wizard, padding-x, 24px));
+		border-radius: sz(ct(form-wizard, radius, var(--rise-radius-lg)));
+	}
+
+	&--outline {
+		border: 1px solid ct(form-wizard, border, var(--rise-border-accented));
+	}
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(form-wizard, bg, var(--rise-bg-elevated)));
+	}
+
+	&__header {
+		min-width: 0;
+
+		.base-stepper--horizontal .base-stepper__items {
+			margin-inline: 0;
+		}
+	}
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
+	& &__title {
+		@include inherit-custom-color;
+		margin: 0;
+		font-size: sz(ct(form-wizard, title-font-size, var(--rise-font-size-lg)));
+		font-weight: var(--rise-font-weight-semibold);
+		line-height: sz(var(--rise-line-height-lg));
+		overflow-wrap: anywhere;
+		@include custom-text(color, ct(form-wizard, title-text, var(--rise-text-highlighted)));
+		@include focus-ring;
+	}
+
+	& &__description {
+		@include inherit-custom-color;
+		margin: 0;
+		color: inherit;
+		@include text-size(sm);
+		overflow-wrap: anywhere;
+	}
+
+	& &__error {
+		margin: 0;
+		color: var(--rise-error-text);
+		@include text-size(sm);
+		overflow-wrap: anywhere;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		gap: sz(8px);
+	}
+
+	& &__back {
+		margin-inline-end: auto;
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+}

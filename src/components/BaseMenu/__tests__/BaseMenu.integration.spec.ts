@@ -1,14 +1,16 @@
-/**
- * Integration-тесты для BaseMenu.
- * Проверяют взаимодействие: клики, emit select.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { vi } from 'vitest'
 import BaseMenu from '../ui/BaseMenu.vue'
-import type { BaseMenuItem } from '../model/BaseMenu.types'
+import userEvent from '@testing-library/user-event'
+import type { BaseMenuItem } from '../types/BaseMenu.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
+
+function stopLinkNavigation(event: MouseEvent): void {
+	if (event.target instanceof Element && event.target.closest('a[href]')) event.preventDefault()
+}
+
+beforeEach(() => window.addEventListener('click', stopLinkNavigation))
+afterEach(() => window.removeEventListener('click', stopLinkNavigation))
 
 const clickHandler = vi.fn()
 
@@ -63,6 +65,79 @@ describe('BaseMenu integration', () => {
 			await user.click(screen.getByText('Действие'))
 
 			expect(emitted()).toHaveProperty('select')
+		})
+	})
+
+	describe('клавиатура и семантика', () => {
+		it('пункты доступны вспомогательным технологиям: с `to` — ссылка, без — кнопка', () => {
+			render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			expect(screen.getByRole('link', { name: 'Профиль' })).toHaveAttribute('href', '/profile')
+			expect(screen.getByRole('button', { name: 'Действие' })).toBeInTheDocument()
+		})
+
+		it('должен активировать пункт по Enter', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			await user.tab()
+			await user.keyboard('{Enter}')
+
+			expect(emitted().select).toEqual([[ITEMS[0][0]]])
+		})
+
+		it('пункт-ссылка: href и target, Space не перехватывается, отключённая ссылка без адреса', async () => {
+			const user = userEvent.setup()
+			const items = [
+				[
+					{ label: 'Документация', href: 'https://example.com', target: '_blank' as const },
+					{ label: 'Архив', to: '/archive', isDisabled: true },
+				],
+			]
+			const { emitted } = render(BaseMenu, { props: { items } })
+
+			const link = screen.getByRole('link', { name: /Документация/ })
+			expect(link).toHaveAttribute('href', 'https://example.com')
+			expect(link).toHaveAttribute('target', '_blank')
+			link.focus()
+			await user.keyboard(' ')
+			expect(emitted()).not.toHaveProperty('select')
+
+			expect(screen.getByText('Архив').closest('.base-menu__item')).not.toHaveAttribute('href')
+		})
+
+		it('должен активировать пункт по Space и вызывать item.click', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			const item = screen.getByText('Действие').closest('.base-menu__item') as HTMLElement
+			item.focus()
+			await user.keyboard(' ')
+
+			expect(clickHandler).toHaveBeenCalledTimes(1)
+			expect(emitted().select).toEqual([[ITEMS[0][1]]])
+		})
+
+		it('отключённый пункт помечен aria-disabled и не активируется с клавиатуры', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseMenu, {
+				props: { items: ITEMS },
+			})
+
+			const disabledItem = screen.getByRole('button', { name: 'Выход' })
+			expect(disabledItem).toHaveAttribute('aria-disabled', 'true')
+
+			disabledItem.focus()
+			await user.keyboard('{Enter}')
+			await user.keyboard(' ')
+
+			expect(emitted()).not.toHaveProperty('select')
 		})
 	})
 

@@ -1,0 +1,139 @@
+.base-prompt-input {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: sz(ct(prompt-input, gap, 6px));
+	width: 100%;
+	min-width: 0;
+	@include custom-text(color, ct(prompt-input, text, var(--rise-text-highlighted)));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__box {
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		min-width: 0;
+		@include field-box(prompt-input);
+		border-radius: sz(ct(prompt-input, radius, var(--rise-radius-lg)));
+	}
+
+	&__control {
+		@include field-reset;
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		max-height: calc(var(--prompt-max-rows, 8) * 1lh + #{sz(16px)});
+		margin: 0;
+		padding: sz(12px) sz(14px) sz(4px);
+		overflow-y: auto;
+		@include control-text;
+		font-size: sz(ct(prompt-input, control-font-size, var(--rise-control-font-size)));
+		resize: none;
+		@include scrollbar-thin;
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+	}
+
+	&__toolbar {
+		display: flex;
+		align-items: center;
+		gap: sz(ct(prompt-input, toolbar-gap, 8px));
+		padding: sz(6px) sz(8px) sz(8px);
+	}
+
+	&__start,
+	&__end {
+		display: flex;
+		align-items: center;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__start {
+		flex: 1 1 auto;
+	}
+
+	&__end {
+		margin-inline-start: auto;
+	}
+
+	&__action {
+		position: relative;
+		display: flex;
+		flex: none;
+	}
+
+	&__button.base-button {
+		--btn-pad-top: 0px;
+		--btn-pad-right: 0px;
+		--btn-pad-bottom: 0px;
+		--btn-pad-left: 0px;
+
+		@include reset-custom-color;
+		flex: none;
+		width: sz(32px);
+		height: sz(32px);
+		border-radius: sz(ct(prompt-input, button-radius, var(--rise-radius-md)));
+
+		.base-icon {
+			width: sz(ct(prompt-input, button-icon-size, 16px));
+			height: sz(ct(prompt-input, button-icon-size, 16px));
+		}
+	}
+
+	&__button--stop.base-button {
+		background-color: var(--rise-text-highlighted);
+		color: var(--rise-bg);
+
+		@include hover {
+			background-color: var(--rise-text);
+		}
+	}
+
+	&--outline &__box {
+		@include field-variant(prompt-input, outline);
+	}
+
+	&--soft &__box {
+		@include field-variant(prompt-input, soft);
+	}
+
+	&--ghost &__box {
+		@include field-variant(prompt-input, ghost);
+	}
+
+	&--error &__box {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--disabled &__box {
+		@include disabled-state;
+	}
+
+	&--disabled &__control {
+		cursor: not-allowed;
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}
+
+@include enter-scale('base-prompt-input-action');
+
+.base-prompt-input-action-leave-active {
+	position: absolute;
+	inset: 0;
+}

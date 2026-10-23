@@ -1,0 +1,26 @@
+/** Панели BaseFlowMap: мини-карта, легенда, подробности узла */
+export const jaFlowPanels = {
+	flowPanels: {
+		DETAILS: '詳細',
+		MINIMAP: 'ミニマップ',
+		MINIMAP_HINT: '矢印キーで表示を移動、Home で全体を表示',
+		LEGEND: '凡例',
+		LEGEND_SHOW: '凡例を表示',
+		LEGEND_HIDE: '凡例を閉じる',
+		STATUS_OK: '稼働中',
+		STATUS_WARNING: '遅延',
+		STATUS_ERROR: 'エラー',
+		STATUS_DOWN: '停止中',
+		STATUS_UNKNOWN: 'データなし',
+		DETAILS_NODE: 'ノードの詳細',
+		DETAILS_EDGE: 'リンクの詳細',
+		DETAILS_GROUP: 'グループの詳細',
+		DETAILS_CLOSE: '詳細を閉じる',
+		DETAILS_EMPTY: 'ノードまたはリンクを選ぶと詳細が表示されます',
+		DETAILS_CALLS: '呼び出し先',
+		DETAILS_CALLED_BY: '呼び出し元',
+		DETAILS_TEAM: 'チーム「{name}」',
+		DETAILS_METRICS: 'メトリクス',
+		DETAILS_SHEET: '下にスワイプして閉じる',
+	},
+}

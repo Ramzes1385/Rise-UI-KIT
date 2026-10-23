@@ -1,8 +1,8 @@
 <template>
 	<button
 		ref="buttonRef"
-		class="base-button"
 		:class="[
+			ui('root'),
 			variantClass,
 			classes.root,
 			{
@@ -12,15 +12,21 @@
 		]"
 		:style="[paddingStyle, sizeScaleStyle, variantStyle, customColorStyle]"
 		:type="type"
-		:disabled="isDisabled || isLoading"
+		:disabled="isDisabled && !isFocusableWhenDisabled"
+		:aria-disabled="isLoading || (isDisabled && isFocusableWhenDisabled) ? 'true' : undefined"
+		:aria-busy="isLoading ? 'true' : undefined"
 		@click="handleClick">
-		<span v-if="isLoading" class="base-button__loader"></span>
-		<span class="base-button__content">
-			<span v-if="$slots.left" class="base-button__slot-left">
+		<Transition name="base-button__loader">
+			<span v-if="isLoading" :class="ui('loader')" aria-hidden="true"></span>
+		</Transition>
+		<span :class="ui('content')">
+			<span v-if="$slots.left" :class="ui('slot-left')">
 				<slot name="left" />
 			</span>
-			<slot />
-			<span v-if="$slots.right" class="base-button__slot-right">
+			<span v-if="$slots.default" :class="ui('label')">
+				<slot />
+			</span>
+			<span v-if="$slots.right" :class="ui('slot-right')">
 				<slot name="right" />
 			</span>
 		</span>
@@ -28,39 +34,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { usePadding } from '@composables/usePadding'
-import { SIZE_SCALE_DEFAULT, UI_SIZE } from '@constants'
 import '../styles/BaseButton.style.scss'
-import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../model/BaseButton.types'
+import { useBaseButton } from '../model/useBaseButton'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseButtonEmits, BaseButtonProps, BaseButtonSlots } from '../types/BaseButton.types'
 
-
-const props = withDefaults(defineProps<BaseButtonProps>(), {
-	type: 'button',
-	padding: 10,
-	isLoading: false,
-	isDisabled: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseButtonProps>(),
+	kitDefaults('BaseButton', {
+		variant: DEFAULT_VARIANT,
+		type: 'button',
+		padding: undefined,
+		isLoading: false,
+		isDisabled: false,
+		isFocusableWhenDisabled: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseButtonEmits>()
 
 defineSlots<BaseButtonSlots>()
 
-const buttonRef = ref<HTMLButtonElement | null>(null)
+const { ui, sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, buttonRef, paddingStyle, handleClick, exposed } =
+	useBaseButton(props, emit)
 
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-button', props, ['root'])
-const { paddingStyle } = usePadding({ getPadding: () => props.padding, prefix: '--btn-pad', defaultPadding: UI_SIZE.PADDING.MD })
-
-function handleClick(e: MouseEvent): void {
-	if (props.isDisabled || props.isLoading) return
-	emit('click', e)
-}
-
-defineExpose({
-	buttonRef,
-	focus: () => buttonRef.value?.focus(),
-	blur: () => buttonRef.value?.blur(),
-})
+defineExpose(exposed)
 </script>

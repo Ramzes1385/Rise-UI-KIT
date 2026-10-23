@@ -1,0 +1,42 @@
+.base-infinite-scroll {
+	display: flex;
+	flex-direction: column;
+
+	&__sentinel {
+		height: 1px;
+		margin-top: -1px;
+		pointer-events: none;
+	}
+
+	&__footer {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: space(ct(infinite-scroll, footer-gap, 8px) ct(infinite-scroll, footer-gap, 12px));
+		min-height: sz(ct(infinite-scroll, footer-height, 48px));
+		padding-block: space(ct(infinite-scroll, footer-padding-y, 8px));
+		background-color: ct(infinite-scroll, footer-bg, transparent);
+		color: ct(infinite-scroll, footer-text, var(--rise-text-muted));
+		font-size: sz(ct(infinite-scroll, footer-font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+	}
+
+	&__footer--empty {
+		min-height: 0;
+		padding-block: 0;
+	}
+
+	&__loader {
+		flex: none;
+	}
+}
+
+@include motion-safe {
+	@include enter-fade(base-infinite-scroll-loader);
+
+	.base-infinite-scroll-loader-leave-active {
+		position: absolute;
+	}
+}

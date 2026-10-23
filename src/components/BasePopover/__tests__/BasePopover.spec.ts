@@ -1,14 +1,8 @@
-/**
- * Unit-тесты для BasePopover.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- * Компонент использует BaseDropdown с teleport to="body" — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
+import { h } from 'vue'
 import BasePopover from '../ui/BasePopover.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
-/** Общие слоты для рендера */
 const SLOTS = {
 	trigger: '<button>Триггер</button>',
 	default: '<p>Контент</p>',
@@ -45,6 +39,15 @@ describe('BasePopover unit', () => {
 	})
 
 	describe('пропс variant', () => {
+		it('должен ограничивать высоту панели 320px по умолчанию и maxHeight — если передан', async () => {
+			const first = render(BasePopover, { props: { isOpen: true }, slots: SLOTS })
+			expect(document.body.querySelector<HTMLElement>('.base-dropdown__panel')?.style.maxHeight).toBe('320px')
+			first.unmount()
+
+			render(BasePopover, { props: { isOpen: true, maxHeight: '480px' }, slots: SLOTS })
+			expect(document.body.querySelector<HTMLElement>('.base-dropdown__panel')?.style.maxHeight).toBe('480px')
+		})
+
 		it('должен применять вариант default по умолчанию', () => {
 			render(BasePopover, {
 				props: { isOpen: true },
@@ -92,40 +95,29 @@ describe('BasePopover unit', () => {
 	})
 
 	describe('пропс position', () => {
-		it('должен применять стрелку --bottom по умолчанию', () => {
+		it.each([
+			[undefined, 'top'],
+			['top', 'bottom'],
+			['left', 'right'],
+			['right', 'left'],
+		] as const)('position=%s: стрелка на крае панели %s, обращённом к триггеру', (position, edge) => {
 			render(BasePopover, {
-				props: { isOpen: true },
+				props: { isOpen: true, ...(position ? { position } : {}) },
 				slots: SLOTS,
 			})
 
-			expect(document.querySelector('.base-popover__arrow--bottom')).toBeInTheDocument()
+			const panel = document.querySelector('.base-dropdown__panel')
+			expect(panel).toHaveClass(`base-dropdown__panel--arrow-${edge}`)
+			expect(panel?.querySelector('.base-popover__arrow')).toBeInTheDocument()
 		})
 
-		it('должен применять стрелку --top когда position=top', () => {
+		it('у варианта ghost стрелки нет', () => {
 			render(BasePopover, {
-				props: { isOpen: true, position: 'top' },
+				props: { isOpen: true, variant: 'ghost' },
 				slots: SLOTS,
 			})
 
-			expect(document.querySelector('.base-popover__arrow--top')).toBeInTheDocument()
-		})
-
-		it('должен применять стрелку --left когда position=left', () => {
-			render(BasePopover, {
-				props: { isOpen: true, position: 'left' },
-				slots: SLOTS,
-			})
-
-			expect(document.querySelector('.base-popover__arrow--left')).toBeInTheDocument()
-		})
-
-		it('должен применять стрелку --right когда position=right', () => {
-			render(BasePopover, {
-				props: { isOpen: true, position: 'right' },
-				slots: SLOTS,
-			})
-
-			expect(document.querySelector('.base-popover__arrow--right')).toBeInTheDocument()
+			expect(document.querySelector('.base-popover__arrow')).not.toBeInTheDocument()
 		})
 	})
 
@@ -215,7 +207,6 @@ describe('BasePopover unit', () => {
 				slots: SLOTS,
 			})
 
-			// Клик вне дропдауна вызывает handleClose в BaseDropdown
 			await fireEvent.mouseDown(document.body)
 
 			const updateEvents = emitted()['update:isOpen'] as boolean[][]
@@ -273,6 +264,28 @@ describe('BasePopover unit', () => {
 		})
 	})
 
+	describe('корень', () => {
+		it('обёртка получает класс base-popover: строчная, по размеру триггера (панель центрируется по нему)', () => {
+			const { container } = render(BasePopover, {
+				props: { isOpen: false },
+				slots: SLOTS,
+			})
+
+			expect(container.querySelector('.base-dropdown')).toHaveClass('base-popover')
+		})
+
+		it('класс base-popover сохраняется вместе с customClass.root', () => {
+			const { container } = render(BasePopover, {
+				props: { isOpen: false, customClass: { root: 'custom-root' } },
+				slots: SLOTS,
+			})
+
+			const root = container.querySelector('.base-dropdown')
+			expect(root).toHaveClass('base-popover')
+			expect(root).toHaveClass('custom-root')
+		})
+	})
+
 	describe('пропс customClass', () => {
 		it('должен добавлять строку класса к корневому элементу', () => {
 			const { container } = render(BasePopover, {
@@ -307,5 +320,83 @@ describe('BasePopover unit', () => {
 			expect(document.querySelector('.base-popover__inner')).toHaveClass('custom-inner')
 			expect(document.querySelector('.base-dropdown__panel')).toHaveClass('custom-panel')
 		})
+	})
+})
+
+describe('BasePopover: кнопка и диалог', () => {
+	it('кнопка получает aria-haspopup, aria-expanded и aria-controls; панель — диалог с именем кнопки', async () => {
+		render(BasePopover, {
+			slots: { trigger: '<button type="button">Пригласить</button>', default: '<p>Форма</p>' },
+		})
+		const button = screen.getByRole('button', { name: 'Пригласить' })
+		expect(button).toHaveAttribute('aria-haspopup', 'dialog')
+		expect(button).toHaveAttribute('aria-expanded', 'false')
+
+		await fireEvent.click(button)
+		const dialog = screen.getByRole('dialog', { name: 'Пригласить' })
+		expect(button).toHaveAttribute('aria-expanded', 'true')
+		expect(button).toHaveAttribute('aria-controls', dialog.id)
+	})
+
+	it('закрытие повторным кликом по кнопке эмитит close (POPV-5); слот получает isOpen и triggerProps', async () => {
+		const { emitted } = render(BasePopover, {
+			slots: {
+				trigger: (props: { isOpen: boolean; triggerProps: Record<string, string | undefined> }) =>
+					h('button', { type: 'button', ...props.triggerProps }, props.isOpen ? 'Скрыть' : 'Показать'),
+				default: () => h('p', 'Содержимое'),
+			},
+		})
+		await fireEvent.click(screen.getByRole('button', { name: 'Показать' }))
+		await fireEvent.click(screen.getByRole('button', { name: 'Скрыть' }))
+		expect(emitted('update:isOpen')).toEqual([[true], [false]])
+		expect(emitted('close')).toHaveLength(1)
+	})
+
+	describe('якорь вместо триггера', () => {
+		it('с anchor и без слота trigger обёртка триггера не рисуется', () => {
+			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 }, ariaLabel: 'Подсказка' } })
+
+			expect(container.querySelector('.base-popover__trigger')).not.toBeInTheDocument()
+		})
+
+		it('с anchor и слотом trigger триггер остаётся', () => {
+			const { container } = render(BasePopover, { props: { isOpen: false, anchor: { x: 10, y: 20 } }, slots: SLOTS })
+
+			expect(container.querySelector('.base-popover__trigger')).toBeInTheDocument()
+		})
+
+		it('панель встаёт у точки якоря, имя диалога — ariaLabel', async () => {
+			render(BasePopover, {
+				props: { isOpen: true, anchor: { x: 120, y: 80 }, position: 'bottom', ariaLabel: 'Меню у курсора' },
+				slots: { default: '<p>Контент</p>' },
+			})
+
+			const dialog = await screen.findByRole('dialog', { name: 'Меню у курсора' })
+			expect(dialog).not.toHaveAttribute('aria-labelledby')
+			const panel = dialog.closest('.base-dropdown__panel') as HTMLElement
+			expect(panel.style.top).toBe('90px')
+		})
+
+		it('без ariaLabel диалог по-прежнему назван триггером', async () => {
+			render(BasePopover, { props: { isOpen: true }, slots: SLOTS })
+
+			expect(await screen.findByRole('dialog')).toHaveAttribute('aria-labelledby')
+		})
+	})
+})
+
+describe('BasePopover предупреждение об имени окна', () => {
+	it('anchor без trigger и без ariaLabel предупреждает; с ariaLabel или trigger молчит', () => {
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 } }, slots: { default: '<p>Контент</p>' } })
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+		expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ariaLabel'))
+
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 }, ariaLabel: 'Окно' }, slots: { default: '<p>Контент</p>' } })
+		render(BasePopover, { props: { isOpen: false, anchor: { x: 1, y: 2 } }, slots: SLOTS })
+		expect(warnSpy).toHaveBeenCalledTimes(1)
+
+		warnSpy.mockRestore()
 	})
 })

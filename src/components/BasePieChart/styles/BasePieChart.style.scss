@@ -1,0 +1,174 @@
+.base-pie-chart {
+	--base-pie-chart-appear-duration: var(--rise-duration-xslow, calc(var(--rise-duration-slow) * 5 / 3));
+	--base-pie-chart-update-duration: var(--rise-duration-slow);
+	--base-pie-chart-ease: var(--rise-ease-emphasized, var(--rise-ease));
+
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: space(ct(pie-chart, gap, 24px));
+	box-sizing: border-box;
+	margin: 0;
+	color: ct(pie-chart, text, var(--rise-text));
+	@include text-size(sm);
+
+	&__chart {
+		position: relative;
+		flex: none;
+		max-width: 100%;
+	}
+
+	&__svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	&__track,
+	&__segment {
+		fill: none;
+		stroke-width: 5;
+	}
+
+	&__track {
+		stroke: ct(pie-chart, track-bg, var(--rise-bg-elevated));
+	}
+
+	&__segment {
+		transition:
+			stroke-dasharray var(--base-pie-chart-update-duration) var(--base-pie-chart-ease),
+			stroke-dashoffset var(--base-pie-chart-update-duration) var(--base-pie-chart-ease),
+			opacity var(--rise-duration-fast) var(--rise-ease);
+	}
+
+	&__segment--leaving {
+		pointer-events: none;
+	}
+
+	&--animation-none &__segment {
+		transition: opacity var(--rise-duration-fast) var(--rise-ease);
+	}
+
+	@include motion-safe {
+		&--animation-sweep &__segment--sweep {
+			animation: base-pie-chart-sweep calc(var(--pie-share) * var(--base-pie-chart-appear-duration)) linear
+				calc(var(--pie-start) * var(--base-pie-chart-appear-duration)) backwards;
+		}
+
+		&__segment--added {
+			animation: base-pie-chart-sweep var(--base-pie-chart-update-duration) var(--base-pie-chart-ease) backwards;
+		}
+
+		&--animation-grow &__chart {
+			animation: base-pie-chart-grow var(--base-pie-chart-appear-duration) var(--rise-ease-spring, var(--rise-ease-out)) backwards;
+		}
+
+		&--animation-fade &__chart {
+			animation: base-pie-chart-fade var(--base-pie-chart-appear-duration) var(--rise-ease-out) backwards;
+		}
+	}
+
+	&__segment--dimmed {
+		opacity: 0.35;
+	}
+
+	&--pie &__track,
+	&--pie &__segment {
+		stroke-width: 21;
+	}
+
+	&__center {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 22%;
+		text-align: center;
+		pointer-events: none;
+
+		strong {
+			color: ct(pie-chart, center-text, var(--rise-text-highlighted));
+			@include text-size(lg);
+			font-family: var(--rise-font-heading);
+			font-weight: ct(pie-chart, center-font-weight, var(--rise-font-weight-semibold));
+			font-variant-numeric: tabular-nums;
+			letter-spacing: var(--rise-tracking-heading);
+		}
+
+		span {
+			max-width: 100%;
+			color: var(--rise-text-muted);
+			@include text-size(xs);
+			@include truncate;
+		}
+	}
+
+	&__legend {
+		display: flex;
+		flex: 1 1 sz(200px);
+		flex-direction: column;
+		gap: space(ct(pie-chart, legend-gap, 6px));
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__item {
+		display: grid;
+		grid-template-columns: auto 1fr auto auto;
+		align-items: center;
+		gap: sz(8px);
+		padding: space(ct(pie-chart, item-padding-y, 2px) ct(pie-chart, item-padding-x, 6px));
+		border-radius: sz(ct(pie-chart, item-radius, var(--rise-radius-sm)));
+	}
+
+	&__item--active {
+		background-color: ct(pie-chart, item-bg-active, var(--rise-bg-elevated));
+	}
+
+	&__swatch {
+		width: sz(10px);
+		height: sz(10px);
+		border-radius: var(--rise-radius-xs);
+	}
+
+	&__name {
+		min-width: 0;
+		@include truncate;
+	}
+
+	&__value {
+		color: ct(pie-chart, value-text, var(--rise-text-highlighted));
+		font-weight: ct(pie-chart, value-font-weight, var(--rise-font-weight-medium));
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__percent {
+		min-width: sz(40px);
+		color: var(--rise-text-muted);
+		font-variant-numeric: tabular-nums;
+		text-align: end;
+	}
+}
+
+@keyframes base-pie-chart-sweep {
+	from {
+		stroke-dasharray: 0 100;
+	}
+}
+
+@keyframes base-pie-chart-grow {
+	from {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+}
+
+@keyframes base-pie-chart-fade {
+	from {
+		opacity: 0;
+	}
+}

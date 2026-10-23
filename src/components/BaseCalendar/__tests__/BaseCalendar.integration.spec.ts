@@ -1,15 +1,8 @@
-/**
- * Integration-тесты для BaseCalendar.
- * Проверяют selectionMode, навигацию, isDisabled.
- * Дочерние UI-компоненты заменены stub'ами со слотами.
- * Мокаем только DOM-зависимые composables.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseCalendar from '../ui/BaseCalendar.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 
 const stubs = {
 	BaseCard: { template: '<div class="base-card-stub"><slot /></div>' },
@@ -20,6 +13,28 @@ const stubs = {
 }
 
 describe('BaseCalendar integration', () => {
+	describe('первый день недели', () => {
+		const firstWeekday = (container: Element): string | null => container.querySelector('.base-calendar__weekday')?.textContent ?? null
+
+		it('явный locale без firstDayOfWeek — первый день недели этого языка, не языка кита', () => {
+			const { container } = render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 1), locale: 'en-US' }, global: { stubs } })
+
+			expect(firstWeekday(container)).toMatch(/^su/i)
+		})
+
+		it('firstDayOfWeek важнее locale; без обоих — язык кита', () => {
+			const explicit = render(BaseCalendar, {
+				props: { modelValue: new Date(2024, 0, 1), locale: 'en-US', firstDayOfWeek: 1 },
+				global: { stubs },
+			})
+			expect(firstWeekday(explicit.container)).toMatch(/^mo/i)
+			explicit.unmount()
+
+			const byKit = render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 1) }, global: { stubs } })
+			expect(firstWeekday(byKit.container)).toMatch(/^(пн|mo)/i)
+		})
+	})
+
 	describe('selectionMode: single', () => {
 		it('должен эмитить update:modelValue при выборе даты', async () => {
 			const date = new Date(2024, 0, 1)
@@ -126,6 +141,27 @@ describe('BaseCalendar integration', () => {
 		})
 	})
 
+	describe('доступные имена кнопок навигации (реальные BaseButton/BaseIcon)', () => {
+		it('в виде дней кнопки-иконки называются «Предыдущий месяц» / «Следующий месяц»', () => {
+			render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 15) } })
+
+			expect(screen.getByRole('button', { name: 'Предыдущий месяц' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующий месяц' })).toBeInTheDocument()
+		})
+
+		it('в видах месяцев и лет имя отражает шаг навигации', async () => {
+			render(BaseCalendar, { props: { modelValue: new Date(2024, 0, 15) } })
+
+			await fireEvent.click(screen.getByRole('button', { name: 'январь 2024' }))
+			expect(screen.getByRole('button', { name: 'Предыдущий год' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующий год' })).toBeInTheDocument()
+
+			await fireEvent.click(screen.getByRole('button', { name: '2024' }))
+			expect(screen.getByRole('button', { name: 'Предыдущие годы' })).toBeInTheDocument()
+			expect(screen.getByRole('button', { name: 'Следующие годы' })).toBeInTheDocument()
+		})
+	})
+
 	describe('isDisabled', () => {
 		it('не должен эмитить события при isDisabled', async () => {
 			const { emitted } = render(BaseCalendar, {
@@ -142,4 +178,3 @@ describe('BaseCalendar integration', () => {
 		})
 	})
 })
-

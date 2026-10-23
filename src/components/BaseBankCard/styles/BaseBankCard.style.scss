@@ -1,0 +1,172 @@
+.base-bank-card {
+	@include custom-color-scope;
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	font-size: sz(var(--rise-font-size-sm));
+
+	&__summary {
+		@include visually-hidden;
+	}
+
+	&__number,
+	&__expiry {
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
+	}
+
+	&__label {
+		overflow: hidden;
+		min-width: 0;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__expired {
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&--full {
+		display: grid;
+		grid-template: 'label brand' auto 'number number' 1fr 'holder expiry' auto / minmax(0, 1fr) auto;
+		column-gap: space(ct(bank-card, gap, 12px));
+		align-items: center;
+		width: sz(ct(bank-card, width, 320px));
+		aspect-ratio: 85.6 / 53.98;
+		overflow: hidden;
+		padding: space(ct(bank-card, padding-y, 16px) ct(bank-card, padding-x, 20px));
+		border-radius: sz(ct(bank-card, radius, var(--rise-radius-xl)));
+		background: var(--base-bank-card-bg);
+		box-shadow: ct(bank-card, shadow, none);
+		color: ct(bank-card, text, var(--rise-color-neutral-50));
+	}
+
+	&--full &__label {
+		grid-area: label;
+	}
+
+	&--full &__brand {
+		grid-area: brand;
+		justify-self: end;
+		font-size: sz(var(--rise-font-size-lg));
+	}
+
+	&--full &__number {
+		grid-area: number;
+		font-family: var(--rise-font-mono);
+		font-size: sz(ct(bank-card, number-font-size, var(--rise-font-size-xl)));
+		letter-spacing: 0.06em;
+	}
+
+	&--full &__holder {
+		grid-area: holder;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-transform: uppercase;
+		white-space: nowrap;
+		@include caps-tracking(0.06em);
+	}
+
+	&--full &__expiry {
+		display: flex;
+		grid-area: expiry;
+		flex-direction: column;
+		align-items: flex-end;
+		font-family: var(--rise-font-mono);
+	}
+
+	&--full &__expired {
+		padding: sz(0 6px);
+		border-radius: sz(var(--rise-radius-sm));
+		background: var(--rise-color-error-700);
+		font-family: var(--rise-font-sans);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+
+	&--full.base-bank-card--cover {
+		position: relative;
+		isolation: isolate;
+		text-shadow: 0 1px 2px var(--rise-media-scrim);
+	}
+
+	&--full.base-bank-card--shadow {
+		box-shadow: ct(bank-card, shadow, var(--rise-shadow-md));
+	}
+
+	&--full.base-bank-card--expired {
+		filter: grayscale(0.6);
+	}
+
+	&--compact {
+		display: inline-grid;
+		grid-template-columns: sz(44px) auto minmax(0, 1fr) auto;
+		gap: sz(ct(bank-card, gap, 10px));
+		align-items: center;
+		padding: sz(ct(bank-card, padding-y, var(--rise-control-padding-y)) ct(bank-card, padding-x, var(--rise-control-padding-x)));
+		border: 1px solid ct(bank-card, border, transparent);
+		border-radius: sz(ct(bank-card, radius, var(--rise-radius-md)));
+		@include custom-bg(background-color, ct(bank-card, bg, var(--rise-bg-muted)));
+		@include custom-text(color, var(--rise-text));
+	}
+
+	&--compact &__brand {
+		display: inline-flex;
+		justify-content: center;
+		@include custom-text(color, var(--rise-text-highlighted));
+		font-size: sz(var(--rise-font-size-sm));
+	}
+
+	&--compact &__brand--cover {
+		position: relative;
+		isolation: isolate;
+		aspect-ratio: 85.6 / 53.98;
+		overflow: hidden;
+		border-radius: sz(var(--rise-radius-xs));
+		background: var(--base-bank-card-bg);
+		color: var(--rise-color-neutral-50);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+
+	&--compact &__number {
+		@include custom-text(color, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-medium);
+	}
+
+	&--compact &__label {
+		grid-row: 1;
+		grid-column: 3;
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--compact &__expiry {
+		grid-column: 4;
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--compact &__expired {
+		color: var(--rise-error-text);
+	}
+
+	&--compact.base-bank-card--soft {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--compact.base-bank-card--soft &__label,
+	&--compact.base-bank-card--soft &__expiry {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&--compact.base-bank-card--outline {
+		border-color: ct(bank-card, border, var(--rise-border-accented));
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--compact.base-bank-card--ghost {
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--compact.base-bank-card--shadow {
+		box-shadow: ct(bank-card, shadow, var(--rise-shadow-sm));
+		@include custom-bg(background-color, var(--rise-surface-floating));
+	}
+}

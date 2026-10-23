@@ -1,7 +1,9 @@
 <template>
 	<BaseInput
 		ref="inputRef"
+		:class="ui('field')"
 		:model-value="modelValue"
+		:label="placeholder"
 		:placeholder="placeholder"
 		:variant="variant"
 		:size-scale="sizeScale"
@@ -13,77 +15,49 @@
 		@keydown="handleKeydown"
 		@focus="handleFocus"
 		@blur="handleBlur">
-		<template #prefix>
-			<BaseIcon
-				v-if="hasIcon"
-				name="search"
-				class="base-search__icon"
-				:custom-class="classes.icon"
-				:size-scale="calcIconScale('sm', sizeScale)" />
+		<template v-if="hasIcon" #prefix>
+			<BaseIcon name="search" :class="ui('icon')" :custom-class="classes.icon" :size-scale="calcIconScale('sm', sizeScale)" />
 		</template>
-		<template #suffix>
-			<BaseButton
-				v-if="hasClear && modelValue"
-				variant="ghost"
-				class="base-search__clear"
-				:custom-class="classes.clear"
-				:size-scale="sizeScale"
-				@click="handleClear">
-				<BaseIcon
-					name="x-mark"
-					:custom-class="classes.clearIcon"
-					:size-scale="calcIconScale('xs', sizeScale)" />
-			</BaseButton>
-			<BaseLoader
-				v-if="isLoading"
-				class="base-search__loading"
-				:custom-class="classes.loading"
-				variant="spinner"
-				:size-scale="calcIconScale('xs', sizeScale)" />
+		<template v-if="isLoading || (hasClear && modelValue)" #suffix>
+			<span :class="ui('actions')">
+				<BaseLoader
+					v-if="isLoading"
+					:class="ui('loading')"
+					:custom-class="classes.loading"
+					variant="spinner"
+					:size-scale="calcDerivedScale(sizeScale, 0.5)" />
+				<BaseButton
+					v-if="hasClear && modelValue"
+					variant="ghost"
+					:class="ui('clear')"
+					:custom-class="classes.clear"
+					:size-scale="sizeScale"
+					:aria-label="UI_ARIA.CLEAR_VALUE"
+					tabindex="-1"
+					@mousedown.prevent
+					@click="handleClear">
+					<BaseIcon name="x-mark" :custom-class="classes.clearIcon" :size-scale="calcIconScale('sm', sizeScale)" />
+				</BaseButton>
+			</span>
 		</template>
 	</BaseInput>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseInput } from '@components/BaseInput'
+import { BaseButton } from '@components/BaseButton'
 import { BaseLoader } from '@components/BaseLoader'
-import { calcIconScale } from '@utils/iconUtils'
-import type { BaseSearchInputEmits, BaseSearchInputProps } from '../model/BaseSearchInput.types'
+import { useBaseSearchInput } from '../model/useBaseSearchInput'
+import { calcDerivedScale, calcIconScale } from '@utils/media/iconUtils'
+import type { BaseSearchInputEmits, BaseSearchInputExpose, BaseSearchInputProps } from '../types/BaseSearchInput.types'
 
-defineProps<BaseSearchInputProps>()
+const props = defineProps<BaseSearchInputProps>()
 
 const emit = defineEmits<BaseSearchInputEmits>()
 
-const inputRef = ref<InstanceType<typeof BaseInput> | null>(null)
+const { inputRef, handleInput, handleKeydown, handleFocus, handleBlur, handleClear, exposed } = useBaseSearchInput(props, emit)
 
-function handleInput(value: string): void {
-	emit('update:modelValue', value)
-}
-
-function handleKeydown(e: KeyboardEvent): void {
-	emit('keydown', e)
-}
-
-function handleFocus(): void {
-	emit('focus')
-}
-
-function handleBlur(): void {
-	emit('blur')
-}
-
-function handleClear(): void {
-	emit('clear')
-}
-
-function focus(): void {
-	inputRef.value?.focus()
-}
-
-defineExpose({
-	focus,
-})
+defineExpose<BaseSearchInputExpose>(exposed)
 </script>

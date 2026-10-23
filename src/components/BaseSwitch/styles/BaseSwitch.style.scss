@@ -1,203 +1,159 @@
 .base-switch {
+	@include custom-color-scope;
+	--switch-track: #{ct(switch, slider-bg, var(--rise-bg-accented))};
+	--switch-thumb: #{ct(switch, handle-bg, var(--rise-text-muted))};
+	--switch-checked-thumb: #{ct(switch, handle-bg-checked, var(--rise-on-primary))};
+	--switch-checked-track-hover: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+	@include custom-bg(--switch-checked-track, ct(switch, slider-bg-checked, var(--rise-primary)));
+
 	display: inline-flex;
 	flex-direction: column;
+	align-items: flex-start;
 	gap: sz(4px);
-	user-select: none;
-
-	@include custom-text(color, var(--color-text));
-
-	// ── Модификаторы ──
-
-	&--disabled {
-		opacity: 0.5;
-
-		.base-switch__row {
-			cursor: not-allowed;
-		}
-	}
-
-	&--reverse {
-		.base-switch__row {
-			flex-direction: row-reverse;
-		}
-	}
-
-	&--error {
-		.base-switch__slider {
-			border-color: var(--color-error);
-		}
-
-		.base-switch__input:checked ~ &__slider {
-			@include custom-bg(background-color, var(--color-error));
-			border-color: var(--color-error);
-		}
-
-		@include focus {
-			.base-switch__slider {
-				box-shadow:
-					0 0 0 2px var(--color-bg),
-					0 0 0 4px var(--color-error);
-			}
-		}
-	}
-
-	// ── Элементы ──
+	max-width: 100%;
 
 	&__row {
 		display: inline-flex;
-		align-items: center;
-		gap: sz(10px);
+		align-items: flex-start;
+		gap: sz(ct(switch, row-gap, 8px));
+		max-width: 100%;
 		cursor: pointer;
+		user-select: none;
 	}
 
 	&__wrapper {
 		position: relative;
-		width: sz(40px);
-		height: sz(20px);
+		display: flex;
+		align-items: center;
 		flex-shrink: 0;
+		height: sz(var(--rise-line-height-sm));
 	}
 
 	&__input {
 		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
 		opacity: 0;
-		width: 0;
-		height: 0;
+		cursor: inherit;
 	}
 
 	&__slider {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		@include custom-bg(background-color, var(--color-border));
-		border-radius: var(--border-radius-full);
-		@include interactive;
-	}
-
-	&__input:checked ~ &__slider {
-		@include custom-bg(background-color, var(--color-accent));
+		position: relative;
+		display: block;
+		width: sz($switch-track-width);
+		height: sz(20px);
+		border-radius: sz(var(--rise-radius-sm));
+		background-color: var(--switch-track);
+		box-shadow: ct(switch, slider-shadow, none);
+		pointer-events: none;
+		@include transition-colors;
 	}
 
 	&__handle {
 		position: absolute;
-		height: sz(16px);
-		width: sz(16px);
-		left: sz(2px);
-		bottom: sz(2px);
-		@include custom-bg(background-color, var(--color-text-inverse));
-		border-radius: var(--border-radius-full);
-		box-shadow: var(--shadow-sm);
-		@include transition(transform, width);
+		top: sz(3px);
+		inset-inline-start: sz(3px);
+		width: sz(14px);
+		height: sz(14px);
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: var(--switch-thumb);
+		box-shadow: ct(switch, handle-shadow, none);
+		@include transition(transform, background-color);
 	}
 
-	&__input:checked ~ &__slider &__handle {
-		transform: translateX(sz(20px));
+	&__input:checked + &__slider {
+		background-color: var(--switch-checked-track);
+	}
+
+	&__input:checked + &__slider &__handle {
+		background-color: var(--switch-checked-thumb);
+		transform: translateX(dir-x(sz(16px)));
+	}
+
+	&__input:focus-visible + &__slider {
+		outline: 2px solid ct(switch, slider-ring, var(--rise-focus-ring));
+		outline-offset: 2px;
 	}
 
 	&__content {
-		display: flex;
-		align-items: center;
-		gap: sz(2px);
+		min-width: 0;
+		@include text-size(sm);
+		color: var(--rise-text);
 	}
 
-	&__label {
-		font-size: sz(14px);
-		font-weight: 500;
-		@include custom-text(color, var(--color-text));
-		@include transition(color);
+	& &__label {
+		@include text-size(sm);
+		color: ct(switch, label-text, var(--rise-text));
 	}
 
-	&__required {
-		color: var(--color-error);
-		font-size: sz(14px);
-		font-weight: 500;
+	& &__required {
+		@include text-size(sm);
+		@include field-required;
 	}
 
-	&__error-text {
-		font-size: sz(12px);
-		color: var(--color-error);
+	&__description {
+		display: block;
+		color: ct(switch, description-text, var(--rise-text-muted));
 	}
 
-	// ── Интерактивные состояния ──
+	&__error:empty {
+		display: none;
+	}
 
-	@include hover {
-		.base-switch__slider {
-			@include custom-bg(background-color, var(--color-primary-soft-hover));
-		}
+	& &__error-text {
+		display: block;
+		padding-inline-start: calc(#{sz($switch-track-width)} + #{sz($switch-row-gap)});
+		@include field-error;
+	}
 
-		.base-switch__input:checked ~ .base-switch__slider {
-			@include custom-bg(background-color, var(--color-accent-hover));
-		}
-
-		.base-switch__label {
-			@include custom-text(color, var(--color-accent));
+	@media (hover: hover) {
+		&:not(&--disabled) &__row:hover &__input:checked + &__slider {
+			background-color: var(--switch-checked-track-hover);
 		}
 	}
 
-	@include focus {
-		.base-switch__slider {
-			box-shadow:
-				0 0 0 2px var(--color-bg),
-				0 0 0 4px var(--color-accent);
-		}
+	&--reverse {
+		align-items: stretch;
 	}
 
-	@include active {
-		.base-switch__slider {
-			transform: scale(0.95);
-		}
-
-		.base-switch__handle {
-			width: sz(20px);
-		}
+	&--reverse &__row {
+		flex-direction: row-reverse;
+		justify-content: space-between;
 	}
 
-	// ── Вариант outline ──
+	&--reverse &__error-text {
+		padding-inline-start: 0;
+	}
 
 	&--outline {
-		.base-switch__slider {
-			@include custom-bg(background-color, transparent);
-			border: 2px solid var(--color-border);
-		}
-
-		.base-switch__input:checked ~ &__slider {
-			@include custom-bg(background-color, var(--color-accent));
-			border-color: var(--color-accent);
-		}
-
-		.base-switch__handle {
-			@include custom-bg(background-color, var(--color-text-muted));
-		}
-
-		.base-switch__input:checked ~ &__slider &__handle {
-			@include custom-bg(background-color, var(--color-text-inverse));
-		}
-
-		@include hover {
-			.base-switch__slider {
-				@include custom-bg(background-color, var(--color-primary-soft));
-				border-color: var(--color-accent);
-			}
-
-			.base-switch__input:checked ~ .base-switch__slider {
-				@include custom-bg(background-color, var(--color-accent-hover));
-				border-color: var(--color-accent-hover);
-			}
-		}
+		--switch-track: transparent;
+		--switch-thumb: var(--rise-text-dimmed);
 	}
 
-	// ── Вариант shadow ──
+	&--outline &__slider {
+		box-shadow: inset 0 0 0 1px var(--rise-border-accented);
+	}
 
-	&--shadow {
-		.base-switch__slider {
-			box-shadow: var(--shadow-lg);
-		}
+	&--outline &__input:checked + &__slider {
+		box-shadow: none;
+	}
 
-		@include hover {
-			.base-switch__slider {
-				box-shadow: var(--shadow-xl);
-			}
-		}
+	&--shadow &__slider {
+		box-shadow: ct(switch, slider-shadow, var(--rise-shadow-sm));
+	}
+
+	&--shadow &__handle {
+		box-shadow: ct(switch, handle-shadow, var(--rise-shadow-xs));
+	}
+
+	&--error &__slider,
+	&--error &__input:checked + &__slider {
+		box-shadow: 0 0 0 1px var(--rise-error);
+	}
+
+	&--disabled &__row {
+		@include disabled-state;
 	}
 }

@@ -1,0 +1,228 @@
+.base-map {
+	@include custom-color-scope;
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: sz(160px);
+	overflow: hidden;
+	border: 1px solid ct(map, border, transparent);
+	border-radius: sz(ct(map, radius, var(--rise-radius-lg)));
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(map, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(map, text, var(--rise-text)));
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
+		@include custom-bg(background-color, var(--rise-bg));
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-radius: 0;
+	}
+
+	&__canvas {
+		position: absolute;
+		inset: 0;
+	}
+
+	&__preview {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	&__shapes {
+		@include visually-hidden;
+		margin: 0;
+		list-style: none;
+	}
+
+	&__controls {
+		position: absolute;
+		top: sz(ct(map, controls-gap, 8px));
+		inset-inline-end: sz(ct(map, controls-gap, 8px));
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+	}
+
+	&__notice {
+		position: absolute;
+		bottom: sz(ct(map, controls-gap, 8px));
+		inset-inline-start: sz(ct(map, controls-gap, 8px));
+		z-index: 1;
+		max-width: calc(100% - #{sz(16px)});
+		pointer-events: none;
+	}
+
+	&__notice-text {
+		display: inline-block;
+		padding: sz(4px) sz(10px);
+		border-radius: sz(ct(map, tooltip-radius, var(--rise-radius-sm)));
+		background: ct(map, tooltip-bg, var(--rise-bg-inverted));
+		color: ct(map, tooltip-text, var(--rise-text-inverted));
+		@include text-size(sm);
+	}
+
+	&__placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 100%;
+		padding: space(ct(map, placeholder-padding, 16px));
+	}
+
+	&__anchor {
+		--base-map-marker-size: #{ct(map, marker-width, 24px)};
+
+		position: relative;
+		width: sz(var(--base-map-marker-size));
+		height: sz(var(--base-map-marker-size));
+		transform: translate(-50%, -100%);
+
+		&--anchored {
+			transform: none;
+		}
+
+		&:has(> .base-map__marker--selected) {
+			z-index: 1;
+		}
+	}
+
+	&__marker {
+		--base-map-marker-color: #{ct(map, marker-bg, var(--rise-primary))};
+
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 2px solid ct(map, marker-border, var(--rise-bg));
+		border-radius: sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) sz(var(--rise-radius-sm)) 0;
+		background: var(--base-map-marker-color);
+		color: ct(map, marker-text, var(--rise-on-primary));
+		box-shadow: ct(map, marker-shadow, none);
+		cursor: pointer;
+		transform: rotate(-45deg);
+		@include focus-ring;
+
+		&::after {
+			content: attr(data-label);
+			position: absolute;
+			bottom: 100%;
+			left: 50%;
+			padding: sz(2px) sz(6px);
+			border-radius: sz(ct(map, tooltip-radius, var(--rise-radius-sm)));
+			background: ct(map, tooltip-bg, var(--rise-bg-inverted));
+			color: ct(map, tooltip-text, var(--rise-text-inverted));
+			white-space: nowrap;
+			opacity: 0;
+			pointer-events: none;
+			transform: rotate(45deg) translate(-50%, 0);
+			transform-origin: left bottom;
+			@include text-size(xs);
+			@include motion-safe {
+				transition:
+					opacity var(--rise-duration-fast) var(--rise-ease-out),
+					transform var(--rise-duration-fast) var(--rise-ease-out);
+			}
+		}
+
+		&:hover::after,
+		&:focus-visible::after {
+			opacity: 1;
+			transform: rotate(45deg) translate(-50%, sz(-4px));
+		}
+
+		&--selected {
+			border-color: ct(map, marker-selected-border, var(--rise-border-accented));
+
+			&::after {
+				display: none;
+			}
+		}
+
+		&--cluster {
+			--base-map-marker-color: #{ct(map, cluster-bg, var(--rise-primary))};
+
+			border-radius: sz(var(--rise-radius-md));
+			transform: none;
+
+			&::after {
+				display: none;
+			}
+		}
+
+		&--custom {
+			border: 0;
+			border-radius: 0;
+			background: transparent;
+			box-shadow: none;
+			color: inherit;
+			transform: none;
+
+			&::after {
+				transform: translate(-50%, 0);
+				transform-origin: center bottom;
+			}
+
+			&:hover::after,
+			&:focus-visible::after {
+				transform: translate(-50%, sz(-4px));
+			}
+		}
+	}
+
+	&__marker-count {
+		font-family: var(--rise-font-mono);
+		font-weight: var(--rise-font-weight-semibold, 600);
+		font-variant-numeric: tabular-nums;
+		@include text-size(xs);
+	}
+
+	&__marker-icon {
+		display: flex;
+		transform: rotate(45deg);
+
+		.base-icon__svg {
+			width: sz(calc(var(--base-map-marker-size, 24px) * 0.55));
+			height: sz(calc(var(--base-map-marker-size, 24px) * 0.55));
+		}
+
+		.base-map__marker--custom & {
+			transform: none;
+		}
+	}
+
+	&__balloon {
+		position: absolute;
+		bottom: calc(100% + #{sz(8px)});
+		left: 50%;
+		z-index: 2;
+		box-sizing: border-box;
+		width: max-content;
+		max-width: sz(ct(map, balloon-width, 280px));
+		padding: space(ct(map, balloon-padding, 12px));
+		border: 1px solid ct(map, balloon-border, transparent);
+		border-radius: sz(ct(map, balloon-radius, var(--rise-radius-lg)));
+		background: ct(map, balloon-bg, var(--rise-surface-floating));
+		color: ct(map, balloon-text, var(--rise-text));
+		box-shadow: ct(map, balloon-shadow, var(--rise-shadow-lg));
+		cursor: auto;
+		transform: translateX(-50%);
+		@include text-size(sm);
+		@include focus-ring;
+	}
+}
+
+@include enter-fade(base-map-loader);
+@include enter-fade(base-map-placeholder);
+@include enter-fade(base-map-preview);

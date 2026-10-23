@@ -1,0 +1,33 @@
+/** Формы для чисел (китайский): по CLDR только `other`, счётные слова — часть строки */
+export const zhPlural = {
+	DATES_SELECTED: { other: '已选 {n} 个日期' },
+	DAYS: { other: '{n} 天' },
+	PARTICIPANTS: { other: '{n} 位成员' },
+	CARDS: { other: '{n} 张卡片' },
+	COMMENTS: { other: '{n} 条评论' },
+	ATTACHMENTS: { other: '{n} 个附件' },
+	JSON_KEYS: { other: '{n} 个键' },
+	MEGA_MENU_ITEMS: { other: '{n} 项' },
+	JSON_ITEMS: { other: '{n} 项' },
+	SIGNATURE_STROKES: { other: '{n} 笔' },
+	NOTIFICATIONS_UNREAD: { other: '{n} 条新通知' },
+	CHAT_UNREAD: { other: '{n} 条未读消息' },
+	CHAT_MAX_FILES: { other: '最多可添加 {n} 个文件' },
+	REPLIES: { other: '{n} 条回复' },
+	BADGES_MORE: { other: '另有 {n} 个徽标' },
+	BREADCRUMBS_HIDDEN: { other: '显示另外 {n} 级' },
+	GANTT_DAYS: { other: '{n} 天' },
+	CRYPTOPRO_EXPIRES: { other: '{n} 天后到期' },
+	SEARCH_RESULTS: { other: '找到 {n} 条结果' },
+	FILE_MANAGER_ITEMS: { other: '{n} 项' },
+	TABLE_HIDDEN_SELECTED: { other: '有 {n} 个已选行被搜索或筛选隐藏，但仍保持选中' },
+	FILE_MANAGER_SELECTED: { other: '已选 {n} 项' },
+	ROADMAP_STAGES: { other: '{n} 个阶段' },
+	ROADMAP_TOPICS: { other: '{n} 个主题' },
+	ROADMAP_OF_TOPICS: { other: '{n} 个主题' },
+	ROADMAP_OF_SUBTOPICS: { other: '{n} 个子主题' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { other: '{n} 项' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { other: '{n} 条连接' },
+}

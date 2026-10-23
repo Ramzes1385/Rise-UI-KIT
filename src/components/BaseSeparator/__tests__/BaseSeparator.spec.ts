@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseSeparator.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSeparator from '../ui/BaseSeparator.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseSeparator unit', () => {
 	describe('рендер', () => {
@@ -81,6 +76,13 @@ describe('BaseSeparator unit', () => {
 			expect(content.style.getPropertyValue('--sep-pad-y')).toBe('10px')
 			expect(content.style.getPropertyValue('--sep-pad-x')).toBe('20px')
 		})
+
+		it('не должен писать inline-переменные отступов без пропа spacing (отступы — из стилей)', () => {
+			const { container } = render(BaseSeparator, { props: { label: 'Тест' } })
+
+			const content = container.querySelector('.base-separator__content') as HTMLElement
+			expect(content.getAttribute('style')).toBeNull()
+		})
 	})
 
 	describe('пропс sizeScale', () => {
@@ -143,12 +145,35 @@ describe('BaseSeparator unit', () => {
 		})
 	})
 
-	it('не должен устанавливать role для вертикального разделителя', () => {
-		const { container } = render(BaseSeparator, {
+	it('должен устанавливать role=separator и aria-orientation=vertical для вертикального разделителя', () => {
+		render(BaseSeparator, {
 			props: { orientation: 'vertical' },
 		})
 
-		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBeNull()
+		expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical')
+	})
+
+	describe('доступное имя разделителя с контентом', () => {
+		it('должен получать имя из пропса label', () => {
+			render(BaseSeparator, { props: { label: 'Или' } })
+
+			expect(screen.getByRole('separator', { name: 'Или' })).toBeInTheDocument()
+		})
+
+		it('должен получать имя из слота default (в т.ч. у вертикального)', () => {
+			render(BaseSeparator, {
+				props: { orientation: 'vertical' },
+				slots: { default: 'Раздел 2' },
+			})
+
+			expect(screen.getByRole('separator', { name: 'Раздел 2' })).toHaveAttribute('aria-orientation', 'vertical')
+		})
+
+		it('не должен ссылаться на несуществующий контент у простой линии', () => {
+			render(BaseSeparator)
+
+			expect(screen.getByRole('separator')).not.toHaveAttribute('aria-labelledby')
+		})
 	})
 
 	it('не должен добавлять класс --dashed по умолчанию', () => {
@@ -181,6 +206,57 @@ describe('BaseSeparator unit', () => {
 			expect(container.querySelector('.base-separator')).toHaveClass('custom-root')
 			expect(container.querySelector('.base-separator__line')).toHaveClass('custom-line')
 			expect(container.querySelector('.base-separator__content')).toHaveClass('custom-content')
+		})
+	})
+
+	describe('проверка thickness и spacing', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		function rootStyle(container: Element): string {
+			return container.querySelector('.base-separator')?.getAttribute('style') ?? ''
+		}
+
+		it.each([0, -2, Number.NaN])('thickness = %s заменяется на 1px с предупреждением — линия не пропадает', thickness => {
+			const { container } = render(BaseSeparator, { props: { thickness } })
+
+			expect(rootStyle(container)).toContain('--sep-thickness: 1px')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSeparator: `thickness`'))
+		})
+
+		it('дробная толщина больше 0 применяется как есть', () => {
+			const { container } = render(BaseSeparator, { props: { thickness: 0.5 } })
+
+			expect(rootStyle(container)).toContain('--sep-thickness: 0.5px')
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('spacing без подписи задаёт отступ поперёк линии (--sep-spacing на корне)', () => {
+			const { container } = render(BaseSeparator, { props: { spacing: 16 } })
+
+			expect(rootStyle(container)).toContain('--sep-spacing: 16px')
+		})
+
+		it('spacing = 0 применяется', () => {
+			const { container } = render(BaseSeparator, { props: { spacing: 0, label: 'или' } })
+
+			expect(rootStyle(container)).toContain('--sep-spacing: 0px')
+			expect(container.querySelector('.base-separator__content')?.getAttribute('style')).toContain('--sep-pad-x: 0px')
+		})
+
+		it.each([-4, Number.NaN])('spacing = %s не применяется и даёт предупреждение', spacing => {
+			const { container } = render(BaseSeparator, { props: { spacing, label: 'или' } })
+
+			expect(rootStyle(container)).not.toContain('--sep-spacing')
+			expect(container.querySelector('.base-separator__content')?.getAttribute('style') ?? '').not.toContain('--sep-pad')
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('BaseSeparator: `spacing`'))
 		})
 	})
 })

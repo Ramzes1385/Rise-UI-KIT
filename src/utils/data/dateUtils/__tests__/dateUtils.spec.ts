@@ -1,0 +1,406 @@
+import '@testing-library/jest-dom/vitest'
+import { setLocale } from '@/locales/state'
+import {
+	buildDateWithTime,
+	daysInMonth,
+	formatDate,
+	formatDatePickerValue,
+	formatMultiple,
+	formatPopoverDate,
+	formatRange,
+	formatRelativeTime,
+	getWeekday,
+	getWeekNumber,
+	isDateInRange,
+	isSameDay,
+	isToday,
+	toDateOnly,
+} from '../dateUtils'
+
+describe('dateUtils', () => {
+	describe('isSameDay', () => {
+		it('возвращает true для одинаковых дат', () => {
+			const a = new Date(2025, 0, 15)
+			const b = new Date(2025, 0, 15)
+			expect(isSameDay(a, b)).toBe(true)
+		})
+
+		it('возвращает false для разных дат', () => {
+			const a = new Date(2025, 0, 15)
+			const b = new Date(2025, 0, 16)
+			expect(isSameDay(a, b)).toBe(false)
+		})
+
+		it('игнорирует время при сравнении', () => {
+			const a = new Date(2025, 0, 15, 10, 30)
+			const b = new Date(2025, 0, 15, 22, 0)
+			expect(isSameDay(a, b)).toBe(true)
+		})
+
+		it('возвращает false для разных месяцев', () => {
+			const a = new Date(2025, 0, 15)
+			const b = new Date(2025, 1, 15)
+			expect(isSameDay(a, b)).toBe(false)
+		})
+
+		it('возвращает false для разных годов', () => {
+			const a = new Date(2024, 0, 15)
+			const b = new Date(2025, 0, 15)
+			expect(isSameDay(a, b)).toBe(false)
+		})
+	})
+
+	describe('toDateOnly', () => {
+		it('обнуляет время', () => {
+			const d = new Date(2025, 5, 10, 14, 30, 45, 500)
+			const result = toDateOnly(d)
+			expect(result.getHours()).toBe(0)
+			expect(result.getMinutes()).toBe(0)
+			expect(result.getSeconds()).toBe(0)
+			expect(result.getMilliseconds()).toBe(0)
+		})
+
+		it('сохраняет дату', () => {
+			const d = new Date(2025, 5, 10, 14, 30)
+			const result = toDateOnly(d)
+			expect(result.getFullYear()).toBe(2025)
+			expect(result.getMonth()).toBe(5)
+			expect(result.getDate()).toBe(10)
+		})
+	})
+
+	describe('daysInMonth', () => {
+		it('возвращает 31 для января', () => {
+			expect(daysInMonth(2025, 0)).toBe(31)
+		})
+
+		it('возвращает 28 для февраля невисокосного года', () => {
+			expect(daysInMonth(2025, 1)).toBe(28)
+		})
+
+		it('возвращает 29 для февраля високосного года', () => {
+			expect(daysInMonth(2024, 1)).toBe(29)
+		})
+
+		it('возвращает 30 для апреля', () => {
+			expect(daysInMonth(2025, 3)).toBe(30)
+		})
+	})
+
+	describe('getWeekday', () => {
+		it('возвращает 0 для воскресенья', () => {
+			const sunday = new Date(2025, 0, 5)
+			expect(getWeekday(sunday)).toBe(0)
+		})
+
+		it('возвращает 1 для понедельника', () => {
+			const monday = new Date(2025, 0, 6)
+			expect(getWeekday(monday)).toBe(1)
+		})
+	})
+
+	describe('getWeekNumber', () => {
+		it('возвращает 1 для начала года', () => {
+			const date = new Date(2025, 0, 1)
+			const week = getWeekNumber(date)
+			expect(week).toBeGreaterThanOrEqual(1)
+			expect(week).toBeLessThanOrEqual(53)
+		})
+
+		it('возвращает корректный номер недели', () => {
+			const date = new Date(2025, 0, 6)
+			expect(getWeekNumber(date)).toBe(2)
+		})
+
+		it('корректно обрабатывает воскресенье', () => {
+			// 5 января 2025 — воскресенье
+			const sunday = new Date(2025, 0, 5)
+			const week = getWeekNumber(sunday)
+			expect(week).toBeGreaterThanOrEqual(1)
+			expect(week).toBeLessThanOrEqual(53)
+		})
+	})
+
+	describe('buildDateWithTime', () => {
+		it('собирает дату с указанным временем', () => {
+			const date = new Date(2025, 5, 10)
+			const result = buildDateWithTime({ date, hours: 14, minutes: 30, seconds: 0 })
+			expect(result.getFullYear()).toBe(2025)
+			expect(result.getMonth()).toBe(5)
+			expect(result.getDate()).toBe(10)
+			expect(result.getHours()).toBe(14)
+			expect(result.getMinutes()).toBe(30)
+		})
+	})
+
+	describe('isToday', () => {
+		it('возвращает true для текущей даты', () => {
+			expect(isToday(new Date())).toBe(true)
+		})
+
+		it('возвращает false для вчерашней даты', () => {
+			const yesterday = new Date()
+			yesterday.setDate(yesterday.getDate() - 1)
+			expect(isToday(yesterday)).toBe(false)
+		})
+	})
+
+	describe('isDateInRange', () => {
+		it('возвращает true для даты внутри диапазона', () => {
+			const date = new Date(2025, 5, 10)
+			const start = new Date(2025, 5, 5)
+			const end = new Date(2025, 5, 15)
+			expect(isDateInRange(date, start, end)).toBe(true)
+		})
+
+		it('возвращает false для даты на границе начала', () => {
+			const date = new Date(2025, 5, 5)
+			const start = new Date(2025, 5, 5)
+			const end = new Date(2025, 5, 15)
+			expect(isDateInRange(date, start, end)).toBe(false)
+		})
+
+		it('возвращает false для даты на границе конца', () => {
+			const date = new Date(2025, 5, 15)
+			const start = new Date(2025, 5, 5)
+			const end = new Date(2025, 5, 15)
+			expect(isDateInRange(date, start, end)).toBe(false)
+		})
+
+		it('возвращает false для даты вне диапазона', () => {
+			const date = new Date(2025, 5, 20)
+			const start = new Date(2025, 5, 5)
+			const end = new Date(2025, 5, 15)
+			expect(isDateInRange(date, start, end)).toBe(false)
+		})
+
+		it('игнорирует время при проверке', () => {
+			const date = new Date(2025, 5, 10, 12, 0)
+			const start = new Date(2025, 5, 5, 23, 59)
+			const end = new Date(2025, 5, 15, 0, 1)
+			expect(isDateInRange(date, start, end)).toBe(true)
+		})
+	})
+
+	describe('formatDate', () => {
+		const base = {
+			dateFormat: 'dd.MM.yyyy' as const,
+			is24Hour: true,
+			locale: 'ru-RU',
+			showSeconds: false,
+			showTime: false,
+		}
+
+		it('форматирует дату без времени', () => {
+			const result = formatDate({ ...base, date: new Date(2025, 5, 10) })
+			expect(result).toContain('2025')
+		})
+
+		it('форматирует дату со временем', () => {
+			const result = formatDate({
+				...base,
+				date: new Date(2025, 5, 10, 14, 30),
+				showTime: true,
+			})
+			expect(result).toContain('14')
+			expect(result).toContain('30')
+		})
+
+		it('форматирует дату с секундами', () => {
+			const result = formatDate({
+				...base,
+				date: new Date(2025, 5, 10, 14, 30, 45),
+				showTime: true,
+				showSeconds: true,
+			})
+			expect(result).toContain('45')
+		})
+
+		it('форматирует дату в 12-часовом формате', () => {
+			const result = formatDate({
+				...base,
+				date: new Date(2025, 5, 10, 14, 30),
+				showTime: true,
+				is24Hour: false,
+			})
+			// В 12-часовом формате 14:30 отображается как 2:30 PM
+			expect(result).toMatch(/PM|pm/i)
+		})
+	})
+
+	describe('formatRange', () => {
+		const base = {
+			dateFormat: 'dd.MM.yyyy' as const,
+			is24Hour: true,
+			locale: 'ru-RU',
+			showSeconds: false,
+			showTime: false,
+		}
+
+		it('возвращает пустую строку если обе даты null', () => {
+			expect(formatRange({ ...base, start: null, end: null })).toBe('')
+		})
+
+		it('форматирует только начало если конец null', () => {
+			const result = formatRange({ ...base, start: new Date(2025, 5, 10), end: null })
+			expect(result).toContain('—')
+			expect(result).toContain('...')
+		})
+
+		it('форматирует диапазон с обеими датами', () => {
+			const result = formatRange({
+				...base,
+				start: new Date(2025, 5, 10),
+				end: new Date(2025, 5, 15),
+			})
+			expect(result).toContain('—')
+		})
+
+		it('форматирует только конец если начало null', () => {
+			const result = formatRange({ ...base, start: null, end: new Date(2025, 5, 15) })
+			expect(result).toContain('—')
+			expect(result).not.toContain('...')
+		})
+	})
+
+	describe('formatMultiple', () => {
+		const base = {
+			dateFormat: 'dd.MM.yyyy' as const,
+			is24Hour: true,
+			locale: 'ru-RU',
+			showSeconds: false,
+			showTime: false,
+		}
+
+		it('возвращает пустую строку для пустого массива', () => {
+			expect(formatMultiple({ ...base, dates: [] })).toBe('')
+		})
+
+		it('форматирует до 3 дат через запятую', () => {
+			const dates = [new Date(2025, 5, 10), new Date(2025, 5, 11)]
+			const result = formatMultiple({ ...base, dates })
+			expect(result).toContain(',')
+		})
+
+		it('форматирует ровно 3 даты через запятую', () => {
+			const dates = [new Date(2025, 5, 10), new Date(2025, 5, 11), new Date(2025, 5, 12)]
+			const result = formatMultiple({ ...base, dates })
+			expect(result).toContain(',')
+			expect(result).not.toContain('Выбрано')
+		})
+
+		it('показывает количество если дат больше 3 — по правилам множественного числа', () => {
+			const dates = [new Date(2025, 5, 10), new Date(2025, 5, 11), new Date(2025, 5, 12), new Date(2025, 5, 13)]
+			expect(formatMultiple({ ...base, dates })).toBe('Выбрано: 4 даты')
+			expect(formatMultiple({ ...base, dates: [...dates, new Date(2025, 5, 14)] })).toBe('Выбрано: 5 дат')
+
+			setLocale('en')
+			expect(formatMultiple({ ...base, dates })).toBe('4 dates selected')
+		})
+	})
+
+	describe('formatDatePickerValue', () => {
+		const base = {
+			dateFormat: 'dd.MM.yyyy' as const,
+			is24Hour: true,
+			locale: 'ru-RU',
+			showSeconds: false,
+			showTime: false,
+		}
+
+		it('форматирует single значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'single',
+				date: new Date(2025, 5, 10),
+				endDate: null,
+				dates: [],
+			})
+
+			expect(result).toContain('2025')
+		})
+
+		it('возвращает пустую строку для single без даты', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'single',
+				date: null,
+				endDate: null,
+				dates: [],
+			})
+
+			expect(result).toBe('')
+		})
+
+		it('форматирует range значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'range',
+				date: new Date(2025, 5, 10),
+				endDate: new Date(2025, 5, 15),
+				dates: [],
+			})
+
+			expect(result).toContain('—')
+		})
+
+		it('форматирует multiple значение', () => {
+			const result = formatDatePickerValue({
+				...base,
+				selectionMode: 'multiple',
+				date: null,
+				endDate: null,
+				dates: [new Date(2025, 5, 10), new Date(2025, 5, 11)],
+			})
+
+			expect(result).toContain(',')
+		})
+	})
+
+	describe('formatPopoverDate', () => {
+		it('форматирует дату с днём недели, месяцем и годом', () => {
+			const result = formatPopoverDate({ date: new Date(2025, 5, 10), locale: 'ru-RU' })
+
+			expect(result).toContain('вторник')
+			expect(result).toContain('июня')
+			expect(result).toContain('2025')
+		})
+	})
+
+	describe('formatRelativeTime', () => {
+		const NOW = new Date(2025, 4, 15, 10, 30)
+		const ago = (seconds: number): Date => new Date(NOW.getTime() - seconds * 1000)
+
+		afterEach(() => setLocale('ru'))
+
+		it('секунды — «сейчас», минуты, часы и дни — относительно, по-русски', () => {
+			expect(formatRelativeTime(ago(10), { now: NOW })).toBe('сейчас')
+			expect(formatRelativeTime(ago(5 * 60), { now: NOW })).toBe('5 минут назад')
+			expect(formatRelativeTime(ago(3 * 3600), { now: NOW })).toBe('3 часа назад')
+			expect(formatRelativeTime(ago(86_400), { now: NOW })).toBe('вчера')
+			expect(formatRelativeTime(ago(-2 * 86_400), { now: NOW })).toBe('послезавтра')
+		})
+
+		it('дальше недели — дата, в другом году — с годом; строка и число тоже принимаются', () => {
+			expect(formatRelativeTime(new Date(2025, 4, 3, 9).toISOString(), { now: NOW })).toBe('3 мая')
+			expect(formatRelativeTime(new Date(2024, 4, 3, 9).getTime(), { now: NOW })).toBe('3 мая 2024 г.')
+		})
+
+		it('некорректная дата из данных — пустая строка, а не RangeError (фаззинг XSS)', () => {
+			expect(formatRelativeTime('не дата', { now: NOW })).toBe('')
+			expect(formatRelativeTime(Number.NaN, { now: NOW })).toBe('')
+			expect(formatRelativeTime(new Date('x'), { now: NOW })).toBe('')
+			expect(formatRelativeTime('<img src=x onerror=alert(1)>')).toBe('')
+		})
+
+		it('язык кита по умолчанию и свой язык', () => {
+			setLocale('en')
+			expect(formatRelativeTime(ago(5 * 60), { now: NOW })).toBe('5 minutes ago')
+			expect(formatRelativeTime(ago(3600), { now: NOW, locale: 'ru-RU' })).toBe('1 час назад')
+		})
+
+		it('без точки отсчёта — текущее время', () => {
+			expect(formatRelativeTime(new Date())).toBe('сейчас')
+		})
+	})
+})

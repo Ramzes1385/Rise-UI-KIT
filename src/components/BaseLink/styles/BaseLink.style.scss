@@ -1,0 +1,49 @@
+.base-link {
+	@include custom-color-scope;
+	display: inline;
+	font-size: calc(#{ct(link, font-size, 1em)} * var(--size-scale, 1));
+	font-weight: ct(link, font-weight, inherit);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-decoration-color: color-mix(in srgb, currentcolor 45%, transparent);
+	text-underline-offset: 0.2em;
+	border-radius: ct(link, radius, var(--rise-radius-xs));
+	cursor: pointer;
+	@include transition-colors;
+	@include custom-text(color, ct(link, text, var(--rise-primary-text)));
+	@include custom-text-hover(color, ct(link, text-hover, var(--rise-primary-text)));
+
+	&:focus-visible {
+		outline: 2px solid ct(link, ring, var(--rise-focus-ring));
+		outline-offset: 2px;
+	}
+
+	@include hover {
+		text-decoration-color: currentcolor;
+	}
+
+	&--ghost {
+		text-decoration-color: transparent;
+		@include custom-text(color, inherit);
+		@include custom-text-hover(color, inherit);
+
+		@include hover {
+			text-decoration-color: currentcolor;
+		}
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&__external {
+		display: inline-block;
+		margin-inline-start: 0.15em;
+		font-size: 0.85em;
+		text-decoration: none;
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}

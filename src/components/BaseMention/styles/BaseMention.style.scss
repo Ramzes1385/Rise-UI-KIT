@@ -1,0 +1,155 @@
+.base-mention {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	gap: sz(6px);
+	width: 100%;
+	min-width: 0;
+	@include custom-text(color, ct(mention, text, var(--rise-text-highlighted)));
+
+	&__label {
+		@include field-label;
+	}
+
+	&__field {
+		position: relative;
+		min-width: 0;
+	}
+
+	&__control {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 0;
+		margin: 0;
+		padding: sz(ct(mention, padding-y, var(--rise-control-padding-y))) sz(ct(mention, padding-x, var(--rise-control-padding-x)));
+		color: inherit;
+		font: inherit;
+		@include control-text;
+		resize: vertical;
+		outline: none;
+		@include field-box(mention);
+
+		&::placeholder {
+			color: var(--rise-text-dimmed);
+			opacity: 1;
+		}
+	}
+
+	&__popup {
+		position: absolute;
+		top: calc(100% + #{sz(4px)});
+		inset-inline-start: 0;
+		z-index: var(--rise-z-overlay);
+		box-sizing: border-box;
+		width: min(100%, #{sz(320px)});
+		overflow: hidden;
+		@include floating-surface(null);
+		background-color: ct(mention, popup-bg, var(--rise-surface-floating));
+		border-radius: sz(ct(mention, popup-radius, var(--rise-radius-lg)));
+		box-shadow: ct(mention, popup-shadow, var(--rise-shadow-lg));
+		transform-origin: top left;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+		max-height: sz(264px);
+		margin: 0;
+		padding: space(4px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+	}
+
+	&__option {
+		@include menu-item;
+		gap: sz(10px);
+		color: ct(mention, option-text, var(--rise-text));
+
+		@include hover {
+			background-color: ct(mention, option-bg-hover, var(--rise-surface-floating-hover));
+		}
+
+		&--active {
+			background-color: ct(mention, option-bg-hover, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
+		}
+	}
+
+	&__avatar {
+		flex: none;
+	}
+
+	&__option-text {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	&__option-label {
+		@include truncate;
+	}
+
+	&__option-value,
+	&__option-description {
+		color: var(--rise-text-muted);
+		@include text-size(xs);
+		@include truncate;
+		@include transition-colors;
+	}
+
+	&__option-description {
+		flex: none;
+		max-width: 40%;
+	}
+
+	&__option--active &__option-value,
+	&__option--active &__option-description {
+		color: var(--rise-text-toned);
+	}
+
+	@media (hover: hover) {
+		&__option:hover &__option-value,
+		&__option:hover &__option-description {
+			color: var(--rise-text-toned);
+		}
+	}
+
+	&__empty {
+		margin: 0;
+		padding: space(12px);
+		color: var(--rise-text-muted);
+		@include text-size(sm);
+	}
+
+	&--soft &__control {
+		@include field-variant(mention, soft);
+	}
+
+	&--outline &__control {
+		@include field-variant(mention, outline);
+	}
+
+	&--ghost &__control {
+		@include field-variant(mention, ghost);
+	}
+
+	&--error &__control {
+		border-color: var(--rise-error);
+		@include field-focus(var(--rise-error));
+	}
+
+	&--disabled &__control {
+		@include disabled-state;
+	}
+
+	&__error {
+		margin: 0;
+		@include field-error;
+	}
+}
+
+@include enter-scale(base-mention-popup);

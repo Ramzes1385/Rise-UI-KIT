@@ -1,45 +1,36 @@
 <template>
-	<div class="base-chat-input__previews">
-		<div v-for="(file, index) in attachments" :key="file.id" class="base-chat-input__preview">
-			<BaseImage
-				v-if="file.type === 'image'"
-				:src="file.url"
-				:alt="file.name"
-				class="base-chat-input__preview-image" />
-			<div v-else class="base-chat-input__preview-file">
-				<BaseIcon name="file" :size-scale="sizeScale * UI_SCALE.SMALL" />
-				<BaseText tag="span" :size-scale="sizeScale * UI_SCALE.SMALL" class="base-chat-input__preview-filename">
-					{{ file.name }}
-				</BaseText>
-			</div>
+	<ul class="base-chat-input__previews">
+		<li v-for="(file, index) in attachments" :key="file.id" class="base-chat-input__preview">
+			<BaseImage v-if="file.type === 'image'" :src="file.url" :alt="file.name" class="base-chat-input__preview-image" />
+			<span v-else class="base-chat-input__preview-file" aria-hidden="true">
+				<BaseIcon name="file" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
+			</span>
+			<span class="base-chat-input__preview-filename">{{ file.name }}</span>
 			<BaseButton
 				variant="ghost"
-				:padding="1"
-				:size-scale="sizeScale * UI_CHAT_SCALE.META"
+				:size-scale="sizeScale"
 				class="base-chat-input__preview-remove"
-				:aria-label="`${UI_CHAT_TEXT.REMOVE_ATTACHMENT} ${file.name}`"
+				:aria-label="formatMessage(UI_CHAT_TEXT.REMOVE_ATTACHMENT_NAMED, { name: file.name })"
 				@click="handleRemove(index)">
-				<template #left>
-					<BaseIcon name="close" :size-scale="sizeScale * UI_CHAT_SCALE.META" />
-				</template>
+				<BaseIcon name="close" :size-scale="sizeScale * CHAT_SCALE.SMALL" />
 			</BaseButton>
-		</div>
-	</div>
+		</li>
+	</ul>
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@components/BaseButton'
+import { formatMessage } from '@/locales/state'
 import { BaseIcon } from '@components/BaseIcon'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { BaseImage } from '@components/BaseImage'
-import { BaseText } from '@components/BaseText'
-import { UI_CHAT_SCALE, UI_CHAT_TEXT, UI_SCALE } from '@constants'
-import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './ChatFilePreview.types'
+import { CHAT_SCALE } from '../../model/chatScale'
+import { BaseButton } from '@components/BaseButton'
+import { useChatFilePreview } from './model/useChatFilePreview'
+import type { ChatFilePreviewEmits, ChatFilePreviewProps } from './types/ChatFilePreview.types'
 
 defineProps<ChatFilePreviewProps>()
 
 const emit = defineEmits<ChatFilePreviewEmits>()
 
-function handleRemove(index: number): void {
-	emit('remove', index)
-}
+const { handleRemove } = useChatFilePreview(emit)
 </script>

@@ -1,0 +1,33 @@
+@use './canvas';
+@use './nodes';
+@use './edges';
+@use './chrome';
+@use './scenario';
+@use './panels';
+@use './review/review';
+@use './edit/edit';
+
+.base-flow-map {
+	@include custom-color-scope;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
+	overflow: hidden;
+	border: 1px solid transparent;
+	border-radius: sz(var(--rise-radius-xl));
+	color: var(--rise-text);
+	background-color: var(--rise-flow-map-canvas-bg, var(--rise-bg-muted));
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+	}
+
+	&--ghost {
+		border-color: transparent;
+		border-radius: 0;
+		background-color: transparent;
+	}
+}

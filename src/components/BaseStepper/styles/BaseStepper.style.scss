@@ -1,282 +1,422 @@
 .base-stepper {
+	@include custom-color-scope;
+	--stepper-size: #{sz(ct(stepper-indicator, width, 28px))};
+	--stepper-line: #{sz(2px)};
+	--stepper-line-gap: #{sz(4px)};
+	--stepper-line-radius: 0;
+	--stepper-step-min-width: #{sz(112px)};
+	--stepper-accent: var(--custom-bg, #{ct(stepper, bg-checked, var(--rise-primary))});
+	--stepper-on-accent: var(--custom-text, #{ct(stepper, text-checked, var(--rise-on-primary))});
+	--stepper-fill-duration: var(--rise-duration);
+
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	position: relative;
 
-	// ── Ориентация ──
 	&--horizontal {
-		align-items: stretch;
+		container-type: inline-size;
 	}
 
-	&--vertical {
-		align-items: stretch;
-	}
-
-	// ── Шапка ──
 	&__header {
 		display: flex;
 		width: 100%;
 		margin-bottom: sz(24px);
 	}
 
-	// ── Подвал ──
 	&__footer {
 		display: flex;
 		width: 100%;
 		margin-top: sz(24px);
 	}
 
-	// ── Контейнер шагов ──
 	&__items {
+		position: relative;
 		display: flex;
 		width: 100%;
-		position: relative;
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
 	&--horizontal &__items {
 		flex-direction: row;
+		width: auto;
+		margin: sz(-4px);
+		padding: sz(4px);
+		overflow: auto hidden;
+		overscroll-behavior-x: contain;
+		@include scrollbar-thin;
+		@include focus-ring;
 	}
 
 	&--vertical &__items {
 		flex-direction: column;
 	}
 
-	// ── Шаг ──
 	&__step {
-		display: flex;
-		cursor: pointer;
 		position: relative;
-		outline: none;
-		z-index: 2;
-		@include transition(transform);
-
-		&--disabled {
-			opacity: 0.5;
-			cursor: not-allowed;
-		}
+		z-index: 1;
+		display: flex;
+		min-width: 0;
 	}
 
 	&--horizontal &__step {
-		flex-direction: column;
-		align-items: center;
-		flex: 1;
-		gap: sz(4px);
+		flex: 1 0 0;
+		min-width: min-content;
 	}
 
-	&--vertical &__step {
+	&__trigger {
+		display: flex;
+		flex: 1 1 auto;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-align: start;
+		@include focus-ring;
+
+		&:disabled {
+			color: inherit;
+		}
+	}
+
+	&__trigger--clickable {
+		cursor: pointer;
+
+		@include hover {
+			.base-stepper__indicator {
+				background-color: var(--rise-bg-accented);
+			}
+		}
+	}
+
+	&--horizontal &__trigger {
+		min-width: var(--stepper-step-min-width);
+		flex-direction: column;
+		align-items: center;
+		gap: sz(8px);
+	}
+
+	&--vertical &__trigger {
 		flex-direction: row;
 		align-items: flex-start;
 		gap: sz(12px);
 	}
 
-	// ── Галочка ──
-	&__check {
-		display: flex;
-		justify-content: center;
-		align-items: center;
+	&__step--disabled &__trigger {
+		cursor: not-allowed;
 	}
 
-	// ── Обёртка индикатора ──
+	&__step--disabled &__content,
+	&__step--disabled &__indicator > * {
+		opacity: var(--rise-disabled-opacity);
+	}
+
 	&__indicator-wrapper {
 		display: flex;
+		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
-
-		&:hover:not(.base-stepper__step--disabled) {
-			.base-stepper__indicator {
-				border-color: var(--color-accent);
-				background-color: var(--color-surface-muted);
-			}
-		}
-
-		&:focus-visible {
-			.base-stepper__indicator {
-				box-shadow: 0 0 0 sz(4px) rgba(249, 115, 22, 0.2);
-			}
-		}
-
-		&:active:not(.base-stepper__step--disabled) {
-			transform: scale(0.98);
-		}
+		width: var(--stepper-size);
+		height: var(--stepper-size);
 	}
 
-	// ── Индикатор ──
 	&__indicator {
-		width: sz(32px);
-		height: sz(32px);
-		border-radius: 50%;
-		border: sz(2px) solid var(--color-border);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-size: sz(14px);
-		font-weight: 700;
-		background-color: var(--color-surface);
-		position: relative;
-		z-index: 2;
-		flex-shrink: 0;
-		@include transition(border-color, background-color, color);
+		width: 100%;
+		height: 100%;
+		border: var(--stepper-line) solid transparent;
+		border-radius: sz(ct(stepper-indicator, radius, var(--rise-radius-sm)));
+		background-color: ct(stepper-indicator, bg, var(--rise-bg-elevated));
+		color: ct(stepper-indicator, text, var(--rise-text-muted));
+		font-family: var(--rise-font-mono);
+		font-size: sz(11px);
+		line-height: sz(16px);
+		font-weight: var(--rise-font-weight-normal);
+		font-variant-numeric: tabular-nums;
+		@include transition-colors;
 
 		& > span {
 			display: flex;
-			height: 100%;
-			width: 100%;
 			align-items: center;
 			justify-content: center;
 		}
 	}
 
 	&__step--active &__indicator {
-		border-color: var(--color-accent);
-		color: var(--color-accent);
+		background-color: color-mix(in srgb, var(--stepper-accent) 14%, transparent);
+		color: var(--custom-bg, var(--rise-primary-text));
+	}
+
+	&__step--active &__trigger--clickable {
+		@include hover {
+			.base-stepper__indicator {
+				background-color: color-mix(in srgb, var(--stepper-accent) 20%, transparent);
+			}
+		}
 	}
 
 	&__step--completed &__indicator {
-		background-color: var(--color-accent);
-		border-color: var(--color-accent);
-		color: #ffffff;
+		border-color: var(--stepper-accent);
+		background-color: var(--stepper-accent);
+		color: var(--stepper-on-accent);
 	}
 
-	&__step--completed:hover:not(&__step--disabled) &__indicator {
-		background-color: var(--color-accent-hover);
-		border-color: var(--color-accent-hover);
+	&__step--completed &__trigger--clickable {
+		@include hover {
+			.base-stepper__indicator {
+				border-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+				background-color: var(--custom-bg-hover, var(--custom-bg, var(--rise-primary-hover)));
+			}
+		}
 	}
 
-	// ── Контент ──
 	&__content {
 		display: flex;
 		flex-direction: column;
-		position: relative;
-		z-index: 2;
+		gap: sz(2px);
+		min-width: 0;
+		max-width: 100%;
 	}
 
 	&--horizontal &__content {
 		align-items: center;
+		padding: 0 sz(8px);
 		text-align: center;
-		padding-top: sz(8px);
+
+		& > * {
+			max-width: 100%;
+		}
 	}
 
 	&--vertical &__content {
-		padding-bottom: sz(16px);
+		padding: sz(4px) 0 sz(20px);
 	}
 
 	&__label {
-		font-size: sz(14px);
-		font-weight: 600;
-		color: var(--color-text);
+		font-size: sz(ct(stepper-label, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(stepper-label, font-weight, var(--rise-font-weight-medium));
+		color: ct(stepper-label, text, var(--rise-text));
+		overflow-wrap: break-word;
+		hyphens: auto;
+	}
+
+	&__step--active &__label {
+		color: ct(stepper-label, text-active, var(--rise-text-highlighted));
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+
+	&__optional {
+		@include text-size(xs);
+		font-style: italic;
+		color: var(--rise-text-muted);
+	}
+
+	&__error-mark {
+		font-weight: var(--rise-font-weight-bold);
+	}
+
+	&__step--error &__indicator {
+		border-color: var(--rise-error);
+		background-color: var(--rise-error);
+		color: var(--rise-on-error);
+	}
+
+	&__step--error &__label,
+	&__step--error &__description {
+		color: var(--rise-error-text);
 	}
 
 	&__description {
-		font-size: sz(12px);
-		opacity: 0.6;
+		display: block;
 		margin: 0;
+		@include text-size(xs);
+		color: ct(stepper-description, text, var(--rise-text-muted));
+		overflow-wrap: break-word;
+		hyphens: auto;
 	}
 
-	// ── Линия: фон (::before) и прогресс (::after) на __items ──
-	&--horizontal &__items::before {
+	&__step:not(:last-child)::after,
+	&--horizontal &__step:not(:first-child)::before {
 		content: '';
 		position: absolute;
-		top: sz(15px);
-		height: sz(2px);
-		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		right: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		background-color: var(--color-border);
-		z-index: 1;
+		z-index: 0;
+		background-color: ct(stepper-line, bg, var(--rise-border-accented));
 	}
 
-	&--horizontal &__items::after {
-		content: '';
+	&--horizontal &__step:not(:first-child)::before,
+	&--horizontal &__step:not(:last-child)::after,
+	&--horizontal &__line-fill {
+		top: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
+		height: var(--stepper-line);
+	}
+
+	&--horizontal &__step:not(:first-child)::before,
+	&--horizontal &__line-fill--start {
+		inset-inline: 0 calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap));
+		border-start-start-radius: 0;
+		border-start-end-radius: var(--stepper-line-radius);
+		border-end-end-radius: var(--stepper-line-radius);
+		border-end-start-radius: 0;
+	}
+
+	&--horizontal &__step:not(:last-child)::after,
+	&--horizontal &__line-fill--end {
+		inset-inline: calc(50% + var(--stepper-size) / 2 + var(--stepper-line-gap)) 0;
+		border-start-start-radius: var(--stepper-line-radius);
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
+		border-end-start-radius: var(--stepper-line-radius);
+	}
+
+	&--vertical &__step:not(:last-child)::after,
+	&--vertical &__line-fill {
+		top: calc(var(--stepper-size) + var(--stepper-line-gap));
+		bottom: var(--stepper-line-gap);
+		inset-inline-start: calc(var(--stepper-size) / 2 - var(--stepper-line) / 2);
+		width: var(--stepper-line);
+		border-radius: var(--stepper-line-radius);
+	}
+
+	&__line-fill {
 		position: absolute;
-		top: sz(15px);
-		height: sz(2px);
-		left: calc(var(--stepper-line-offset, 0%) + #{sz(16px)});
-		width: calc((100% - 2 * var(--stepper-line-offset, 0%) - #{sz(32px)}) * var(--stepper-progress-scale, 0));
-		background-color: var(--color-accent);
 		z-index: 1;
+		background-color: var(--stepper-accent);
+		pointer-events: none;
+		transition: transform var(--stepper-fill-duration) var(--rise-ease);
 	}
 
-	// Вертикальная линия
-	&--vertical &__items::before {
-		content: '';
-		position: absolute;
-		left: sz(15px);
-		width: sz(2px);
-		top: sz(16px);
-		bottom: sz(16px);
-		background-color: var(--color-border);
-		z-index: 1;
+	&--horizontal &__line-fill {
+		transform: scaleX(0);
+		transform-origin: dir-pos(0%) center;
 	}
 
-	&--vertical &__items::after {
-		content: '';
-		position: absolute;
-		left: sz(15px);
-		width: sz(2px);
-		top: sz(16px);
-		height: calc((100% - #{sz(32px)}) * var(--stepper-progress-scale, 0));
-		background-color: var(--color-accent);
-		z-index: 1;
+	&--vertical &__line-fill {
+		transform: scaleY(0);
+		transform-origin: center top;
 	}
 
-	// ── Форма: circle (по умолчанию) ──
-	&--circle &__indicator {
-		border-radius: 50%;
+	&--horizontal &__line-fill--start,
+	&--horizontal &__step--passed &__line-fill--end {
+		transition-delay: 0s;
+		transition-timing-function: var(--rise-ease-in);
 	}
 
-	// ── Форма: square ──
+	&--horizontal &__line-fill--end,
+	&--horizontal &__step--passed &__line-fill--start,
+	&--horizontal &__step--active &__line-fill--start {
+		transition-delay: var(--stepper-fill-duration);
+		transition-timing-function: var(--rise-ease-out);
+	}
+
+	&__step--passed &__line-fill,
+	&--horizontal &__step--active &__line-fill--start {
+		transform: none;
+	}
+
+	&__step--passed:not(:last-child)::after {
+		background-color: transparent;
+		transition: background-color 0s linear var(--stepper-fill-duration);
+	}
+
+	&--horizontal &__step--passed:not(:first-child)::before,
+	&--horizontal &__step--active:not(:first-child)::before {
+		background-color: transparent;
+		transition: background-color 0s linear calc(var(--stepper-fill-duration) * 2);
+	}
+
+	&--instant &__items &__step &__line-fill,
+	&--instant &__items &__step:nth-child(n)::before,
+	&--instant &__items &__step:nth-child(n)::after {
+		transition: none;
+	}
+
 	&--square &__indicator {
-		border-radius: sz(4px);
+		border-radius: sz(ct(stepper-indicator, square-radius, var(--rise-radius-xs)));
 	}
 
-	// ── Форма: diamond ──
 	&--diamond &__indicator {
-		border-radius: sz(4px);
+		width: 70%;
+		height: 70%;
+		border-radius: sz(var(--rise-radius-xs));
 		transform: rotate(45deg);
-		font-size: sz(12px);
 
 		& > span {
 			transform: rotate(-45deg);
 		}
 	}
 
-	&--diamond &__step--active &__indicator,
-	&--diamond &__step--completed &__indicator {
-		transform: rotate(45deg);
+	&--empty {
+		--stepper-size: #{sz(8px)};
+		--stepper-line-gap: calc(var(--stepper-size) / -2);
+		--stepper-line-radius: 0;
 	}
 
-	&--diamond &__step--active &__indicator > span,
-	&--diamond &__step--completed &__indicator > span {
-		transform: rotate(-45deg);
-	}
-
-	// ── Форма: empty — без индикатора ──
-	&--empty &__step {
-		gap: sz(30px);
-	}
-
-	&--empty &__content {
-		padding-top: sz(20px);
-	}
-
-	&--empty &__label {
-		font-weight: 700;
-	}
-
-	&--empty &__step--active &__label {
-		color: var(--color-accent);
-	}
-
+	&--empty &__step--active &__label,
 	&--empty &__step--completed &__label {
-		color: var(--color-accent);
+		color: var(--rise-text-highlighted);
 	}
 
-	// ── Вариант: animated — анимация заполнения линии ──
-	&--animated &__items::after {
-		transition: width 0.4s ease;
+	&--animated {
+		--stepper-fill-duration: var(--rise-duration-slow);
 	}
 
-	&--animated.base-stepper--vertical &__items::after {
-		transition: height 0.4s ease;
+	@include motion-safe {
+		&--stepped:not(.base-stepper--instant) &__step--active &__indicator-wrapper {
+			animation: base-stepper-step-in var(--rise-duration) var(--rise-ease-spring);
+		}
+	}
+}
+
+@container (max-width: 480px) {
+	.base-stepper--horizontal[data-summary]::after {
+		content: attr(data-summary);
+		content: attr(data-summary) / '';
+		order: 1;
+		margin-top: sz(12px);
+		color: ct(stepper-label, text-active, var(--rise-text-highlighted));
+		font-size: sz(ct(stepper-label, font-size, var(--rise-font-size-sm)));
+		font-weight: ct(stepper-label, font-weight, var(--rise-font-weight-medium));
+		line-height: sz(var(--rise-line-height-sm));
+		overflow-wrap: anywhere;
+		text-align: center;
+	}
+
+	.base-stepper--horizontal .base-stepper__footer {
+		order: 2;
+	}
+
+	.base-stepper--horizontal:not(.base-stepper--empty) .base-stepper__items {
+		--stepper-line-gap: #{sz(2px)};
+	}
+
+	.base-stepper--horizontal .base-stepper__items {
+		margin-inline: 0;
+	}
+
+	.base-stepper--horizontal .base-stepper__step,
+	.base-stepper--horizontal .base-stepper__trigger {
+		min-width: 0;
+	}
+
+	.base-stepper--horizontal .base-stepper__content {
+		@include visually-hidden;
+	}
+}
+
+@keyframes base-stepper-step-in {
+	from {
+		transform: scale(var(--rise-motion-scale-from));
 	}
 }

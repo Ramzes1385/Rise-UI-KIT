@@ -1,11 +1,6 @@
-/**
- * Integration-тесты для BaseText.
- * Проверяют truncate, maxLines, weight, nowrap и их взаимодействие.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseText from '../ui/BaseText.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseText integration', () => {
 	describe('truncate + maxLines', () => {
@@ -91,13 +86,13 @@ describe('BaseText integration', () => {
 			expect(style).toContain('font-weight: 700')
 		})
 
-		it('должен устанавливать font-weight: 400 по умолчанию', () => {
+		it('по умолчанию не пишет font-weight inline', () => {
 			const { container } = render(BaseText, {
 				slots: { default: 'Обычный текст' },
 			})
 
 			const style = container.querySelector('.base-text')?.getAttribute('style') ?? ''
-			expect(style).toContain('font-weight: 400')
+			expect(style).not.toContain('font-weight')
 		})
 	})
 

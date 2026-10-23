@@ -1,15 +1,8 @@
-/**
- * Unit-тесты для BaseCalendar.
- * Проверяют рендер, пропсы, CSS-модификаторы, isDisabled.
- * Дочерние UI-компоненты заменены stub'ами.
- * Мокаем только DOM-зависимые composables.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseCalendar from '../ui/BaseCalendar.vue'
+import { fireEvent, render } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
+vi.mock('@composables/overlay/useClickOutside', () => ({ useClickOutside: vi.fn() }))
 
 const stubs = {
 	BaseCard: {
@@ -209,7 +202,7 @@ describe('BaseCalendar unit', () => {
 			})
 		})
 
-			describe('эмиты', () => {
+		describe('эмиты', () => {
 			it('должен эмитить range-select при выборе диапазона', async () => {
 				const { container, emitted } = render(BaseCalendar, {
 					props: {
@@ -250,9 +243,7 @@ describe('BaseCalendar unit', () => {
 				})
 
 				const titleBtn = container.querySelector('.base-calendar__title-btn') as HTMLElement
-				// days → months
 				await fireEvent.click(titleBtn)
-				// months → years
 				await fireEvent.click(titleBtn)
 
 				const yearBtn = container.querySelector('.base-calendar__year-btn') as HTMLElement

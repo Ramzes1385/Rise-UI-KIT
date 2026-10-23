@@ -1,65 +1,58 @@
 <template>
-	<div
-		class="base-menu"
-		:class="[variantClass, classes.root]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<div v-for="(group, gIndex) in items" :key="gIndex" class="base-menu__group" :class="classes.group">
-			<div
-				v-for="(item, iIndex) in group"
-				:key="iIndex"
-				class="base-menu__item"
-				tabindex="0"
-				:class="[
-					{
-						'base-menu__item--disabled': item.isDisabled,
-					},
-					classes.item,
-				]"
-				@click="handleItemClick(item)">
-				<BaseIcon
-					v-if="item.icon"
-					class="base-menu__icon"
-					:class="classes.icon"
-					:name="item.icon"
-					:size-scale="calcIconScale('sm', sizeScale)" />
-				<BaseText class="base-menu__label" :class="classes.label" :size-scale="sizeScale">{{ item.label }}</BaseText>
-			</div>
-			<BaseSeparator
-				v-if="gIndex < items.length - 1"
-				class="base-menu__divider"
-				:class="classes.divider"
-				:size-scale="sizeScale" />
+	<div :class="[ui('root'), variantClass, classes.root]" :style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		<div v-for="(group, gIndex) in items" :key="gIndex" :class="[ui('group'), classes.group]">
+			<template v-for="(item, iIndex) in group" :key="iIndex">
+				<component
+					:is="isLink(item) ? BaseLink : 'div'"
+					v-bind="itemAttrs(item)"
+					:class="[
+						ui('item'),
+						{
+							'base-menu__item--disabled': item.isDisabled,
+						},
+						classes.item,
+					]"
+					@click="handleItemClick(item)"
+					@keydown="handleItemKeydown(item, $event)">
+					<BaseIcon
+						v-if="item.icon"
+						:class="[ui('icon'), classes.icon]"
+						:name="item.icon"
+						:size-scale="calcIconScale('sm', sizeScale)" />
+					<span :class="[ui('label'), classes.label]">{{ item.label }}</span>
+				</component>
+				<BaseSeparator
+					v-if="item.hasDivider && iIndex < group.length - 1"
+					:class="[ui('divider'), classes.divider]"
+					:size-scale="sizeScale" />
+			</template>
+			<BaseSeparator v-if="gIndex < items.length - 1" :class="[ui('divider'), classes.divider]" :size-scale="sizeScale" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { BaseIcon } from '@components/BaseIcon'
-import { BaseSeparator } from '@components/BaseSeparator'
-import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { SIZE_SCALE_DEFAULT } from '@constants'
 import '../styles/BaseMenu.style.scss'
-import { calcIconScale } from '@utils/iconUtils'
-import type { BaseMenuEmits, BaseMenuItem, BaseMenuProps, BaseMenuSlots } from '../model/BaseMenu.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { BaseLink } from '@components/BaseLink'
+import { useBaseMenu } from '../model/useBaseMenu'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseSeparator } from '@components/BaseSeparator'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseMenuEmits, BaseMenuProps, BaseMenuSlots } from '../types/BaseMenu.types'
 
-const props = withDefaults(defineProps<BaseMenuProps>(), {
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-menu', props, ['root', 'group', 'item', 'icon', 'label', 'divider'])
+const props = withDefaults(
+	defineProps<BaseMenuProps>(),
+	kitDefaults('BaseMenu', {
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseMenuEmits>()
-
 defineSlots<BaseMenuSlots>()
 
-function handleItemClick(item: BaseMenuItem): void {
-	if (item.isDisabled) return
-
-	if (item.click) {
-		item.click()
-	}
-
-	emit('select', item)
-}
+const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes, ui, isLink, itemAttrs, handleItemClick, handleItemKeydown } =
+	useBaseMenu(props, emit)
 </script>

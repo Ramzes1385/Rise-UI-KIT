@@ -1,0 +1,151 @@
+.base-text-diff {
+	@include custom-color-scope;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	min-width: 0;
+	margin: 0;
+	overflow: hidden;
+	border: 1px solid ct(text-diff, border, transparent);
+	border-radius: sz(ct(text-diff, radius, var(--rise-radius-md)));
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(text-diff, text, var(--rise-text)));
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(text-diff, bg, var(--rise-bg-elevated)));
+	}
+
+	&--outline {
+		border-color: ct(text-diff, border, var(--rise-border-accented));
+		@include tonal-surface(page);
+		@include custom-bg(background-color, ct(text-diff, bg, transparent));
+	}
+
+	&--ghost {
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__summary {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: space(8px);
+		padding: space(ct(text-diff, summary-padding-y, 6px) ct(text-diff, summary-padding-x, 12px));
+		border-bottom: 1px solid var(--rise-border);
+		background-color: ct(text-diff, summary-bg, transparent);
+		font-weight: var(--rise-font-weight-medium);
+		@include text-size(xs);
+	}
+
+	&__count--added {
+		color: var(--rise-success-text);
+	}
+
+	&__count--removed {
+		color: var(--rise-error-text);
+	}
+
+	&__same {
+		color: var(--rise-text-toned);
+		font-weight: var(--rise-font-weight-normal);
+	}
+
+	&__hidden {
+		@include visually-hidden;
+	}
+
+	&__table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: sz(ct(text-diff, font-size, var(--rise-font-size-xs)));
+		line-height: sz(var(--rise-line-height-xs));
+
+		th {
+			padding: space(6px 12px);
+			border-bottom: 1px solid var(--rise-border);
+			@include caps-label(10px);
+			text-align: start;
+		}
+	}
+
+	&__head th {
+		padding: 0;
+		border-bottom: 0;
+	}
+
+	&__table--split th + th {
+		border-inline-start: 1px solid var(--rise-border);
+	}
+
+	&__number,
+	&__sign,
+	&__text,
+	&__word {
+		font-family: var(--rise-font-mono);
+	}
+
+	&__number {
+		width: 1%;
+		padding: space(2px 8px);
+		color: var(--rise-text-dimmed);
+		font-variant-numeric: tabular-nums;
+		text-align: end;
+		white-space: nowrap;
+		vertical-align: top;
+		user-select: none;
+	}
+
+	&__sign {
+		width: 1%;
+		padding: space(2px 4px);
+		text-align: center;
+		vertical-align: top;
+		user-select: none;
+	}
+
+	&__text {
+		padding-block: space(2px);
+		padding-inline: space(4px 12px);
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		vertical-align: top;
+	}
+
+	&__table--split &__text {
+		width: 49%;
+	}
+
+	&__table--split &__number:nth-child(3) {
+		border-inline-start: 1px solid var(--rise-border);
+	}
+
+	&__cell--added {
+		background-color: ct(text-diff, added-bg, var(--rise-success-soft));
+	}
+
+	&__cell--removed {
+		background-color: ct(text-diff, removed-bg, var(--rise-error-soft));
+	}
+
+	&__cell--empty {
+		background-color: var(--rise-bg-elevated);
+	}
+
+	&__word {
+		border-radius: sz(2px);
+		color: inherit;
+		text-decoration: none;
+	}
+
+	&__word--added {
+		background-color: color-mix(in srgb, var(--rise-success) 22%, transparent);
+	}
+
+	&__word--removed {
+		background-color: color-mix(in srgb, var(--rise-error) 22%, transparent);
+	}
+}

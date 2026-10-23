@@ -1,41 +1,41 @@
-@use "@styles/functions" as *;
+@use '../../styles/chat' as *;
 
 .base-chat-selection-toolbar {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: sz(12px) sz(20px);
-	background: var(--color-surface-muted);
-	border-top: sz(1px) solid var(--color-border);
-	animation: slideUp 0.2s ease;
-	z-index: 5;
+	flex: none;
+	padding: sz(12px) sz(16px);
+	@include chat-section-border(top);
+
+	&__surface {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(8px);
+		padding-block: sz(4px);
+		padding-inline: sz(12px) sz(4px);
+		@include floating-surface(null);
+	}
 
 	&__info {
-		display: flex;
-		align-items: center;
+		@include text-size(sm);
+		font-weight: var(--rise-font-weight-medium);
+		color: var(--rise-text-highlighted);
+		white-space: nowrap;
 	}
 
 	&__actions {
 		display: flex;
-		gap: sz(8px);
+		flex-wrap: wrap;
+		gap: sz(2px);
 	}
 
-	&__btn--danger {
-		color: var(--color-danger) !important;
+	&__btn--danger.base-button {
+		--custom-text: var(--rise-error-text);
+		--custom-bg-hover: var(--rise-error-soft);
+		--custom-bg-active: var(--rise-error-soft-hover);
 
-		&:hover {
-			background-color: rgba(var(--color-danger-rgb, 239, 68, 68), 0.08) !important;
+		@include hover {
+			color: var(--rise-error-text);
 		}
-	}
-}
-
-@keyframes slideUp {
-	from {
-		opacity: 0;
-		transform: translateY(10px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
 	}
 }

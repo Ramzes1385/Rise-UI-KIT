@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseBadge.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'with-icon', 'statuses', 'long-content'] as const
 
-const COMPONENT = 'ui-basebadge'
-const STORIES = ['default', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseBadge — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-badge--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseBadge · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-basebadge--${story}`, { theme, height: 160 })
+				await expectStoryScreenshot(page, `base-badge-${story}-${theme}.png`)
+			})
+		}
 	})
 }

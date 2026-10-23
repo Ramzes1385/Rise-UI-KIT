@@ -1,0 +1,191 @@
+// Стили canvas Storybook. В пакет не попадают.
+
+// Фон и текст canvas берутся из токенов темы: переключатель «Тема» меняет data-theme на <html>.
+body.sb-show-main,
+.docs-story {
+	background-color: var(--rise-bg);
+	color: var(--rise-text);
+	font-family: var(--rise-font-sans);
+}
+
+// Layout «centered»: корень — flex-элемент с `min-width: auto`, и история с широкой раскладкой растягивала бы страницу.
+// Корень не шире окна; широкому демо история даёт свою рамку с прокруткой (`max-width: 100%; overflow-x: auto`).
+.sb-show-main.sb-main-centered #storybook-root {
+	min-width: 0;
+	max-width: 100%;
+}
+
+// Используются в шаблонах stories вместо inline-стилей: `<div class="story-row">…</div>`.
+
+/** Ряд элементов с переносом: варианты кнопок, бейджей, чипов. */
+.story-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 12px;
+}
+
+/** Колонка элементов, выровненных по левому краю: размеры, состояния. */
+.story-col {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 12px;
+
+	> * {
+		max-width: 100%;
+	}
+}
+
+/** Колонка на всю ширину: поля форм, карточки. */
+.story-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+/** Сетка карточек. Минимальную ширину колонки задаёт --story-grid-min. */
+.story-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--story-grid-min, 220px), 1fr));
+	gap: 16px;
+}
+
+/** Подпись строки/примера: «Hover», «sizeScale 75», «Ошибка». */
+.story-label {
+	min-width: 88px;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--rise-text-muted);
+}
+
+.story-narrow {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 360px;
+}
+
+.story-medium {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 560px;
+}
+
+/** Рамка-контейнер: показывает границы области (например, isContained у Modal). */
+.story-frame {
+	position: relative;
+	box-sizing: border-box;
+	padding: 16px;
+	border: 1px dashed var(--rise-border-accented);
+	border-radius: 8px;
+}
+
+/** Сцена для окна поверх контейнера (история BaseLoader «OverlayUnderWindow»): точка отсчёта для `story-window`. */
+.story-stage {
+	position: relative;
+}
+
+/** Окно поверх соседнего контейнера на слое окон кита (история BaseLoader «OverlayUnderWindow»). */
+.story-window {
+	position: absolute;
+	inset-block-start: 24px;
+	inset-inline-start: 24px;
+	z-index: var(--rise-z-overlay);
+	background: var(--rise-bg);
+}
+
+/** Карта на тени с ореолом (история BaseMap «Theming», customClass.root): свойства, которых кит не задаёт. */
+.story-map-elevated {
+	outline: 4px solid var(--rise-primary-soft);
+	box-shadow: var(--rise-shadow-lg);
+}
+
+/** Полосатый фон заглушки карты (история BaseMap «Theming», customClass.placeholder). */
+.story-map-striped {
+	background: repeating-linear-gradient(45deg, transparent 0 8px, var(--rise-border-muted) 8px 9px);
+}
+
+/** Подсказка под историей (декоратор withYandexMapsKey): чего не хватает для живого примера. */
+.story-hint {
+	margin: 0;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--rise-text-muted);
+}
+
+/** Витрина JSON-LD под историями с SEO (декоратор withJsonLd): разметка компонента, как её прочитает поисковик. */
+.story-json-ld {
+	margin: 0;
+	padding: 12px 16px;
+	overflow: auto;
+	max-height: 360px;
+	border: 1px dashed var(--rise-border-accented);
+	border-radius: 8px;
+	color: var(--rise-text-toned);
+	font-family: var(--rise-font-mono);
+	font-size: 12px;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+// Таблица параметров на странице Docs: длинная строка в значении-объекте (картинка data URI) — в одну строку
+// с многоточием, остальные длинные значения переносятся. Иначе таблица растягивается шире страницы.
+.docblock-argstable {
+	td {
+		overflow-wrap: anywhere;
+	}
+
+	.rejt-value {
+		display: inline-block;
+		max-width: 280px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		vertical-align: bottom;
+	}
+}
+
+/**
+ * История «Анимации»: кнопка «Повторить» и колонки пресетов движения (`data-rise-motion` на каждой).
+ * Колонки равной ширины: четыре в ряд, когда каждой хватает `--story-motion-min` (по умолчанию 240 px),
+ * иначе две или одна — на телефоне колонка во всю ширину. Компонент тянется и сжимается под колонку
+ * (`max-width: 100%`); компоненту, которому нужно больше места, история задаёт свой `--story-motion-min`.
+ */
+// Обёртка ширины из meta (`story-medium`) не сужает историю «Анимации»: колонкам нужна вся строка
+.story-medium:has(.story-motion) {
+	max-width: none;
+}
+
+.story-motion {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 16px;
+	width: 100%;
+
+	&__presets {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--story-motion-min, 240px)), 1fr));
+		gap: 12px;
+		width: 100%;
+	}
+
+	&__preset {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		box-sizing: border-box;
+		min-width: 0;
+		padding: 12px;
+		border: 1px dashed var(--rise-border);
+		border-radius: var(--rise-radius-lg);
+
+		> * {
+			max-width: 100%;
+		}
+	}
+}

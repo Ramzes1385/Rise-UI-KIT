@@ -1,22 +1,39 @@
-/**
- * Integration-тесты для BaseSlideover.
- * Проверяют взаимодействие: закрытие, оверлей.
- * Компонент использует teleport — поиск в document.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseSlideover from '../ui/BaseSlideover.vue'
+import userEvent from '@testing-library/user-event'
+import { defineComponent, nextTick, ref } from 'vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-vi.mock('@composables/useClickOutside', () => ({ useClickOutside: vi.fn() }))
-vi.mock('@composables/useScrollLock', () => ({
-	useScrollLock: () => ({ lock: vi.fn(), unlock: vi.fn() }),
-}))
+function renderSlideoverHost() {
+	const Host = defineComponent({
+		components: { BaseSlideover },
+		setup() {
+			const isOpen = ref(false)
+			return { isOpen }
+		},
+		template: `
+			<div>
+				<button type="button" @click="isOpen = true">Фильтры</button>
+				<BaseSlideover v-model:is-open="isOpen" title="Настройки фильтра">
+					<input aria-label="Название" />
+					<template #footer>
+						<button type="button">Применить</button>
+					</template>
+				</BaseSlideover>
+			</div>
+		`,
+	})
+	return render(Host)
+}
 
 describe('BaseSlideover integration', () => {
+	beforeEach(() => {
+		document.body.style.overflow = ''
+		document.body.style.paddingRight = ''
+	})
+
 	describe('закрытие по кнопке', () => {
-		it('должен эмитить update:isOpen=false при клике на Г—', async () => {
+		it('должен эмитить update:isOpen=false при клике на «Закрыть»', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(BaseSlideover, {
 				props: { isOpen: true, title: 'Панель' },
@@ -30,7 +47,7 @@ describe('BaseSlideover integration', () => {
 			expect(events.at(-1)?.[0]).toBe(false)
 		})
 
-		it('должен эмитить close при клике на Г—', async () => {
+		it('должен эмитить close при клике на «Закрыть»', async () => {
 			const user = userEvent.setup()
 			const { emitted } = render(BaseSlideover, {
 				props: { isOpen: true, title: 'Панель' },
@@ -161,6 +178,79 @@ describe('BaseSlideover integration', () => {
 			})
 
 			expect(document.querySelector('.base-slideover__title')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('семантика диалога и управление фокусом', () => {
+		it('открытая панель — диалог с aria-modal и именем из заголовка', () => {
+			render(BaseSlideover, { props: { isOpen: true, title: 'Настройки фильтра' } })
+
+			expect(screen.getByRole('dialog', { name: 'Настройки фильтра' })).toHaveAttribute('aria-modal', 'true')
+		})
+
+		it('при открытии переводит фокус внутрь, по Escape возвращает его на триггер', async () => {
+			const user = userEvent.setup()
+			renderSlideoverHost()
+			const trigger = screen.getByRole('button', { name: 'Фильтры' })
+
+			await user.click(trigger)
+			const dialog = screen.getByRole('dialog', { name: 'Настройки фильтра' })
+			await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement))
+
+			await user.keyboard('{Escape}')
+
+			expect(trigger).toHaveFocus()
+		})
+
+		it('Tab и Shift+Tab циклически перемещают фокус внутри панели', async () => {
+			const user = userEvent.setup()
+			renderSlideoverHost()
+
+			await user.click(screen.getByRole('button', { name: 'Фильтры' }))
+			const closeButton = screen.getByRole('button', { name: 'Закрыть' })
+			await waitFor(() => expect(closeButton).toHaveFocus())
+
+			await user.tab()
+			expect(screen.getByRole('textbox', { name: 'Название' })).toHaveFocus()
+			await user.tab()
+			expect(screen.getByRole('button', { name: 'Применить' })).toHaveFocus()
+
+			await user.tab()
+			expect(closeButton).toHaveFocus()
+
+			await user.tab({ shift: true })
+			expect(screen.getByRole('button', { name: 'Применить' })).toHaveFocus()
+		})
+
+		it('isContained — немодальная панель: без aria-modal и без перехвата фокуса', async () => {
+			render(BaseSlideover, { props: { isOpen: true, title: 'Внутри блока', isContained: true } })
+			await nextTick()
+
+			const dialog = screen.getByRole('dialog', { name: 'Внутри блока' })
+			expect(dialog).not.toHaveAttribute('aria-modal')
+			expect(dialog).not.toContainElement(document.activeElement as HTMLElement)
+		})
+
+		it('со слотом header не ссылается aria-labelledby на отсутствующий заголовок', () => {
+			render(BaseSlideover, {
+				props: { isOpen: true, title: 'Скрытый заголовок' },
+				slots: { header: '<span>Кастомная шапка</span>' },
+			})
+
+			expect(screen.getByRole('dialog')).not.toHaveAttribute('aria-labelledby')
+		})
+
+		it('тело с прокруткой получает tabindex="0", короткое — нет', async () => {
+			const { unmount } = render(BaseSlideover, { props: { isOpen: true, title: 'Короткая' } })
+			await nextTick()
+			expect(document.querySelector('.base-slideover__body')).not.toHaveAttribute('tabindex')
+			unmount()
+
+			vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(900)
+			vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(300)
+			render(BaseSlideover, { props: { isOpen: true, title: 'Длинная' } })
+			await nextTick()
+			expect(document.querySelector('.base-slideover__body')).toHaveAttribute('tabindex', '0')
 		})
 	})
 })

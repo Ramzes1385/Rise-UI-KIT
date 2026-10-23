@@ -1,20 +1,21 @@
-/**
- * Unit/Integration-тесты для ChatMessageList.
- * Покрывают режим выделения, вложения (изображения/файлы), реакции,
- * контекстное меню, подсветку поиска, ссылки и галерею.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import { mount } from '@vue/test-utils'
+import { UI_CHAT_TEXT } from '@/locales/messages'
 import { describe, expect, it, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
 import ChatMessageList from '../ui/ChatMessageList.vue'
-import type { ChatMessage } from '../../model/BaseChat.types'
+import type { ChatMessage } from '../../../types/BaseChat.types'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/vue'
 
 const BASE_MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна', senderAvatar: 'a.png' },
 	{ id: '2', text: 'Здравствуйте', sender: 'me', time: '10:01', status: 'read' },
 ]
+
+async function scrollListTo(list: HTMLElement, scrollTop: number): Promise<void> {
+	Object.defineProperty(list, 'scrollTop', { value: scrollTop, configurable: true, writable: true })
+	await fireEvent.scroll(list)
+}
 
 describe('ChatMessageList unit', () => {
 	describe('рендер сообщений', () => {
@@ -154,9 +155,7 @@ describe('ChatMessageList unit', () => {
 				props: { messages: BASE_MESSAGES, selectedMessageIds: ['1'] },
 			})
 
-			const checkbox = container.querySelector(
-				'.base-chat-message-list__checkbox-wrapper input',
-			) as HTMLInputElement
+			const checkbox = container.querySelector('.base-chat-message-list__checkbox-wrapper input') as HTMLInputElement
 			await fireEvent.click(checkbox)
 
 			expect(emitted()['message-select']).toBeTruthy()
@@ -225,7 +224,6 @@ describe('ChatMessageList unit', () => {
 				props: { messages: [imageMsg], allImagesUrls: [] },
 			})
 
-			// Коллаж с изображением отрендерен — getMessageImagesUrls вызван для gallery
 			expect(container.querySelector('.base-chat-message-list__attached-image')).toBeInTheDocument()
 		})
 
@@ -249,7 +247,7 @@ describe('ChatMessageList unit', () => {
 		it('должен эмитить file-click при клике по карточке файла', async () => {
 			const { container, emitted } = render(ChatMessageList, { props: { messages: [fileMsg] } })
 
-			const fileCard = container.querySelector('.base-chat-message-list__attached-file') as HTMLElement
+			const fileCard = container.querySelector('.base-chat-message-list__attached-file-main') as HTMLElement
 			await fireEvent.click(fileCard)
 
 			expect(emitted()['file-click']).toBeTruthy()
@@ -502,7 +500,7 @@ describe('ChatMessageList unit', () => {
 			expect(item).toHaveClass('base-chat-message-list__item--context-active')
 
 			const list = container.querySelector('.base-chat-message-list') as HTMLElement
-			await fireEvent.scroll(list)
+			await scrollListTo(list, 120)
 			expect(item).not.toHaveClass('base-chat-message-list__item--context-active')
 		})
 
@@ -575,16 +573,28 @@ describe('ChatMessageList unit', () => {
 			expect(emitted()['delete-message']).toBeTruthy()
 		})
 
-		it('должен закрывать контекстное меню при скролле списка', async () => {
+		it('должен закрывать контекстное меню при прокрутке списка', async () => {
 			const { container } = render(ChatMessageList, { props: { messages: [ctxMsg] } })
 
 			openContextMenu(container)
 			await screen.findByText('Ответить')
 
 			const list = container.querySelector('.base-chat-message-list') as HTMLElement
-			await fireEvent.scroll(list)
+			await scrollListTo(list, 120)
 
 			expect(screen.queryByText('Ответить')).toBeNull()
+		})
+
+		it('не должен закрывать меню при сдвиге ленты на несколько пикселей (фокус кнопки у края ленты)', async () => {
+			const { container } = render(ChatMessageList, { props: { messages: [ctxMsg] } })
+
+			openContextMenu(container)
+			await screen.findByText('Ответить')
+
+			const list = container.querySelector('.base-chat-message-list') as HTMLElement
+			await scrollListTo(list, 8)
+
+			expect(screen.getByText('Ответить')).toBeInTheDocument()
 		})
 
 		it('должен закрывать контекстное меню при клике снаружи (useClickOutside isActive)', async () => {
@@ -601,18 +611,56 @@ describe('ChatMessageList unit', () => {
 		it('не должен реагировать на клик снаружи когда меню закрыто (isActive=false)', async () => {
 			render(ChatMessageList, { props: { messages: [ctxMsg] } })
 
-			// меню не открыто — isActive() возвращает false, callback не вызывается
 			await fireEvent.mouseDown(document.body)
 
 			expect(screen.queryByText('Ответить')).toBeNull()
+		})
+
+		describe('реальный клик указателем (pointerdown → mousedown → click)', () => {
+			it('должен выполнять действия пунктов меню и реакций при клике мышью', async () => {
+				const user = userEvent.setup()
+				const { container, emitted } = render(ChatMessageList, {
+					props: { messages: [ctxMsg], currentUserRole: 'admin' },
+				})
+
+				openContextMenu(container)
+				await user.click(await screen.findByText('Закрепить'))
+				expect(emitted()['pin-message']).toEqual([['70']])
+
+				openContextMenu(container)
+				await user.click(await screen.findByText('Ответить'))
+				expect(emitted()['message-reply']).toEqual([[ctxMsg]])
+
+				openContextMenu(container)
+				await user.click(await screen.findByLabelText('Поставить реакцию 👍'))
+				expect(emitted()['message-reaction']).toEqual([[{ messageId: '70', emoji: '👍' }]])
+
+				openContextMenu(container)
+				await user.click(await screen.findByText('Удалить'))
+				expect(emitted()['delete-message']).toEqual([['70']])
+			})
+
+			it('не должен закрывать меню по mousedown внутри меню и должен закрывать после выбора пункта', async () => {
+				const { container } = render(ChatMessageList, { props: { messages: [ctxMsg] } })
+
+				openContextMenu(container)
+				const replyItem = await screen.findByText('Ответить')
+				await fireEvent.mouseDown(replyItem)
+
+				expect(screen.getByText('Ответить')).toBeInTheDocument()
+
+				await userEvent.setup().click(screen.getByText('Ответить'))
+
+				expect(screen.queryByText('Ответить')).toBeNull()
+			})
 		})
 	})
 
 	describe('публичный метод scrollToMessage', () => {
 		it('должен скроллить к сообщению и временно подсвечивать его', () => {
 			vi.useFakeTimers()
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 
 			const wrapper = mount(ChatMessageList, {
 				props: { messages: BASE_MESSAGES },
@@ -622,7 +670,8 @@ describe('ChatMessageList unit', () => {
 			;(wrapper.vm as unknown as { scrollToMessage: (id: string) => void }).scrollToMessage('1')
 
 			const target = wrapper.element.querySelector('#message-1') as HTMLElement
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalledTimes(1)
+			expect(scrollBy.mock.contexts[0]).toBe(document.querySelector('.base-chat-message-list'))
 			expect(target.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
 
 			vi.advanceTimersByTime(1500)
@@ -630,6 +679,162 @@ describe('ChatMessageList unit', () => {
 
 			wrapper.unmount()
 			vi.useRealTimers()
+		})
+
+		it('должен находить сообщение, id которого содержит спецсимволы CSS-селектора', () => {
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
+			const messages: ChatMessage[] = [
+				{ id: '$ev:matrix.org', text: 'Matrix-событие', sender: 'other', time: '10:00' },
+				{ id: 'msg.1', text: 'С точкой', sender: 'me', time: '10:01' },
+				{ id: 'a b', text: 'С пробелом', sender: 'me', time: '10:02' },
+				{ id: '42', text: 'Числовой', sender: 'me', time: '10:03' },
+			]
+			const wrapper = mount(ChatMessageList, { props: { messages }, attachTo: document.body })
+			const vm = wrapper.vm as unknown as { scrollToMessage: (id: string) => void }
+
+			for (const message of messages) {
+				scrollBy.mockClear()
+				expect(() => vm.scrollToMessage(message.id)).not.toThrow()
+
+				const target = document.getElementById(`message-${message.id}`)
+				expect(scrollBy).toHaveBeenCalledTimes(1)
+				expect(scrollBy.mock.contexts[0]).toBe(document.querySelector('.base-chat-message-list'))
+				expect(target?.classList.contains('base-chat-message-list__item--highlighted')).toBe(true)
+			}
+
+			wrapper.unmount()
+		})
+	})
+
+	describe('доступность и клавиатура', () => {
+		const ownMsg: ChatMessage = { id: '90', text: 'Моё сообщение', sender: 'me', time: '17:00', status: 'read' }
+
+		it('лента — role="log" с доступным именем, пустая лента показывает подсказку', () => {
+			render(ChatMessageList, { props: { messages: [] } })
+
+			const log = screen.getByRole('log', { name: 'Сообщения' })
+			expect(log).toHaveTextContent('Сообщений пока нет')
+		})
+
+		it('при поиске без совпадений показывает «Ничего не найдено»', () => {
+			render(ChatMessageList, { props: { messages: [], searchQuery: 'макет' } })
+
+			expect(screen.getByText('Ничего не найдено')).toBeInTheDocument()
+		})
+
+		it('статус доставки передаётся не только цветом: галочки — role="img" с названием статуса', () => {
+			render(ChatMessageList, { props: { messages: [ownMsg] } })
+
+			expect(screen.getByRole('img', { name: 'Прочитано' })).toBeInTheDocument()
+		})
+
+		it('своя реакция — нажатая кнопка (aria-pressed), чужая — ненажатая', () => {
+			const message: ChatMessage = {
+				...ownMsg,
+				reactions: [
+					{ emoji: '👍', users: ['me', 'Анна'] },
+					{ emoji: '🔥', users: ['Анна'] },
+				],
+			}
+			render(ChatMessageList, { props: { messages: [message] } })
+
+			expect(screen.getByRole('button', { name: 'Реакция 👍: 2' })).toHaveAttribute('aria-pressed', 'true')
+			expect(screen.getByRole('button', { name: 'Реакция 🔥: 1' })).toHaveAttribute('aria-pressed', 'false')
+		})
+
+		it('«Другие действия» открывает меню: фокус на первом пункте, стрелки по кругу, Escape закрывает и возвращает фокус', async () => {
+			const user = userEvent.setup()
+			const wrapper = mount(ChatMessageList, { props: { messages: [ownMsg] }, attachTo: document.body })
+
+			const more = screen.getByRole('button', { name: 'Другие действия с сообщением' })
+			more.focus()
+			await user.keyboard('{Enter}')
+
+			const menu = await screen.findByRole('menu', { name: 'Действия с сообщением' })
+			const items = within(menu).getAllByRole('menuitem')
+			await waitFor(() => expect(items[0]).toHaveFocus())
+			expect(more).toHaveAttribute('aria-expanded', 'true')
+
+			await user.keyboard('{ArrowUp}')
+			expect(items.at(-1)).toHaveFocus()
+			await user.keyboard('{Home}')
+			expect(items[0]).toHaveFocus()
+
+			await user.keyboard('{Escape}')
+			await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
+			expect(more).toHaveFocus()
+
+			wrapper.unmount()
+		})
+
+		it('выбор пункта меню с клавиатуры выполняет действие и возвращает фокус на кнопку', async () => {
+			const user = userEvent.setup()
+			const wrapper = mount(ChatMessageList, { props: { messages: [ownMsg] }, attachTo: document.body })
+
+			const more = screen.getByRole('button', { name: 'Другие действия с сообщением' })
+			more.focus()
+			await user.keyboard('{Enter}')
+			const reply = await screen.findByRole('menuitem', { name: 'Ответить' })
+			reply.focus()
+			await user.keyboard('{Enter}')
+
+			expect(wrapper.emitted('message-reply')?.[0]).toEqual([ownMsg])
+			expect(more).toHaveFocus()
+
+			wrapper.unmount()
+		})
+	})
+
+	describe('неотправленные сообщения', () => {
+		const failed: ChatMessage = { id: 'f1', text: 'Не дошло', sender: 'me', time: '10:05', status: 'failed' }
+
+		it('«Повторить» эмитит retry-message с id сообщения', async () => {
+			const { emitted } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.RETRY_ARIA }))
+
+			expect(emitted()['retry-message']).toEqual([['f1']])
+			expect(emitted()['discard-message']).toBeUndefined()
+		})
+
+		const announcer = (): HTMLElement => document.querySelector('.base-chat-message-list__announcer') as HTMLElement
+
+		it('сбой, случившийся после монтирования, озвучивается постоянной live-областью ленты', async () => {
+			const sending: ChatMessage = { ...failed, status: 'sending' }
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, sending] } })
+			expect(announcer()).toHaveAttribute('role', 'status')
+			expect(announcer()).toBeEmptyDOMElement()
+
+			await rerender({ messages: [...BASE_MESSAGES, failed] })
+
+			await waitFor(() => expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED))
+			await rerender({ messages: [...BASE_MESSAGES, failed, { ...BASE_MESSAGES[1], id: 'next' }] })
+			expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED)
+		})
+
+		it('сообщения, которые были failed при монтировании, не зачитываются', async () => {
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+			await rerender({ messages: [...BASE_MESSAGES, failed, { ...BASE_MESSAGES[0], id: 'new' }] })
+
+			expect(announcer()).toBeEmptyDOMElement()
+		})
+
+		it('повторный сбой после «Повторить» объявляется снова', async () => {
+			const { rerender } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+			await rerender({ messages: [...BASE_MESSAGES, { ...failed, status: 'sending' }] })
+			await rerender({ messages: [...BASE_MESSAGES, failed] })
+
+			await waitFor(() => expect(announcer()).toHaveTextContent(UI_CHAT_TEXT.STATUS_FAILED))
+		})
+
+		it('«Удалить» эмитит discard-message с id сообщения', async () => {
+			const { emitted } = render(ChatMessageList, { props: { messages: [...BASE_MESSAGES, failed] } })
+
+			await fireEvent.click(screen.getByRole('button', { name: UI_CHAT_TEXT.DISCARD_ARIA }))
+
+			expect(emitted()['discard-message']).toEqual([['f1']])
+			expect(emitted()['retry-message']).toBeUndefined()
 		})
 	})
 })

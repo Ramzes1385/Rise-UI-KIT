@@ -1,56 +1,77 @@
 .base-slideover {
+	@include custom-color-scope;
 	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
-	z-index: 1000;
-	backdrop-filter: blur(4px);
+	inset: 0;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
+	background-color: ct(slideover, bg, var(--rise-overlay));
 
-	/* Режим ограничения внутри контейнера */
+	&--right {
+		--overlay-slide: calc(var(--rise-dir, 1) * 100%) 0;
+	}
+
+	&--left {
+		--overlay-slide: calc(var(--rise-dir, 1) * -100%) 0;
+	}
+
 	&--contained {
 		position: absolute;
-		backdrop-filter: none;
 	}
 
-	/* Без затемнения фона */
 	&--no-overlay {
+		pointer-events: none;
 		background-color: transparent;
-		backdrop-filter: none;
 	}
 
-	&--full {
-		.base-slideover__panel {
-			width: 100%;
-			border-radius: 0;
-		}
+	&--no-overlay &__panel {
+		pointer-events: auto;
 	}
 
 	&__panel {
+		--slideover-pad-top: #{ct(slideover-panel, padding-y, 16px)};
+		--slideover-pad-right: #{ct(slideover-panel, padding-x, 20px)};
+		--slideover-pad-bottom: #{ct(slideover-panel, padding-y, 16px)};
+		--slideover-pad-left: #{ct(slideover-panel, padding-x, 20px)};
+
 		position: absolute;
 		top: 0;
-		height: 100%;
-		width: calc(420px * var(--slideover-width-scale, 1));
-		background-color: var(--color-surface);
-		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-		border: 1px solid var(--color-border);
+		bottom: 0;
 		display: flex;
 		flex-direction: column;
+		box-sizing: border-box;
+		width: calc(#{sz(ct(slideover-panel, width, 420px))} * var(--slideover-width-scale, 1));
+		max-width: 100%;
 		overflow: hidden;
+		border: 1px solid ct(slideover-panel, border, transparent);
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(slideover-panel, bg, var(--rise-surface-dialog)));
+		@include custom-text(color, ct(slideover-panel, text, var(--rise-text)));
+		@include text-size(sm);
+		box-shadow: ct(slideover-panel, shadow, var(--rise-shadow-xl));
+		outline: none;
 
-		/* Сторона появления */
 		&--right {
-			right: 0;
-			border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
+			inset-inline-end: 0;
+			border-start-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
+			border-start-end-radius: 0;
+			border-end-end-radius: 0;
+			border-end-start-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
+			transform-origin: dir-pos(100%) center;
 		}
 
 		&--left {
-			left: 0;
-			border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+			inset-inline-start: 0;
+			border-start-start-radius: 0;
+			border-start-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
+			border-end-end-radius: sz(ct(slideover-panel, radius, var(--rise-radius-xl)));
+			border-end-start-radius: 0;
+			transform-origin: dir-pos(0%) center;
 		}
 
 		&--full {
+			width: 100%;
+			border-radius: 0;
+		}
+		@include respond-below('mobile') {
 			width: 100%;
 			border-radius: 0;
 		}
@@ -58,72 +79,75 @@
 
 	&__header {
 		display: flex;
+		flex: none;
 		align-items: center;
-		justify-content: space-between;
-		padding: var(--slideover-pad-top, 16px) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 16px)
-			var(--slideover-pad-left, 24px);
-		border-bottom: 1px solid var(--color-border);
-		background-color: var(--color-surface-muted);
+		gap: sz(12px);
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
+		border-bottom: 1px solid var(--rise-border);
 	}
 
-	&__title {
+	&__title.base-text {
+		@include inherit-custom-color;
+		flex: 1;
+		min-width: 0;
 		margin: 0;
-		font-size: 18px;
-		font-weight: 700;
-		color: var(--color-primary);
+		@include heading;
+		font-size: sz(ct(slideover-title, font-size, var(--rise-font-size-base)));
+		line-height: sz(var(--rise-line-height-base));
+		@include custom-text(color, var(--rise-text-highlighted));
+		overflow-wrap: anywhere;
+	}
+
+	&__close.base-button {
+		@include inherit-custom-color;
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+
+		flex: none;
+		margin-inline-start: auto;
 	}
 
 	&__body {
-		flex: 1;
-		padding: var(--slideover-pad-top, 0) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 24px)
-			var(--slideover-pad-left, 24px);
+		flex: 1 1 auto;
+		min-height: 0;
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
 		overflow-y: auto;
-		color: var(--color-text);
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+		@include reset-custom-color;
 	}
 
 	&__footer {
 		display: flex;
+		flex: none;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: flex-end;
-		gap: 12px;
-		padding: var(--slideover-pad-top, 16px) var(--slideover-pad-right, 24px) var(--slideover-pad-bottom, 16px)
-			var(--slideover-pad-left, 24px);
-		border-top: 1px solid var(--color-border);
-		background-color: var(--color-surface-muted);
+		gap: sz(8px);
+		padding-block: space(var(--slideover-pad-top) var(--slideover-pad-bottom));
+		padding-inline: space(var(--slideover-pad-left) var(--slideover-pad-right));
+		border-top: 1px solid var(--rise-border);
+		@include reset-custom-color;
+	}
+
+	&--shadow &__panel {
+		box-shadow: ct(slideover-panel, shadow, var(--rise-shadow-xl));
+	}
+
+	&--ghost &__panel {
+		border-color: transparent;
+		@include custom-bg(background-color, transparent);
+		box-shadow: none;
+	}
+
+	&--ghost &__header,
+	&--ghost &__footer {
+		border-color: transparent;
 	}
 }
 
-/* Адаптивность — на мобильных панель на всю ширину */
-@include respond-below('mobile') {
-	.base-slideover__panel:not(.base-slideover__panel--full) {
-		width: 100% !important;
-		border-radius: 0;
-	}
-}
-
-/* Анимация */
-.slideover-enter-active,
-.slideover-leave-active {
-	transition: opacity var(--transition-base);
-
-	.base-slideover__panel--right {
-		transition: transform var(--transition-base);
-	}
-
-	.base-slideover__panel--left {
-		transition: transform var(--transition-base);
-	}
-}
-
-.slideover-enter-from,
-.slideover-leave-to {
-	opacity: 0;
-
-	.base-slideover__panel--right {
-		transform: translateX(100%);
-	}
-
-	.base-slideover__panel--left {
-		transform: translateX(-100%);
-	}
-}
+@include overlay-animation(base-slideover, '.base-slideover', '.base-slideover__panel');

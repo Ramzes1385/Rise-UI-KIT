@@ -1,0 +1,138 @@
+.base-segmented {
+	@include custom-color-scope;
+	--segment-checked-bg: var(--custom-bg, #{ct(segmented, indicator-bg, var(--rise-surface-selected))});
+	--segment-checked-text: var(--custom-text, #{ct(segmented, segment-text-checked, var(--rise-text-highlighted))});
+	--segment-checked-shadow: #{ct(segmented, indicator-shadow, none)};
+	--segment-checked-border: transparent;
+	--segment-track-bg: #{ct(segmented, track-bg, var(--rise-bg-elevated))};
+	--segment-track-border: #{ct(segmented, track-border, transparent)};
+
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: sz(6px);
+	max-width: 100%;
+
+	& &__label {
+		@include field-label;
+	}
+
+	&__track {
+		position: relative;
+		display: inline-flex;
+		gap: sz(ct(segmented, track-gap, 2px));
+		max-width: 100%;
+		padding: sz(2px);
+		border: 1px solid var(--segment-track-border);
+		border-radius: sz(ct(segmented, track-radius, var(--rise-control-radius)));
+		background-color: var(--segment-track-bg);
+		overflow-x: auto;
+	}
+
+	&__segment {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: sz(6px);
+		flex-shrink: 0;
+		padding: sz(ct(segmented, segment-padding-y, 3px)) sz(ct(segmented, segment-padding-x, 12px));
+		border: 1px solid transparent;
+		border-radius: sz(ct(segmented, segment-radius, var(--rise-radius-sm)));
+		color: ct(segmented, segment-text, var(--rise-text));
+		white-space: nowrap;
+		cursor: pointer;
+		@include text-size(sm);
+		font-weight: ct(segmented, segment-font-weight, var(--rise-font-weight-medium));
+		@include transition-colors;
+
+		@include hover {
+			color: var(--rise-text-highlighted);
+		}
+
+		&--checked {
+			color: var(--segment-checked-text);
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+
+		&:has(.base-segmented__input:focus-visible) {
+			outline: 2px solid var(--rise-focus-ring);
+			outline-offset: 1px;
+		}
+	}
+
+	&__segment--icon-only {
+		padding-inline: sz(8px);
+	}
+
+	&__text--hidden {
+		@include visually-hidden;
+	}
+
+	&__indicator {
+		@include sliding-indicator;
+		box-sizing: border-box;
+		border: 1px solid var(--segment-checked-border);
+		border-radius: sz(ct(segmented, segment-radius, var(--rise-radius-sm)));
+		background-color: var(--segment-checked-bg);
+		box-shadow: var(--segment-checked-shadow);
+
+		&--disabled {
+			opacity: var(--rise-disabled-opacity);
+		}
+	}
+
+	&__input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: inherit;
+	}
+
+	&__icon {
+		flex-shrink: 0;
+	}
+
+	& &__error {
+		display: block;
+		@include field-error;
+	}
+
+	&--block {
+		display: flex;
+		width: 100%;
+	}
+
+	&--block &__track {
+		display: flex;
+		width: 100%;
+	}
+
+	&--block &__segment {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	&--error &__track {
+		--segment-track-border: var(--rise-error);
+	}
+
+	&--soft {
+		--segment-checked-bg: var(--custom-bg, var(--rise-primary-soft));
+		--segment-checked-text: var(--custom-text, var(--rise-primary-text));
+		--segment-checked-shadow: none;
+	}
+
+	&--outline {
+		--segment-track-bg: transparent;
+		--segment-track-border: var(--rise-border-accented);
+		--segment-checked-border: var(--custom-bg, var(--rise-primary));
+		--segment-checked-shadow: none;
+	}
+}

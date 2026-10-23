@@ -1,0 +1,19 @@
+import type { Ref } from 'vue'
+import type { TableRow } from '@components/BaseTable/types/BaseTable.types'
+
+export interface UseTableDisplayedRowsOptions {
+	/** Обработанные строки (поиск + фильтры + сортировка) */
+	processedRows: Ref<TableRow[]>
+	/** Режим подгрузки */
+	loadMode: () => string
+	/** Текущая страница */
+	currentPage: Ref<number>
+	/** Локальный размер страницы */
+	localPageSize: Ref<number>
+	/** Количество загруженных строк для button/infinite режимов */
+	loadedCount: Ref<number>
+	/** Есть ли строки, которые родитель ещё не передал (серверная подгрузка) */
+	hasMore?: () => boolean
+	/** Всего строк на сервере: в режиме страниц строки не нарезаются, в button и infinite подгрузка идёт, пока их меньше */
+	totalRows?: () => number | undefined
+}

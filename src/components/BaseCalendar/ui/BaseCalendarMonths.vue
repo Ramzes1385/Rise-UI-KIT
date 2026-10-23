@@ -1,25 +1,25 @@
 <template>
-	<div class="base-calendar__months" :class="classes.months">
-		<BaseButton
+	<div :class="[ui('months'), classes.months]">
+		<button
 			v-for="(name, index) in monthNames"
 			:key="index"
-			variant="outline"
-			class="base-calendar__month-btn"
-			:class="{ 'base-calendar__month-btn--current': index === currentMonth }"
-			:size-scale="sizeScale"
-			:is-disabled="isDisabled"
+			type="button"
+			:class="[ui('month-btn'), { 'base-calendar__month-btn--current': index === currentMonth }]"
+			:aria-current="index === currentMonth ? 'true' : undefined"
+			:disabled="isDisabled"
 			@click="emit('select', index)">
-			<BaseText tag="span" :size-scale="sizeScale">{{ name }}</BaseText>
-		</BaseButton>
+			{{ name }}
+		</button>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { BaseButton } from '@components/BaseButton'
-import { BaseText } from '@components/BaseText'
-import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../model/BaseCalendarMonths.types'
+import { useCalendarUi } from '../model/useCalendarUi'
+import type { BaseCalendarMonthsEmits, BaseCalendarMonthsProps } from '../types/BaseCalendarMonths.types'
 
 defineProps<BaseCalendarMonthsProps>()
 
 const emit = defineEmits<BaseCalendarMonthsEmits>()
+
+const ui = useCalendarUi()
 </script>

@@ -1,21 +1,18 @@
-/**
- * E2E smoke-тест для BaseSlider.
- * Проверяет: навигация, autoplay, анимации.
- */
-
 import { expect, test } from '@playwright/test'
+
+const PLAYED_PHASES = ['played', 'completed', 'finished']
+
+type StorybookWindow = { __STORYBOOK_PREVIEW__?: { currentRender?: { phase?: string } } }
 
 async function loadSlider(page: import('@playwright/test').Page, storyId: string): Promise<void> {
 	await page.goto(`/iframe.html?id=${storyId}`)
 	await page.waitForSelector('.base-slider__dot', { timeout: 25000 })
 	await page.setViewportSize({ width: 800, height: 500 })
-	// Ждём, пока woff2 прогрузятся и layout устаканится. Без этого на throttled CI-runner
-	// Inter Variable может прийти ПОСЛЕ клика, и reflow отменит/съест click на 6px-точке.
 	await page.waitForLoadState('networkidle')
 }
 
 test('слайдер: переключает слайды по стрелкам', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--default')
+	await loadSlider(page, 'data-baseslider--default')
 
 	const nextBtn = page.locator('.base-slider__arrow--next')
 	await nextBtn.click()
@@ -25,7 +22,7 @@ test('слайдер: переключает слайды по стрелкам'
 })
 
 test('слайдер: навигация по точкам', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--default')
+	await loadSlider(page, 'data-baseslider--default')
 
 	const dots = page.locator('.base-slider__dot')
 	if ((await dots.count()) > 1) {
@@ -36,18 +33,27 @@ test('слайдер: навигация по точкам', async ({ page }) =>
 })
 
 test('слайдер: autoplay переключает слайды', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--autoplay')
+	await loadSlider(page, 'data-baseslider--autoplay')
+	await page.waitForFunction(
+		phases => phases.includes((window as StorybookWindow).__STORYBOOK_PREVIEW__?.currentRender?.phase ?? ''),
+		PLAYED_PHASES,
+		{ timeout: 25_000 },
+	)
 
-	const dots = page.locator('.base-slider__dot')
-	await expect(dots.first()).toHaveClass(/--active/)
+	const activeDot = (): Promise<number> =>
+		page.locator('.base-slider__dot').evaluateAll(dots => dots.findIndex(dot => /--active/.test(dot.className)))
+	const initialDot = await activeDot()
+	expect(initialDot).toBeGreaterThanOrEqual(0)
 
-	await page.waitForTimeout(5000)
+	const start = page.getByRole('button', { name: 'Запустить автопрокрутку' })
+	if (await start.isVisible()) await start.press('Enter')
+	await expect(page.getByRole('button', { name: 'Остановить автопрокрутку' })).toBeVisible()
 
-	await expect(dots.first()).not.toHaveClass(/--active/)
+	await expect.poll(activeDot, { timeout: 10_000 }).not.toBe(initialDot)
 })
 
 test('слайдер: анимация fade', async ({ page }) => {
-	await loadSlider(page, 'ui-baseslider--fade')
+	await loadSlider(page, 'data-baseslider--fade')
 
 	const slider = page.locator('.base-slider')
 	await expect(slider).toBeVisible()

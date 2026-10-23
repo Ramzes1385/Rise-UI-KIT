@@ -1,6 +1,7 @@
 <template>
 	<BaseDropdown
 		v-model:is-open="isOpen"
+		:class="ui('dropdown')"
 		position="bottom-start"
 		:match-width="true"
 		:size-scale="sizeScale"
@@ -8,116 +9,113 @@
 		:custom-class="classes.dropdown"
 		@close="handleClose">
 		<div
-			class="base-select"
 			:class="[
+				ui('root'),
 				variantClass,
 				{
 					'base-select--open': isOpen,
-					'base-select--disabled': isDisabled,
-					'base-select--error': formField.error,
+					'base-select--disabled': isControlDisabled,
+					'base-select--error': control.hasError.value,
 					'base-select--multiple': isMultiple,
+					'base-select--has-tags': hasTags,
 				},
 				classes.root,
 			]"
 			:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<FormFieldLabel
-			v-if="label"
-			:label="label"
-			:is-required="isRequired"
-			class-name="base-select__label"
-			:custom-class="classes.label"
-			required-class-name="base-select__required"
-			:required-custom-class="classes.required"
-			:size-scale="sizeScale" />
+			<FormFieldLabel
+				v-if="label"
+				:id="labelId"
+				tag="span"
+				:label="label"
+				:is-required="isRequired"
+				:class-name="ui('label')"
+				:custom-class="classes.label"
+				:required-class-name="ui('required')"
+				:required-custom-class="classes.required"
+				:size-scale="sizeScale"
+				@click="focusTrigger" />
 
-		<div
-			ref="selectRef"
-			class="base-select__trigger"
-			:class="classes.trigger"
-			:tabindex="isDisabled ? -1 : 0"
+			<div
+				ref="selectRef"
+				:class="[ui('trigger'), classes.trigger]"
+				role="combobox"
+				:tabindex="isControlDisabled ? undefined : 0"
+				aria-haspopup="listbox"
+				:aria-expanded="isOpen ? 'true' : 'false'"
+				:aria-controls="isOpen ? listboxId : undefined"
+				:aria-activedescendant="isOpen && activeIndex >= 0 ? getOptionId(activeIndex) : undefined"
+				v-bind="triggerAttrs"
+				:aria-disabled="isControlDisabled ? 'true' : undefined"
 				@click="toggleDropdown"
-				@keydown.enter.prevent="toggleDropdown"
-				@keydown.space.prevent="toggleDropdown">
+				@keydown="handleTriggerKeydown">
 				<slot name="trigger" :is-open="isOpen" :selected-label="selectedLabel" :selected-labels="selectedLabels">
-					<div class="base-select__values" :class="classes.values">
-						<template v-if="isMultiple && Array.isArray(modelValue) && modelValue.length > 0">
-							<template v-if="$slots.tag">
-								<slot name="tag" :labels="selectedLabels" :items="selectedItems" :remove="removeValue" />
-							</template>
-							<template v-else>
-								<BaseBadge
-									v-for="item in selectedItems"
-									:key="item.value"
-									class="base-select__tag"
-									:custom-class="classes.tag"
-									:size-scale="sizeScale">
-									<BaseText
-										tag="span"
-										class="base-select__tag-text"
-										:custom-class="classes.tagText"
-										:size-scale="sizeScale"
-										>{{ item.label }}</BaseText
-									>
-									<BaseIcon
-										class="base-select__tag-close"
-										:custom-class="classes.tagClose"
-										name="x-mark"
-										:size-scale="calcIconScale('xs', sizeScale)"
-										@click.stop="removeValue(item.value)" />
-								</BaseBadge>
-							</template>
-						</template>
-						<template v-else-if="isMultiple && (!Array.isArray(modelValue) || modelValue.length === 0)">
-							<BaseText
-								tag="span"
-								class="base-select__placeholder"
-								:custom-class="classes.placeholder"
-								:size-scale="sizeScale"
-								>{{ placeholder }}</BaseText
-							>
-						</template>
-						<template v-else-if="!isMultiple && selectedOption">
+					<div :class="[ui('values'), classes.values]">
+						<slot
+							v-if="hasTags && $slots.tag"
+							name="tag"
+							:labels="selectedLabels"
+							:items="selectedItems"
+							:remove="removeValue" />
+						<TransitionGroup
+							v-else-if="isMultiple"
+							name="base-select-tag"
+							:css="!isMotionReduced"
+							@before-leave="holdLeavingTag">
+							<BaseBadge
+								v-for="item in selectedItems"
+								:key="item.value"
+								variant="soft"
+								:class="ui('tag')"
+								:custom-class="{ root: classes.tag, remove: classes.tagClose }"
+								:ui="{ remove: ui('tag-close') }"
+								:is-removable="!isControlDisabled"
+								:is-remove-focusable="false"
+								:remove-label="formatMessage(UI_ARIA.TAG_REMOVE, { name: item.label })"
+								@remove="removeValue(item.value)"
+								:size-scale="sizeScale">
+								<BaseText tag="span" :class="ui('tag-text')" :custom-class="classes.tagText" :size-scale="sizeScale">{{
+									item.label
+								}}</BaseText>
+							</BaseBadge>
+						</TransitionGroup>
+						<template v-if="!isMultiple && selectedOption">
 							<slot name="selected" :option="selectedOption">
 								<BaseText
 									v-if="selectedOption.icon"
 									tag="span"
-									class="base-select__icon"
+									:class="ui('icon')"
 									:custom-class="classes.icon"
 									:size-scale="sizeScale"
 									>{{ selectedOption.icon }}</BaseText
 								>
-								<BaseText
-									tag="span"
-									class="base-select__value-text"
-									:custom-class="classes.valueText"
-									:size-scale="sizeScale"
-									>{{ selectedLabel }}</BaseText
-								>
+								<BaseText tag="span" :class="ui('value-text')" :custom-class="classes.valueText" :size-scale="sizeScale">{{
+									selectedLabel
+								}}</BaseText>
 							</slot>
 						</template>
-						<template v-else>
-							<BaseText
-								tag="span"
-								class="base-select__placeholder"
-								:custom-class="classes.placeholder"
-								:size-scale="sizeScale"
-								>{{ placeholder }}</BaseText
-							>
-						</template>
+						<BaseText
+							v-else-if="!hasTags"
+							tag="span"
+							:class="ui('placeholder')"
+							:custom-class="classes.placeholder"
+							:size-scale="sizeScale"
+							>{{ resolvedPlaceholder }}</BaseText
+						>
 					</div>
 				</slot>
 				<BaseIcon
-					class="base-select__arrow"
+					:class="ui('arrow')"
 					:custom-class="classes.arrow"
 					name="chevron-down"
 					:size-scale="calcIconScale('sm', sizeScale)" />
 			</div>
 
-		<FormFieldError
-			:error="formField.error"
-			class-name="base-select__error-text"
-			:custom-class="classes.errorText"
-			:size-scale="sizeScale" />
+			<FormFieldError
+				:id="errorId"
+				:error="formField.error"
+				:class-name="ui('error-text')"
+				:custom-class="classes.errorText"
+				:size-scale="sizeScale" />
 		</div>
 
 		<template #dropdown>
@@ -129,9 +127,18 @@
 				:size-scale="sizeScale"
 				:is-selected="isSelected"
 				:classes="classes"
+				:part-class="ui"
+				:is-motion-reduced="isMotionReduced"
 				:size-scale-style="sizeScaleStyle"
-				@select="handleSelect">
-				<template #header>
+				:listbox-id="listboxId"
+				:labelledby="triggerLabelledBy"
+				:listbox-label="unlabelledName"
+				:active-index="activeIndex"
+				:get-option-id="getOptionId"
+				@select="handleSelect"
+				@activate="setActive"
+				@search-keydown="handleSearchKeydown">
+				<template v-if="$slots.header" #header>
 					<slot name="header" />
 				</template>
 				<template #option="slotProps">
@@ -140,7 +147,7 @@
 				<template #empty>
 					<slot name="empty" />
 				</template>
-				<template #footer>
+				<template v-if="$slots.footer" #footer>
 					<slot name="footer" />
 				</template>
 			</BaseSelectDropdown>
@@ -149,76 +156,60 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseBadge } from '@components/BaseBadge'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import '@components/BaseText/styles/BaseText.style.scss'
+import '../styles/BaseSelect.style.scss'
+import { formatMessage } from '@/locales'
+import { UI_ARIA } from '@/locales/messages'
 import { BaseIcon } from '@components/BaseIcon'
 import { BaseText } from '@components/BaseText'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
-import { useSelect } from '@composables/useSelect'
-import { UI_TEXT, SIZE_SCALE_DEFAULT, DEFAULT_VARIANT} from '@constants'
-import '../styles/BaseSelect.style.scss'
-import { calcIconScale } from '@utils/iconUtils'
+import { BaseBadge } from '@components/BaseBadge'
+import { useBaseSelect } from '../model/useBaseSelect'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { BaseDropdown } from '@components/BaseDropdown'
 import BaseSelectDropdown from './BaseSelectDropdown.vue'
-import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../model/BaseSelect.types'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseSelectEmits, BaseSelectProps, BaseSelectSlots } from '../types/BaseSelect.types'
 
-const props = withDefaults(defineProps<BaseSelectProps>(), {
-	modelValue: '',
-	placeholder: UI_TEXT.SELECT_PLACEHOLDER,
-	label: '',
-	isRequired: false,
-	isMultiple: false,
-	isSearchable: false,
-	isDisabled: false,
-	error: '',
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-select', props, [
-		'root',
-		'dropdown',
-		'label',
-		'required',
-		'trigger',
-		'values',
-		'tag',
-		'tagText',
-		'tagClose',
-		'placeholder',
-		'icon',
-		'valueText',
-		'arrow',
-		'errorText',
-		'dropdownContent',
-		'search',
-		'searchInput',
-		'options',
-		'option',
-		'checkbox',
-		'optionIcon',
-		'optionContent',
-		'optionLabel',
-		'optionDesc',
-		'noResults',
-	])
-
+const props = withDefaults(
+	defineProps<BaseSelectProps>(),
+	kitDefaults('BaseSelect', {
+		modelValue: '',
+		label: '',
+		isRequired: false,
+		isMultiple: false,
+		isSearchable: false,
+		isDisabled: false,
+		error: '',
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 const emit = defineEmits<BaseSelectEmits>()
 defineSlots<BaseSelectSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-const selectRef = ref<HTMLDivElement | null>(null)
-
 const {
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	labelId,
+	errorId,
+	listboxId,
+	formField,
+	isControlDisabled,
+	control,
+	getOptionId,
+	triggerLabelledBy,
+	unlabelledName,
+	triggerAttrs,
+	resolvedPlaceholder,
+	selectRef,
 	isOpen,
 	searchQuery,
+	activeIndex,
 	selectedOption,
 	selectedLabel,
 	selectedItems,
@@ -228,19 +219,17 @@ const {
 	handleClose,
 	isSelected,
 	handleSelect,
+	setActive,
 	removeValue,
-} = useSelect({
-	props,
-	emit,
-	onBlur: formField.onBlur,
-})
+	hasTags,
+	focusTrigger,
+	handleTriggerKeydown,
+	handleSearchKeydown,
+	ui,
+	isMotionReduced,
+	holdLeavingTag,
+	exposed,
+} = useBaseSelect(props, emit)
 
-defineExpose({
-	rootRef: selectRef,
-	selectRef,
-	focus: () => selectRef.value?.focus(),
-	blur: () => selectRef.value?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+defineExpose(exposed)
 </script>

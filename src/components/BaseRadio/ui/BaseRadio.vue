@@ -1,107 +1,109 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-radio"
 		:class="[
+			ui('root'),
 			{
-				'base-radio--error': formField.error,
+				'base-radio--error': control.hasError.value,
 			},
 			variantClass,
 			classes.root,
 		]"
-		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
+		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
+		role="radiogroup"
+		v-bind="groupAttrs">
 		<FormFieldLabel
 			v-if="label"
+			:id="labelId"
 			tag="span"
 			:label="label"
 			:is-required="isRequired"
-			class-name="base-radio__label"
+			:class-name="ui('label')"
 			:custom-class="classes.label"
-			required-class-name="base-radio__required"
+			:required-class-name="ui('required')"
 			:required-custom-class="classes.required"
 			:size-scale="sizeScale" />
 
-		<div
-			class="base-radio__options"
-			:class="[{ 'base-radio__options--vertical': isVertical }, classes.options]">
+		<div :class="[ui('options'), { 'base-radio__options--vertical': isVertical }, classes.options]">
 			<label
 				v-for="option in options"
 				:key="option.value"
-				class="base-radio-item"
 				:class="[
+					ui('item'),
 					{
 						'base-radio-item--disabled': option.isDisabled,
-						'base-radio-item--error': formField.error,
+						'base-radio-item--error': control.hasError.value,
 					},
 					classes.radio,
 				]">
+				<span :class="[ui('wrapper'), classes.wrapper]">
+					<input
+						type="radio"
+						:class="[ui('input'), classes.input]"
+						:name="name"
+						:value="option.value"
+						:checked="modelValue === option.value"
+						:disabled="option.isDisabled"
+						@change="handleChange(option.value)" />
+					<span :class="[ui('circle'), classes.circle]" aria-hidden="true">
+						<Transition name="base-radio-dot">
+							<span v-if="modelValue === option.value" :class="[ui('dot'), classes.dot]"></span>
+						</Transition>
+					</span>
+				</span>
 				<slot name="option" :option="option" :is-checked="modelValue === option.value">
-					<div class="base-radio-item__wrapper" :class="classes.wrapper">
-						<input
-							type="radio"
-							class="base-radio-item__input"
-							:class="classes.input"
-							:name="name"
-							:value="option.value"
-							:checked="modelValue === option.value"
-							:disabled="option.isDisabled"
-							@change="handleChange(option.value)" />
-						<div class="base-radio-item__circle" :class="classes.circle">
-							<div v-if="modelValue === option.value" class="base-radio-item__dot" :class="classes.dot"></div>
-						</div>
-					</div>
-					<span class="base-radio-item__option-label" :class="classes.optionLabel">{{ option.label }}</span>
+					<span :class="[ui('option-label'), classes.optionLabel]">{{ option.label }}</span>
 				</slot>
 			</label>
 		</div>
 
 		<FormFieldError
+			:id="errorId"
 			:error="formField.error"
-			class-name="base-radio__error-text"
+			:class-name="ui('error-text')"
 			:custom-class="classes.errorText"
 			:size-scale="sizeScale" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
 import '../styles/BaseRadio.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../model/BaseRadio.types'
+import { useBaseRadio } from '../model/useBaseRadio'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseRadioEmits, BaseRadioProps, BaseRadioSlots } from '../types/BaseRadio.types'
 
-const props = withDefaults(defineProps<BaseRadioProps>(), {
-	isVertical: false,
-	isRequired: false,
-	error: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-radio', props, ['root', 'label', 'options', 'radio', 'wrapper', 'input', 'circle', 'dot', 'optionLabel', 'errorText'])
-
-const rootRef = ref<HTMLElement | null>(null)
+const props = withDefaults(
+	defineProps<BaseRadioProps>(),
+	kitDefaults('BaseRadio', {
+		variant: DEFAULT_VARIANT,
+		isVertical: false,
+		isRequired: false,
+		error: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseRadioEmits>()
 defineSlots<BaseRadioSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-function handleChange(value: string | number): void {
-	emit('update:modelValue', value)
-	emit('change', value)
-}
-
-defineExpose({
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	labelId,
+	errorId,
+	formField,
+	control,
+	groupAttrs,
+	handleChange,
+	exposed,
+} = useBaseRadio(props, emit)
+
+defineExpose(exposed)
 </script>

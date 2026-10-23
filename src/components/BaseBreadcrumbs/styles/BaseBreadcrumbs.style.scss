@@ -1,101 +1,134 @@
 .base-breadcrumbs {
+	@include custom-color-scope;
+	--breadcrumbs-gap: #{sz(ct(breadcrumbs, gap, 6px))};
+
+	display: block;
 	width: 100%;
-	@include custom-text(color, var(--color-text));
+	font-size: sz(ct(breadcrumbs, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(breadcrumbs, text, var(--rise-text-muted)));
 
 	&__list {
 		display: flex;
-		align-items: center;
 		flex-wrap: wrap;
-		list-style: none;
-		padding: 0;
+		align-items: center;
+		gap: var(--breadcrumbs-gap);
 		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
 	&__item {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
-
-		&--current {
-			pointer-events: none;
-		}
-
-		&--home {
-			gap: 0;
-		}
+		gap: var(--breadcrumbs-gap);
+		min-width: 0;
 	}
 
 	&__link {
-		&:hover {
-			color: var(--color-accent) !important;
-		}
+		display: inline-flex;
+		align-items: center;
+		gap: var(--breadcrumbs-gap);
+		min-width: 0;
+		@include button-reset;
+		border-radius: sz(var(--rise-radius-sm));
+		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
+		text-align: start;
+		text-decoration: none;
+		@include transition-colors;
+		@include focus-ring;
+		@include custom-text-hover(color, ct(breadcrumbs, text-hover, var(--rise-text)));
+	}
+
+	&__ellipsis-btn {
+		justify-content: center;
+		min-width: sz(20px);
+		letter-spacing: 0.05em;
+	}
+
+	&__ellipsis-btn--expanded {
+		margin-inline-end: var(--breadcrumbs-gap);
+	}
+
+	&__text {
+		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
 	&__current {
 		display: inline-flex;
 		align-items: center;
-		@include custom-text(color, var(--color-text));
-		font-weight: 600;
-    margin-left: 10px;
+		gap: var(--breadcrumbs-gap);
+		min-width: 0;
+		font-weight: ct(breadcrumbs, font-weight, var(--rise-font-weight-medium));
+		color: var(--custom-text-active, #{ct(breadcrumbs, current-text, var(--rise-text-highlighted))});
 	}
 
 	&__icon {
 		flex-shrink: 0;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		vertical-align: middle;
 	}
 
 	&__sep {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--color-text-muted);
-		opacity: 0.5;
+		flex-shrink: 0;
+		font-family: var(--rise-font-mono);
+		color: ct(breadcrumbs, sep-text, var(--rise-text-dimmed));
 		user-select: none;
-		vertical-align: middle;
 	}
 
-	&__ellipsis-btn {
-		/* Сброс стилей BaseButton ghost для ellipsis */
-		padding: 0 2px !important;
-		min-height: unset !important;
-		height: auto !important;
-		font-size: inherit !important;
-		color: var(--color-text-muted) !important;
-
-		&:hover {
-			color: var(--color-accent) !important;
-		}
+	&__sep-text {
+		display: inline-block;
+		min-width: sz(8px);
+		text-align: center;
 	}
 
-	// Варианты
 	&--ghost {
-		opacity: 0.7;
+		--breadcrumbs-gap: #{sz(ct(breadcrumbs, gap, 2px))};
+	}
 
+	&--ghost &__link,
+	&--ghost &__current {
+		padding: sz(2px 6px);
+		border-radius: sz(var(--rise-radius-sm));
+	}
+
+	&--ghost &__link {
 		@include hover {
-			opacity: 1;
+			background-color: var(--rise-bg-elevated);
+			color: var(--custom-text-hover, var(--custom-text, var(--rise-text-highlighted)));
 		}
+	}
+
+	&--outline,
+	&--shadow,
+	&--soft {
+		display: inline-block;
+		width: auto;
+		max-width: 100%;
+		padding: sz(var(--rise-control-padding-y) ct(breadcrumbs, padding-x, 12px));
+		border: 1px solid transparent;
+		border-radius: sz(ct(breadcrumbs, radius, var(--rise-radius-md)));
 	}
 
 	&--outline {
-		border: 1px solid var(--color-border);
-		padding: sz(4px) sz(12px);
-		border-radius: var(--border-radius-base);
-		display: inline-block;
-		width: auto;
+		border-color: ct(breadcrumbs, border, var(--rise-border-accented));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, transparent));
 	}
 
 	&--shadow {
-		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		box-shadow: ct(breadcrumbs, shadow, var(--rise-shadow-sm));
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-surface-floating)));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		@include custom-text(color, var(--color-primary));
-		padding: sz(4px) sz(12px);
-		border-radius: var(--border-radius-base);
-		display: inline-block;
-		width: auto;
+		@include custom-bg(background-color, ct(breadcrumbs, bg, var(--rise-bg-elevated)));
 	}
+}
+
+@include enter-scale('base-breadcrumbs-reveal');
+
+.base-breadcrumbs-reveal-move {
+	transition: transform var(--rise-duration) var(--rise-ease-out);
 }

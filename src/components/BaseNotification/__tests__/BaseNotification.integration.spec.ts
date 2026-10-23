@@ -1,11 +1,6 @@
-/**
- * Integration-тесты для BaseNotification.
- * Проверяют рендер и базовую логику.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import { vi } from 'vitest'
+import { render } from '@testing-library/vue'
 import BaseNotification from '../ui/BaseNotification.vue'
 
 describe('BaseNotification integration', () => {

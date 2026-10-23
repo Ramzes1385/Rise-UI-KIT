@@ -1,0 +1,60 @@
+.base-inplace {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	vertical-align: baseline;
+
+	.base-input {
+		@include inherit-custom-color;
+	}
+
+	&__display {
+		@include button-reset;
+		max-width: 100%;
+		padding: sz(ct(inplace, display-padding-y, 2px) ct(inplace, display-padding-x, 4px));
+		border-radius: sz(ct(inplace, display-radius, var(--rise-radius-sm)));
+		background-color: ct(inplace, display-bg, transparent);
+		color: ct(inplace, display-text, inherit);
+		text-align: start;
+		text-decoration: underline dashed;
+		text-decoration-color: var(--rise-border-accented);
+		text-underline-offset: 0.25em;
+		cursor: text;
+		overflow-wrap: anywhere;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: ct(inplace, display-bg-hover, var(--rise-bg-elevated));
+		}
+
+		&:disabled {
+			text-decoration: none;
+			cursor: default;
+		}
+
+		&--empty {
+			color: var(--rise-text-muted);
+		}
+	}
+
+	&--ghost &__display {
+		text-decoration: none;
+	}
+
+	&__field {
+		min-width: sz(ct(inplace, field-width, 160px));
+	}
+
+	&__hint {
+		@include visually-hidden;
+	}
+}
+
+@include enter-fade(base-inplace-mode);
+
+.base-inplace-mode-leave-active {
+	position: absolute;
+	pointer-events: none;
+}

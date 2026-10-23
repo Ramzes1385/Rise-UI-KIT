@@ -1,0 +1,164 @@
+.base-presentation-player {
+	&__stage {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+	}
+
+	&__slide {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	&__stage {
+		--presentation-slide-shift: var(--rise-motion-distance);
+	}
+
+	&__stage--backward {
+		--presentation-slide-shift: calc(var(--rise-motion-distance) * -1);
+	}
+
+	&__slide-enter-active,
+	&__slide-leave-active {
+		@include motion-safe {
+			transition:
+				opacity calc(var(--rise-duration) * 1.3) var(--rise-ease-emphasized),
+				transform calc(var(--rise-duration) * 1.3) var(--rise-ease-emphasized);
+		}
+	}
+
+	&__slide-enter-from {
+		opacity: 0;
+		transform: translateX(var(--presentation-slide-shift));
+	}
+
+	&__slide-leave-to {
+		opacity: 0;
+		transform: translateX(calc(var(--presentation-slide-shift) * -1));
+	}
+
+	&__next {
+		position: relative;
+		display: inline-flex;
+	}
+
+	&__next--locked .base-media-player__control {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	&__ring {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+		transform: rotate(-90deg);
+	}
+
+	&__ring-track,
+	&__ring-fill {
+		fill: none;
+		stroke-width: 2;
+	}
+
+	&__ring-track {
+		stroke: var(--media-border);
+	}
+
+	&__ring-fill {
+		stroke: ct(presentation-player, next-ring, var(--media-primary));
+		stroke-dasharray: 100;
+		stroke-dashoffset: calc(100 - var(--presentation-lock, 0));
+		stroke-linecap: round;
+	}
+
+	&__done {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: space(ct(presentation-player, done-gap, 8px));
+		padding: space(ct(presentation-player, done-padding, 24px));
+		background-color: ct(presentation-player, done-bg, var(--media-overlay));
+		text-align: center;
+	}
+
+	&__done-icon {
+		width: sz(ct(presentation-player, done-icon-size, 48px));
+		height: sz(ct(presentation-player, done-icon-size, 48px));
+		color: var(--media-primary);
+	}
+
+	&__done-title {
+		margin: 0;
+		font-family: var(--rise-font-heading);
+		font-size: sz(ct(presentation-player, done-title-font-size, var(--rise-font-size-2xl)));
+		font-weight: ct(presentation-player, done-title-font-weight, var(--rise-font-weight-semibold));
+		@include caps-tracking(var(--rise-tracking-heading));
+	}
+
+	&__done-text {
+		margin: 0 0 sz(8px);
+		color: var(--media-muted);
+		font-size: sz(var(--rise-font-size-sm));
+	}
+
+	&__caption-box {
+		pointer-events: none;
+		cursor: auto;
+	}
+
+	&__notes {
+		flex: 1;
+		overflow-y: auto;
+		padding: space(ct(presentation-player, notes-padding-y, 16px)) space(ct(presentation-player, notes-padding-x, 20px));
+		color: ct(presentation-player, notes-text, var(--media-text));
+		font-size: sz(ct(presentation-player, notes-font-size, calc(var(--rise-font-size-base) - 1px)));
+		line-height: 1.6;
+
+		&:focus-visible {
+			@include focus-ring;
+		}
+	}
+
+	&__notes-title {
+		margin: 0 0 sz(12px);
+		font-weight: var(--rise-font-weight-bold);
+	}
+
+	&__notes-text {
+		margin: 0 0 sz(12px);
+		color: var(--media-muted);
+		white-space: pre-line;
+	}
+
+	&__card--locked {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	&__card-mark {
+		display: flex;
+		flex: none;
+		width: sz(18px);
+		height: sz(18px);
+		margin-inline-start: auto;
+		color: var(--media-muted);
+
+		&--done {
+			color: var(--media-primary);
+		}
+	}
+
+	&__lock {
+		width: 100%;
+		height: 100%;
+		fill: currentcolor;
+	}
+}

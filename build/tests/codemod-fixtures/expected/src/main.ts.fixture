@@ -1,0 +1,15 @@
+import { createApp } from 'vue'
+import { createUiKitPlugin, icons as plugins } from '@ramzes1385/rise-ui-kit'
+import { createIconPlugin } from '@ramzes1385/rise-ui-kit/icons'
+import '@ramzes1385/rise-ui-kit/styles'
+import '@ramzes1385/rise-ui-kit/media.css'
+import App from './App.vue'
+import './styles/app.scss'
+
+// import { plugins } from '@ramzes1385/rise-ui-kit' — в комментарии остаётся как есть
+const note = "from '@ramzes1385/rise-ui-kit/plugins'"
+const iconPlugin = plugins.createIconPlugin({ spritePath: '/icons.svg' })
+const ownIcons = createIconPlugin({ spritePath: '/own.svg' })
+
+createApp(App).use(createUiKitPlugin()).use(iconPlugin).use(ownIcons).mount('#app')
+console.log(note)

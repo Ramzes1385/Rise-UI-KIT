@@ -1,11 +1,11 @@
-export { CALENDAR_VARIANTS } from './model/BaseCalendar.types'
+export { CALENDAR_PARTS, CALENDAR_VARIANTS } from './types/BaseCalendar.types'
 export type {
 	BaseCalendarEmits,
+	BaseCalendarPart,
 	BaseCalendarProps,
 	BaseCalendarSlots,
 	CalendarConstraints,
 	CalendarDisplayConfig,
-	CalendarEvent,
 	CalendarHighlight,
 	CalendarSelectionMode,
 	CalendarTimeConfig,
@@ -13,5 +13,5 @@ export type {
 	CalendarView,
 	CalendarWeekday,
 	CalendarWeekends,
-} from './model/BaseCalendar.types'
+} from './types/BaseCalendar.types'
 export { default as BaseCalendar } from './ui/BaseCalendar.vue'

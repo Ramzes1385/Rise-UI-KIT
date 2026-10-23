@@ -1,0 +1,31 @@
+.base-toolbar {
+	@include custom-color-scope;
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: sz(ct(toolbar, gap, 4px));
+	max-width: 100%;
+	padding: space(ct(toolbar, padding, 4px));
+	border: 1px solid ct(toolbar, border, transparent);
+	border-radius: sz(ct(toolbar, radius, var(--rise-radius-md)));
+	box-shadow: ct(toolbar, shadow, none);
+	@include custom-bg(background-color, ct(toolbar, bg, transparent));
+
+	&--vertical {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	&--ghost {
+		padding: 0;
+		border-width: 0;
+	}
+
+	&--outline {
+		border-color: ct(toolbar, border, var(--rise-border-accented));
+	}
+
+	&--soft {
+		@include custom-bg(background-color, ct(toolbar, bg, var(--rise-bg-elevated)));
+	}
+}

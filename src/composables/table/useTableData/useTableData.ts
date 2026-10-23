@@ -1,0 +1,85 @@
+/** Composable: сортировка, фильтрация, пагинация и поиск таблицы */
+import { useTableSort } from '@composables/table/useTableSort'
+import { useTableProcessedRows } from './useTableProcessedRows'
+import { createTableDataActions } from './createTableDataActions'
+import { useTableFilter } from '@composables/table/useTableFilter'
+import { useTableSearch } from '@composables/table/useTableSearch'
+import { useTablePagination } from '@composables/table/useTablePagination'
+import type { UseTableDataOptions, UseTableDataReturn } from './types/useTableData.types'
+
+/**
+ * Composable для сортировки, фильтрации, пагинации и поиска таблицы.
+ * Является фасадом над специализированными composables:
+ * useTableSearch, useTableFilter, useTableSort, useTablePagination, useTableSelection.
+ *
+ * @example
+ * ```ts
+ * const {
+ *   searchQuery, sortStates, activeFilters,
+ *   processedRows, displayedRows, currentPage, totalPages, visiblePages,
+ *   getSortDirection, handleSort, handleSearchInput, addFilter, removeFilter,
+ * } = useTableData({
+ *   rows: computed(() => props.rows),
+ *   columns: localColumns,
+ *   loadMode: () => props.loadMode,
+ *   pageSize: computed(() => props.pageSize),
+ *   isMultiSort: () => props.isMultiSort,
+ *   searchDebounce: () => props.searchDebounce,
+ *   onSearch: (q) => emit('search', q),
+ *   onSort: (s) => emit('sort', s),
+ *   onFilter: (f) => emit('filter', f),
+ * })
+ * ```
+ */
+function useTableData(options: UseTableDataOptions): UseTableDataReturn {
+	const { rows, columns, loadMode, pageSize, hasMore, isMultiSort, searchDebounce, sortLocale, timeZone, onSearch, onSort, onFilter } =
+		options
+	const { onPageSizeChange, page, onPageChange, totalRows, isManualFiltering, isManualSorting } = options
+
+	const { searchQuery, handleSearchInput } = useTableSearch({ searchDebounce, onSearch })
+
+	const {
+		activeFilters,
+		addFilter: baseAddFilter,
+		removeFilter: baseRemoveFilter,
+		getFilterLabel,
+	} = useTableFilter({ columns, onFilter })
+
+	const sort = useTableSort({ isMultiSort, onSort })
+
+	/** Обработанные строки (поиск + фильтры + сортировка) */
+	const processedRows = useTableProcessedRows({
+		rows,
+		columns,
+		searchQuery,
+		activeFilters,
+		sortStates: sort.sortStates,
+		locale: sortLocale,
+		timeZone,
+		isManualFiltering,
+		isManualSorting,
+	})
+
+	const pagination = useTablePagination({ processedRows, loadMode, pageSize, hasMore, onPageSizeChange, page, onPageChange, totalRows })
+
+	const { addFilter, removeFilter, handleSearchInputWithReset } = createTableDataActions({
+		baseAddFilter,
+		baseRemoveFilter,
+		handleSearchInput,
+		resetPage: pagination.resetPage,
+	})
+
+	return {
+		...sort,
+		...pagination,
+		searchQuery,
+		activeFilters,
+		processedRows,
+		handleSearchInput: handleSearchInputWithReset,
+		addFilter,
+		removeFilter,
+		getFilterLabel,
+	}
+}
+
+export { useTableData }

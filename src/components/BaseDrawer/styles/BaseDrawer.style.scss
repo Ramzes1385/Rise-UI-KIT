@@ -1,0 +1,167 @@
+.base-drawer {
+	@include custom-color-scope;
+	position: fixed;
+	inset: 0;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
+	background-color: ct(drawer, bg, var(--rise-overlay));
+
+	&--bottom {
+		--overlay-slide: 0 100%;
+	}
+
+	&--top {
+		--overlay-slide: 0 -100%;
+	}
+
+	&--left {
+		--overlay-slide: calc(var(--rise-dir, 1) * -100%) 0;
+	}
+
+	&--right {
+		--overlay-slide: calc(var(--rise-dir, 1) * 100%) 0;
+	}
+
+	&--no-overlay {
+		background-color: transparent;
+	}
+
+	&--dragging {
+		user-select: none;
+	}
+
+	&__panel {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
+		overflow: hidden;
+		border: 1px solid ct(drawer-panel, border, transparent);
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(drawer-panel, bg, var(--rise-surface-dialog)));
+		@include custom-text(color, ct(drawer-panel, text, var(--rise-text)));
+		@include text-size(sm);
+		box-shadow: ct(drawer-panel, shadow, var(--rise-shadow-xl));
+		outline: none;
+		@include transition(translate);
+
+		&--bottom,
+		&--top {
+			inset-inline: 0;
+			max-height: 85dvh;
+		}
+
+		&--bottom {
+			bottom: 0;
+			border-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl))) sz(ct(drawer-panel, radius, var(--rise-radius-xl))) 0 0;
+			transform-origin: bottom center;
+		}
+
+		&--top {
+			top: 0;
+			border-radius: 0 0 sz(ct(drawer-panel, radius, var(--rise-radius-xl))) sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			transform-origin: top center;
+		}
+
+		&--left,
+		&--right {
+			top: 0;
+			bottom: 0;
+			width: sz(ct(drawer-panel, width, 360px));
+			max-width: 90vw;
+		}
+
+		&--left {
+			inset-inline-start: 0;
+			border-start-start-radius: 0;
+			border-start-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			border-end-end-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			border-end-start-radius: 0;
+			transform-origin: dir-pos(0%) center;
+		}
+
+		&--right {
+			inset-inline-end: 0;
+			border-start-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			border-start-end-radius: 0;
+			border-end-end-radius: 0;
+			border-end-start-radius: sz(ct(drawer-panel, radius, var(--rise-radius-xl)));
+			transform-origin: dir-pos(100%) center;
+		}
+	}
+
+	&__handle {
+		flex: none;
+		align-self: center;
+		width: sz(36px);
+		height: sz(4px);
+		margin: sz(8px) auto 0;
+		border-radius: sz(var(--rise-radius-xs));
+		background-color: ct(drawer-handle, bg, var(--rise-border-accented));
+		cursor: grab;
+		touch-action: none;
+	}
+
+	&__panel--top &__handle {
+		order: 1;
+		margin: 0 auto sz(8px);
+	}
+
+	&__panel--left &__handle,
+	&__panel--right &__handle {
+		position: absolute;
+		top: 50%;
+		width: sz(4px);
+		height: sz(36px);
+		margin: 0;
+		transform: translateY(-50%);
+	}
+
+	&__panel--left &__handle {
+		inset-inline-end: sz(6px);
+	}
+
+	&__panel--right &__handle {
+		inset-inline-start: sz(6px);
+	}
+
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: sz(12px);
+		padding: space(12px ct(drawer-panel, padding-x, 20px) 8px);
+		touch-action: none;
+	}
+
+	&__title {
+		margin: 0;
+		@include heading;
+		font-size: sz(ct(drawer-title, font-size, var(--rise-font-size-md)));
+		line-height: sz(var(--rise-line-height-md));
+	}
+
+	&__description {
+		margin: 0;
+		padding: space(0 ct(drawer-panel, padding-x, 20px) 8px);
+		color: ct(drawer-description, text, var(--rise-text-muted));
+	}
+
+	&__body {
+		flex: 1 1 auto;
+		min-height: 0;
+		padding: space(8px ct(drawer-panel, padding-x, 20px) 16px);
+		overflow-y: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+	}
+
+	&__footer {
+		display: flex;
+		justify-content: flex-end;
+		gap: sz(8px);
+		padding: space(12px ct(drawer-panel, padding-x, 20px) 16px);
+		border-top: 1px solid var(--rise-border);
+	}
+}
+
+@include overlay-animation(base-drawer, '.base-drawer', '.base-drawer__panel');

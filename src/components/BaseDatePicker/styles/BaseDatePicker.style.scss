@@ -1,4 +1,5 @@
 .base-date-picker {
+	@include custom-color-scope;
 	position: relative;
 	width: 100%;
 }

@@ -1,14 +1,9 @@
-/**
- * Unit-тесты для BaseTreeChildren и BaseTreeNode.
- * Проверяют выброс ошибки при отсутствии контекста и работу с дефолтным слотом.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render } from '@testing-library/vue'
 import BaseTree from '../ui/BaseTree.vue'
-import BaseTreeChildren from '../ui/BaseTreeChildren.vue'
 import BaseTreeNode from '../ui/BaseTreeNode.vue'
-import type { TreeNode } from '../model/BaseTree.types'
+import type { TreeNode } from '../types/BaseTree.types'
+import { fireEvent, render } from '@testing-library/vue'
+import BaseTreeChildren from '../ui/BaseTreeChildren.vue'
 
 const NESTED_ITEMS: TreeNode[] = [
 	{
@@ -30,6 +25,7 @@ describe('BaseTreeChildren', () => {
 					sizeScale: 100,
 					isExpanded: true,
 					wasExpanded: true,
+					isOpen: true,
 				},
 			}),
 		).toThrow('BaseTreeChildren: TreeContext not found')
@@ -53,7 +49,7 @@ describe('BaseTreeNode', () => {
 
 		expect(() =>
 			render(BaseTreeNode, {
-				props: { node: { id: 'x', label: 'X' }, depth: 0, sizeScale: 100 },
+				props: { node: { id: 'x', label: 'X' }, depth: 0, setSize: 1, posInSet: 1, sizeScale: 100 },
 			}),
 		).toThrow('BaseTreeNode: TreeContext not found')
 		errorSpy.mockRestore()

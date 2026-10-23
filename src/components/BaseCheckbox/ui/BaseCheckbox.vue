@@ -1,95 +1,101 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-checkbox"
 		:class="[
+			ui('root'),
 			variantClass,
 			{
 				'base-checkbox--disabled': isDisabled,
-				'base-checkbox--error': formField.error,
+				'base-checkbox--readonly': isReadonly,
+				'base-checkbox--error': control.hasError.value,
 			},
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]">
-		<label class="base-checkbox__label-wrapper" :class="classes.labelWrapper">
-			<div class="base-checkbox__wrapper" :class="classes.wrapper">
+		<label :class="[ui('label-wrapper'), classes.labelWrapper]">
+			<span :class="[ui('wrapper'), classes.wrapper]">
 				<input
+					v-bind="nativeAttrs"
 					type="checkbox"
-					class="base-checkbox__input"
-					:class="classes.input"
-				:checked="modelValue"
-				:disabled="isDisabled"
+					:class="[ui('input'), classes.input]"
+					:checked="modelValue"
+					:indeterminate="isIndeterminate"
+					:disabled="isDisabled"
+					@click="handleClick"
 					@change="handleChange" />
-				<div class="base-checkbox__box" :class="classes.box">
-					<BaseIcon
-						v-if="modelValue"
-						name="check"
-						:size-scale="calcIconScale('xs', sizeScale)"
-						class="base-checkbox__icon"
-						:custom-class="classes.icon" />
-				</div>
-			</div>
+				<span :class="[ui('box'), classes.box]" aria-hidden="true">
+					<Transition name="base-checkbox-mark">
+						<BaseIcon
+							v-if="modelValue || isIndeterminate"
+							:name="isIndeterminate ? 'minus' : 'check'"
+							:size-scale="calcIconScale('sm', sizeScale)"
+							:class="ui('icon')"
+							:custom-class="classes.icon" />
+					</Transition>
+				</span>
+			</span>
 			<FormFieldLabel
 				v-if="label"
 				tag="span"
 				:label="label"
-				class-name="base-checkbox__label"
+				:class-name="ui('label')"
 				:custom-class="classes.label"
 				:size-scale="sizeScale" />
 		</label>
-		<slot name="error">
-			<FormFieldError
-				:error="formField.error"
-				class-name="base-checkbox__error-text"
-				:custom-class="classes.errorText"
-				:size-scale="sizeScale" />
-		</slot>
+		<div :id="errorId" :class="ui('error')">
+			<slot name="error">
+				<FormFieldError
+					:error="formField.error"
+					:class-name="ui('error-text')"
+					:custom-class="classes.errorText"
+					:size-scale="sizeScale" />
+			</slot>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
-import { BaseIcon } from '@components/BaseIcon'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import { toHTMLInputElement } from '@utils/domUtils'
-import { calcIconScale } from '@utils/iconUtils'
 import '../styles/BaseCheckbox.style.scss'
-import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../model/BaseCheckbox.types'
+import { BaseIcon } from '@components/BaseIcon'
+import { calcIconScale } from '@utils/media/iconUtils'
+import { useBaseCheckbox } from '../model/useBaseCheckbox'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { FormFieldError, FormFieldLabel } from '@components/BaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseCheckboxEmits, BaseCheckboxProps, BaseCheckboxSlots } from '../types/BaseCheckbox.types'
 
-const props = withDefaults(defineProps<BaseCheckboxProps>(), {
-	modelValue: false,
-	isDisabled: false,
-	error: '',
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseCheckboxProps>(),
+	kitDefaults('BaseCheckbox', {
+		variant: DEFAULT_VARIANT,
+		modelValue: false,
+		isDisabled: false,
+		isIndeterminate: false,
+		isReadonly: false,
+		error: '',
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseCheckboxEmits>()
 defineSlots<BaseCheckboxSlots>()
 
-const formField = useFormField({
-	value: () => props.modelValue,
-	error: () => props.error,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-checkbox', props, ['root', 'labelWrapper', 'wrapper', 'input', 'box', 'icon', 'label', 'errorText'])
-
-const rootRef = ref<HTMLElement | null>(null)
-
-function handleChange(e: Event): void {
-	const target = toHTMLInputElement(e.target)
-	if (!target) return
-	emit('update:modelValue', target.checked)
-	emit('change', target.checked)
-}
-
-defineExpose({
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
+	errorId,
+	formField,
+	control,
+	nativeAttrs,
 	rootRef,
-	focus: () => rootRef.value?.querySelector('input')?.focus(),
-	blur: () => rootRef.value?.querySelector('input')?.blur(),
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	handleClick,
+	handleChange,
+	exposed,
+} = useBaseCheckbox(props, emit)
+
+defineExpose(exposed)
 </script>

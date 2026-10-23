@@ -1,26 +1,18 @@
-/**
- * Unit-тесты для компонента BaseIcon.
- * Проверяет рендеринг, пропсы, трансформации и доступность.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import BaseIcon from '../ui/BaseIcon.vue'
+import { render } from '@testing-library/vue'
 
-/** Мокаем useIcon — разрыв циклической зависимости */
-vi.mock('@composables/useIcon', () => ({
+vi.mock('@composables/app/useIcon', () => ({
 	useIcon: () => ({
-		getIconUrl: (name: string) => `icons.svg#${name}`,
+		resolveIcon: (name: string) => ({ url: `icons.svg#${name}` }),
 	}),
 	createIconPlugin: () => ({ install: () => {} }),
 }))
 
-/** Получить корневой элемент иконки из DOM */
 function getIconRoot(): HTMLElement | null {
 	return document.querySelector('.base-icon')
 }
 
-/** Получить SVG-элемент иконки из DOM */
 function getIconSvg(): SVGSVGElement | null {
 	return document.querySelector('.base-icon__svg') as SVGSVGElement | null
 }
@@ -36,6 +28,12 @@ describe('BaseIcon', () => {
 		const svg = getIconSvg()
 		expect(svg).toBeTruthy()
 		expect(svg?.tagName).toBe('svg')
+	})
+
+	it('должен рендерить корень как span: иконку можно вкладывать в кнопки, ссылки и абзацы', () => {
+		render(BaseIcon, { props: { name: 'close' } })
+
+		expect(getIconRoot()?.tagName).toBe('SPAN')
 	})
 
 	it('должен рендерить <use> с правильным href', () => {
@@ -170,5 +168,20 @@ describe('BaseIcon', () => {
 			expect(root).toHaveClass('custom-icon-root')
 			expect(svg).toHaveClass('custom-icon-svg')
 		})
+	})
+})
+
+describe('BaseIcon: направленные иконки (RTL)', () => {
+	it.each(['arrow-left', 'arrow-right', 'chevron-left', 'chevron-right', 'undo', 'redo', 'reply', 'send'])(
+		'%s зеркалится в RTL: класс base-icon--directional',
+		name => {
+			render(BaseIcon, { props: { name } })
+			expect(getIconRoot()).toHaveClass('base-icon--directional')
+		},
+	)
+
+	it.each(['chevron-down', 'chevron-up', 'star', 'play'])('%s не зеркалится', name => {
+		render(BaseIcon, { props: { name } })
+		expect(getIconRoot()).not.toHaveClass('base-icon--directional')
 	})
 })

@@ -1,66 +1,85 @@
 <template>
 	<div
 		ref="rootRef"
-		class="base-form-field"
 		:style="[sizeScaleStyle, variantStyle, customColorStyle]"
 		:class="[
+			ui('root'),
 			{
-				'base-form-field--error': formField.error,
+				'base-form-field--error': error,
 			},
 			variantClass,
 			classes.root,
 		]">
-		<div v-if="label" class="base-form-field__header" :class="classes.header">
-			<label :for="props.for" class="base-form-field__label" :class="classes.label">
-				{{ label }}
-				<span v-if="isRequired" class="base-form-field__required" :class="classes.required">*</span>
-			</label>
+		<div v-if="label" :class="[ui('header'), classes.header]">
+			<label :id="labelId" :for="controlId" :class="[ui('label'), classes.label]"
+				>{{ label }}<span v-if="isRequired" :class="[ui('required'), classes.required]" aria-hidden="true">*</span></label
+			>
 		</div>
 
-		<div class="base-form-field__content" :class="classes.content">
+		<div
+			:class="[ui('content'), classes.content]"
+			:role="isGroup ? 'group' : undefined"
+			:aria-labelledby="isGroup ? labelId : undefined"
+			:aria-describedby="isGroup ? describedBy : undefined">
 			<slot />
 		</div>
 
-		<p v-if="description && !formField.error" class="base-form-field__description" :class="classes.description">
-			{{ description }}
-		</p>
+		<div v-if="description" class="base-form-field__message" :class="{ 'base-form-field__message--open': !error }">
+			<div class="base-form-field__message-body">
+				<Transition name="base-form-field-message">
+					<p v-if="!error" :id="descriptionId" :class="[ui('description'), classes.description]">
+						{{ description }}
+					</p>
+				</Transition>
+			</div>
+		</div>
 
-		<BaseAnimation name="fade" :size-scale="sizeScale" :custom-class="classes.animation">
-			<p v-if="formField.error" class="base-form-field__error" :class="classes.error">
-				{{ formField.error }}
-			</p>
-		</BaseAnimation>
+		<div class="base-form-field__message" :class="[{ 'base-form-field__message--open': error }, classes.animation]">
+			<div class="base-form-field__message-body">
+				<Transition name="base-form-field-message">
+					<p v-if="error" :id="errorId" role="alert" :class="[ui('error'), classes.error]">
+						{{ error }}
+					</p>
+				</Transition>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseAnimation } from '@components/BaseAnimation'
-import { useStandardBaseComponent } from '@composables/useBaseComponent'
-import { useFormField } from '@composables/useFormField'
 import '../styles/BaseFormField.style.scss'
-import { SIZE_SCALE_DEFAULT } from '@constants'
-import type { BaseFormFieldProps, BaseFormFieldSlots } from '../model/BaseFormField.types'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { useBaseFormField } from '../model/useBaseFormField'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseFormFieldProps, BaseFormFieldSlots } from '../types/BaseFormField.types'
 
-const props = withDefaults(defineProps<BaseFormFieldProps>(), {
-	isRequired: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-
-const { sizeScaleStyle, variantClass, variantStyle, customColorStyle, classes } = useStandardBaseComponent('base-form-field', props, ['root', 'header', 'label', 'required', 'content', 'description', 'animation', 'error'])
+const props = withDefaults(
+	defineProps<BaseFormFieldProps>(),
+	kitDefaults('BaseFormField', {
+		variant: DEFAULT_VARIANT,
+		isRequired: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 defineSlots<BaseFormFieldSlots>()
 
-const rootRef = ref<HTMLElement | null>(null)
-
-const formField = useFormField({
-	value: () => undefined,
-	error: () => props.error,
-	isRequired: () => props.isRequired,
-})
-
-defineExpose({
+const {
+	ui,
+	sizeScaleStyle,
+	variantClass,
+	variantStyle,
+	customColorStyle,
+	classes,
 	rootRef,
-	validate: formField.validate,
-	reset: formField.reset,
-})
+	labelId,
+	descriptionId,
+	errorId,
+	error,
+	describedBy,
+	controlId,
+	isGroup,
+	exposed,
+} = useBaseFormField(props)
+
+defineExpose(exposed)
 </script>

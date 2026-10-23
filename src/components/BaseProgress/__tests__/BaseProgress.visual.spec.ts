@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseProgress.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['sizes', 'circle', 'with-label', 'indeterminate', 'animations', 'fills'] as const
 
-const COMPONENT = 'ui-baseprogress'
-const STORIES = ['default', 'circle', 'indeterminate', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseProgress — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-progress--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseProgress · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `element-baseprogress--${story}`, { theme, height: 300 })
+				await expectStoryScreenshot(page, `base-progress-${story}-${theme}.png`)
+			})
+		}
 	})
 }

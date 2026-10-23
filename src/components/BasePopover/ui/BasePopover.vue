@@ -2,23 +2,36 @@
 	<BaseDropdown
 		v-model:is-open="isOpenLocal"
 		:position="position"
+		:anchor="anchor"
 		:variant="variant"
 		:color="color"
 		:gap="10"
 		:match-width="false"
+		:max-height="maxHeight"
 		:prevent-mousedown="false"
 		:panel-class="panelClasses"
 		:padding="0"
 		:size-scale="sizeScale"
-		:custom-class="{ root: classes.root, panel: classes.panel }"
+		:animation="animation"
+		:show-arrow="variant !== 'ghost'"
+		:custom-class="{ root: rootClass, panel: classes.panel, arrow: arrowClass }"
 		@close="handleClose">
-		<div class="base-popover__trigger" :class="classes.trigger" @click="toggle">
-			<slot name="trigger" />
+		<div
+			v-if="$slots.trigger || !anchor"
+			ref="triggerRef"
+			:class="[ui('trigger'), classes.trigger]"
+			@click="toggle"
+			@keydown="handleTriggerKeydown">
+			<slot name="trigger" :is-open="isOpenLocal" :trigger-props="triggerAttributes" />
 		</div>
 
 		<template #dropdown>
-			<div class="base-popover__arrow" :class="[`base-popover__arrow--${position}`, classes.arrow]"></div>
-			<div class="base-popover__inner" :class="classes.inner">
+			<div
+				:id="panelId"
+				:class="[ui('inner'), classes.inner]"
+				role="dialog"
+				:aria-label="ariaLabel"
+				:aria-labelledby="ariaLabel ? undefined : triggerId">
 				<slot />
 			</div>
 		</template>
@@ -26,48 +39,43 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { BaseDropdown } from '@components/BaseDropdown'
-import { useCustomClass } from '@composables/useCustomClass'
 import '../styles/BasePopover.style.scss'
-import { SIZE_SCALE_DEFAULT, DEFAULT_VARIANT } from '@constants'
-import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../model/BasePopover.types'
+import { BaseDropdown } from '@components/BaseDropdown'
+import { useBasePopover } from '../model/useBasePopover'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { DEFAULT_VARIANT, SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BasePopoverEmits, BasePopoverProps, BasePopoverSlots } from '../types/BasePopover.types'
 
-const props = withDefaults(defineProps<BasePopoverProps>(), {
-	isOpen: false,
-	position: 'bottom',
-	variant: DEFAULT_VARIANT,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BasePopoverProps>(),
+	kitDefaults('BasePopover', {
+		isOpen: false,
+		position: 'bottom',
+		anchor: undefined,
+		ariaLabel: undefined,
+		maxHeight: '320px',
+		variant: DEFAULT_VARIANT,
+		sizeScale: SIZE_SCALE_DEFAULT,
+		animation: 'scale',
+	}),
+)
 
 const emit = defineEmits<BasePopoverEmits>()
 defineSlots<BasePopoverSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'trigger', 'arrow', 'inner', 'panel'],
-})
-
-const isOpenLocal = ref(props.isOpen)
-
-watch(
-	() => props.isOpen,
-	isOpen => {
-		isOpenLocal.value = isOpen
-	},
-)
-
-const panelClasses = computed((): string => {
-	return `base-popover__panel base-popover__panel--${props.variant}`
-})
-
-function toggle(): void {
-	isOpenLocal.value = !isOpenLocal.value
-	emit('update:isOpen', isOpenLocal.value)
-}
-
-function handleClose(): void {
-	emit('update:isOpen', false)
-	emit('close')
-}
+const {
+	classes,
+	isOpenLocal,
+	toggle,
+	handleTriggerKeydown,
+	handleClose,
+	triggerRef,
+	panelId,
+	triggerAttributes,
+	triggerId,
+	rootClass,
+	panelClasses,
+	arrowClass,
+	ui,
+} = useBasePopover(props, emit)
 </script>

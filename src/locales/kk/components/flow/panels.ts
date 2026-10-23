@@ -1,0 +1,26 @@
+/** Панели BaseFlowMap: мини-карта, легенда, подробности узла */
+export const kkFlowPanels = {
+	flowPanels: {
+		DETAILS: 'Толығырақ',
+		MINIMAP: 'Шағын карта',
+		MINIMAP_HINT: 'Көрсеткілер көріністі жылжытады, Home бәрін сыйдырады',
+		LEGEND: 'Белгілер',
+		LEGEND_SHOW: 'Белгілерді көрсету',
+		LEGEND_HIDE: 'Белгілерді жию',
+		STATUS_OK: 'Жұмыс істейді',
+		STATUS_WARNING: 'Кідірістер',
+		STATUS_ERROR: 'Қателер',
+		STATUS_DOWN: 'Жұмыс істемейді',
+		STATUS_UNKNOWN: 'Дерек жоқ',
+		DETAILS_NODE: 'Түйін мәліметтері',
+		DETAILS_EDGE: 'Байланыс мәліметтері',
+		DETAILS_GROUP: 'Топ мәліметтері',
+		DETAILS_CLOSE: 'Мәліметтерді жабу',
+		DETAILS_EMPTY: 'Мәліметтерді көру үшін түйінді немесе байланысты таңдаңыз',
+		DETAILS_CALLS: 'Шақырады',
+		DETAILS_CALLED_BY: 'Оны шақырады',
+		DETAILS_TEAM: '«{name}» тобы',
+		DETAILS_METRICS: 'Метрикалар',
+		DETAILS_SHEET: 'Жабу үшін төмен сырғытыңыз',
+	},
+}

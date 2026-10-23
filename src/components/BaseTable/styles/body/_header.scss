@@ -1,0 +1,139 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	&__th {
+		position: sticky;
+		top: 0;
+		z-index: 2;
+		padding-block: space(var(--tbl-pad-top) var(--tbl-pad-bottom));
+		padding-inline: space(var(--tbl-pad-left) var(--tbl-pad-right));
+		border-bottom: 1px solid var(--tbl-border);
+		background-color: var(--tbl-head-bg);
+		@include caps-label(10px);
+		color: var(--tbl-head-text);
+		font-weight: ct(table, header-font-weight, var(--rise-font-weight-normal));
+		text-align: start;
+		white-space: nowrap;
+		vertical-align: middle;
+
+		&--center {
+			text-align: center;
+		}
+
+		&--right {
+			text-align: end;
+		}
+
+		&--sticky-left {
+			inset-inline-start: 0;
+			z-index: 3;
+			box-shadow: inset dir-x(-1px) 0 0 var(--tbl-border);
+		}
+
+		&--sticky-right {
+			inset-inline-end: 0;
+			z-index: 3;
+			box-shadow: inset dir-x(1px) 0 0 var(--tbl-border);
+		}
+	}
+
+	@media (pointer: coarse) {
+		&__th--resizable {
+			padding-inline-end: calc(#{space(var(--tbl-pad-right))} + #{sz(16px)});
+		}
+	}
+
+	&__th-label {
+		min-width: 0;
+		@include truncate;
+	}
+
+	&__sort-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		max-width: calc(100% + #{sz(16px)});
+		margin: sz(-4px -8px);
+		padding: sz(4px 8px);
+		border: 0;
+		border-radius: sz(var(--rise-control-radius));
+		background-color: transparent;
+		color: inherit;
+		font: inherit;
+		text-align: inherit;
+		cursor: pointer;
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+
+			.base-table__sort-icon {
+				color: var(--rise-text-muted);
+			}
+		}
+
+		@include active {
+			background-color: var(--rise-bg-accented);
+		}
+	}
+
+	&__sort-icon {
+		display: inline-flex;
+		align-items: center;
+		gap: sz(2px);
+		flex-shrink: 0;
+		color: var(--rise-text-dimmed);
+		@include transition-colors;
+	}
+
+	&__th--sorted &__sort-icon,
+	&__th--sorted &__sort-btn:hover &__sort-icon {
+		color: var(--rise-primary);
+	}
+
+	&__sort-index {
+		@include text-size(xs);
+		font-weight: var(--rise-font-weight-semibold);
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__resizer {
+		position: absolute;
+		top: 0;
+		inset-inline-end: 0;
+		bottom: 0;
+		z-index: 1;
+		width: sz(8px);
+		cursor: col-resize;
+		touch-action: none;
+		user-select: none;
+
+		@media (pointer: coarse) {
+			width: sz(24px);
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			inset-inline-end: 0;
+			bottom: 0;
+			width: 2px;
+			background-color: var(--rise-border-accented);
+			clip-path: inset(calc(50% - #{sz(8px)}) 0 calc(50% - #{sz(8px)}) 1px);
+			@include transition(clip-path, background-color);
+		}
+
+		@include hover {
+			&::after {
+				background-color: var(--rise-primary);
+				clip-path: inset(0);
+			}
+		}
+
+		@include focus-ring(-2px);
+	}
+}

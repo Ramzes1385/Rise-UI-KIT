@@ -1,0 +1,1 @@
+export const EDITOR_MENU_SCALE_RATIO = 0.875

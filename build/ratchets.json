@@ -1,0 +1,135 @@
+{
+	"size": {
+		"components.js": {
+			"gzip": 944392,
+			"budget": 1039360
+		},
+		"components/*/index.js": {
+			"gzip": 197260,
+			"budget": 217088
+		},
+		"composables.js": {
+			"gzip": 200015,
+			"budget": 220160
+		},
+		"config.js": {
+			"gzip": 19707,
+			"budget": 22528
+		},
+		"flow3d.js": {
+			"gzip": 140484,
+			"budget": 154624
+		},
+		"icons.js": {
+			"gzip": 4901,
+			"budget": 6144
+		},
+		"icons.svg": {
+			"gzip": 5138,
+			"budget": 7168
+		},
+		"index.js": {
+			"gzip": 1188370,
+			"budget": 1307648
+		},
+		"locales/ja.js": {
+			"gzip": 47408,
+			"budget": 52224
+		},
+		"locales/zh.js": {
+			"gzip": 47211,
+			"budget": 52224
+		},
+		"map3d.js": {
+			"gzip": 141332,
+			"budget": 155648
+		},
+		"media.css": {
+			"gzip": 15402,
+			"budget": 17408
+		},
+		"media.js": {
+			"gzip": 175810,
+			"budget": 193536
+		},
+		"media.layer.css": {
+			"gzip": 60,
+			"budget": 2048
+		},
+		"nuxt.js": {
+			"gzip": 1757,
+			"budget": 3072
+		},
+		"resolver.js": {
+			"gzip": 1355,
+			"budget": 3072
+		},
+		"roadmap3d.js": {
+			"gzip": 163285,
+			"budget": 180224
+		},
+		"styles.css": {
+			"gzip": 116621,
+			"budget": 129024
+		},
+		"styles.layer.css": {
+			"gzip": 61,
+			"budget": 2048
+		},
+		"tokens.css": {
+			"gzip": 4143,
+			"budget": 6144
+		},
+		"tokens.json": {
+			"gzip": 3941,
+			"budget": 5120
+		},
+		"tokens.layer.css": {
+			"gzip": 61,
+			"budget": 2048
+		},
+		"tokens/*.json": {
+			"gzip": 3977,
+			"budget": 5120
+		},
+		"utils.js": {
+			"gzip": 69100,
+			"budget": 76800
+		},
+		"components/*/style.css": {
+			"gzip": 7121,
+			"budget": 8192
+		},
+		"fonts/*.woff2": {
+			"gzip": 160987,
+			"budget": 177152
+		},
+		"fonts/cjk/sc/*.woff2": {
+			"gzip": 1244344,
+			"budget": 1369088
+		},
+		"fonts/cjk/jp/*.woff2": {
+			"gzip": 1005763,
+			"budget": 1106944
+		},
+		"fonts/cjk/*/*.woff2": {
+			"gzip": 218388,
+			"budget": 240640
+		},
+		"fonts/cjk/zh.css": {
+			"gzip": 12082,
+			"budget": 13312
+		},
+		"fonts/cjk/ja.css": {
+			"gzip": 10105,
+			"budget": 11264
+		}
+	},
+	"coverageExcludes": {
+		"test:components:coverage": 23,
+		"test:composables:coverage": 0,
+		"test:utils:coverage": 0,
+		"test:components-heavy:coverage": 0
+	},
+	"lintWarnings": 0
+}

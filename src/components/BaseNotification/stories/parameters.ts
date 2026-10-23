@@ -1,0 +1,27 @@
+import { source } from './render'
+import type { Meta } from '@storybook/vue3-vite'
+import type BaseNotification from '../ui/BaseNotification.vue'
+
+export const parameters = {
+	docs: {
+		source,
+		description: {
+			component: [
+				'Всплывающие уведомления (toast) о результате действия: сохранено, ошибка загрузки, предупреждение.',
+				'',
+				'- В приложении уведомления показывает `useToast()` внутри `<BaseApp>` — отдельный BaseNotification не нужен.',
+				'- Сам компонент: одно уведомление — из props (`title`, `description`, `type`), список — методом `add()`',
+				'  через ref или управляемый `items` (закрытие — событие `remove(id)`). Каждое закрывается кнопкой',
+				'  «Закрыть» и само — через `duration` мс (по умолчанию 3 секунды, полоса снизу показывает оставшееся время).',
+				'- `isPersistent` — без автозакрытия (загрузка, нет сети); `actions` — кнопки вроде «Отменить».',
+				'- Пока указатель над уведомлениями или фокус внутри, они не закрываются (WCAG 2.2.1).',
+				'- `type` задаёт цвет иконки и полосы прогресса; `position` — угол или край экрана; `isContained` —',
+				'  список в потоке страницы, без телепорта.',
+				'- Доступность: контейнер — регион «Уведомления», ошибка объявляется сразу (`role="alert"`),',
+				'  остальные типы — вежливо (`role="status"`).',
+				'',
+				'Сообщение, которое остаётся на странице, — `BaseAlert`.',
+			].join('\n'),
+		},
+	},
+} satisfies Meta<typeof BaseNotification>['parameters']

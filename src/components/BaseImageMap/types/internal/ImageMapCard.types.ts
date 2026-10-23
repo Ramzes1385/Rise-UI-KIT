@@ -1,0 +1,12 @@
+import type { ImageMapHoursState } from '../ImageMapHours.types'
+import type { ResolvedImageMapObject } from './imageMapModel.types'
+
+/** Пропсы содержимого подсказки и окна объекта */
+export interface ImageMapCardProps {
+	/** Объект карты */
+	item: ResolvedImageMapObject
+	/** Полное содержимое окна (видео, заголовок — у окна); без него — краткая подсказка с заголовком */
+	isFull?: boolean
+	/** Часы работы сейчас: строка состояния, в окне — ещё и расписание недели */
+	hours?: ImageMapHoursState
+}

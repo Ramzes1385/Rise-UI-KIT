@@ -1,0 +1,333 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-flow-map {
+	&__scenario-trail {
+		fill: none;
+		stroke: ct(flow-map, edge-border-active, var(--rise-primary));
+		stroke-width: 2.5;
+		stroke-linecap: round;
+		pointer-events: none;
+
+		&--active {
+			stroke-width: 3;
+		}
+
+		&[data-status='warning'] {
+			stroke: var(--rise-warning);
+		}
+
+		&[data-status='error'],
+		&[data-status='down'] {
+			stroke: var(--rise-error);
+		}
+	}
+
+	&__scenario-pulse {
+		fill: none;
+		stroke: ct(flow-map, edge-border-active, var(--rise-primary));
+		stroke-width: 2;
+		rx: 12px;
+		opacity: 0.8;
+		transform-box: fill-box;
+		transform-origin: center;
+		pointer-events: none;
+
+		&[data-status='error'],
+		&[data-status='down'] {
+			stroke: var(--rise-error);
+		}
+
+		@include motion-safe {
+			animation: base-flow-map-pulse calc(var(--rise-duration-loop) * 0.9) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+	}
+
+	&__particles {
+		pointer-events: none;
+
+		&--muted {
+			opacity: 0.35;
+		}
+	}
+
+	&__particle {
+		fill: ct(flow-map, particle-bg, var(--rise-text-muted));
+		opacity: 0.85;
+	}
+
+	&__scenario-token {
+		pointer-events: none;
+
+		&[data-status='error'],
+		&[data-status='down'] {
+			--rise-flow-scenario-token: var(--rise-error);
+		}
+	}
+
+	&__scenario-token-dot {
+		fill: var(--rise-flow-scenario-token, #{ct(flow-map, token-bg, var(--rise-primary))});
+		stroke: var(--rise-surface-bg, var(--rise-bg));
+		stroke-width: 1.5;
+	}
+
+	&__scenario-token-ring {
+		fill: none;
+		stroke: var(--rise-flow-scenario-token, #{ct(flow-map, token-bg, var(--rise-primary))});
+		stroke-width: 2;
+		opacity: 0.35;
+	}
+
+	&__scenario-panel {
+		display: flex;
+		flex-direction: column;
+		gap: sz(8px);
+		box-sizing: border-box;
+		min-width: 0;
+		padding: sz(14px) sz(12px) sz(8px);
+		border-radius: sz(var(--rise-radius-lg));
+		color: var(--rise-text);
+		@include tonal-surface(page);
+		@include text-size(sm);
+
+		&--compact {
+			position: absolute;
+			inset-block-end: sz(14px);
+			inset-inline: sz(12px);
+			z-index: 2;
+			flex-direction: row;
+			align-items: center;
+			gap: sz(10px);
+			min-height: sz(60px);
+			padding-block: 0;
+			padding-inline: sz(8px) sz(6px);
+			@include floating-surface(null);
+		}
+	}
+
+	&__scenario-top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: sz(8px);
+		padding-inline: sz(2px);
+	}
+
+	&__scenario-heading {
+		display: flex;
+		flex-direction: column;
+		gap: sz(3px);
+		min-width: 0;
+	}
+
+	&__scenario-eyebrow {
+		@include caps-label;
+	}
+
+	&__scenario-name {
+		@include heading;
+		font-size: sz(15px);
+	}
+
+	&__scenario-note {
+		color: var(--rise-text-muted);
+		font-size: sz(var(--rise-font-size-xs));
+	}
+
+	&__scenario-controls,
+	&__scenario-tools,
+	&__scenario-select {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: sz(6px);
+	}
+
+	&__scenario-segments {
+		display: grid;
+		grid-auto-columns: minmax(0, 1fr);
+		grid-auto-flow: column;
+		gap: sz(3px);
+		margin-inline: sz(2px);
+	}
+
+	&__scenario-segment {
+		block-size: sz(4px);
+		border-radius: sz(1px);
+		background-color: var(--rise-bg-accented);
+		@include transition-colors(var(--rise-duration-slow));
+
+		&--done {
+			background-color: ct(flow-map, edge-border-active, var(--rise-primary));
+			opacity: 0.55;
+		}
+
+		&--current {
+			background-color: ct(flow-map, edge-border-active, var(--rise-primary));
+		}
+	}
+
+	&__scenario-seek {
+		margin-inline: sz(2px);
+	}
+
+	&__scenario-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: sz(8px);
+		margin-inline: sz(2px);
+		color: var(--rise-text-muted);
+		font-size: sz(var(--rise-font-size-xs));
+		line-height: sz(16px);
+	}
+
+	&__scenario-steps {
+		display: grid;
+		gap: 1px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__scenario-step {
+		appearance: none;
+		display: flex;
+		align-items: center;
+		gap: sz(10px);
+		box-sizing: border-box;
+		inline-size: 100%;
+		padding: sz(5px) sz(8px);
+		border: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		color: var(--rise-text);
+		font: inherit;
+		text-align: start;
+		background-color: transparent;
+		cursor: pointer;
+		@include transition-colors(var(--rise-duration-slow));
+		@include focus-ring;
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+
+		&--current {
+			background-color: var(--rise-primary-soft);
+		}
+	}
+
+	&__scenario-step-number {
+		display: grid;
+		flex: none;
+		place-items: center;
+		inline-size: sz(22px);
+		block-size: sz(22px);
+		border-radius: sz(var(--rise-radius-sm));
+		color: var(--rise-text-muted);
+		font-family: var(--rise-font-mono);
+		font-size: sz(11px);
+		font-variant-numeric: tabular-nums;
+		background-color: var(--rise-bg-elevated);
+		@include transition-colors(var(--rise-duration-slow));
+
+		.base-flow-map__scenario-step--current & {
+			color: var(--rise-on-primary);
+			background-color: var(--rise-primary);
+		}
+
+		.base-flow-map__scenario-step--done & {
+			color: var(--rise-primary-text);
+			background-color: var(--rise-primary-soft);
+		}
+
+		.base-flow-map__scenario-step--failed & {
+			color: var(--rise-error-text);
+			background-color: var(--rise-error-soft);
+		}
+	}
+
+	&__scenario-step-text {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-width: 0;
+		font-size: sz(12.5px);
+		line-height: sz(15px);
+
+		b {
+			color: var(--rise-text-highlighted);
+			font-weight: 500;
+		}
+
+		span {
+			color: var(--rise-text-muted);
+			font-size: sz(11px);
+			line-height: sz(14px);
+		}
+	}
+
+	&__scenario-step-latency {
+		color: var(--rise-text-muted);
+		font-family: var(--rise-font-mono);
+		font-size: sz(11px);
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__scenario-step-failed {
+		color: var(--rise-error-text);
+		font-size: sz(11px);
+		font-weight: 600;
+	}
+
+	&__scenario-play {
+		flex: none;
+		inline-size: sz(44px);
+		block-size: sz(44px);
+		border-radius: sz(var(--rise-radius-md));
+	}
+
+	&__scenario-icon {
+		flex: none;
+		min-inline-size: sz(36px);
+	}
+
+	&__scenario-player {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(5px);
+		min-width: 0;
+	}
+
+	&__scenario-player-title {
+		color: var(--rise-text-highlighted);
+		font-size: sz(13px);
+	}
+
+	&__scenario-player-step {
+		overflow: hidden;
+		color: var(--rise-text-muted);
+		font-size: sz(12px);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	&__scenario-chevron {
+		[dir='rtl'] & {
+			transform: scaleX(-1);
+		}
+	}
+}
+
+@keyframes base-flow-map-pulse {
+	from {
+		opacity: 0.9;
+		transform: scale(1);
+	}
+
+	to {
+		opacity: 0;
+		transform: scale(1.08);
+	}
+}

@@ -1,0 +1,167 @@
+.base-tag {
+	@include custom-color-scope;
+	@include reset-custom-color;
+
+	--tag-soft: #{ct(tag, bg, var(--rise-bg-elevated))};
+	--tag-soft-hover: #{ct(tag, bg-hover, var(--rise-bg-accented))};
+	--tag-text: #{ct(tag, text, var(--rise-text-highlighted))};
+	--tag-border: #{ct(tag, border, var(--rise-border-accented))};
+	--tag-solid: #{ct(tag, bg-selected, var(--rise-primary))};
+	--tag-solid-hover: var(--rise-primary-hover);
+	--tag-on-solid: #{ct(tag, text-selected, var(--rise-on-primary))};
+
+	display: inline-flex;
+	align-items: center;
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
+	border: 1px solid transparent;
+	border-radius: sz(ct(tag, radius, var(--rise-radius-sm)));
+	vertical-align: middle;
+	font-size: sz(ct(tag, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	font-weight: ct(tag, font-weight, var(--rise-font-weight-medium));
+	white-space: nowrap;
+	@include custom-bg(background-color, var(--tag-soft));
+	@include custom-text(color, var(--tag-text));
+	@include transition-colors;
+
+	@each $role in (primary, info, success, warning, error) {
+		&--tone-#{$role} {
+			--tag-soft: var(--rise-#{$role}-soft);
+			--tag-soft-hover: var(--rise-#{$role}-soft-hover);
+			--tag-text: var(--rise-#{$role}-text);
+			--tag-border: var(--rise-#{$role}-border);
+			--tag-solid: var(--rise-#{$role});
+			--tag-solid-hover: var(--rise-#{$role}-hover);
+			--tag-on-solid: var(--rise-on-#{$role});
+		}
+	}
+
+	&--outline {
+		border-color: var(--tag-border);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--interactive:not(&--disabled, &--selected):hover {
+		@include custom-bg(background-color, var(--tag-soft-hover));
+	}
+
+	&--outline#{&}--interactive:not(&--disabled, &--selected):hover {
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--selected {
+		border-color: var(--tag-solid);
+		@include custom-bg(background-color, var(--tag-solid));
+		@include custom-text(color, var(--tag-on-solid));
+
+		&:not(.base-tag--disabled):hover {
+			border-color: var(--tag-solid-hover);
+			@include custom-bg(background-color, var(--tag-solid-hover));
+		}
+	}
+
+	&--disabled#{&}--interactive {
+		@include disabled-state;
+	}
+
+	&__main {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-width: 0;
+		margin: 0;
+		padding: sz(ct(tag, padding-y, 3px)) sz(ct(tag, padding-x, 10px));
+		border: 0;
+		border-radius: inherit;
+		background: none;
+		color: inherit;
+		font: inherit;
+		text-align: start;
+		@include focus-ring;
+
+		&[role='button'],
+		&:is(button) {
+			cursor: pointer;
+		}
+
+		&:disabled,
+		&[aria-disabled='true'] {
+			cursor: not-allowed;
+		}
+	}
+
+	&--removable &__main {
+		padding-inline-end: sz(4px);
+	}
+
+	&__lead {
+		display: grid;
+		grid-template-columns: 0fr;
+
+		@include motion-safe {
+			transition: grid-template-columns var(--rise-duration) var(--rise-ease-emphasized);
+		}
+
+		&--open {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__lead-clip {
+		display: flex;
+		min-width: 0;
+		overflow: hidden;
+	}
+
+	&__icon {
+		display: inline-flex;
+		flex-shrink: 0;
+		box-sizing: content-box;
+		padding-inline-end: sz(ct(tag, gap, 4px));
+	}
+
+	&__lead:not(&__lead--open) &__icon-leave-active {
+		transition-duration: var(--rise-duration);
+	}
+
+	&__text {
+		min-width: 0;
+		@include truncate;
+	}
+
+	&__remove {
+		@include button-reset;
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: sz(20px);
+		height: sz(20px);
+		margin-block: 0;
+		margin-inline: 0 sz(3px);
+		border-radius: sz(var(--rise-radius-xs));
+		@include transition-colors;
+		@include focus-ring(0);
+
+		@include hover {
+			background-color: color-mix(in srgb, currentcolor 15%, transparent);
+		}
+
+		&:disabled {
+			@include disabled-state;
+		}
+	}
+
+	&--disabled#{&}--interactive &__remove:disabled {
+		opacity: 1;
+	}
+
+	@include enter-pop(base-tag__icon, calc(var(--rise-motion-scale-from) * 0.5));
+	@include enter-pop(base-tag__remove, calc(var(--rise-motion-scale-from) * 0.5));
+
+	&__lead-clip:has(> .base-tag__icon-enter-active) > .base-tag__icon-leave-active {
+		position: absolute;
+	}
+}

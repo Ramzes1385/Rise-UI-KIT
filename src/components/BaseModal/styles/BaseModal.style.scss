@@ -1,156 +1,124 @@
 .base-modal {
+	@include custom-color-scope;
 	position: fixed;
-	top: 0;
-	left: 0;
-	box-sizing: border-box;
-	width: 100%;
-	height: 100%;
-	@include custom-bg(background-color, rgba(0, 0, 0, 0.5));
+	inset: 0;
+	z-index: calc(var(--rise-z-overlay) + var(--rise-layer-index, 0));
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 1000;
-	backdrop-filter: blur(6px);
-	@include interactive;
+	box-sizing: border-box;
+	padding: sz(ct(modal, padding, 16px));
+	background-color: ct(modal, bg, var(--rise-overlay));
 
-	@include respond-below('mobile') {
-		padding: 0 sz(16px);
-	}
-
-	@include respond-below('xs') {
-		padding: 0;
-	}
-
-	/* Режим ограничения внутри контейнера */
 	&--contained {
 		position: absolute;
-		backdrop-filter: none;
 	}
 
-	/* Без затемнения фона */
 	&--no-overlay {
 		background-color: transparent;
-		backdrop-filter: none;
 	}
 
 	&__content {
-		@include custom-bg(background-color, var(--color-white));
-		border-radius: var(--border-radius-lg);
+		display: flex;
+		flex-direction: column;
 		box-sizing: border-box;
 		width: 100%;
-		min-width: min(320px, 100%);
-		max-width: sz(500px);
-		max-height: calc(100vh - #{sz(40px)});
-		border: 1px solid var(--color-border);
-		overflow: visible;
+		max-width: sz(ct(modal-content, width, 500px));
+		max-height: 100%;
+		overflow: hidden;
+		border: 1px solid ct(modal-content, border, transparent);
+		border-radius: sz(ct(modal-content, radius, var(--rise-radius-xl)));
+		@include tonal-surface(dialog);
+		@include custom-bg(background-color, ct(modal-content, bg, var(--rise-surface-dialog)));
+		@include custom-text(color, ct(modal-content, text, var(--rise-text)));
+		@include text-size(sm);
+		box-shadow: ct(modal-content, shadow, var(--rise-shadow-xl));
+		outline: none;
 	}
 
-	/* FullScreen режимы */
-	&--fullscreen-width {
-		.base-modal__content {
-			max-width: calc(100vw - 40px);
-
-			@include respond-below('mobile') {
-				max-width: 100%;
-			}
-		}
+	&--fullscreen-width &__content,
+	&--fullscreen-both &__content {
+		max-width: none;
 	}
 
-	&--fullscreen-height {
-		.base-modal__content {
-			max-height: calc(100vh - 40px);
-			height: calc(100vh - 40px);
-		}
-	}
-
-	&--fullscreen-both {
-		.base-modal__content {
-			max-width: calc(100vw - 40px);
-			max-height: calc(100vh - 40px);
-			height: calc(100vh - 40px);
-
-			@include respond-below('mobile') {
-				max-width: 100%;
-			}
-		}
+	&--fullscreen-height &__content,
+	&--fullscreen-both &__content {
+		height: 100%;
 	}
 
 	&__header {
 		display: flex;
+		flex: none;
 		align-items: center;
-		justify-content: space-between;
-		padding: sz(16px) sz(24px);
-		border-bottom: 1px solid var(--color-border);
-		@include custom-bg(background-color, var(--color-surface-muted));
-		border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+		gap: sz(12px);
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
+		border-bottom: 1px solid var(--rise-border);
 	}
 
 	&__header-left {
 		display: flex;
+		flex: 1;
 		align-items: center;
-		gap: 10px;
+		gap: sz(8px);
+		min-width: 0;
 	}
 
-	&__title {
+	&__title.base-text {
+		@include inherit-custom-color;
 		margin: 0;
-		font-size: sz(18px);
-		font-weight: 700;
-		@include custom-text(color, var(--color-primary));
+		@include heading;
+		font-size: sz(ct(modal-title, font-size, var(--rise-font-size-base)));
+		line-height: sz(var(--rise-line-height-base));
+		@include custom-text(color, var(--rise-text-highlighted));
+		overflow-wrap: anywhere;
+	}
+
+	&__close.base-button {
+		@include inherit-custom-color;
+		--btn-pad-top: 5px;
+		--btn-pad-right: 5px;
+		--btn-pad-bottom: 5px;
+		--btn-pad-left: 5px;
+
+		flex: none;
 	}
 
 	&__body {
-		padding: sz(24px);
-		@include custom-text(color, var(--color-text));
+		flex: 1 1 auto;
+		min-height: 0;
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
 		overflow-y: auto;
+		@include scrollbar-thin;
+		@include focus-ring(-2px);
+		@include reset-custom-color;
 	}
 
 	&__footer {
 		display: flex;
+		flex: none;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: flex-end;
-		gap: sz(12px);
-		padding: sz(16px) sz(24px);
-		border-top: 1px solid var(--color-border);
-		@include custom-bg(background-color, var(--color-surface-muted));
-		border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+		gap: sz(8px);
+		padding: space(ct(modal-content, padding-y, 16px) ct(modal-content, padding-x, 20px));
+		border-top: 1px solid var(--rise-border);
+		@include reset-custom-color;
 	}
 
-	// Варианты
-	&--ghost {
+	&--shadow &__content {
+		box-shadow: ct(modal-content, shadow, var(--rise-shadow-xl));
+	}
+
+	&--ghost &__content {
+		border-color: transparent;
 		@include custom-bg(background-color, transparent);
-		backdrop-filter: none;
-
-		.base-modal__content {
-			border-color: transparent;
-			background-color: transparent;
-		}
+		box-shadow: none;
 	}
 
-	&--shadow {
-		.base-modal__content {
-			box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-		}
+	&--ghost &__header,
+	&--ghost &__footer {
+		border-color: transparent;
 	}
 }
 
-/* Анимации */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-	transition: opacity 0.25s ease;
-
-	.base-modal__content {
-		transition:
-			transform 0.25s ease,
-			opacity 0.25s ease;
-	}
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-	opacity: 0;
-
-	.base-modal__content {
-		transform: scale(0.95) translateY(10px);
-		opacity: 0;
-	}
-}
+@include overlay-animation(base-modal, '.base-modal', '.base-modal__content');

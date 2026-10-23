@@ -2,18 +2,19 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: auto;
-	height: auto;
-	fill: currentColor;
 	flex-shrink: 0;
+	color: ct(icon, text, currentcolor);
+	fill: currentcolor;
+
+	&--directional {
+		scale: var(--rise-dir, 1) 1;
+	}
 
 	&__svg {
-		width: sz(20px);
-		height: sz(20px);
+		width: sz(ct(icon, icon-size, 20px));
+		height: sz(ct(icon, icon-size, 20px));
 		transform-box: fill-box;
 		transform-origin: center;
-		transition:
-			transform var(--transition-base),
-			color var(--transition-base);
+		@include transition(transform, color);
 	}
 }

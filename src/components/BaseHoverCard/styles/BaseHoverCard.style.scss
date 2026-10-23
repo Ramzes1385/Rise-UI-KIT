@@ -1,0 +1,37 @@
+.base-hover-card {
+	display: inline-flex;
+	vertical-align: middle;
+
+	&__trigger {
+		display: inline-flex;
+		max-width: 100%;
+
+		> [tabindex] {
+			@include focus-ring;
+		}
+	}
+
+	&__panel.base-dropdown__panel {
+		display: flex;
+		flex-direction: column;
+		max-width: sz(ct(hover-card-panel, width, 320px));
+		overflow: visible;
+	}
+
+	&__inner {
+		min-height: 0;
+		padding: space(ct(hover-card-inner, padding-y, 12px) ct(hover-card-inner, padding-x, 16px));
+		font-size: sz(ct(hover-card-inner, font-size, var(--rise-font-size-sm)));
+		overflow: hidden auto;
+		overflow-wrap: anywhere;
+		@include scrollbar-thin;
+
+		> :first-child {
+			margin-top: 0;
+		}
+
+		> :last-child {
+			margin-bottom: 0;
+		}
+	}
+}

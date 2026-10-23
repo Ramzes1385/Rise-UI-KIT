@@ -1,16 +1,15 @@
-/**
- * Visual regression тесты для BaseMegaMenu.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['default', 'variants', 'sizes', 'disabled', 'long-content'] as const
 
-const COMPONENT = 'ui-basemegamenu'
-const STORIES = ['default', 'deep-nesting', 'dark-theme']
-
-for (const story of STORIES) {
-	test(`BaseMegaMenu — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('.base-mega-menu')
-		await expect(root).toHaveScreenshot(`base-mega-menu--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseMegaMenu · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `navigation-basemegamenu--${story}`, { theme, width: 1000, height: 600 })
+				await expectStoryScreenshot(page, `base-mega-menu-${story}-${theme}.png`)
+			})
+		}
 	})
 }

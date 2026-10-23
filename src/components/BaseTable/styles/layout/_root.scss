@@ -1,0 +1,79 @@
+@use '@styles/variables' as *;
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-table {
+	@include custom-color-scope;
+	--tbl-pad-top: #{ct(table, cell-padding-y, 13.5px)};
+	--tbl-pad-right: #{ct(table, cell-padding-x, 16px)};
+	--tbl-pad-bottom: #{ct(table, cell-padding-y, 13.5px)};
+	--tbl-pad-left: #{ct(table, cell-padding-x, 16px)};
+	@include custom-bg(--tbl-bg, ct(table, bg, var(--rise-bg)));
+	@include custom-bg(--tbl-head-bg, ct(table, header-bg, ct(table, bg, var(--rise-bg))));
+	--tbl-hover: var(--custom-bg-hover);
+	--tbl-border: #{ct(table, border, var(--rise-border))};
+	--tbl-font-size: #{sz(ct(table, font-size, var(--rise-font-size-sm)))};
+	@include custom-text(--tbl-text, ct(table, text, var(--rise-text)));
+	@include custom-text(--tbl-head-text, ct(table, header-text, var(--rise-text-muted)));
+
+	width: 100%;
+	font-family: var(--rise-font-sans);
+	font-size: var(--tbl-font-size);
+	line-height: sz(var(--rise-line-height-sm));
+	color: var(--tbl-text);
+
+	&__body {
+		@include reset-custom-color;
+
+		box-sizing: border-box;
+		width: 100%;
+		border: 1px solid ct(table, border, transparent);
+		border-radius: sz(ct(table, radius, var(--rise-radius-lg)));
+		background-color: var(--tbl-bg);
+		overflow: hidden;
+	}
+
+	&__header {
+		padding: space(12px 16px);
+		border-bottom: 1px solid var(--tbl-border);
+	}
+
+	&__footer {
+		padding: space(12px 16px);
+		border-top: 1px solid var(--tbl-border);
+		background-color: var(--rise-bg-muted);
+	}
+
+	&__visually-hidden,
+	&__visually-hidden.base-text {
+		@include visually-hidden;
+	}
+
+	&--bordered {
+		.base-table__body {
+			border-color: ct(table, border, var(--rise-border-accented));
+		}
+
+		.base-table__th + .base-table__th,
+		.base-table__td + .base-table__td {
+			border-inline-start: 1px solid var(--tbl-border);
+		}
+	}
+
+	&--striped {
+		.base-table__tr {
+			--tbl-row-hover: var(
+				--tbl-hover,
+				#{ct(table, row-bg-hover, color-mix(in srgb, var(--rise-bg-accented) 60%, var(--rise-bg-muted)))}
+			);
+		}
+
+		.base-table__tr--even {
+			--tbl-row-bg: var(--rise-bg-muted);
+		}
+
+		.base-table__td {
+			border-top-color: transparent;
+		}
+	}
+}

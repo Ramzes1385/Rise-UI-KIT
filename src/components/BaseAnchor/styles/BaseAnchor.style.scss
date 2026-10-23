@@ -1,0 +1,112 @@
+.base-anchor {
+	@include custom-color-scope;
+	--anchor-indent: #{sz(12px)};
+	--anchor-mark: var(--custom-bg, #{ct(anchor, indicator-bg, var(--rise-primary))});
+
+	position: relative;
+	display: block;
+	box-sizing: border-box;
+	max-width: 100%;
+	min-width: 0;
+	font-size: sz(ct(anchor, font-size, var(--rise-font-size-sm)));
+	line-height: sz(var(--rise-line-height-sm));
+	@include custom-text(color, ct(anchor, text, var(--rise-text-muted)));
+
+	&__indicator {
+		@include sliding-indicator('&--instant');
+
+		left: auto;
+		inset-inline-start: -1px;
+		width: 2px;
+		background-color: var(--anchor-mark);
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: sz(ct(anchor, gap, 2px));
+		margin: 0;
+		padding: 0;
+		border-inline-start: 1px solid ct(anchor, border, var(--rise-border));
+		list-style: none;
+	}
+
+	&__item {
+		min-width: 0;
+	}
+
+	&__link {
+		position: relative;
+		display: block;
+		padding-block: sz(ct(anchor, padding-y, 4px));
+		padding-inline: calc(var(--anchor-indent) * (var(--anchor-level, 0) + 1)) sz(ct(anchor, padding-x, 8px));
+		border-radius: sz(ct(anchor, radius, var(--rise-radius-sm)));
+		color: inherit;
+		text-decoration: none;
+		overflow-wrap: anywhere;
+		@include transition-colors;
+		@include focus-ring;
+		@include custom-text-hover(color, ct(anchor, text-hover, var(--rise-text)));
+
+		&--active {
+			font-weight: ct(anchor, font-weight-active, var(--rise-font-weight-medium));
+			color: var(--custom-text-active, #{ct(anchor, text-active, var(--rise-primary-text))});
+		}
+	}
+
+	&--horizontal &__list {
+		flex-flow: row wrap;
+		gap: sz(ct(anchor, horizontal-gap, 4px));
+		border-bottom: 1px solid ct(anchor, border, var(--rise-border));
+		border-inline-start: none;
+	}
+
+	&--horizontal &__link {
+		padding: sz(ct(anchor, horizontal-padding-y, 6px) ct(anchor, horizontal-padding-x, 10px));
+	}
+
+	&--horizontal &__indicator {
+		left: 0;
+		inset-inline-start: auto;
+		width: var(--indicator-w);
+		height: 2px;
+		transform: translate(var(--indicator-x), calc(var(--indicator-y) + var(--indicator-h) - 1px));
+	}
+
+	&:not(&--soft, &--horizontal, &--indicator-ready) &__link--active::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		inset-inline-start: -2px;
+		width: 2px;
+		background-color: var(--anchor-mark);
+	}
+
+	&--horizontal:not(&--soft, &--indicator-ready) &__link--active::before {
+		content: '';
+		position: absolute;
+		inset-inline: 0;
+		bottom: -1px;
+		height: 2px;
+		background-color: var(--anchor-mark);
+	}
+
+	&--soft &__list {
+		border: none;
+	}
+
+	&--soft &__indicator {
+		left: 0;
+		inset-inline-start: auto;
+		width: var(--indicator-w);
+		height: var(--indicator-h);
+		border-radius: sz(ct(anchor, radius, var(--rise-radius-sm)));
+		transform: translate(var(--indicator-x), var(--indicator-y));
+		background-color: var(--custom-bg, #{ct(anchor, soft-indicator-bg, var(--rise-primary-soft))});
+	}
+
+	&--soft:not(&--indicator-ready) &__link--active {
+		background-color: var(--custom-bg, #{ct(anchor, soft-indicator-bg, var(--rise-primary-soft))});
+	}
+}

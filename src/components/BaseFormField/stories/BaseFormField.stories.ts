@@ -1,252 +1,29 @@
-/**
- * Stories для компонента BaseFormField.
- * Демонстрирует все состояния.
- */
-
-import { expect, userEvent, within } from 'storybook/test'
-import { BaseInput } from '@components/BaseInput'
-import { UI_TEXT } from '@constants'
-import { buildArgTypes } from '@utils/storybookUtils'
-import { FORM_FIELD_VARIANTS } from '../model/BaseFormField.types'
+import { args } from './args'
+import * as cases from './cases'
+import { render } from './render'
+import { argTypes } from './argTypes'
+import { parameters } from './parameters'
+import type { Meta } from '@storybook/vue3-vite'
 import BaseFormField from '../ui/BaseFormField.vue'
-import type { Meta, StoryObj } from '@storybook/vue3'
 
-const meta: Meta<typeof BaseFormField> = {
-	title: 'UI/BaseFormField',
+const meta = {
+	title: 'Form/BaseFormField',
 	component: BaseFormField,
-
-	argTypes: buildArgTypes({
-		props: {
-			label: { control: 'text' },
-			description: { control: 'text' },
-			error: { control: 'text' },
-			variant: {
-				control: 'radio',
-				options: FORM_FIELD_VARIANTS,
-			},
-			color: {
-				control: 'object',
-				description: 'Объект CustomColor: bg (фон), text (текст) и их состояния hover/active/focus',
-			},
-			isRequired: { control: 'boolean' },
-			sizeScale: {
-				control: { type: 'range', min: 50, max: 200, step: 10 },
-				description: 'Масштаб размера (50–200%, по умолчанию 100)',
-			},
-			customClass: { control: 'object' },
-		},
-	}),
-
-	args: {
-		label: 'Email',
-		description: '',
-		error: '',
-		variant: 'default',
-		isRequired: false,
-		sizeScale: 100,
-	},
-}
+	parameters,
+	argTypes,
+	args,
+	render,
+} satisfies Meta<typeof BaseFormField>
 
 export default meta
-type Story = StoryObj<typeof BaseFormField>
-/** Базовое поле */
-export const Default: Story = {
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="" placeholder="email@example.com" />
-			</BaseFormField>
-		`,
-	}),
-}
-/** Варианты отображения */
-export const Variants: Story = {
-	render: () => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { FORM_FIELD_VARIANTS }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:16px;max-width:400px;">
-				<BaseFormField v-for="v in FORM_FIELD_VARIANTS" :key="v" :label="v" :variant="v">
-					<BaseInput model-value="" :placeholder="v + ' вариант'" />
-				</BaseFormField>
-			</div>
-		`,
-	}),
-}
-/** Масштаб размера — sizeScale применяется ко всем вложенным элементам */
-export const SizeScale: Story = {
-	render: () => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			const scales = [75, 100, 125, 150]
-			return { scales }
-		},
-		template: `
-			<div style="display:flex;flex-direction:column;gap:24px;max-width:400px;">
-				<template v-for="s in scales" :key="s">
-					<BaseFormField
-						:label="'Масштаб ' + s + '% — описание'"
-						:size-scale="s"
-						description="Подсказка масштабируется"
-						is-required
-					>
-						<BaseInput model-value="" placeholder="Введите значение" />
-					</BaseFormField>
-					<BaseFormField
-						:label="'Масштаб ' + s + '% — ошибка'"
-						:size-scale="s"
-						error="Ошибка масштабируется"
-						is-required
-					>
-						<BaseInput model-value="bad-email" error />
-					</BaseFormField>
-				</template>
-			</div>
-		`,
-	}),
-}
-/** С описанием */
-export const WithDescription: Story = {
-	args: {
-		description: 'Мы не будем передавать ваш email третьим лицам',
-	},
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="" placeholder="email@example.com" />
-			</BaseFormField>
-		`,
-	}),
-}
-/** С ошибкой */
-export const WithError: Story = {
-	args: {
-		error: 'Введите корректный email',
-	},
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="bad-email" error />
-			</BaseFormField>
-		`,
-	}),
-}
-/** Обязательное */
-export const Required: Story = {
-	args: {
-		isRequired: true,
-	},
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args, UI_TEXT }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="" :placeholder="UI_TEXT.REQUIRED_FIELD" />
-			</BaseFormField>
-		`,
-	}),
-}
-/** Тёмная тема */
-export const DarkTheme: Story = {
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<div data-theme="dark" style="padding:16px;background:var(--color-bg);border-radius:var(--border-radius-base);">
-				<BaseFormField v-bind="args">
-					<BaseInput model-value="" placeholder="email@example.com" />
-				</BaseFormField>
-			</div>
-		`,
-	}),
-}
-/** Отключённое поле */
-export const Disabled: Story = {
-	args: {
-		label: 'Email',
-	},
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="disabled@example.com" is-disabled />
-			</BaseFormField>
-		`,
-	}),
-}
-/** Интерактивное */
-export const Interactive: Story = {
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="" placeholder="Введите значение" />
-			</BaseFormField>
-		`,
-	}),
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement)
 
-		await step('пользователь вводит значение в связанное поле', async () => {
-			const input = canvas.getByPlaceholderText('Введите значение')
-			await userEvent.type(input, 'Привет')
-			expect(input).toHaveValue('Привет')
-		})
-	},
-}
-/** Длинный контент — проверка переполнения текста в лейбле, описании и ошибке */
-export const LongContent: Story = {
-	args: {
-		label:
-			'Пожалуйста, введите ваш основной адрес электронной почты, который будет использоваться для всех уведомлений, рассылок и важных сообщений от нашей компании, включая обновления заказов и промо-акции, а также для связи с технической поддержкой',
-		description:
-			'Этот адрес электронной почты будет отображаться в вашем профиле и использоваться для восстановления пароля, а также для получения важных уведомлений о состоянии ваших заказов и аккаунта',
-		error:
-			'Введённый адрес электронной почты не соответствует требуемому формату. Пожалуйста, убедитесь, что адрес содержит символ @ и корректное доменное имя, например user@example.com, и попробуйте снова',
-		isRequired: true,
-	},
-	render: args => ({
-		components: { BaseFormField, BaseInput },
-		setup() {
-			return { args }
-		},
-		template: `
-			<BaseFormField v-bind="args">
-				<BaseInput model-value="invalid-email" error />
-			</BaseFormField>
-		`,
-	}),
-	tags: ['!a11y'],
-}
-export const WithCustomClass: Story = {
-	args: {
-		customClass: { root: 'ff-root', header: 'ff-header', label: 'ff-label', required: 'ff-required', content: 'ff-content', description: 'ff-description', animation: 'ff-animation', error: 'ff-error' },
-	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement.querySelector('.ff-root')).toBeTruthy()
-	},
-}
+export const Default = cases.Default
+export const Variants = cases.Variants
+export const Sizes = cases.Sizes
+export const Theming = cases.Theming
+export const WithError = cases.WithError
+export const LongContent = cases.LongContent
+export const KitControl = cases.KitControl
+export const LabelFor = cases.LabelFor
+export const ToggleControls = cases.ToggleControls
+export const Animations = cases.Animations

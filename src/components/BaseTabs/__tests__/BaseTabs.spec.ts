@@ -1,13 +1,7 @@
-/**
- * Unit-тесты для BaseTabs.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import { nextTick } from 'vue'
+import { render, screen } from '@testing-library/vue'
 
-/** Мок ResizeObserver для jsdom */
 global.ResizeObserver = class ResizeObserver {
 	observe() {}
 	unobserve() {}
@@ -15,7 +9,9 @@ global.ResizeObserver = class ResizeObserver {
 }
 
 import BaseTabs from '../ui/BaseTabs.vue'
-import type { TabItem } from '../model/BaseTabs.types'
+import type { TabItem } from '../types/BaseTabs.types'
+
+Object.defineProperty(HTMLElement.prototype, 'scrollTo', { configurable: true, value: vi.fn() })
 
 const TABS: TabItem[] = [
 	{ id: 'info', label: 'Информация' },
@@ -181,6 +177,35 @@ describe('BaseTabs unit', () => {
 		})
 	})
 
+	describe('кнопки прокрутки', () => {
+		it('должны иметь доступные имена', async () => {
+			const metrics = { scrollLeft: 10, scrollWidth: 100, clientWidth: 50 }
+			const originals = Object.fromEntries(
+				Object.keys(metrics).map(key => [key, Object.getOwnPropertyDescriptor(HTMLElement.prototype, key)]),
+			)
+
+			for (const [key, value] of Object.entries(metrics)) {
+				Object.defineProperty(HTMLElement.prototype, key, { configurable: true, get: () => value })
+			}
+
+			try {
+				render(BaseTabs, {
+					props: { modelValue: 'info', items: TABS, isScrollable: true },
+				})
+				await nextTick()
+				await nextTick()
+
+				expect(screen.getByRole('button', { name: 'Прокрутить вкладки влево' })).toBeInTheDocument()
+				expect(screen.getByRole('button', { name: 'Прокрутить вкладки вправо' })).toBeInTheDocument()
+			} finally {
+				for (const [key, descriptor] of Object.entries(originals)) {
+					if (descriptor) Object.defineProperty(HTMLElement.prototype, key, descriptor)
+					else delete (HTMLElement.prototype as unknown as Record<string, unknown>)[key]
+				}
+			}
+		})
+	})
+
 	describe('пропс sizeScale', () => {
 		it('не должен устанавливать --size-scale когда sizeScale=100', () => {
 			const { container } = render(BaseTabs, {
@@ -221,12 +246,10 @@ describe('BaseTabs unit', () => {
 		})
 
 		it('должен распределять объект классов по внутренним элементам', async () => {
-			// Сохраняем оригинальные дескрипторы свойств
 			const originalScrollLeft = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollLeft')
 			const originalScrollWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollWidth')
 			const originalClientWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'clientWidth')
 
-			// Мокаем свойства прокрутки, чтобы кнопки прокрутки отрендерились
 			Object.defineProperty(HTMLElement.prototype, 'scrollLeft', {
 				configurable: true,
 				get() {
@@ -250,7 +273,7 @@ describe('BaseTabs unit', () => {
 				const { container } = render(BaseTabs, {
 					props: {
 						modelValue: 'info',
-						items: [{ id: 'info', label: 'Информация', icon: '<span class="test-icon"></span>' }],
+						items: [{ id: 'info', label: 'Информация', icon: 'home' }],
 						isScrollable: true,
 						customClass: {
 							root: 'custom-root',
@@ -265,7 +288,6 @@ describe('BaseTabs unit', () => {
 					},
 				})
 
-				// Ждем выполнения nextTick для обновления состояния прокрутки
 				await nextTick()
 				await nextTick()
 
@@ -278,7 +300,6 @@ describe('BaseTabs unit', () => {
 				expect(container.querySelector('.base-tabs__label')?.classList.contains('custom-label')).toBe(true)
 				expect(container.querySelector('.base-tabs__content')?.classList.contains('custom-content')).toBe(true)
 			} finally {
-				// Восстанавливаем оригинальные дескрипторы
 				if (originalScrollLeft) {
 					Object.defineProperty(HTMLElement.prototype, 'scrollLeft', originalScrollLeft)
 				} else {
@@ -297,6 +318,37 @@ describe('BaseTabs unit', () => {
 					delete (HTMLElement.prototype as any).clientWidth
 				}
 			}
+		})
+	})
+
+	describe('слоты panel-<id>', () => {
+		it('выбранная вкладка со своим слотом показывает его, остальные — default', async () => {
+			const { rerender } = render(BaseTabs, {
+				props: { modelValue: 'specs', items: TABS },
+				slots: { default: 'Общая панель', 'panel-specs': 'Панель характеристик' },
+			})
+			expect(screen.getByRole('tabpanel')).toHaveTextContent('Панель характеристик')
+			await rerender({ modelValue: 'info', items: TABS })
+			expect(screen.getByRole('tabpanel')).toHaveTextContent('Общая панель')
+		})
+
+		it('только слоты panel-<id>: панель связана с вкладкой, у вкладки без слота панель пустая', async () => {
+			const { rerender } = render(BaseTabs, {
+				props: { modelValue: 'info', items: TABS },
+				slots: { 'panel-info': 'О товаре' },
+			})
+			const panel = screen.getByRole('tabpanel')
+			expect(panel).toHaveTextContent('О товаре')
+			expect(screen.getByRole('tab', { name: 'Информация' })).toHaveAttribute('aria-controls', panel.id)
+			await rerender({ modelValue: 'specs', items: TABS })
+			await nextTick()
+			expect(screen.getByRole('tabpanel').textContent?.trim()).toBe('')
+		})
+
+		it('без слотов панели нет роли tabpanel и aria-controls', () => {
+			const { container } = render(BaseTabs, { props: { modelValue: 'info', items: TABS } })
+			expect(container.querySelector('[role="tabpanel"]')).toBeNull()
+			expect(screen.getByRole('tab', { name: 'Информация' })).not.toHaveAttribute('aria-controls')
 		})
 	})
 })

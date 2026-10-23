@@ -1,11 +1,6 @@
-/**
- * Unit-тесты для BaseAvatar.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseAvatar from '../ui/BaseAvatar.vue'
+import { fireEvent, render, screen } from '@testing-library/vue'
 
 function getElement(selector: string, root: ParentNode): Element {
 	const element = root.querySelector(selector)
@@ -45,7 +40,7 @@ describe('BaseAvatar unit', () => {
 				props: { src: '/avatar.jpg', alt: 'Аватар', name: 'Иван Петров' },
 			})
 
-			await fireEvent.error(getElement('.base-image__img', container))
+			await fireEvent.error(getElement('.base-avatar__img', container))
 
 			expect(screen.getByText('ИП')).toBeInTheDocument()
 
@@ -82,10 +77,10 @@ describe('BaseAvatar unit', () => {
 	})
 
 	describe('пропс shape', () => {
-		it('должен применять модификатор --circle по умолчанию', () => {
+		it('должен применять модификатор --square по умолчанию', () => {
 			const { container } = render(BaseAvatar)
 
-			expect(container.querySelector('.base-avatar')?.classList.contains('base-avatar--circle')).toBe(true)
+			expect(container.querySelector('.base-avatar')?.classList.contains('base-avatar--square')).toBe(true)
 		})
 
 		it('должен применять модификатор --square когда shape=square', () => {
@@ -123,6 +118,12 @@ describe('BaseAvatar unit', () => {
 			const { container } = render(BaseAvatar, { props: { isOnline: true } })
 
 			expect(container.querySelector('.base-avatar__online')).toBeInTheDocument()
+		})
+
+		it('должен давать точке статуса доступное имя «в сети» (статус передаётся не только цветом)', () => {
+			render(BaseAvatar, { props: { name: 'Иван Петров', isOnline: true } })
+
+			expect(screen.getByRole('img', { name: 'в сети' })).toHaveClass('base-avatar__online')
 		})
 
 		it('не должен рендерить индикатор онлайн когда isOnline=false', () => {

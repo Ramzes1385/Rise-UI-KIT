@@ -6,7 +6,6 @@ import vue from '@vitejs/plugin-vue'
 import type { PluginOption } from 'vite'
 import { isProductionMode } from '../utils/helpers'
 
-/** Создаёт плагин Vue с оптимальными настройками */
 export function createVuePlugin(mode: string): PluginOption {
 	const isProduction = isProductionMode(mode)
 

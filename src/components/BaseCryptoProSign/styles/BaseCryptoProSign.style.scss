@@ -1,0 +1,289 @@
+.base-crypto-pro-sign {
+	@include custom-color-scope;
+	--crypto-pro-sign-gap: #{ct(crypto-pro-sign, gap, space(16px))};
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--crypto-pro-sign-gap);
+	box-sizing: border-box;
+	min-width: 0;
+	max-width: 100%;
+	padding: ct(crypto-pro-sign, padding, space(16px));
+	border: 1px solid ct(crypto-pro-sign, border, transparent);
+	border-radius: sz(ct(crypto-pro-sign, radius, var(--rise-radius-lg)));
+	@include text-size(sm);
+	@include tonal-surface(muted);
+	@include custom-bg(background-color, ct(crypto-pro-sign, bg, var(--rise-bg-muted)));
+	@include custom-text(color, ct(crypto-pro-sign, text, var(--rise-text)));
+	@include custom-text(--crypto-pro-sign-text, ct(crypto-pro-sign, text, var(--rise-text)));
+
+	& :is(.base-select, .base-segmented, .base-file-upload) :is(.base-select__label, .base-segmented__label, .base-file-upload__label) {
+		color: var(--crypto-pro-sign-text);
+	}
+
+	&--soft {
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, var(--rise-bg-elevated));
+	}
+
+	&--outline {
+		border-color: var(--rise-border-accented);
+		@include tonal-surface(page);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&--ghost {
+		padding: 0;
+		@include tonal-surface(none);
+		@include custom-bg(background-color, transparent);
+	}
+
+	&__empty,
+	&__source,
+	&__hint {
+		margin: 0;
+	}
+
+	&__empty,
+	&__hint {
+		@include custom-text(color, var(--rise-text-muted));
+	}
+
+	&--soft &__empty,
+	&--soft &__hint,
+	&--soft .base-crypto-pro-sign-status__versions,
+	&--soft .base-crypto-pro-sign-status__step--pending {
+		@include custom-text(color, var(--rise-text-toned));
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: ct(crypto-pro-sign, actions-gap, sz(8px));
+	}
+
+	&__error {
+		margin-top: calc(var(--crypto-pro-sign-gap) * -1);
+		@include expand-rows;
+
+		&--open {
+			@include expand-rows-open;
+		}
+	}
+
+	&__error-body > * {
+		margin-top: var(--crypto-pro-sign-gap);
+	}
+
+	&__live {
+		@include visually-hidden;
+	}
+}
+
+.base-crypto-pro-sign-status {
+	--crypto-pro-sign-status-gap: #{sz(12px)};
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--crypto-pro-sign-status-gap);
+
+	&__versions {
+		margin: 0;
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+	}
+
+	&__steps {
+		display: flex;
+		flex-direction: column;
+		gap: sz(6px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__step {
+		display: flex;
+		align-items: center;
+		gap: sz(8px);
+
+		&--ok .base-crypto-pro-sign-status__icon {
+			color: var(--rise-success-text);
+		}
+
+		&--error .base-crypto-pro-sign-status__icon {
+			color: var(--rise-error-text);
+		}
+
+		&--pending {
+			@include custom-text(color, var(--rise-text-muted));
+		}
+	}
+
+	&__dot {
+		box-sizing: border-box;
+		flex: none;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid var(--rise-border-accented);
+		border-radius: 50%;
+	}
+
+	&__step--checking &__dot {
+		border-color: var(--rise-primary);
+		border-inline-end-color: transparent;
+
+		@include motion-safe {
+			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;
+		}
+	}
+
+	&__state {
+		@include visually-hidden;
+	}
+
+	&__error {
+		margin-top: calc(var(--crypto-pro-sign-status-gap) * -1);
+		@include expand-rows;
+
+		&--open {
+			@include expand-rows-open;
+		}
+	}
+
+	&__error-body > * {
+		margin-top: var(--crypto-pro-sign-status-gap);
+	}
+}
+
+.base-crypto-pro-sign-batch {
+	display: flex;
+	flex-direction: column;
+	gap: sz(8px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	&__item {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto auto;
+		align-items: center;
+		gap: sz(4px) sz(8px);
+		padding: space(8px) space(12px);
+		border: 1px solid transparent;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-field-bg);
+
+		&--signed {
+			border-color: var(--rise-success-border);
+		}
+
+		&--failed {
+			border-color: var(--rise-error-border);
+		}
+
+		&--signed .base-crypto-pro-sign-batch__icon {
+			color: var(--rise-success-text);
+		}
+
+		&--failed .base-crypto-pro-sign-batch__icon {
+			color: var(--rise-error-text);
+		}
+	}
+
+	&__dot {
+		box-sizing: border-box;
+		width: sz(16px);
+		height: sz(16px);
+		border: 2px solid var(--rise-border-accented);
+		border-radius: 50%;
+	}
+
+	&__item--signing &__dot {
+		border-color: var(--rise-primary);
+		border-inline-end-color: transparent;
+
+		@include motion-safe {
+			animation: base-crypto-pro-sign-spin calc(var(--rise-duration-slow) * 3) linear infinite;
+		}
+	}
+
+	&__name {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__meta {
+		@include custom-text(color, var(--rise-text-muted));
+		@include text-size(xs);
+	}
+
+	&__progress,
+	&__error {
+		grid-column: 2 / -1;
+	}
+
+	&__error {
+		color: var(--rise-error-text);
+		overflow-wrap: anywhere;
+	}
+}
+
+.base-crypto-pro-sign-result {
+	display: flex;
+	align-items: flex-start;
+	gap: ct(crypto-pro-sign, result-gap, sz(10px));
+	padding: ct(crypto-pro-sign, result-padding, space(12px));
+	border-radius: sz(ct(crypto-pro-sign, result-radius, var(--rise-radius-lg)));
+	background-color: var(--rise-success-soft);
+	color: var(--rise-success-text);
+
+	&--invalid {
+		background-color: var(--rise-error-soft);
+		color: var(--rise-error-text);
+	}
+
+	&__icon {
+		flex: none;
+	}
+
+	&__body,
+	&__signer {
+		display: flex;
+		flex-direction: column;
+		gap: sz(4px);
+		min-width: 0;
+	}
+
+	&__title,
+	&__name {
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__signers {
+		display: flex;
+		flex-direction: column;
+		gap: sz(10px);
+		margin: sz(6px) 0 0;
+		padding: 0;
+		list-style: none;
+		color: var(--rise-text);
+	}
+
+	&__detail,
+	&__line {
+		overflow-wrap: anywhere;
+	}
+}
+
+@include enter-fade(base-crypto-pro-sign-fade);
+@include enter-slide(base-crypto-pro-sign-slide);
+
+@keyframes base-crypto-pro-sign-spin {
+	to {
+		transform: rotate(1turn);
+	}
+}

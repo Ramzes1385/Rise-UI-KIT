@@ -1,0 +1,198 @@
+import { vi } from 'vitest'
+import { buildScenePng, buildSceneSvg } from '../../../../model/render/flowExportSvg'
+import type { FlowExportScene } from '../../../../types/internal/core/flowRenderInternal.types'
+
+const scene = (patch: Partial<FlowExportScene> = {}): FlowExportScene =>
+	({
+		nodes: [
+			{ rect: { x: 0, y: 0, width: 100, height: 40 }, node: { label: 'A&B <x>' }, kind: { shape: { shape: 'cylinder' } } },
+			{ rect: { x: 200, y: 0, width: 100, height: 40 }, node: { label: 'C' }, kind: { shape: { shape: 'rect' } } },
+		],
+		edges: [
+			{ route: { path: 'M0 0L9 9' }, kind: { stroke: 'dashed' }, markerEnd: 'arrow', markerStart: 'circle' },
+			{ route: { path: 'M1 1L8 8' }, kind: { stroke: 'dotted' }, markerEnd: null, markerStart: null },
+			{ route: { path: 'M2 2L7 7' }, kind: { stroke: 'solid' }, markerEnd: null, markerStart: null },
+		],
+		groups: [
+			{ rect: { x: -10, y: -10, width: 400, height: 100 }, group: { label: 'Группа "1"' }, border: 'dashed' },
+			{ rect: { x: -5, y: -5, width: 50, height: 50 }, group: { label: 'Вложенная' }, border: 'solid' },
+		],
+		labels: [{ point: { x: 50, y: 20 }, text: 'a<b' }],
+		markers: [
+			{ id: 'arrow', paths: ['M0 0L10 5L0 10Z'], isFilled: true, refX: 9 },
+			{ id: 'circle', paths: ['M1 5A4 4 0 1 0 9 5Z'], isFilled: false, refX: 1 },
+		],
+		bounds: { x: 0, y: 0, width: 300, height: 40 },
+		viewport: { x: -10, y: -20, zoom: 2 },
+		frame: { width: 200, height: 100 },
+		uid: 'u',
+		root: null,
+		...patch,
+	}) as unknown as FlowExportScene
+
+describe('buildSceneSvg', () => {
+	it('собирает узлы, связи, группы, подписи и маркеры; текст экранируется', () => {
+		const svg = buildSceneSvg(scene())
+		expect(svg).toContain('A&amp;B &lt;x&gt;')
+		expect(svg).toContain('Группа &quot;1&quot;')
+		expect(svg).toContain('a&lt;b')
+		expect(svg).toContain('stroke-dasharray="6 4"')
+		expect(svg).toContain('stroke-dasharray="2 4"')
+		expect(svg).toContain('marker-end="url(#u-arrow)"')
+		expect(svg).toContain('marker-start="url(#u-circle)"')
+		expect(svg).toContain('<marker id="u-arrow"')
+		expect(svg).toContain('fill="#c4c7cc"')
+		expect(svg).toContain('viewBox="-24 -24 348 88"')
+		expect(svg).toContain('fill="#f6f6f7"')
+	})
+
+	it('прозрачный фон не рисует подложку, область viewport берёт видимую часть', () => {
+		const svg = buildSceneSvg(scene(), { background: 'transparent', area: 'viewport' })
+		expect(svg).not.toContain('#f6f6f7')
+		expect(svg).toContain('viewBox="5 10 100 50"')
+	})
+
+	it('цвета берутся из токенов корня карты', () => {
+		const root = document.createElement('div')
+		root.style.setProperty('--rise-bg-muted', '#101010')
+		document.body.append(root)
+		const svg = buildSceneSvg(scene({ root }))
+		root.remove()
+		expect(svg).toContain('#101010')
+		expect(svg).toContain('#ffffff')
+	})
+})
+
+describe('buildSceneSvg: подзаголовок, подпись снизу и цвета узла (v6.2)', () => {
+	const only = (patch: Record<string, unknown>, shape: Record<string, unknown> = { shape: 'rect' }, root: Element | null = null) =>
+		scene({
+			root,
+			nodes: [{ rect: { x: 0, y: 0, width: 100, height: 60 }, node: { label: 'Имя' }, kind: { shape }, ...patch }],
+			edges: [],
+			groups: [],
+			labels: [],
+			markers: [],
+		} as never)
+	const textOf = (svg: string, content: string): string => svg.match(new RegExp(`<text [^>]*>${content}</text>`))?.[0] ?? ''
+
+	it('без подзаголовка подпись по центру узла, второй строки нет', () => {
+		const svg = buildSceneSvg(only({}))
+		expect(textOf(svg, 'Имя')).toContain('x="50" y="34" text-anchor="middle"')
+		expect(svg.match(/<text /g)).toHaveLength(1)
+	})
+
+	it('подзаголовок идёт второй строкой, приглушён и экранируется; подпись смещается вверх', () => {
+		const svg = buildSceneSvg(only({ subtitle: 'роль <A>' }))
+		expect(textOf(svg, 'Имя')).toContain('y="28" text-anchor="middle"')
+		const subtitle = textOf(svg, 'роль &lt;A&gt;')
+		expect(subtitle).toContain('x="50" y="44" text-anchor="middle" font-size="11"')
+		expect(subtitle).toContain('fill-opacity="0.8"')
+	})
+
+	it('подпись снизу слева: жирная, от левого края, подзаголовок под ней', () => {
+		const alone = buildSceneSvg(only({ isLabelBottom: true }))
+		expect(textOf(alone, 'Имя')).toContain('x="12" y="34" text-anchor="start" font-size="13" font-weight="600"')
+		const both = buildSceneSvg(only({ isLabelBottom: true, subtitle: 'под' }))
+		expect(textOf(both, 'Имя')).toContain('x="12" y="34" text-anchor="start"')
+		expect(textOf(both, 'под')).toContain('x="12" y="50" text-anchor="start"')
+	})
+
+	it('цвета фигуры: значения вида, цвет узла главнее обводки вида, без токенов — запасные', () => {
+		const root = document.createElement('div')
+		root.style.setProperty('--k-fill', '#111111')
+		root.style.setProperty('--k-line', '#222222')
+		root.style.setProperty('--k-text', '#333333')
+		root.style.setProperty('--k-mine', '#444444')
+		document.body.append(root)
+		const shape = { shape: 'rect', fill: 'var(--k-fill)', stroke: 'var(--k-line)', text: 'var(--k-text)' }
+		const byKind = buildSceneSvg(only({}, shape, root))
+		const own = buildSceneSvg(only({ node: { label: 'Имя', color: 'var(--k-mine)' } }, shape, root))
+		const plain = buildSceneSvg(only({}, { shape: 'rect' }, root))
+		root.remove()
+		expect(byKind).toContain('fill="#111111" stroke="#222222"')
+		expect(textOf(byKind, 'Имя')).toContain('fill="#333333"')
+		expect(own).toContain('fill="#111111" stroke="#444444"')
+		expect(plain).toContain('fill="#ffffff"')
+		expect(plain).not.toContain('#111111')
+	})
+
+	it('токен, которого нет, вложенный var и дыры в значении возвращают запасной цвет; без корня и без getComputedStyle — тоже', () => {
+		const root = document.createElement('div')
+		root.style.setProperty('--k-ok', '#555555')
+		document.body.append(root)
+		const fills = (fill: string, host: Element | null = root): string =>
+			buildSceneSvg(only({}, { shape: 'rect', fill }, host)).match(/<g transform[^>]*><path d="[^"]*" fill="([^"]*)"/)?.[1] ?? ''
+		const fallback = fills('var(--нет)')
+		expect(fallback).toBe('#ffffff')
+		expect(fills('var(--k-ok)')).toBe('#555555')
+		expect(fills('var(--k-ok, red)')).toBe('#555555')
+		expect(fills('var(--k-ok) var(--нет)')).toBe(fallback)
+		expect(fills('color-mix(in srgb, var(--нет) 40%, white)')).toBe(fallback)
+		expect(fills('rgb()')).toBe(fallback)
+		expect(fills('var(--k-ok)', null)).toBe(fallback)
+		vi.stubGlobal('getComputedStyle', undefined)
+		expect(fills('var(--k-ok)')).toBe(fallback)
+		vi.unstubAllGlobals()
+		root.remove()
+	})
+})
+
+describe('buildScenePng', () => {
+	const toBlob = vi.fn()
+	const drawImage = vi.fn()
+	let behavior: 'load' | 'fail' = 'load'
+
+	class FakeImage {
+		onload: () => void = () => undefined
+		onerror: () => void = () => undefined
+		set src(_value: string) {
+			queueMicrotask(() => (behavior === 'load' ? this.onload() : this.onerror()))
+		}
+	}
+
+	beforeEach(() => {
+		behavior = 'load'
+		toBlob.mockReset()
+		drawImage.mockReset()
+		vi.stubGlobal('Image', FakeImage)
+		URL.createObjectURL = vi.fn(() => 'blob:x')
+		URL.revokeObjectURL = vi.fn()
+		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({ drawImage } as never)
+		vi.spyOn(HTMLCanvasElement.prototype, 'toBlob').mockImplementation(toBlob)
+	})
+
+	afterEach(() => {
+		vi.unstubAllGlobals()
+		vi.restoreAllMocks()
+	})
+
+	it('рисует svg на холсте с множителем и возвращает png', async () => {
+		const png = new Blob(['x'], { type: 'image/png' })
+		toBlob.mockImplementation((done: (blob: Blob | null) => void) => done(png))
+		const result = await buildScenePng(scene(), { pixelRatio: 1 })
+		expect(result).toBe(png)
+		expect(drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 348, 88)
+		expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:x')
+	})
+
+	it('без множителя берётся 2, пустой результат холста — пустой png', async () => {
+		toBlob.mockImplementation((done: (blob: Blob | null) => void) => done(null))
+		const result = await buildScenePng(scene())
+		expect(drawImage).toHaveBeenCalledWith(expect.anything(), 0, 0, 696, 176)
+		expect(result.type).toBe('image/png')
+		expect(result.size).toBe(0)
+	})
+
+	it('ошибка загрузки изображения отклоняет промис и освобождает адрес', async () => {
+		behavior = 'fail'
+		await expect(buildScenePng(scene())).rejects.toThrow('svg')
+		expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:x')
+	})
+
+	it('без 2d-контекста картинка всё равно возвращается', async () => {
+		vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+		toBlob.mockImplementation((done: (blob: Blob | null) => void) => done(new Blob([], { type: 'image/png' })))
+		await expect(buildScenePng(scene())).resolves.toBeInstanceOf(Blob)
+		expect(drawImage).not.toHaveBeenCalled()
+	})
+})

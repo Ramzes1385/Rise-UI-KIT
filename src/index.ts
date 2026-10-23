@@ -1,7 +1,36 @@
+import './styles/kit.scss'
 export * from './components'
 export * as composables from './composables'
+export { applyTheme, useColorMode, useLoadingBar, useLocale, useOverlay, useTheme, useToast } from './composables'
+export type {
+	ColorMode,
+	IconMap,
+	LinkComponent,
+	OverlayCreateOptions,
+	OverlayHandle,
+	ResolvedColorMode,
+	ToastAction,
+	ToastId,
+	ThemeController,
+	ToastOptions,
+	UiKitDefaults,
+	UseLocaleReturn,
+} from './composables'
+export { defineLocale, en, formatMessage, kk, LOCALES, pluralize, registerLocale, ru, setLocale, uz } from './locales'
+export type {
+	CalendarNames,
+	CalendarPatterns,
+	KitLocaleCode,
+	LocaleInput,
+	LocaleOverrides,
+	PluralForms,
+	RelativeTimeNames,
+	RelativeTimeUnit,
+	UiKitLocale,
+} from './locales'
 export * as icons from './icons'
-export * as plugins from './plugins'
-export { createUiKitPlugin, default, UI_COMPONENTS, uiKitPlugin } from './plugin'
-export type { UiKitPluginOptions } from './plugin'
+export { createUiKitConfig, createUiKitPlugin, default, UI_COMPONENTS, uiKitPlugin } from './plugin'
+export type { UiKitConfigOptions, UiKitPluginOptions } from './plugin'
 export * as utils from './utils'
+export { createTheme, THEME_PRESETS } from './utils'
+export type { Theme, ThemeInput, ThemePresetName } from './utils'

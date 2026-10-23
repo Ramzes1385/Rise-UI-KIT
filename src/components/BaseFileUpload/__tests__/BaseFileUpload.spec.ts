@@ -1,21 +1,25 @@
-/**
- * Unit-тесты для BaseFileUpload.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import BaseFileUpload from '../ui/BaseFileUpload.vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 
-vi.mock('@utils/fileUtils', async importOriginal => {
-	const actual = await importOriginal<typeof import('@utils/fileUtils')>()
-	return {
-		...actual,
-		createImagePreview: vi.fn(() => Promise.resolve('blob:preview-mock')),
-	}
-})
+function selectFiles(container: Element, files: File[]) {
+	const input = container.querySelector<HTMLInputElement>('input[type="file"]')!
+	Object.defineProperty(input, 'files', { value: files, configurable: true })
+	return fireEvent.change(input)
+}
+
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0))
 
 describe('BaseFileUpload unit', () => {
+	beforeEach(() => {
+		vi.stubGlobal('URL', { ...URL, createObjectURL: vi.fn(() => 'blob:preview-mock'), revokeObjectURL: vi.fn() })
+	})
+
+	afterEach(() => {
+		vi.useRealTimers()
+		vi.unstubAllGlobals()
+	})
+
 	describe('рендер', () => {
 		it('должен рендерить контейнер загрузки', () => {
 			const { container } = render(BaseFileUpload, {
@@ -128,26 +132,60 @@ describe('BaseFileUpload unit', () => {
 	})
 
 	describe('пропс allowPreview', () => {
-		it('должен вернуть preview zoom после сброса allowPreview=false', async () => {
+		it('по умолчанию — миниатюра с увеличением; false — иконка файла без objectURL', async () => {
 			const { mount } = await import('@vue/test-utils')
 			const { BaseImage } = await import('@components/BaseImage')
 			const file = new File(['image'], 'photo.png', { type: 'image/png' })
-			const wrapper = mount(BaseFileUpload, {
-				props: { allowPreview: false },
-			})
-
-			const input = wrapper.find<HTMLInputElement>('input[type="file"]').element
-			Object.defineProperty(input, 'files', { value: [file], configurable: true })
-			await fireEvent.change(input)
-
-			await waitFor(() => {
-				expect(wrapper.findComponent(BaseImage).exists()).toBe(true)
-			})
-			expect(wrapper.findComponent(BaseImage).props('zoomConfig')).toEqual({ hasZoom: false })
-
-			await wrapper.setProps({ allowPreview: undefined })
+			const wrapper = mount(BaseFileUpload)
+			await selectFiles(wrapper.element, [file])
 
 			expect(wrapper.findComponent(BaseImage).props('zoomConfig')).toEqual({ hasZoom: true })
+
+			const withoutPreview = mount(BaseFileUpload, { props: { allowPreview: false } })
+			vi.mocked(URL.createObjectURL).mockClear()
+			await selectFiles(withoutPreview.element, [file])
+			expect(withoutPreview.findComponent(BaseImage).exists()).toBe(false)
+			expect(withoutPreview.find('.base-file-upload__file-icon').exists()).toBe(true)
+			expect(URL.createObjectURL).not.toHaveBeenCalled()
+		})
+	})
+
+	describe('пропс previewSize', () => {
+		it('размер превью масштабируется sizeScale', async () => {
+			const { container } = render(BaseFileUpload, { props: { previewSize: 80, sizeScale: 50 } })
+			await selectFiles(container, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
+			expect(container.querySelector<HTMLElement>('.base-file-upload__preview')?.style.width).toBe('40px')
+		})
+	})
+
+	describe('иконка файла и отключённая зона', () => {
+		it('видео — иконка video, прочее — file', async () => {
+			const { container } = render(BaseFileUpload, { props: { isMultiple: true } })
+			await selectFiles(container, [
+				new File(['v'], 'clip.mp4', { type: 'video/mp4' }),
+				new File(['d'], 'a.pdf', { type: 'application/pdf' }),
+			])
+			const icons = [...container.querySelectorAll('.base-file-upload__file-icon use')].map(use => use.getAttribute('href'))
+			expect(icons).toEqual(['icons.svg#video', 'icons.svg#file'])
+		})
+
+		it('отключённая зона не подсвечивается при перетаскивании', async () => {
+			const { container } = render(BaseFileUpload, { props: { isDisabled: true } })
+			await fireEvent.dragOver(container.querySelector('.base-file-upload__dropzone')!)
+			expect(container.querySelector('.base-file-upload--dragover')).not.toBeInTheDocument()
+		})
+	})
+
+	describe('пропс emptyText', () => {
+		it('по умолчанию — подсказка о перетаскивании, своя строка заменяет её, пустая — убирает', async () => {
+			const { container, rerender } = render(BaseFileUpload)
+			expect(container.querySelector('.base-file-upload__drop-text')).toHaveTextContent('Перетащите файлы сюда')
+
+			await rerender({ emptyText: 'Или бросьте договор сюда' })
+			expect(container.querySelector('.base-file-upload__drop-text')).toHaveTextContent('Или бросьте договор сюда')
+
+			await rerender({ emptyText: '' })
+			expect(container.querySelector('.base-file-upload__drop-text')).not.toBeInTheDocument()
 		})
 	})
 
@@ -167,8 +205,7 @@ describe('BaseFileUpload unit', () => {
 				props: { error: 'Ошибка загрузки' },
 			})
 
-			expect(container.querySelector('.base-file-upload__error-item')).toBeInTheDocument()
-			expect(screen.getByText('1. Ошибка загрузки')).toBeInTheDocument()
+			expect(container.querySelector('.base-file-upload__error-item')).toHaveTextContent('Ошибка загрузки')
 		})
 
 		it('должен добавлять класс --error когда error передан', () => {
@@ -218,7 +255,7 @@ describe('BaseFileUpload unit', () => {
 		it('должен эмитить error при превышении maxCount', async () => {
 			const first = new File(['a'], 'a.pdf', { type: 'application/pdf' })
 			const second = new File(['b'], 'b.pdf', { type: 'application/pdf' })
-			const { container, emitted } = render(BaseFileUpload, { props: { maxCount: 1 } })
+			const { container, emitted } = render(BaseFileUpload, { props: { maxCount: 1, isMultiple: true } })
 
 			const input = container.querySelector<HTMLInputElement>('input[type="file"]')!
 			Object.defineProperty(input, 'files', { value: [first], configurable: true })
@@ -230,8 +267,8 @@ describe('BaseFileUpload unit', () => {
 			Object.defineProperty(input, 'files', { value: [second], configurable: true })
 			await fireEvent.change(input)
 
-			expect(emitted().error?.at(-1)).toEqual(['Максимум файлов: 1'])
-			expect(screen.getByText('1. Максимум файлов: 1')).toBeInTheDocument()
+			expect(emitted().error?.at(-1)).toEqual(['Лимит файлов — 1, лишние не добавлены'])
+			expect(container.querySelector('.base-file-upload__error-item')).toHaveTextContent('Лимит файлов — 1, лишние не добавлены')
 		})
 	})
 
@@ -252,31 +289,6 @@ describe('BaseFileUpload unit', () => {
 			const lastChange = emitted().change?.at(-1) as [File[]]
 			expect(lastChange[0]).toHaveLength(1)
 			expect(lastChange[0][0].name).toBe('b.pdf')
-		})
-	})
-
-	describe('прерывание прогресса при удалении файла', () => {
-		it('должен очищать интервал, если файл удалён во время загрузки', async () => {
-			vi.useFakeTimers()
-			const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0)
-
-			const file = new File(['img'], 'photo.png', { type: 'image/png' })
-			const { container } = render(BaseFileUpload, { props: {} })
-
-			const input = container.querySelector<HTMLInputElement>('input[type="file"]')!
-			Object.defineProperty(input, 'files', { value: [file], configurable: true })
-			await fireEvent.change(input)
-			await vi.advanceTimersByTimeAsync(0)
-
-			const removeBtn = container.querySelector('.base-file-upload__remove')
-			expect(removeBtn).toBeInTheDocument()
-
-			await fireEvent.click(removeBtn as HTMLElement)
-			await vi.advanceTimersByTimeAsync(200 * 3)
-			expect(container.querySelector('.base-file-upload__item')).not.toBeInTheDocument()
-
-			randomSpy.mockRestore()
-			vi.useRealTimers()
 		})
 	})
 
@@ -302,28 +314,126 @@ describe('BaseFileUpload unit', () => {
 		})
 	})
 
-	describe('имитация прогресса загрузки', () => {
-		it('должен завершать загрузку изображения со статусом done при достижении 100%', async () => {
+	describe('без uploader', () => {
+		it('файл только выбран: нет статуса, прогресса и таймеров', async () => {
 			vi.useFakeTimers()
-			const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.99)
+			const { container } = render(BaseFileUpload)
+			await selectFiles(container, [new File(['img'], 'photo.png', { type: 'image/png' })])
+			await vi.advanceTimersByTimeAsync(5000)
 
-			const file = new File(['img'], 'photo.png', { type: 'image/png' })
-			const { container } = render(BaseFileUpload, { props: {} })
+			expect(container.querySelector('.base-file-upload__item--selected')).toBeInTheDocument()
+			expect(container.querySelector('.base-file-upload__status')).not.toBeInTheDocument()
+			expect(container.querySelector('.base-file-upload__progress')).not.toBeInTheDocument()
+			expect(vi.getTimerCount()).toBe(0)
+		})
+	})
 
-			const input = container.querySelector<HTMLInputElement>('input[type="file"]')!
-			Object.defineProperty(input, 'files', { value: [file], configurable: true })
+	describe('пропс uploader', () => {
+		it('прогресс из onProgress, затем «Загружено» и upload-success', async () => {
+			let progress!: (percent: number) => void
+			let finish!: (value: unknown) => void
+			const uploader = vi.fn((_file: File, context: { onProgress: (percent: number) => void }) => {
+				progress = context.onProgress
+				return new Promise(resolve => {
+					finish = resolve
+				})
+			})
+			const { container, emitted } = render(BaseFileUpload, { props: { uploader } })
+			await selectFiles(container, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
+			await flush()
 
-			await fireEvent.change(input)
-			await vi.advanceTimersByTimeAsync(0)
+			progress(40)
+			await waitFor(() => expect(container.querySelector('.base-file-upload__status')).toHaveTextContent('40%'))
+			expect(screen.getByRole('progressbar', { name: 'a.pdf' })).toBeInTheDocument()
+			expect(container.querySelector('.base-file-upload__ext .base-badge')).toHaveClass(
+				'base-badge--soft',
+				'base-badge--status-neutral',
+			)
+			expect(container.querySelector('.base-file-upload__status .base-badge')).toHaveClass('base-badge--soft')
+			expect(container.querySelector('.base-file-upload__status .base-badge')).not.toHaveClass('base-badge--status-neutral')
 
-			await vi.advanceTimersByTimeAsync(200 * 6)
+			finish({ id: 1 })
+			await waitFor(() => expect(container.querySelector('.base-file-upload__status')).toHaveTextContent('Загружено'))
+			expect(container.querySelector('.base-file-upload__status .base-badge')).toHaveClass('base-badge--status-success')
+			expect((emitted()['upload-success'] as unknown[][])[0][1]).toEqual({ id: 1 })
+			expect(screen.getByRole('status')).toHaveTextContent('Файл «a.pdf» загружен')
+		})
 
-			const item = container.querySelector('.base-file-upload__item')
-			expect(item).toBeInTheDocument()
-			expect(container.querySelector('.base-file-upload__item--done')).toBeInTheDocument()
+		it('ошибка: текст под файлом, upload-error, объявление и повтор', async () => {
+			const uploader = vi.fn().mockRejectedValueOnce(new Error('Сервер недоступен')).mockResolvedValueOnce('ok')
+			const { container, emitted } = render(BaseFileUpload, { props: { uploader } })
+			await selectFiles(container, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
 
-			randomSpy.mockRestore()
-			vi.useRealTimers()
+			await waitFor(() => expect(container.querySelector('.base-file-upload__file-error')).toHaveTextContent('Сервер недоступен'))
+			expect(container.querySelector('.base-file-upload__status--error .base-badge')).toHaveClass('base-badge--status-error')
+			expect(container.querySelector('.base-file-upload__status--error')).toHaveTextContent('Ошибка')
+			expect((emitted()['upload-error'] as unknown[][])[0][1]).toBe('Сервер недоступен')
+			expect(screen.getByRole('status')).toHaveTextContent('Не удалось загрузить «a.pdf»: Сервер недоступен')
+
+			await fireEvent.click(screen.getByRole('button', { name: 'Повторить загрузку «a.pdf»' }))
+			await waitFor(() => expect(container.querySelector('.base-file-upload__item--done')).toBeInTheDocument())
+			expect(uploader).toHaveBeenCalledTimes(2)
+			expect(screen.queryByRole('button', { name: 'Повторить загрузку «a.pdf»' })).not.toBeInTheDocument()
+		})
+	})
+
+	describe('озвучивание ошибок', () => {
+		it('ошибки выбора попадают в role="alert"', async () => {
+			const { container } = render(BaseFileUpload, { props: { accept: '.pdf' } })
+			expect(screen.getByRole('alert')).toHaveTextContent('')
+
+			await selectFiles(container, [new File(['a'], 'a.png', { type: 'image/png' })])
+			expect(screen.getByRole('alert')).toHaveTextContent('Формат файла "a.png" не поддерживается')
+			expect(screen.getByRole('alert')).toContainElement(container.querySelector('.base-file-upload__error-item'))
+		})
+	})
+
+	describe('методы через ref', () => {
+		it('focus и blur — на зоне загрузки; rootRef — корень', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseFileUpload, { attachTo: document.body })
+			const dropzone = wrapper.find('.base-file-upload__dropzone').element
+
+			wrapper.vm.focus()
+			expect(document.activeElement).toBe(dropzone)
+			wrapper.vm.blur()
+			expect(document.activeElement).not.toBe(dropzone)
+			expect(wrapper.vm.rootRef).toBe(wrapper.element)
+			wrapper.unmount()
+		})
+
+		it('isRequired: validate без файлов — false и ошибка, с файлом — true; reset очищает список', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const wrapper = mount(BaseFileUpload, { props: { isRequired: true, label: 'Договор' } })
+			expect(wrapper.find('.base-file-upload__label').text()).toContain('*')
+
+			expect(wrapper.vm.validate()).toBe(false)
+			await wrapper.vm.$nextTick()
+			expect(wrapper.find('.base-file-upload__error-item').text()).toBe('Обязательное поле')
+
+			await selectFiles(wrapper.element, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
+			expect(wrapper.vm.validate()).toBe(true)
+
+			wrapper.vm.reset()
+			await wrapper.vm.$nextTick()
+			expect(wrapper.find('.base-file-upload__item').exists()).toBe(false)
+			expect(wrapper.emitted('change')?.at(-1)).toEqual([[]])
+			expect(wrapper.find('.base-file-upload__error-item').exists()).toBe(false)
+		})
+
+		it('retry повторяет загрузку файла с ошибкой', async () => {
+			const { mount } = await import('@vue/test-utils')
+			const uploader = vi.fn().mockRejectedValueOnce(new Error('x')).mockResolvedValueOnce('ok')
+			const wrapper = mount(BaseFileUpload, { props: { uploader } })
+			await selectFiles(wrapper.element, [new File(['a'], 'a.pdf', { type: 'application/pdf' })])
+			await flush()
+			await flush()
+
+			const item = wrapper.emitted<[unknown, string]>('upload-error')![0][0]
+			wrapper.vm.retry(item as never)
+			await flush()
+			await flush()
+			expect(uploader).toHaveBeenCalledTimes(2)
 		})
 	})
 
@@ -359,9 +469,7 @@ describe('BaseFileUpload unit', () => {
 			expect(container.querySelector('.base-file-upload__text')?.classList.contains('custom-text')).toBe(true)
 			expect(container.querySelector('.base-file-upload__hint')?.classList.contains('custom-hint')).toBe(true)
 			expect(container.querySelector('.custom-errors')).toBeInTheDocument()
-			expect(container.querySelector('.base-file-upload__error-item')?.classList.contains('custom-error-item')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-file-upload__error-item')?.classList.contains('custom-error-item')).toBe(true)
 		})
 	})
 })

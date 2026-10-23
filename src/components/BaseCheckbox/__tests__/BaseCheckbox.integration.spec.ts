@@ -1,12 +1,7 @@
-/**
- * Integration-тесты для BaseCheckbox.
- * Проверяют взаимодействие: клик, v-model, emits.
- */
-
 import '@testing-library/jest-dom/vitest'
+import BaseCheckbox from '../ui/BaseCheckbox.vue'
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '@testing-library/vue'
-import BaseCheckbox from '../ui/BaseCheckbox.vue'
 
 describe('BaseCheckbox integration', () => {
 	describe('переключение по клику', () => {
@@ -48,6 +43,19 @@ describe('BaseCheckbox integration', () => {
 			})
 
 			await user.click(screen.getByText('Согласен'))
+
+			const events = emitted()['update:modelValue'] as boolean[][]
+			expect(events.at(-1)?.[0]).toBe(true)
+		})
+	})
+
+	describe('клавиатура', () => {
+		it('должен переключаться клавишей Space', async () => {
+			const user = userEvent.setup()
+			const { emitted } = render(BaseCheckbox, { props: { modelValue: false, label: 'Согласен' } })
+
+			screen.getByRole('checkbox', { name: 'Согласен' }).focus()
+			await user.keyboard(' ')
 
 			const events = emitted()['update:modelValue'] as boolean[][]
 			expect(events.at(-1)?.[0]).toBe(true)

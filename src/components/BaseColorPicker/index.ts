@@ -1,8 +1,12 @@
-export { COLOR_PICKER_POSITIONS, DEFAULT_COLOR_PRESETS } from './model/BaseColorPicker.types'
+export { DEFAULT_COLOR_PRESETS, getKitTokenPalette } from './model/colorPresets'
+export { COLOR_PICKER_PARTS, COLOR_PICKER_POSITIONS, COLOR_PICKER_TRIGGER_VARIANTS } from './types/BaseColorPicker.types'
 export type {
 	BaseColorPickerEmits,
+	BaseColorPickerPart,
 	BaseColorPickerProps,
 	BaseColorPickerSlots,
+	ColorPalette,
 	ColorPickerPosition,
-} from './model/BaseColorPicker.types'
+	ColorPickerTriggerVariant,
+} from './types/BaseColorPicker.types'
 export { default as BaseColorPicker } from './ui/BaseColorPicker.vue'

@@ -1,26 +1,7 @@
 @use 'sass:list';
+@use 'sass:meta';
 @use 'sass:string';
 
-/**
- * Масштабирует значение пропорционально CSS-переменной --size-scale.
- * Применяется к размерам, отступам, шрифтам — ко всему, что должно
- * пропорционально изменяться при масштабировании компонента.
- *
- * Когда --size-scale не задана (по умолчанию 1), значения не меняются.
- *
- * @param {Number|String|List} $values — одно или несколько значений (px, em, CSS-переменные)
- * @return {List} — calc()-выражения с умножением на --size-scale
- *
- * @example
- *   padding: sz(10px 20px);
- *   // → padding: calc(10px * var(--size-scale, 1)) calc(20px * var(--size-scale, 1));
- *
- *   font-size: sz(14px);
- *   // → font-size: calc(14px * var(--size-scale, 1));
- *
- *   border-radius: sz(var(--border-radius-base));
- *   // → border-radius: calc(var(--border-radius-base) * var(--size-scale, 1));
- */
 @function sz($values) {
 	$result: ();
 
@@ -33,4 +14,50 @@
 	}
 
 	@return $result;
+}
+
+// Отступы поверхностей (карточки, окна, таблицы, меню): как sz(), но с множителем плотности темы --rise-density
+@function space($values) {
+	$result: ();
+
+	@each $value in $values {
+		@if $value == 0 {
+			$result: list.append($result, 0, space);
+		} @else {
+			$result: list.append($result, string.unquote('calc(#{$value} * var(--size-scale, 1) * var(--rise-density, 1))'), space);
+		}
+	}
+
+	@return $result;
+}
+
+// Токен компонента (уровень 3): кит читает --rise-<компонент>-<свойство> с запасным значением и нигде его не объявляет.
+// $component: null — только запасное значение (общие миксины, вызванные без имени компонента).
+// Запасное значение — тот же токен (`field-box(input)` с общим `--rise-input-*`) — возвращается как есть, без повтора.
+@function ct($component, $prop, $fallback) {
+	@if $component == null {
+		@return $fallback;
+	}
+
+	@if string.index(meta.inspect($fallback), 'var(--rise-#{$component}-#{$prop},') == 1 {
+		@return $fallback;
+	}
+
+	@return string.unquote('var(--rise-#{$component}-#{$prop}, #{$fallback})');
+}
+
+// Направление письма в значениях, которые нельзя записать логическим свойством. `--rise-dir` — 1 в LTR и −1 в RTL (kit.scss).
+// Сдвиг вдоль строки: dir-x(16px) — вправо в LTR, влево в RTL; dir-x(-50%) — к началу строки.
+@function dir-x($value) {
+	@return string.unquote('calc(var(--rise-dir, 1) * #{$value})');
+}
+
+// Угол градиента «вдоль строки»: dir-angle(90deg) — слева направо в LTR и справа налево в RTL.
+@function dir-angle($angle) {
+	@return dir-x($angle);
+}
+
+// Позиция вдоль строки в процентах от начала: dir-pos(0%) — начало строки (слева в LTR, справа в RTL), dir-pos(100%) — конец.
+@function dir-pos($percent) {
+	@return string.unquote('calc(50% + (#{$percent} - 50%) * var(--rise-dir, 1))');
 }

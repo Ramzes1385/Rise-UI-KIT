@@ -1,11 +1,6 @@
-/**
- * Integration-тесты для BaseSeparator.
- * Проверяют рендер с реальными дочерними компонентами и слотами.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/vue'
 import BaseSeparator from '../ui/BaseSeparator.vue'
+import { render, screen } from '@testing-library/vue'
 
 describe('BaseSeparator integration', () => {
 	it('должен рендерить разделитель с меткой', () => {
@@ -50,11 +45,11 @@ describe('BaseSeparator integration', () => {
 		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBe('separator')
 	})
 
-	it('не должен устанавливать role для вертикального разделителя', () => {
-		const { container } = render(BaseSeparator, {
+	it('должен устанавливать role=separator для вертикального разделителя', () => {
+		render(BaseSeparator, {
 			props: { orientation: 'vertical' },
 		})
 
-		expect(container.querySelector('.base-separator')?.getAttribute('role')).toBeNull()
+		expect(screen.getByRole('separator')).toHaveAttribute('aria-orientation', 'vertical')
 	})
 })

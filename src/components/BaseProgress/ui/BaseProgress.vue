@@ -1,133 +1,114 @@
 <template>
 	<div
-		class="base-progress"
+		ref="rootRef"
 		:class="[
+			ui('root'),
 			`base-progress--${shape}`,
 			animation !== 'none' ? `base-progress--${animation}` : '',
-			{ 'base-progress--indeterminate': isIndeterminate },
+			fillClass,
+			{ 'base-progress--indeterminate': isIndeterminate, 'base-progress--countdown': isCountdown, 'base-progress--paused': isPaused },
 			classes.root,
 		]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="progressbar"
-		:aria-valuenow="percent"
+		:aria-label="ariaLabel || UI_ARIA.PROGRESS"
+		:aria-valuenow="isIndeterminate || isCountdown ? undefined : percent"
+		:aria-valuetext="valueText"
 		aria-valuemin="0"
 		aria-valuemax="100">
-		<!-- Линейный прогресс -->
 		<template v-if="shape === 'line'">
-			<div class="base-progress__track" :class="classes.track">
-				<div class="base-progress__fill" :class="classes.fill" :style="{ width: `${percent}%` }">
-					<div v-if="hasLabel" class="base-progress__tooltip-trigger" :class="classes.tooltipTrigger">
-						<BaseTooltip
-							:text="`${percent}%`"
-							position="top"
-							:is-always-visible="true"
-							:size-scale="sizeScale"
-							:color="tooltipColor">
-							<span class="base-progress__tooltip-anchor" :class="classes.tooltipAnchor" />
-						</BaseTooltip>
-					</div>
+			<div v-if="isLabelVisible" :class="[ui('status'), classes.tooltipTrigger]" :style="percentStyle">
+				<span :class="[ui('status-text'), classes.tooltipAnchor]">
+					<slot :value="value" :percent="percent">{{ displayPercent }}%</slot>
+				</span>
+			</div>
+			<div :class="[ui('track'), classes.track]">
+				<div :class="ui('bar')">
+					<div :class="[ui('fill'), classes.fill]" :style="fillStyle"></div>
 				</div>
 			</div>
 		</template>
 
-		<!-- Круговой прогресс -->
 		<template v-if="shape === 'circle'">
-			<svg class="base-progress__svg" :class="classes.svg" viewBox="0 0 120 120">
+			<svg :class="[ui('svg'), classes.svg]" :viewBox="circleViewBox">
+				<defs v-if="gradientStops.length">
+					<linearGradient :id="gradientId" x1="0" y1="1" x2="1" y2="0">
+						<stop v-for="stop in gradientStops" :key="stop.offset" :offset="stop.offset" :style="{ stopColor: stop.color }" />
+					</linearGradient>
+				</defs>
 				<circle
-					class="base-progress__track-circle"
-					:class="classes.trackCircle"
-					cx="60"
-					cy="60"
-					r="52"
+					:class="[ui('track-circle'), classes.trackCircle]"
+					:cx="circleCenter"
+					:cy="circleCenter"
+					:r="circleRadius"
 					fill="none"
-					stroke-width="8" />
+					:stroke-width="circleStroke" />
 				<circle
-					class="base-progress__fill-circle"
-					:class="classes.fillCircle"
-					cx="60"
-					cy="60"
-					r="52"
+					:class="[ui('fill-circle'), classes.fillCircle]"
+					:cx="circleCenter"
+					:cy="circleCenter"
+					:r="circleRadius"
 					fill="none"
-					stroke-width="8"
+					:stroke-width="circleStroke"
 					:stroke-dasharray="circumference"
 					:stroke-dashoffset="circleOffset"
+					:style="circleStrokeStyle"
 					stroke-linecap="round" />
 			</svg>
-			<BaseText
-				v-if="hasLabel"
-				tag="span"
-				class="base-progress__circle-label"
-				:weight="UI_FONT_WEIGHT.BOLD"
-				:custom-class="classes.circleLabel">
-				<slot :value="value" :percent="percent">{{ percent }}%</slot>
-			</BaseText>
+			<span v-if="isLabelVisible" :class="[ui('circle-label'), classes.circleLabel]">
+				<slot :value="value" :percent="percent">{{ displayPercent }}%</slot>
+			</span>
 		</template>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
 import '../styles/BaseProgress.style.scss'
+import { UI_ARIA } from '@/locales/messages'
+import { useBaseProgress } from '../model/useBaseProgress'
+import { kitDefaults } from '@composables/base/useDefaults'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
+import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../types/BaseProgress.types'
 
-import { BaseText } from '@components/BaseText'
-import { BaseTooltip } from '@components/BaseTooltip'
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { UI_FONT_WEIGHT, UI_SIZE, SIZE_SCALE_DEFAULT} from '@constants'
-import type { BaseProgressEmits, BaseProgressProps, BaseProgressSlots } from '../model/BaseProgress.types'
-
-const props = withDefaults(defineProps<BaseProgressProps>(), {
-	max: 100,
-	shape: 'line',
-	animation: 'none',
-	hasLabel: false,
-	isIndeterminate: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
+const props = withDefaults(
+	defineProps<BaseProgressProps>(),
+	kitDefaults('BaseProgress', {
+		max: 100,
+		shape: 'line',
+		animation: 'none',
+		fill: 'solid',
+		hasLabel: false,
+		isIndeterminate: false,
+		isPaused: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
 
 const emit = defineEmits<BaseProgressEmits>()
 defineSlots<BaseProgressSlots>()
 
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: [
-		'root',
-		'track',
-		'fill',
-		'tooltipTrigger',
-		'tooltipAnchor',
-		'svg',
-		'trackCircle',
-		'fillCircle',
-		'circleLabel',
-	],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
-
-/** Цвет тултипа соответствует цвету заливки */
-const tooltipColor = computed(() => {
-	if (props.color?.bg?.base) return { bg: { base: props.color.bg.base } }
-	return { bg: { base: 'var(--color-accent)' } }
-})
-
-const percent = computed((): number => {
-	if (props.isIndeterminate) return 0
-	const clamped = Math.min(Math.max(props.value, 0), props.max)
-	return Math.round((clamped / props.max) * 100)
-})
-
-const circumference = computed((): number => {
-	return 2 * Math.PI * UI_SIZE.PROGRESS_CIRCLE_RADIUS
-})
-
-const circleOffset = computed((): number => {
-	if (props.isIndeterminate) return circumference.value
-	return circumference.value * (1 - percent.value / 100)
-})
-
-watch(percent, value => {
-	if (value >= 100) emit('complete')
-})
+const {
+	ui,
+	rootRef,
+	classes,
+	sizeScaleStyle,
+	customColorStyle,
+	percent,
+	valueText,
+	isLabelVisible,
+	displayPercent,
+	percentStyle,
+	fillStyle,
+	fillClass,
+	isCountdown,
+	gradientId,
+	gradientStops,
+	circleStrokeStyle,
+	circleViewBox,
+	circleCenter,
+	circleStroke,
+	circleRadius,
+	circumference,
+	circleOffset,
+} = useBaseProgress(props, emit)
 </script>

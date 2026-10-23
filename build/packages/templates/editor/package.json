@@ -1,0 +1,43 @@
+{
+  "name": "@ramzes1385/rise-editor",
+  "version": "0.1.0",
+  "description": "Визуальный редактор текста для Vue 3 на Rise UI Kit: BaseEditor с панелью форматирования, историей отмены, загрузкой изображений и очисткой HTML, v-model с HTML",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/editor.css",
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "vite build && vue-tsc -p tsconfig.build.json",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@ramzes1385/rise-ui-kit": "^2.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@ramzes1385/rise-ui-kit": "^2.0.0",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vue/tsconfig": "^0.9.1",
+    "sass-embedded": "^1.100.0",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.15",
+    "vue": "^3.5.0",
+    "vue-tsc": "^3.3.3"
+  }
+}

@@ -1,89 +1,61 @@
 <template>
-	<div class="base-calendar__time" :class="classes.time">
-		<div class="base-calendar__time-field">
+	<div :class="[ui('time'), classes.time]" role="group" :aria-labelledby="captionId">
+		<span :id="captionId" :class="ui('time-caption')">{{ UI_CALENDAR.TIME }}</span>
+		<div :class="ui('time-fields')">
 			<BaseInput
 				v-model="hoursModel"
-				class="base-calendar__time-input"
+				:class="ui('time-input')"
 				type="number"
-				variant="outline"
+				:label="UI_CALENDAR.HOURS"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
-				@change="emit('timeChange')" />
-			<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				@change="commitTime"
+				@blur="resetDrafts" />
+			<span :class="ui('time-sep')" aria-hidden="true">:</span>
 			<BaseInput
 				v-model="minutesModel"
-				class="base-calendar__time-input"
+				:class="ui('time-input')"
 				type="number"
-				variant="outline"
+				:label="UI_CALENDAR.MINUTES"
 				:size-scale="sizeScale"
 				:is-disabled="isDisabled"
-				@change="emit('timeChange')" />
+				@change="commitTime"
+				@blur="resetDrafts" />
 			<template v-if="showSeconds">
-				<BaseText tag="span" class="base-calendar__time-sep" :size-scale="sizeScale">:</BaseText>
+				<span :class="ui('time-sep')" aria-hidden="true">:</span>
 				<BaseInput
 					v-model="secondsModel"
-					class="base-calendar__time-input"
+					:class="ui('time-input')"
 					type="number"
-					variant="outline"
+					:label="UI_CALENDAR.SECONDS"
 					:size-scale="sizeScale"
 					:is-disabled="isDisabled"
-					@change="emit('timeChange')" />
+					@change="commitTime"
+					@blur="resetDrafts" />
 			</template>
-			<template v-if="!is24Hour">
-				<BaseButton
-					variant="outline"
-					class="base-calendar__time-ampm"
-					:size-scale="sizeScale"
-					:is-disabled="isDisabled"
-					@click="emit('toggleAmPm')">
-					<BaseText tag="span" :size-scale="sizeScale">{{ isAm ? 'AM' : 'PM' }}</BaseText>
-				</BaseButton>
-			</template>
+			<BaseButton
+				v-if="!is24Hour"
+				variant="outline"
+				:class="ui('time-ampm')"
+				:size-scale="sizeScale"
+				:is-disabled="isDisabled"
+				@click="emit('toggleAmPm')">
+				{{ isAm ? 'AM' : 'PM' }}
+			</BaseButton>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { BaseButton } from '@components/BaseButton'
+import { UI_CALENDAR } from '@/locales/messages'
 import { BaseInput } from '@components/BaseInput'
-import { BaseText } from '@components/BaseText'
-import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../model/BaseCalendarTime.types'
+import { BaseButton } from '@components/BaseButton'
+import { useBaseCalendarTime } from '../model/useBaseCalendarTime'
+import type { BaseCalendarTimeEmits, BaseCalendarTimeProps } from '../types/BaseCalendarTime.types'
 
 const props = defineProps<BaseCalendarTimeProps>()
 
 const emit = defineEmits<BaseCalendarTimeEmits>()
 
-function to12h(h: number): number {
-	if (h === 0) return 12
-	if (h > 12) return h - 12
-	return h
-}
-
-function from12h(h: number, am: boolean): number {
-	if (am) return h === 12 ? 0 : h
-	return h === 12 ? 12 : h + 12
-}
-
-const hoursModel = computed({
-	get: (): string => String(props.is24Hour ? props.hours : to12h(props.hours)),
-	set: (val: string): void => {
-		const parsed = parseInt(val, 10) || 0
-		emit('update:hours', props.is24Hour ? parsed : from12h(parsed, props.isAm))
-	},
-})
-
-const minutesModel = computed({
-	get: (): string => String(props.minutes),
-	set: (val: string): void => {
-		emit('update:minutes', parseInt(val, 10) || 0)
-	},
-})
-
-const secondsModel = computed({
-	get: (): string => String(props.seconds),
-	set: (val: string): void => {
-		emit('update:seconds', parseInt(val, 10) || 0)
-	},
-})
+const { ui, captionId, hoursModel, minutesModel, secondsModel, resetDrafts, commitTime } = useBaseCalendarTime(props, emit)
 </script>

@@ -1,31 +1,26 @@
 .base-form {
+	@include custom-color-scope;
 	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: sz(24px);
+	box-sizing: border-box;
 	width: 100%;
-	@include interactive;
+	@include custom-bg(background-color, ct(form, bg, transparent));
 
-	&--loading {
+	&--loading,
+	&--disabled {
 		pointer-events: none;
-
-		.base-form__content {
-			opacity: 0.4;
-			filter: blur(2px);
-			transform: scale(0.99);
-		}
 	}
 
 	&--disabled {
-		opacity: 0.6;
-		pointer-events: none;
+		opacity: var(--rise-disabled-opacity);
 	}
 
-	&__content {
-		transition:
-			opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	&__fieldset {
+		display: contents;
+		min-width: 0;
+		min-inline-size: 0;
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
 	&__overlay {
@@ -35,46 +30,38 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		@include custom-bg(background-color, rgba(255, 255, 255, 0.7));
 		border-radius: inherit;
+		background-color: ct(form, overlay-bg, color-mix(in srgb, var(--rise-bg) 85%, transparent));
 		opacity: 0;
-		backdrop-filter: blur(0px);
-		pointer-events: none;
-		transition:
-			opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-			backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		visibility: hidden;
+		@include transition(opacity, visibility);
 
 		&--visible {
 			opacity: 1;
-			backdrop-filter: blur(4px);
+			visibility: visible;
 			pointer-events: auto;
 		}
 	}
 
-	// Варианты
-	&--ghost {
-		gap: sz(12px);
+	&--outline,
+	&--soft,
+	&--shadow {
+		padding: space(ct(form, padding, 20px));
+		border-radius: sz(ct(form, radius, var(--rise-radius-lg)));
 	}
 
 	&--outline {
-		border: 1px solid var(--color-border);
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
-	}
-
-	&--shadow {
-		box-shadow: var(--shadow-lg);
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
+		border: 1px solid ct(form, border, var(--rise-border-accented));
 	}
 
 	&--soft {
-		@include custom-bg(background-color, var(--color-primary-soft));
-		padding: sz(24px);
-		border-radius: var(--border-radius-lg);
+		@include tonal-surface(elevated);
+		@include custom-bg(background-color, ct(form, bg, var(--rise-bg-elevated)));
 	}
-}
 
-:root[data-theme='dark'] .base-form__overlay {
-	background-color: rgba(0, 0, 0, 0.5);
+	&--shadow {
+		@include tonal-surface(floating);
+		@include custom-bg(background-color, ct(form, bg, var(--rise-surface-floating)));
+		box-shadow: ct(form, shadow, var(--rise-shadow-md));
+	}
 }

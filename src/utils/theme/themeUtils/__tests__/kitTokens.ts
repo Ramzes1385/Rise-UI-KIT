@@ -1,0 +1,39 @@
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
+
+const TOKENS_SCSS = readFileSync(resolve(dirname(fileURLToPath(import.meta.url)), '../../../../styles/_tokens.scss'), 'utf-8')
+
+export function scssPalettes(): Record<string, Record<string, string>> {
+	const block = TOKENS_SCSS.slice(TOKENS_SCSS.indexOf('$palettes'), TOKENS_SCSS.indexOf('$roles'))
+	const result: Record<string, Record<string, string>> = {}
+	for (const [, role, body] of block.matchAll(/'(\w+)': \(\n([\s\S]*?)\n\t\)/g)) {
+		result[role] = Object.fromEntries([...body.matchAll(/(\d+): (#[0-9a-f]+)/g)].map(([, shade, color]) => [shade, color]))
+	}
+	return result
+}
+
+/** Таблица `$role-fills`: шаг заливки и наведения роли */
+export function scssRoleFills(): Record<string, { fill: number; hover: number }> {
+	const block = TOKENS_SCSS.slice(TOKENS_SCSS.indexOf('$role-fills'), TOKENS_SCSS.indexOf('$dark-roles'))
+	const result: Record<string, { fill: number; hover: number }> = {}
+	for (const [, role, fill, hover] of block.matchAll(/'(\w+)': \(\n\t\t'fill': (\d+),\n\t\t'hover': (\d+),/g)) {
+		result[role] = { fill: Number(fill), hover: Number(hover) }
+	}
+	return result
+}
+
+/** Таблица `$dark-roles`: запись яркого тона роли (`tint`) — шаг или литерал */
+export function scssDarkTints(): Record<string, string> {
+	const block = TOKENS_SCSS.slice(TOKENS_SCSS.indexOf('$dark-roles'), TOKENS_SCSS.indexOf('@function palette('))
+	return Object.fromEntries([...block.matchAll(/'(\w+)': \(\n\t\t'tint': ([^,]+),/g)].map(([, role, tint]) => [role, tint]))
+}
+
+function scssMixin(name: string): string {
+	const start = TOKENS_SCSS.indexOf(`@mixin ${name}`)
+	return TOKENS_SCSS.slice(start, TOKENS_SCSS.indexOf('\n}\n', start))
+}
+
+export function scssValue(mixin: string, token: string): string | undefined {
+	return Array.from(scssMixin(mixin).matchAll(new RegExp(`${token}:\\s*([^;]+);`, 'g')), match => match[1].replace(/\s+/g, ' ').trim())[0]
+}

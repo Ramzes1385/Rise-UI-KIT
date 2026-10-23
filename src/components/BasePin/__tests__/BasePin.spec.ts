@@ -1,11 +1,9 @@
-/**
- * Unit-тесты для BasePin.
- * Проверяют рендер, пропсы и CSS-модификаторы.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { render } from '@testing-library/vue'
 import BasePin from '../ui/BasePin.vue'
+import { mount } from '@vue/test-utils'
+import { defineComponent, h } from 'vue'
+import { useBasePin } from '../model/useBasePin'
+import { render, screen } from '@testing-library/vue'
 
 describe('BasePin unit', () => {
 	describe('рендер', () => {
@@ -105,6 +103,40 @@ describe('BasePin unit', () => {
 		})
 	})
 
+	describe('доступность', () => {
+		it('подписывает каждую ячейку позицией в коде', () => {
+			render(BasePin, { props: { modelValue: '', length: 6 } })
+
+			expect(screen.getAllByRole('textbox')).toHaveLength(6)
+			expect(screen.getByRole('textbox', { name: 'Символ 1 из 6' })).toBeInTheDocument()
+			expect(screen.getByRole('textbox', { name: 'Символ 6 из 6' })).toBeInTheDocument()
+		})
+
+		it('объединяет ячейки в группу, которой aria-label на компоненте даёт имя', () => {
+			render(BasePin, { props: { modelValue: '' }, attrs: { 'aria-label': 'Код из СМС' } })
+
+			const group = screen.getByRole('group', { name: 'Код из СМС' })
+			expect(group).toContainElement(screen.getByRole('textbox', { name: 'Символ 1 из 4' }))
+		})
+
+		it('помечает ячейки aria-invalid и связывает их с текстом ошибки', () => {
+			render(BasePin, { props: { modelValue: '1234', error: 'Неверный код' } })
+
+			for (const cell of screen.getAllByRole('textbox')) {
+				expect(cell).toHaveAttribute('aria-invalid', 'true')
+				expect(cell).toHaveAccessibleDescription('Неверный код')
+			}
+		})
+
+		it('без ошибки не ставит aria-invalid и aria-describedby', () => {
+			render(BasePin, { props: { modelValue: '' } })
+
+			const cell = screen.getByRole('textbox', { name: 'Символ 1 из 4' })
+			expect(cell).not.toHaveAttribute('aria-invalid')
+			expect(cell).not.toHaveAttribute('aria-describedby')
+		})
+	})
+
 	describe('пропс type', () => {
 		it('должен рендерить input с type=text по умолчанию', () => {
 			const { container } = render(BasePin, {
@@ -161,6 +193,37 @@ describe('BasePin unit', () => {
 			expect(container.querySelector('.base-pin__cells')).toHaveClass('custom-cells')
 			expect(container.querySelector('.base-pin__input')).toHaveClass('custom-input')
 			expect(container.querySelector('.base-pin__error-text')).toHaveClass('custom-error')
+		})
+	})
+
+	describe('defineExpose', () => {
+		it('focus и blur переводят фокус на первую ячейку и снимают его', () => {
+			const wrapper = mount(BasePin, { props: { modelValue: '' }, attachTo: document.body })
+			const first = wrapper.find('.base-pin__input').element
+
+			wrapper.vm.focus()
+			expect(first).toHaveFocus()
+			wrapper.vm.blur()
+			expect(first).not.toHaveFocus()
+			wrapper.unmount()
+		})
+	})
+
+	describe('useBasePin', () => {
+		it('событие ввода не от <input> игнорируется', () => {
+			const emit = vi.fn()
+			let model!: ReturnType<typeof useBasePin>
+			mount(
+				defineComponent({
+					setup() {
+						model = useBasePin({ modelValue: '', length: 4 }, emit)
+						return () => h('div')
+					},
+				}),
+			)
+
+			model.handleInput(new Event('input'), 0)
+			expect(emit).not.toHaveBeenCalled()
 		})
 	})
 })

@@ -1,0 +1,36 @@
+/** Сандармен жолдар: қазақ тілінде сан есімнен кейінгі зат есім жекеше тұрады, сондықтан one мен other бірдей (CLDR: one — 1, other — қалғаны) */
+export const kkPlural = {
+	DATES_SELECTED: { one: '{n} күн таңдалды', other: '{n} күн таңдалды' },
+	DAYS: { one: '{n} күн', other: '{n} күн' },
+	PARTICIPANTS: { one: '{n} қатысушы', other: '{n} қатысушы' },
+	CARDS: { one: '{n} карточка', other: '{n} карточка' },
+	COMMENTS: { one: '{n} пікір', other: '{n} пікір' },
+	ATTACHMENTS: { one: '{n} тіркеме', other: '{n} тіркеме' },
+	JSON_KEYS: { one: '{n} кілт', other: '{n} кілт' },
+	MEGA_MENU_ITEMS: { one: '{n} тармақ', other: '{n} тармақ' },
+	JSON_ITEMS: { one: '{n} элемент', other: '{n} элемент' },
+	SIGNATURE_STROKES: { one: '{n} штрих', other: '{n} штрих' },
+	NOTIFICATIONS_UNREAD: { one: '{n} жаңа', other: '{n} жаңа' },
+	CHAT_UNREAD: { one: '{n} оқылмаған хабарлама', other: '{n} оқылмаған хабарлама' },
+	CHAT_MAX_FILES: { one: 'Ең көбі {n} файл тіркеуге болады', other: 'Ең көбі {n} файл тіркеуге болады' },
+	REPLIES: { one: '{n} жауап', other: '{n} жауап' },
+	BADGES_MORE: { one: 'Тағы {n} белгіше', other: 'Тағы {n} белгіше' },
+	BREADCRUMBS_HIDDEN: { one: 'Тағы {n} бөлімді көрсету', other: 'Тағы {n} бөлімді көрсету' },
+	GANTT_DAYS: { one: '{n} күн', other: '{n} күн' },
+	CRYPTOPRO_EXPIRES: { one: '{n} күннен кейін мерзімі аяқталады', other: '{n} күннен кейін мерзімі аяқталады' },
+	SEARCH_RESULTS: { one: '{n} нәтиже табылды', other: '{n} нәтиже табылды' },
+	FILE_MANAGER_ITEMS: { one: '{n} элемент', other: '{n} элемент' },
+	TABLE_HIDDEN_SELECTED: {
+		one: 'Іздеу немесе сүзгілер жасырған {n} таңдалған жол таңдауда қалады',
+		other: 'Іздеу немесе сүзгілер жасырған {n} таңдалған жол таңдауда қалады',
+	},
+	FILE_MANAGER_SELECTED: { one: 'таңдалды: {n}', other: 'таңдалды: {n}' },
+	ROADMAP_STAGES: { one: '{n} кезең', other: '{n} кезең' },
+	ROADMAP_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
+	ROADMAP_OF_TOPICS: { one: '{n} тақырып', other: '{n} тақырып' },
+	ROADMAP_OF_SUBTOPICS: { one: '{n} қосалқы тақырып', other: '{n} қосалқы тақырып' },
+	/** Блок свёрнутой группы BaseFlowMap: сколько элементов внутри */
+	FLOW_ITEMS: { one: '{n} элемент', other: '{n} элемент' },
+	/** Слитая связь BaseFlowMap: сколько связей объединено */
+	FLOW_LINKS: { one: '{n} байланыс', other: '{n} байланыс' },
+}

@@ -1,5 +1,5 @@
 import { nextTick, ref } from 'vue'
-import { useDatePickerPanelNavigation } from '@composables/useDatePickerPanelNavigation'
+import { useDatePickerPanelNavigation } from '@composables/calendar/useDatePickerPanelNavigation'
 
 describe('useDatePickerPanelNavigation', () => {
 	it('инициализирует базовый месяц из modelValue', () => {

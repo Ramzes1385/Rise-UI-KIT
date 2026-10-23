@@ -1,0 +1,194 @@
+import type { Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+
+const STORY_PATH = '/iframe.html?id=navigation-basesidebar'
+
+async function openStory(page: Page, storyId: string): Promise<void> {
+	await page.goto(`${STORY_PATH}--${storyId}`)
+	await page.setViewportSize({ width: 900, height: 640 })
+	await page.waitForSelector('.base-side-bar', { timeout: 25000 })
+}
+
+test.describe('BaseSideBar e2e', () => {
+	test('сайдбар: сворачивает и разворачивает по клику на кнопку', async ({ page }) => {
+		await openStory(page, 'default')
+
+		const sidebar = page.locator('.base-side-bar')
+		const toggle = sidebar.locator('.base-side-bar__toggle')
+
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
+
+		await toggle.click()
+
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
+
+		await toggle.click()
+
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
+	})
+
+	test('сайдбар: controlled v-model управляет состоянием через внешнюю кнопку', async ({ page }) => {
+		await openStory(page, 'controlled')
+
+		const sidebar = page.locator('.base-side-bar')
+		const externalToggle = page.getByRole('button', { name: 'Переключить панель' })
+
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
+		await expect(page.getByText('isCollapsed: false')).toBeVisible()
+
+		await externalToggle.click()
+
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
+		await expect(page.getByText('isCollapsed: true')).toBeVisible()
+
+		await externalToggle.click()
+
+		await expect(sidebar).not.toHaveClass(/base-side-bar--collapsed/)
+		await expect(page.getByText('isCollapsed: false')).toBeVisible()
+	})
+
+	test('сайдбар: несворачиваемый сайдбар не имеет кнопки', async ({ page }) => {
+		await openStory(page, 'not-collapsible')
+
+		const sidebar = page.locator('.base-side-bar')
+		const toggle = sidebar.locator('.base-side-bar__toggle')
+
+		await expect(sidebar).toBeVisible()
+		await expect(toggle).toHaveCount(0)
+	})
+
+	test('сайдбар: items API рендерит пункты, children и badge', async ({ page }) => {
+		await openStory(page, 'default')
+
+		const sidebar = page.locator('.base-side-bar')
+
+		await expect(sidebar).toBeVisible()
+		await expect(sidebar.getByText('Главная')).toBeVisible()
+		await expect(sidebar.getByText('Каталог')).toBeVisible()
+		await expect(sidebar.getByText('Товары')).toBeVisible()
+		await expect(sidebar.getByText('Категории')).toBeVisible()
+		await expect(sidebar.getByText('12')).toBeVisible()
+	})
+
+	test('сайдбар: activePath подсвечивает parent и current item', async ({ page }) => {
+		await openStory(page, 'default')
+
+		const catalogLink = page.getByText('Каталог').locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
+		const productsLink = page.getByText('Товары').locator('xpath=ancestor::*[contains(@class, "base-side-bar-nav__link")]')
+
+		await expect(catalogLink).toHaveClass(/base-side-bar-nav__link--parent-active/)
+		await expect(productsLink).toHaveClass(/base-side-bar-nav__link--current/)
+	})
+
+	test('сайдбар: disabled item недоступен', async ({ page }) => {
+		await openStory(page, 'default')
+
+		const disabledItem = page.getByRole('button', { name: 'Недоступно' })
+
+		await expect(disabledItem).toBeDisabled()
+	})
+
+	test('сайдбар: collapsed mode показывает иконки, скрывает labels и сохраняет footer', async ({ page }) => {
+		await openStory(page, 'collapsed')
+
+		const sidebar = page.locator('.base-side-bar')
+
+		await expect(sidebar).toHaveClass(/base-side-bar--collapsed/)
+		await expect(sidebar.getByText('Главная')).toHaveCount(0)
+		await expect(sidebar.getByText('Товары')).toHaveCount(0)
+		await expect(sidebar.getByText('Категории')).toHaveCount(0)
+		await expect(sidebar.locator('.base-side-bar-nav__icon').first()).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar__footer')).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar__footer .base-avatar')).toBeVisible()
+		await expect(sidebar.getByText('Анна Смирнова')).toHaveCount(0)
+	})
+
+	test('сайдбар: collapsed mode показывает tooltip при hover на item', async ({ page }) => {
+		await openStory(page, 'collapsed')
+
+		const firstItem = page.locator('.base-side-bar-nav__link').first()
+
+		await firstItem.hover()
+
+		await expect(page.getByText('Главная')).toBeVisible()
+	})
+
+	test('сайдбар: loading state показывает skeleton и скрывает навигацию', async ({ page }) => {
+		await openStory(page, 'loading')
+
+		const sidebar = page.locator('.base-side-bar')
+
+		await expect(sidebar.locator('.base-side-bar__loading')).toBeVisible()
+		await expect(sidebar.locator('.base-side-bar__navigation')).toHaveCount(0)
+	})
+
+	test('сайдбар: dark theme применяет dark canvas и компонент остаётся видимым', async ({ page }) => {
+		await openStory(page, 'default&globals=theme:dark')
+
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+		await expect(page.locator('.base-side-bar')).toBeVisible()
+	})
+
+	test('сайдбар: variant stories рендерят все варианты', async ({ page }) => {
+		await openStory(page, 'variants')
+
+		await expect(page.locator('.base-side-bar')).toHaveCount(5)
+
+		for (const variant of ['ghost', 'outline', 'shadow', 'soft']) {
+			await expect(page.locator(`.base-side-bar--${variant}`).first()).toBeVisible()
+		}
+	})
+
+	test('сайдбар: collapsed variants рендерят свёрнутые варианты', async ({ page }) => {
+		await openStory(page, 'variants&args=isCollapsed:!true')
+
+		const sidebars = page.locator('.base-side-bar')
+
+		await expect(sidebars.first()).toBeVisible()
+		await expect(sidebars.first()).toHaveClass(/base-side-bar--collapsed/)
+	})
+
+	test('сайдбар: custom item slot работает', async ({ page }) => {
+		await openStory(page, 'custom-item-slot')
+
+		await expect(page.getByText('открыто')).toBeVisible()
+	})
+
+	test('сайдбар: navigation slot имеет приоритет над items', async ({ page }) => {
+		await openStory(page, 'navigation-slot')
+
+		await expect(page.getByText('Кастомная главная')).toBeVisible()
+		await expect(page.getByText('Кастомный каталог')).toBeVisible()
+	})
+
+	test('сайдбар: занимает всю высоту родительского контейнера', async ({ page }) => {
+		await openStory(page, 'app-layout')
+
+		const wrapper = page.locator('.base-side-bar').locator('xpath=..')
+		const sidebar = page.locator('.base-side-bar')
+
+		const wrapperBox = await wrapper.boundingBox()
+		const sidebarBox = await sidebar.boundingBox()
+
+		expect(Math.round(sidebarBox?.height ?? 0)).toBe(Math.round(wrapperBox?.height ?? 0))
+	})
+
+	test('сайдбар: disclosure group раскрывает и скрывает children', async ({ page }) => {
+		await openStory(page, 'default')
+
+		const settingsButton = page.getByRole('button', { name: 'Настройки' })
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'false')
+		await expect(page.getByText('Профиль')).toHaveCount(0)
+
+		await settingsButton.click()
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'true')
+		await expect(page.getByText('Профиль')).toBeVisible()
+
+		await settingsButton.click()
+
+		await expect(settingsButton).toHaveAttribute('aria-expanded', 'false')
+		await expect(page.getByText('Профиль')).toHaveCount(0)
+	})
+})

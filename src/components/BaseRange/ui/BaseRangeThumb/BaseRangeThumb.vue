@@ -1,35 +1,30 @@
 <template>
 	<div
-		class="base-range__thumb"
-		:class="[{ 'base-range__thumb--custom': hasCustom }, thumbClass]"
-		tabindex="0"
+		:class="[thumbClass, { 'base-range__thumb--custom': hasCustom }]"
+		:tabindex="isDisabled ? -1 : 0"
 		role="slider"
+		:aria-label="label"
 		:aria-valuenow="value"
 		:aria-valuemin="boundMin"
 		:aria-valuemax="boundMax"
+		:aria-orientation="isVertical ? 'vertical' : undefined"
+		:aria-disabled="isDisabled ? 'true' : undefined"
 		@mousedown.stop.prevent="emitDown($event)"
 		@touchstart.stop.prevent="emitDown($event)"
 		@keydown="emitKeydown($event)">
 		<slot :value="value" :index="index">
-			<span class="base-range__thumb-dot" :class="dotClass"></span>
+			<span :class="dotClass"></span>
 		</slot>
 	</div>
 </template>
 
 <script setup lang="ts">
-import type { BaseRangeThumbEmits, BaseRangeThumbProps, BaseRangeThumbSlots } from '../../model/BaseRangeThumb.types'
+import { useBaseRangeThumb } from '../../model/useBaseRangeThumb'
+import type { BaseRangeThumbEmits, BaseRangeThumbProps, BaseRangeThumbSlots } from '../../types/BaseRangeThumb.types'
 
 const props = defineProps<BaseRangeThumbProps>()
 const emit = defineEmits<BaseRangeThumbEmits>()
 defineSlots<BaseRangeThumbSlots>()
 
-/** Начало перетаскивания ползунка */
-function emitDown(event: MouseEvent | TouchEvent): void {
-	emit('down', { event, index: props.index })
-}
-
-/** Клавиатурное управление ползунком */
-function emitKeydown(event: KeyboardEvent): void {
-	emit('keydown', { event, index: props.index })
-}
+const { emitDown, emitKeydown } = useBaseRangeThumb(props, emit)
 </script>

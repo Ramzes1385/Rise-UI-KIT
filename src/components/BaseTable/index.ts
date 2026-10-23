@@ -1,6 +1,8 @@
-export { TABLE_VARIANTS } from './model/BaseTable.types'
+export { TABLE_PARTS, TABLE_SELECT_ALL_SCOPES, TABLE_VARIANTS } from './types/BaseTable.types'
 export type {
 	BaseTableEmits,
+	BaseTableExpose,
+	BaseTablePart,
 	BaseTableProps,
 	BaseTableSlots,
 	ColumnFilter,
@@ -15,8 +17,11 @@ export type {
 	SortType,
 	TableBehaviorConfig,
 	TableColumn,
+	TableExportDataOptions,
+	TableExportEvent,
 	TableFeaturesConfig,
 	TableRow,
+	TableSelectAllScope,
 	TableVariant,
-} from './model/BaseTable.types'
+} from './types/BaseTable.types'
 export { default as BaseTable } from './ui/BaseTable.vue'

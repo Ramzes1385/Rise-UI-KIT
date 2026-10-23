@@ -1,12 +1,7 @@
-/**
- * Unit-тесты для BaseStepper.
- * Проверяют рендер, пропсы, CSS-модификаторы и слоты.
- */
-
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
 import BaseStepper from '../ui/BaseStepper.vue'
-import type { BaseStepperStep } from '../model/BaseStepper.types'
+import { fireEvent, render, screen } from '@testing-library/vue'
+import type { BaseStepperStep } from '../types/BaseStepper.types'
 
 const ITEMS: BaseStepperStep[] = [
 	{ label: 'Данные' },
@@ -150,13 +145,14 @@ describe('BaseStepper unit', () => {
 			expect(container.querySelector('.base-stepper')?.classList.contains('base-stepper--animated')).toBe(true)
 		})
 
-		it('должен устанавливать CSS-переменную прогресса', () => {
+		it('должен отмечать --passed шаги до текущего, включая шаг с ошибкой', () => {
 			const { container } = render(BaseStepper, {
-				props: { modelValue: 2, items: ITEMS },
+				props: { modelValue: 3, items: [{ label: 'А' }, { label: 'Б', isError: true }, { label: 'В' }, { label: 'Г' }] },
 			})
 
-			const stepper = container.querySelector('.base-stepper') as HTMLElement
-			expect(stepper.style.getPropertyValue('--stepper-progress-scale')).toBe('0.5')
+			const steps = [...container.querySelectorAll('.base-stepper__step')]
+			expect(steps.map(step => step.classList.contains('base-stepper__step--passed'))).toEqual([true, true, false, false])
+			expect(container.querySelector('.base-stepper')).not.toHaveAttribute('style')
 		})
 	})
 
@@ -260,7 +256,7 @@ describe('BaseStepper unit', () => {
 				props: { modelValue: 1, items: ITEMS },
 			})
 
-			const step = container.querySelectorAll('.base-stepper__step')[1]
+			const step = container.querySelectorAll('.base-stepper__trigger')[1]
 			await fireEvent.click(step!)
 
 			expect(emitted()['update:modelValue']).toBeTruthy()
@@ -272,7 +268,7 @@ describe('BaseStepper unit', () => {
 				props: { modelValue: 1, items: ITEMS },
 			})
 
-			const step = container.querySelectorAll('.base-stepper__step')[1]
+			const step = container.querySelectorAll('.base-stepper__trigger')[1]
 			await fireEvent.click(step!)
 
 			expect(emitted().change).toBeTruthy()
@@ -292,14 +288,13 @@ describe('BaseStepper unit', () => {
 		})
 	})
 
-	describe('progressStyle', () => {
-		it('не должен устанавливать CSS-переменные прогресса когда один шаг', () => {
+	describe('линия прогресса', () => {
+		it('не должен отмечать --passed первый шаг', () => {
 			const { container } = render(BaseStepper, {
 				props: { modelValue: 1, items: [{ label: 'Один' }] },
 			})
 
-			const el = container.querySelector('.base-stepper') as HTMLElement
-			expect(el.style.getPropertyValue('--stepper-progress-scale')).toBe('')
+			expect(container.querySelector('.base-stepper__step--passed')).toBeNull()
 		})
 	})
 
@@ -352,20 +347,111 @@ describe('BaseStepper unit', () => {
 			expect(container.querySelector('.base-stepper__items')?.classList.contains('custom-stepper-items')).toBe(true)
 			expect(container.querySelector('.base-stepper__step')?.classList.contains('custom-stepper-step')).toBe(true)
 			expect(
-				container
-					.querySelector('.base-stepper__indicator-wrapper')
-					?.classList.contains('custom-stepper-indicator-wrapper'),
+				container.querySelector('.base-stepper__indicator-wrapper')?.classList.contains('custom-stepper-indicator-wrapper'),
 			).toBe(true)
-			expect(container.querySelector('.base-stepper__indicator')?.classList.contains('custom-stepper-indicator')).toBe(
-				true,
-			)
+			expect(container.querySelector('.base-stepper__indicator')?.classList.contains('custom-stepper-indicator')).toBe(true)
 			expect(container.querySelector('.base-stepper__check')?.classList.contains('custom-stepper-check')).toBe(true)
 			expect(container.querySelector('.base-stepper__content')?.classList.contains('custom-stepper-content')).toBe(true)
 			expect(container.querySelector('.base-stepper__label')?.classList.contains('custom-stepper-label')).toBe(true)
-			expect(
-				container.querySelector('.base-stepper__description')?.classList.contains('custom-stepper-description'),
-			).toBe(true)
+			expect(container.querySelector('.base-stepper__description')?.classList.contains('custom-stepper-description')).toBe(true)
 			expect(container.querySelector('.base-stepper__footer')?.classList.contains('custom-stepper-footer')).toBe(true)
+		})
+	})
+
+	describe('ошибки, необязательные шаги и линейный процесс', () => {
+		const FLOW: BaseStepperStep[] = [
+			{ label: 'Корзина' },
+			{ label: 'Доставка' },
+			{ label: 'Оплата', isError: true, description: 'Карта отклонена' },
+			{ label: 'Отзыв', isOptional: true },
+		]
+
+		it('пройденный шаг и шаг с ошибкой озвучивают состояние; ошибка не отмечается пройденной', () => {
+			const { container } = render(BaseStepper, { props: { modelValue: 4, items: FLOW } })
+
+			expect(screen.getByRole('button', { name: 'Корзина, пройден' }).closest('li')).toHaveClass('base-stepper__step--completed')
+			const payment = screen.getByRole('button', { name: /^Оплата, ошибка/ })
+			expect(payment.closest('li')).toHaveClass('base-stepper__step--error')
+			expect(payment.closest('li')).not.toHaveClass('base-stepper__step--completed')
+			expect(payment.querySelector('.base-stepper__error-mark')).toHaveTextContent('!')
+			expect(container.querySelector('.base-stepper__optional')).toHaveTextContent('Необязательно')
+		})
+
+		it('isLinear: дальний шаг недоступен, следующий и пройденные — доступны', async () => {
+			const { emitted } = render(BaseStepper, { props: { modelValue: 1, items: FLOW, isLinear: true } })
+
+			const far = screen.getByRole('button', { name: /^Оплата/ })
+			expect(far).toBeDisabled()
+			await fireEvent.click(far)
+			expect(emitted('update:modelValue')).toBeUndefined()
+
+			await fireEvent.click(screen.getByRole('button', { name: /Доставка/ }))
+			expect(emitted('update:modelValue')).toEqual([[2]])
+		})
+
+		it('слот item получает isError и isDisabled линейного процесса', () => {
+			const slotProps: Record<string, unknown>[] = []
+			render(BaseStepper, {
+				props: { modelValue: 1, items: FLOW, isLinear: true },
+				slots: {
+					item: (props: Record<string, unknown>) => {
+						slotProps.push(props)
+						return String(props.stepNumber)
+					},
+				},
+			})
+
+			expect(slotProps[2]).toMatchObject({ isError: true, isDisabled: true, isCompleted: false })
+			expect(slotProps[1]).toMatchObject({ isError: false, isDisabled: false })
+		})
+	})
+	describe('modelValue вне диапазона (ST-4)', () => {
+		let warnSpy: ReturnType<typeof vi.spyOn>
+
+		beforeEach(() => {
+			warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+		})
+
+		afterEach(() => {
+			warnSpy.mockRestore()
+		})
+
+		const activeSteps = (container: Element): number[] =>
+			Array.from(container.querySelectorAll('.base-stepper__step')).flatMap((step, index) =>
+				step.classList.contains('base-stepper__step--active') ? [index + 1] : [],
+			)
+
+		it('больше числа шагов — активен последний, предупреждение в консоль', () => {
+			const { container } = render(BaseStepper, { props: { modelValue: 9, items: ITEMS } })
+
+			expect(activeSteps(container)).toEqual([3])
+			expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('modelValue 9 вне диапазона 1…3'))
+		})
+
+		it('0, отрицательный и дробный — активен ближайший шаг', () => {
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: 0, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: -3, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: 2.7, items: ITEMS } }).container)).toEqual([2])
+		})
+
+		it('NaN и бесконечность — первый шаг', () => {
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: Number.NaN, items: ITEMS } }).container)).toEqual([1])
+			expect(activeSteps(render(BaseStepper, { props: { modelValue: Infinity, items: ITEMS } }).container)).toEqual([1])
+		})
+
+		it('значение в диапазоне и пустой список шагов — без предупреждения', () => {
+			render(BaseStepper, { props: { modelValue: 2, items: ITEMS } })
+			render(BaseStepper, { props: { modelValue: 5, items: [] } })
+
+			expect(warnSpy).not.toHaveBeenCalled()
+		})
+
+		it('клик по шагу при значении вне диапазона отправляет номер шага', async () => {
+			const { container, emitted } = render(BaseStepper, { props: { modelValue: 9, items: ITEMS } })
+
+			await fireEvent.click(container.querySelectorAll('.base-stepper__trigger')[1])
+
+			expect(emitted()['update:modelValue']).toEqual([[2]])
 		})
 	})
 })

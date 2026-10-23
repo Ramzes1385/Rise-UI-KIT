@@ -1,29 +1,29 @@
-@use "@styles/functions" as *;
+@use '@styles/mixins' as *;
+@use '../../styles/chat' as *;
 
 .base-chat-header {
 	display: flex;
+	flex: none;
 	align-items: center;
-	justify-content: space-between;
-	padding: sz(12px) sz(16px);
-	background: var(--color-surface);
-	border-bottom: sz(1px) solid var(--color-border);
 	gap: sz(12px);
+	min-height: sz(56px);
+	padding-block: sz(12px);
+	padding-inline: sz(16px) sz(12px);
+	@include chat-section-border(bottom);
 
 	&__info {
 		display: flex;
+		flex: 1;
 		align-items: center;
 		gap: sz(12px);
-		flex: 1;
 		min-width: 0;
 	}
 
-	&__avatar {
-		cursor: pointer;
-		transition: opacity var(--transition-base);
-
-		&:hover {
-			opacity: 0.85;
-		}
+	&__avatar-button {
+		@include button-reset;
+		flex: none;
+		border-radius: sz(var(--rise-radius-md));
+		@include focus-ring;
 	}
 
 	&__text {
@@ -33,35 +33,31 @@
 	}
 
 	&__title {
-		color: var(--color-text);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
+		@include heading;
+		@include text-size(sm);
+		color: var(--chat-title-color, var(--rise-text-highlighted));
+		@include truncate;
+	}
+
+	&__subtitle,
+	&__typing {
+		@include text-size(xs);
+		@include truncate;
 	}
 
 	&__subtitle {
-		color: var(--color-text-muted);
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		overflow: hidden;
-	}
-
-	&__status {
-		display: flex;
-		align-items: center;
-		min-width: 0;
+		color: var(--rise-text-muted);
 	}
 
 	&__typing {
-		color: var(--color-accent);
-		font-weight: 500;
-		display: flex;
-		align-items: center;
+		color: var(--rise-primary-text);
 	}
 
 	&__dots {
-		display: inline-block;
-		animation: typing-dots 1.4s infinite both;
+		@include motion-safe {
+			animation: base-chat-header-typing calc(var(--rise-duration-loop) * 1.4) var(--rise-ease) infinite;
+			@include loop-state;
+		}
 	}
 
 	&__search-container {
@@ -69,41 +65,29 @@
 		min-width: 0;
 	}
 
-	&__search-input {
-		width: 100%;
+	&__search-field::-webkit-search-cancel-button {
+		appearance: none;
 	}
 
 	&__actions {
 		display: flex;
+		flex: none;
 		align-items: center;
-		gap: sz(4px);
+		gap: sz(2px);
 	}
 
 	&__action-btn {
-		color: var(--color-text-muted);
-		transition:
-			color var(--transition-base),
-			transform var(--transition-base);
-
-		&:hover {
-			color: var(--color-accent);
-			transform: scale(1.05);
-		}
-
-		&:active {
-			transform: scale(0.95);
-		}
+		@include chat-icon-button(5px);
 	}
 }
 
-@keyframes typing-dots {
-	0% {
-		opacity: 0.2;
-	}
-	20% {
-		opacity: 1;
-	}
+@keyframes base-chat-header-typing {
+	0%,
 	100% {
-		opacity: 0.2;
+		opacity: 0.3;
+	}
+
+	50% {
+		opacity: 1;
 	}
 }

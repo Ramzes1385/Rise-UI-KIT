@@ -1,123 +1,249 @@
+$progress-stripe: color-mix(in srgb, var(--rise-on-primary) 20%, transparent);
+$progress-light: color-mix(in srgb, var(--progress-color) 35%, var(--rise-bg));
+$progress-radius: sz(ct(progress, radius, calc(var(--rise-radius-xs) / 2)));
+
 .base-progress {
+	@include custom-color-scope;
+	@include custom-bg('--progress-color', var(--custom-text, #{ct(progress-fill, bg, var(--rise-primary))}));
+
 	position: relative;
 	display: flex;
-	align-items: center;
 
-	@include custom-text(color, var(--color-text));
-
-	/* ===== Линейный ===== */
 	&--line {
 		flex-direction: column;
+		gap: sz(ct(progress, gap, 8px));
 		width: 100%;
 	}
 
-	&__tooltip-trigger {
-		position: absolute;
-		right: 0;
-		top: 0;
+	&__status {
+		display: flex;
+		container-type: inline-size;
+		font-size: sz(ct(progress, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		color: ct(progress-status, text, var(--rise-text-muted));
+		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
 	}
 
-	&__tooltip-anchor {
-		display: block;
-		width: 0;
-		height: sz(10px);
+	&__status-text {
+		--progress-label-shift: max(0px, calc(var(--progress-percent, 0) * 1cqw - 100%));
+
+		transform: translateX(var(--progress-label-shift));
+		@include transition(transform);
+
+		[dir='rtl'] & {
+			transform: translateX(calc(var(--progress-label-shift) * -1));
+		}
 	}
 
 	&__track {
+		position: relative;
+		container-type: inline-size;
 		width: 100%;
-		height: sz(10px);
-		background-color: var(--color-surface-muted);
-		border-radius: var(--border-radius-full);
-		overflow: visible;
+		height: sz(ct(progress, height, 4px));
+		border-radius: $progress-radius;
+		background-color: ct(progress-track, bg, var(--rise-bg-accented));
+	}
+
+	&__bar {
+		height: 100%;
+		border-radius: inherit;
 	}
 
 	&__fill {
+		--progress-clip: calc(100% - var(--progress-percent, 0) * 1%);
+
 		height: 100%;
-		border-radius: var(--border-radius-full);
-		@include transition(width);
-		position: relative;
-		@include custom-bg(background-color, var(--color-accent));
+		border-radius: inherit;
+		border-start-end-radius: 0;
+		border-end-end-radius: 0;
+		background-color: var(--progress-color);
+		background-image: var(--progress-stripes, none), var(--progress-paint, none);
+		background-size:
+			sz(16px) sz(16px),
+			100cqw 100%;
+		clip-path: inset(0 var(--progress-clip) 0 0 round 0 #{$progress-radius} #{$progress-radius} 0);
+		@include transition(clip-path);
+
+		[dir='rtl'] & {
+			clip-path: inset(0 0 0 var(--progress-clip) round #{$progress-radius} 0 0 #{$progress-radius});
+		}
 	}
 
-	/* ===== Круговой ===== */
 	&--circle {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: fit-content;
 	}
 
 	&__svg {
-		width: sz(100px);
-		height: sz(100px);
+		width: sz(ct(progress-svg, width, 64px));
+		height: sz(ct(progress-svg, width, 64px));
 		transform: rotate(-90deg);
 	}
 
 	&__track-circle {
-		stroke: var(--color-surface-muted);
+		stroke: ct(progress-track, bg, var(--rise-bg-accented));
 	}
 
 	&__fill-circle {
+		stroke: var(--progress-color);
 		@include transition(stroke-dashoffset);
-		@include custom-text(stroke, var(--color-accent));
 	}
 
 	&__circle-label {
 		position: absolute;
-		font-size: sz(18px);
-		color: var(--color-text);
+		font-size: sz(ct(progress, font-size, var(--rise-font-size-sm)));
+		line-height: sz(var(--rise-line-height-sm));
+		font-weight: ct(progress-circle-label, font-weight, var(--rise-font-weight-semibold));
+		color: ct(progress-circle-label, text, var(--rise-text-highlighted));
+		font-variant-numeric: tabular-nums;
 	}
 
-	/* ===== Анимация: полоски ===== */
 	&--striped &__fill {
-		background-image: linear-gradient(
+		--progress-stripes: linear-gradient(
 			45deg,
-			rgba(255, 255, 255, 0.15) 25%,
+			#{$progress-stripe} 25%,
 			transparent 25%,
 			transparent 50%,
-			rgba(255, 255, 255, 0.15) 50%,
-			rgba(255, 255, 255, 0.15) 75%,
+			#{$progress-stripe} 50%,
+			#{$progress-stripe} 75%,
 			transparent 75%,
 			transparent
 		);
-		background-size: 20px 20px;
-		animation: base-progress-stripes 1s linear infinite;
 	}
 
-	/* ===== Анимация: пульс ===== */
-	&--pulse &__fill {
-		animation: base-progress-pulse 2s ease-in-out infinite;
+	&--fill-gradient &__fill {
+		--progress-paint: linear-gradient(90deg, #{$progress-light}, var(--progress-color));
+
+		[dir='rtl'] & {
+			--progress-paint: linear-gradient(270deg, #{$progress-light}, var(--progress-color));
+		}
 	}
 
-	&--pulse &__fill-circle {
-		animation: base-progress-pulse-circle 2s ease-in-out infinite;
+	&--fill-rainbow &__fill {
+		--progress-paint: linear-gradient(90deg, #{$rainbow-colors});
+
+		[dir='rtl'] & {
+			--progress-paint: linear-gradient(270deg, #{$rainbow-colors});
+		}
 	}
 
-	/* ===== Анимация: свечение ===== */
-	&--glow &__fill {
-		box-shadow:
-			0 0 10px currentColor,
-			0 0 20px currentColor;
-		animation: base-progress-glow 2s ease-in-out infinite;
+	&--fill-segments &__track {
+		mask: repeating-linear-gradient(90deg, currentcolor 0 sz(10px), transparent sz(10px) sz(13px));
 	}
 
-	/* ===== Неопределённый ===== */
-	&--indeterminate.base-progress--line &__track {
+	&--glow &__bar {
+		filter: drop-shadow(0 0 4px color-mix(in srgb, var(--progress-color) 60%, transparent));
+	}
+
+	&--indeterminate &__track {
 		overflow: hidden;
 	}
 
-	&--indeterminate.base-progress--line &__fill {
-		width: 40% !important;
-		animation: base-progress-indeterminate 1.5s ease-in-out infinite;
+	&--indeterminate &__fill {
+		border-radius: inherit;
+		opacity: 0.4;
+		clip-path: none;
+	}
+
+	&--countdown#{&}--paused &__fill {
+		animation-play-state: paused;
+	}
+
+	&--countdown &__fill {
+		border-radius: inherit;
+		clip-path: none;
+		transform-origin: left;
+		transition: none;
+
+		[dir='rtl'] & {
+			clip-path: none;
+			transform-origin: right;
+		}
+	}
+
+	&--indeterminate &__fill-circle {
+		stroke-dashoffset: 0;
+		opacity: 0.4;
+	}
+
+	@include motion-safe {
+		&--striped &__fill {
+			animation: base-progress-stripes var(--rise-duration-loop) linear infinite;
+			@include loop-state;
+		}
+
+		&--pulse &__fill,
+		&--pulse &__fill-circle {
+			animation: base-progress-pulse calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		&--glow &__bar {
+			animation: base-progress-glow calc(var(--rise-duration-loop) * 2) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		&--flow &__fill {
+			--progress-paint: linear-gradient(90deg, var(--progress-color), #{$progress-light}, var(--progress-color));
+
+			animation: base-progress-flow calc(var(--rise-duration-loop) * 2.5) linear infinite;
+			@include loop-state;
+		}
+
+		&--flow#{&}--fill-rainbow &__fill {
+			--progress-paint: linear-gradient(90deg, #{$rainbow-colors-loop});
+		}
+
+		&--indeterminate &__fill {
+			width: 40%;
+			opacity: 1;
+			animation: base-progress-indeterminate calc(var(--rise-duration-loop) * 1.5) var(--rise-ease) infinite;
+			@include loop-state;
+		}
+
+		&--countdown &__fill {
+			animation: base-progress-countdown var(--progress-countdown) linear forwards;
+		}
+
+		&--indeterminate &__fill-circle {
+			stroke-dashoffset: 245px;
+			opacity: 1;
+		}
+
+		&--indeterminate &__svg {
+			animation: base-progress-spin var(--rise-duration-loop) linear infinite;
+		}
 	}
 }
 
 @keyframes base-progress-stripes {
-	0% {
-		background-position: 20px 0;
+	from {
+		background-position:
+			sz(16px) 0,
+			0 0;
 	}
 
-	100% {
-		background-position: 0 0;
+	to {
+		background-position:
+			0 0,
+			0 0;
+	}
+}
+
+@keyframes base-progress-flow {
+	from {
+		background-position:
+			0 0,
+			0 0;
+	}
+
+	to {
+		background-position:
+			0 0,
+			100cqw 0;
 	}
 }
 
@@ -132,38 +258,43 @@
 	}
 }
 
-@keyframes base-progress-pulse-circle {
-	0%,
-	100% {
-		opacity: 1;
-		filter: none;
-	}
-
-	50% {
-		opacity: 0.7;
-		filter: drop-shadow(0 0 4px currentColor);
-	}
-}
-
 @keyframes base-progress-glow {
 	0%,
 	100% {
-		box-shadow: 0 0 5px currentColor;
+		filter: drop-shadow(0 0 2px color-mix(in srgb, var(--progress-color) 40%, transparent));
 	}
 
 	50% {
-		box-shadow:
-			0 0 15px currentColor,
-			0 0 30px currentColor;
+		filter: drop-shadow(0 0 6px color-mix(in srgb, var(--progress-color) 70%, transparent));
 	}
 }
 
 @keyframes base-progress-indeterminate {
-	0% {
+	from {
 		transform: translateX(-100%);
 	}
 
-	100% {
-		transform: translateX(350%);
+	to {
+		transform: translateX(250%);
+	}
+}
+
+@keyframes base-progress-countdown {
+	from {
+		transform: scaleX(1);
+	}
+
+	to {
+		transform: scaleX(0);
+	}
+}
+
+@keyframes base-progress-spin {
+	from {
+		transform: rotate(-90deg);
+	}
+
+	to {
+		transform: rotate(270deg);
 	}
 }

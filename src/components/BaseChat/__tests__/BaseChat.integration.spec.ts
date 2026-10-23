@@ -1,16 +1,11 @@
-/**
- * Integration-тесты для BaseChat.
- * Проверяют сквозное взаимодействие composed-подкомпонентов (ChatInput,
- * ChatMessageList, ChatSelectionToolbar) и проброс событий наружу через
- * публичный API BaseChat.
- */
-
 import '@testing-library/jest-dom/vitest'
-import userEvent from '@testing-library/user-event'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { afterEach, beforeEach, vi } from 'vitest'
+import { nextTick } from 'vue'
 import BaseChat from '../ui/BaseChat.vue'
-import type { ChatMember, ChatMessage } from '../model/BaseChat.types'
+import { afterEach, beforeEach, vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { BaseFormField } from '@components/BaseFormField'
+import type { ChatMember, ChatMessage } from '../types/BaseChat.types'
+import { fireEvent, render, screen, within } from '@testing-library/vue'
 
 const MESSAGES: ChatMessage[] = [
 	{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна' },
@@ -101,7 +96,6 @@ describe('BaseChat integration', () => {
 			const searchInput = container.querySelector('.base-chat-header__search-input input') as HTMLInputElement
 			await user.type(searchInput, 'Привет')
 
-			// При активном поиске текст разбивается на span-ы подсветки, поэтому проверяем через DOM
 			expect(container.querySelectorAll('.base-chat-message-list__item').length).toBe(1)
 			expect(screen.queryByText('Здравствуйте')).toBeNull()
 			expect(container.querySelector('.base-chat-message-list__highlight')).toBeInTheDocument()
@@ -116,33 +110,110 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(screen.getByLabelText('Закрыть поиск'))
 			expect(container.querySelector('.base-chat-header__search-input')).toBeNull()
 		})
+
+		it('должен возвращать полную ленту и очищать запрос при закрытии поиска', async () => {
+			const user = userEvent.setup()
+			const { container } = renderChat()
+
+			await fireEvent.click(screen.getByLabelText('Поиск по сообщениям'))
+			await user.type(container.querySelector('.base-chat-header__search-input input') as HTMLInputElement, 'Привет')
+			expect(container.querySelectorAll('.base-chat-message-list__item')).toHaveLength(1)
+
+			await fireEvent.click(screen.getByLabelText('Закрыть поиск'))
+
+			expect(container.querySelectorAll('.base-chat-message-list__item')).toHaveLength(2)
+			expect(screen.getByText('Здравствуйте')).toBeInTheDocument()
+			expect(container.querySelector('.base-chat-message-list__highlight')).toBeNull()
+
+			await fireEvent.click(screen.getByLabelText('Поиск по сообщениям'))
+			expect(container.querySelector('.base-chat-header__search-input input')).toHaveValue('')
+		})
 	})
 
 	describe('навигация по закреплённым сообщениям', () => {
-		it('должен переключать текущий закреп при нажатии "Следующее"', async () => {
-			const pinned: ChatMessage[] = [
-				{ id: '1', text: 'Закреп 1', sender: 'me', time: '10:00', isPinned: true },
-				{ id: '2', text: 'Закреп 2', sender: 'me', time: '10:01', isPinned: true },
-			]
-			renderChat({ messages: pinned })
+		const PINNED: ChatMessage[] = [
+			{ id: '1', text: 'Закреп 1', sender: 'me', time: '10:00', isPinned: true },
+			{ id: '2', text: 'Обычное', sender: 'me', time: '10:01' },
+			{ id: '3', text: 'Закреп 2', sender: 'me', time: '10:02', isPinned: true },
+			{ id: '4', text: 'Закреп 3', sender: 'me', time: '10:03', isPinned: true },
+		]
 
-			expect(screen.getByText('Закреплённое сообщение (1 из 2)')).toBeInTheDocument()
+		afterEach(() => {
+			Reflect.deleteProperty(Element.prototype, 'scrollBy')
+		})
+
+		it('показывает последнее закреплённое, стрелки листают закрепы по кругу', async () => {
+			const { container } = renderChat({ messages: PINNED })
+			const panel = container.querySelector('.base-chat-pinned-panel') as HTMLElement
+
+			expect(screen.getByText('Закреплённое сообщение (3 из 3)')).toBeInTheDocument()
+			expect(within(panel).getByText('Закреп 3')).toBeInTheDocument()
 
 			await fireEvent.click(screen.getByLabelText('Следующее закреплённое сообщение'))
+			expect(screen.getByText('Закреплённое сообщение (1 из 3)')).toBeInTheDocument()
 
-			expect(screen.getByText('Закреплённое сообщение (2 из 2)')).toBeInTheDocument()
+			await fireEvent.click(screen.getByLabelText('Предыдущее закреплённое сообщение'))
+			expect(screen.getByText('Закреплённое сообщение (3 из 3)')).toBeInTheDocument()
+		})
+
+		it('клик по панели прокручивает ленту к показанному закрепу и переключает панель на предыдущий, по кругу', async () => {
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
+			const { container } = renderChat({ messages: PINNED })
+			const list = container.querySelector('.base-chat-message-list')
+			const panel = container.querySelector('.base-chat-pinned-panel__content') as HTMLElement
+
+			for (const [id, counter] of [
+				['4', '2 из 3'],
+				['3', '1 из 3'],
+				['1', '3 из 3'],
+			]) {
+				await fireEvent.click(panel)
+				expect(container.querySelector(`#message-${id}`)).toHaveClass('base-chat-message-list__item--highlighted')
+				expect(screen.getByText(`Закреплённое сообщение (${counter})`)).toBeInTheDocument()
+			}
+			expect(scrollBy).toHaveBeenCalledTimes(3)
+			expect(scrollBy.mock.contexts.every(context => context === list)).toBe(true)
+			expect(scrollBy).toHaveBeenLastCalledWith({ top: expect.any(Number), behavior: 'smooth' })
+			expect(container.querySelectorAll('.base-chat-message-list__item--highlighted')).toHaveLength(1)
+		})
+
+		it('без анимации прокручивает ленту при prefers-reduced-motion', async () => {
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
+			vi.stubGlobal(
+				'matchMedia',
+				vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
+			)
+			const { container } = renderChat({ messages: PINNED })
+
+			await fireEvent.click(container.querySelector('.base-chat-pinned-panel__content') as HTMLElement)
+
+			expect(scrollBy).toHaveBeenCalledWith({ top: expect.any(Number), behavior: 'auto' })
+			vi.unstubAllGlobals()
+		})
+
+		it('новый закреп сразу показывается в панели', async () => {
+			const { container, rerender } = renderChat({ messages: PINNED })
+
+			await rerender({ messages: PINNED.map(message => (message.id === '2' ? { ...message, isPinned: true } : message)) })
+
+			const panel = container.querySelector('.base-chat-pinned-panel') as HTMLElement
+			expect(screen.getByText('Закреплённое сообщение (2 из 4)')).toBeInTheDocument()
+			expect(within(panel).getByText('Обычное')).toBeInTheDocument()
 		})
 	})
 
 	describe('клик по аватару в шапке', () => {
-		it('должен эмитить avatar-click и открывать профиль при клике по аватару с заданным avatar', async () => {
+		it('открывает «Информацию» о чате и эмитит info-click, а не профиль участника', async () => {
 			const { container, emitted } = renderChat({ avatar: 'https://ex.com/a.png' })
 
 			const avatar = container.querySelector('.base-chat-header__avatar') as HTMLElement
 			await fireEvent.click(avatar)
 
-			const events = emitted()['avatar-click'] as Array<[string]>
-			expect(events[0][0]).toBe('https://ex.com/a.png')
+			expect(emitted()).not.toHaveProperty('avatar-click')
+			expect(emitted()['info-click']).toHaveLength(1)
+			expect(await screen.findByRole('tab', { name: 'Инфо', selected: true })).toBeInTheDocument()
 		})
 	})
 
@@ -177,8 +248,8 @@ describe('BaseChat integration', () => {
 		})
 
 		it('должен скроллить к сообщению при клике по цитате', async () => {
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 			const withReply: ChatMessage[] = [
 				...MESSAGES,
 				{ id: '3', text: 'Ответ', sender: 'me', time: '10:02', replyToId: '1', replyToText: 'Привет!' },
@@ -188,7 +259,8 @@ describe('BaseChat integration', () => {
 			const quote = container.querySelector('.base-chat-message-list__reply-quote') as HTMLElement
 			await fireEvent.click(quote)
 
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalled()
+			expect(container.querySelector('#message-1')).toHaveClass('base-chat-message-list__item--highlighted')
 		})
 	})
 
@@ -254,8 +326,31 @@ describe('BaseChat integration', () => {
 
 			await enterSelection()
 
-			expect(screen.queryByPlaceholderText('Напишите сообщение...')).toBeNull()
+			expect(screen.getByPlaceholderText('Напишите сообщение...')).not.toBeVisible()
 			expect(screen.getByText('Отмена')).toBeInTheDocument()
+		})
+
+		it('должен сохранять черновик и вложения после входа в режим выделения и отмены', async () => {
+			vi.stubGlobal('URL', { ...URL, createObjectURL: vi.fn(() => 'blob:draft'), revokeObjectURL: vi.fn() })
+			try {
+				const user = userEvent.setup()
+				const { container } = renderChat()
+
+				await user.type(screen.getByPlaceholderText('Напишите сообщение...'), 'Черновик ответа')
+				const fileInput = container.querySelector('.base-chat-input__file-input') as HTMLInputElement
+				const file = new File(['x'], 'plan.pdf', { type: 'application/pdf' })
+				Object.defineProperty(fileInput, 'files', { value: [file], configurable: true })
+				await fireEvent.change(fileInput)
+
+				await enterSelection()
+				await fireEvent.click(screen.getByText('Отмена'))
+
+				expect(screen.getByPlaceholderText('Напишите сообщение...')).toBeVisible()
+				expect(screen.getByPlaceholderText('Напишите сообщение...')).toHaveValue('Черновик ответа')
+				expect(screen.getByText('plan.pdf')).toBeInTheDocument()
+			} finally {
+				vi.unstubAllGlobals()
+			}
 		})
 
 		it('должен эмитить forward-messages при пересылке выделенных', async () => {
@@ -273,7 +368,6 @@ describe('BaseChat integration', () => {
 			await enterSelection()
 			await fireEvent.click(screen.getByText('Удалить'))
 
-			// До подтверждения событие не эмитится
 			expect(emitted()['delete-messages']).toBeUndefined()
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 
@@ -291,7 +385,6 @@ describe('BaseChat integration', () => {
 
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 
-			// Отмена внутри окна подтверждения (закрытие по кресту модалки)
 			const modalClose = container.querySelector('.base-modal__close') as HTMLElement
 			await fireEvent.click(modalClose)
 
@@ -302,9 +395,7 @@ describe('BaseChat integration', () => {
 		it('показывает множественный текст и эмитит все id при удалении нескольких сообщений', async () => {
 			const { container, emitted } = renderChat()
 
-			// Первое сообщение — вход в режим выбора через action-кнопку
 			await enterSelection()
-			// Второе сообщение — клик по item в режиме выбора
 			const items = container.querySelectorAll('.base-chat-message-list__item')
 			await fireEvent.click(items[1] as HTMLElement)
 
@@ -343,7 +434,6 @@ describe('BaseChat integration', () => {
 			openMenu(container, 1)
 			await fireEvent.click(await screen.findByText('Удалить'))
 
-			// До подтверждения событие не эмитится, показывается окно
 			expect(emitted()['delete-messages']).toBeUndefined()
 			expect(screen.getByText('Удалить сообщения?')).toBeInTheDocument()
 
@@ -376,15 +466,65 @@ describe('BaseChat integration', () => {
 		})
 
 		it('должен скроллить к закреплённому сообщению при клике по панели', async () => {
-			const scrollIntoView = vi.fn()
-			Element.prototype.scrollIntoView = scrollIntoView
+			const scrollBy = vi.fn()
+			Element.prototype.scrollBy = scrollBy
 			const pinned: ChatMessage = { id: '1', text: 'Закреп', sender: 'me', time: '10:00', isPinned: true }
 			const { container } = renderChat({ messages: [pinned] })
 
 			const panel = container.querySelector('.base-chat-pinned-panel__content') as HTMLElement
 			await fireEvent.click(panel)
 
-			expect(scrollIntoView).toHaveBeenCalled()
+			expect(scrollBy).toHaveBeenCalled()
+		})
+	})
+
+	describe('значки участников', () => {
+		const BADGES = [
+			{ id: 'verified', label: 'Подтверждён', icon: 'check-circle', color: 'var(--rise-info)' },
+			{ id: 'cup', label: 'Кубок', emoji: '🏆' },
+			{ id: 'fire', label: 'Серия', emoji: '🔥' },
+			{ id: 'rocket', label: 'Релизы', emoji: '🚀' },
+			{ id: 'plain', label: 'Без иконки' },
+		]
+		const MEMBERS_WITH_BADGES: ChatMember[] = [{ ...GROUP_MEMBERS[0], badges: BADGES }, GROUP_MEMBERS[1]]
+		const GROUP_MESSAGES: ChatMessage[] = [
+			{ id: '1', text: 'Привет!', sender: 'other', time: '10:00', senderName: 'Анна', senderId: 'a1' },
+			{ id: '2', text: 'Добрый день', sender: 'other', time: '10:01', senderName: 'Борис', senderId: 'm1' },
+		]
+
+		it('рядом с именем отправителя — первые maxBadges значков и счётчик остальных', () => {
+			const { container } = renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES })
+			const [anna, boris] = container.querySelectorAll('.base-chat-message-list__sender')
+
+			expect(anna.querySelectorAll('.base-chat-badges__badge')).toHaveLength(3)
+			expect(screen.getByRole('img', { name: 'Подтверждён' })).toBeInTheDocument()
+			expect(screen.getByRole('img', { name: 'Ещё 2 значка: Релизы, Без иконки' })).toHaveTextContent('+2')
+			expect(boris.querySelector('.base-chat-badges')).toBeNull()
+		})
+
+		it('maxBadges меняет число видимых значков', () => {
+			renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES, maxBadges: 1 })
+
+			expect(screen.getByRole('img', { name: 'Ещё 4 значка: Кубок, Серия, Релизы, Без иконки' })).toHaveTextContent('+4')
+		})
+
+		it('в списке участников — значки рядом с именем, в профиле — полный список с подписями', async () => {
+			const { container } = renderChat({ isGroup: true, members: MEMBERS_WITH_BADGES, messages: GROUP_MESSAGES })
+
+			await fireEvent.click(screen.getByLabelText('Информация о чате'))
+			const [annaItem, borisItem] = container.querySelectorAll('.base-chat-slideover__member-item')
+			expect(annaItem.querySelectorAll('.base-chat-badges__badge')).toHaveLength(3)
+			expect(borisItem.querySelector('.base-chat-badges')).toBeNull()
+
+			await fireEvent.click(annaItem.querySelector('.base-chat-slideover__member-main') as HTMLElement)
+			const section = screen.getByRole('region', { name: 'Значки' })
+			expect(Array.from(section.querySelectorAll('li'), item => item.textContent?.trim())).toEqual([
+				'Подтверждён',
+				'🏆Кубок',
+				'🔥Серия',
+				'🚀Релизы',
+				'Без иконки',
+			])
 		})
 	})
 
@@ -393,7 +533,7 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(screen.getByLabelText('Информация о чате'))
 		}
 
-		it('должен эмитить avatar-click при клике "Написать сообщение" в профиле участника', async () => {
+		it('должен эмитить write-message при клике "Написать сообщение" в профиле участника', async () => {
 			const { container, emitted } = renderChat({ isGroup: true, members: GROUP_MEMBERS })
 
 			await openInfo()
@@ -401,8 +541,7 @@ describe('BaseChat integration', () => {
 			await fireEvent.click(memberMain)
 			await fireEvent.click(screen.getByText('Написать сообщение'))
 
-			// BaseChat пробрасывает write-message наружу как avatar-click (переход в личку)
-			const events = emitted()['avatar-click'] as Array<[string]>
+			const events = emitted()['write-message'] as Array<[string]>
 			expect(events.at(-1)?.[0]).toBe('a1')
 		})
 
@@ -421,11 +560,15 @@ describe('BaseChat integration', () => {
 
 			await fireEvent.click(screen.getByLabelText('Действия с участником Анна'))
 			await fireEvent.click(screen.getByText('Исключить'))
-			expect(emitted()['kick-member']).toBeTruthy()
+			expect(emitted()['kick-member']).toBeUndefined()
+			await fireEvent.click(await screen.findByRole('button', { name: 'Подтвердить' }))
+			expect(emitted()['kick-member']).toEqual([['a1']])
 
 			await fireEvent.click(screen.getByLabelText('Действия с участником Анна'))
 			await fireEvent.click(screen.getByText('Забанить'))
-			expect(emitted()['ban-member']).toBeTruthy()
+			expect(emitted()['ban-member']).toBeUndefined()
+			await fireEvent.click(await screen.findByRole('button', { name: 'Подтвердить' }))
+			expect(emitted()['ban-member']).toEqual([[{ memberId: 'a1' }]])
 
 			expect(container).toBeTruthy()
 		})
@@ -442,11 +585,42 @@ describe('BaseChat integration', () => {
 
 			await openInfo()
 			await fireEvent.click(screen.getByText('Файлы'))
-			const fileItem = container.querySelector('.base-chat-slideover__file-item') as HTMLElement
-			await fireEvent.click(fileItem)
+			const fileButton = container.querySelector('.base-chat-slideover__file-main') as HTMLElement
+			await fireEvent.click(fileButton)
 
-			// file-click внутри слайдовера пробрасывается наружу как download-file
 			expect(emitted()['download-file']).toBeTruthy()
 		})
+
+		it('должен показывать в панели только описание из props, без демо-данных', async () => {
+			const { container } = renderChat({ isGroup: true, members: GROUP_MEMBERS, description: 'Чат команды поддержки' })
+
+			await openInfo()
+
+			const panel = container.querySelector('.base-chat-slideover') as HTMLElement
+			expect(panel).toHaveTextContent('Чат команды поддержки')
+			expect(panel.textContent).not.toMatch(/Металл-Арт|\+7 \(999\) 123-45-67|info@metal-art\.ru/)
+		})
+	})
+
+	it('внутри BaseFormField флажки выбора сообщений не берут подпись, ошибку и обязательность обёртки', async () => {
+		const { container } = render({
+			components: { BaseChat, BaseFormField },
+			setup: () => ({ messages: MESSAGES }),
+			template: `
+				<BaseFormField label="Поддержка" error="Нет связи" is-required>
+					<BaseChat :messages="messages" title="Чат с Анной" />
+				</BaseFormField>
+			`,
+		})
+		await fireEvent.click(screen.getAllByLabelText('Выбрать сообщение')[0])
+		await nextTick()
+
+		const checkboxes = container.querySelectorAll('.base-chat input[type="checkbox"]')
+		expect(checkboxes.length).toBeGreaterThan(0)
+		for (const checkbox of checkboxes) {
+			expect(checkbox).not.toHaveAttribute('aria-invalid')
+			expect(checkbox).not.toHaveAttribute('aria-required')
+		}
+		expect(container.querySelector('label.base-form-field__label')).not.toHaveAttribute('for')
 	})
 })

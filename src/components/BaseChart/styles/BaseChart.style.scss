@@ -1,0 +1,318 @@
+.base-chart {
+	@include ltr-surface;
+
+	display: flex;
+	flex-direction: column;
+	gap: space(12px);
+	box-sizing: border-box;
+	min-width: 0;
+	margin: 0;
+	color: var(--rise-text);
+	@include text-size(sm);
+
+	&__body {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: sz(6px) sz(8px);
+		padding-top: sz(8px);
+	}
+
+	&__y-axis {
+		display: flex;
+		flex-direction: column-reverse;
+		justify-content: space-between;
+		color: ct(chart, axis-text, var(--rise-text-muted));
+		@include text-size(xs);
+		font-size: sz(ct(chart, axis-font-size, var(--rise-font-size-xs)));
+		font-variant-numeric: tabular-nums;
+		text-align: end;
+	}
+
+	&__y-tick {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		height: 0;
+		white-space: nowrap;
+	}
+
+	&__y-tick--outside,
+	&__grid--outside,
+	&__line--hidden,
+	&__area--hidden,
+	&__bar--hidden {
+		opacity: 0;
+	}
+
+	&__plot {
+		position: relative;
+		min-width: 0;
+		border-radius: sz(var(--rise-radius-sm));
+		touch-action: pan-y;
+		@include focus-ring(4px);
+	}
+
+	&__svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	&__grid {
+		stroke: ct(chart, grid-border, var(--rise-border-muted));
+		stroke-width: 1;
+		vector-effect: non-scaling-stroke;
+	}
+
+	&__line {
+		fill: none;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		vector-effect: non-scaling-stroke;
+	}
+
+	&__area {
+		opacity: 0.18;
+	}
+
+	&__bar {
+		transform-box: fill-box;
+		transform-origin: bottom;
+	}
+
+	&__bar--negative {
+		transform-origin: top;
+	}
+
+	&__guide {
+		stroke: var(--rise-border-accented);
+		stroke-width: 1;
+		stroke-dasharray: 4 4;
+		vector-effect: non-scaling-stroke;
+	}
+
+	&__marker {
+		position: absolute;
+		width: sz(10px);
+		height: sz(10px);
+		border: 2px solid var(--rise-surface-bg, var(--rise-bg));
+		border-radius: var(--rise-radius-xs);
+		box-sizing: border-box;
+		pointer-events: none;
+		top: 0;
+		inset-inline-start: 0;
+		transform: translate(var(--base-chart-marker-x, 0), var(--base-chart-marker-y, 0)) translate(-50%, -50%);
+	}
+
+	&__tooltip {
+		position: absolute;
+		top: 0;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		gap: space(2px);
+		min-width: sz(120px);
+		padding: space(ct(chart, tooltip-padding-y, 6px) ct(chart, tooltip-padding-x, 10px));
+		@include floating-surface(null);
+		border: 1px solid ct(chart, tooltip-border, transparent);
+		border-radius: sz(ct(chart, tooltip-radius, var(--rise-radius-lg)));
+		background-color: ct(chart, tooltip-bg, var(--rise-surface-floating));
+		box-shadow: ct(chart, tooltip-shadow, var(--rise-shadow-lg));
+		pointer-events: none;
+		white-space: nowrap;
+		inset-inline-start: 0;
+		transform: translateX(var(--base-chart-guide-x, 0)) translateX(sz(12px));
+		@include text-size(xs);
+	}
+
+	&__tooltip--start {
+		transform: translateX(var(--base-chart-guide-x, 0)) translateX(calc(-100% - #{sz(12px)}));
+	}
+
+	&__tooltip-label {
+		color: ct(chart, tooltip-text, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__tooltip-row {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: sz(6px);
+	}
+
+	&__tooltip-name {
+		color: var(--rise-text-muted);
+	}
+
+	&__tooltip-value {
+		color: ct(chart, tooltip-text, var(--rise-text-highlighted));
+		font-weight: var(--rise-font-weight-medium);
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__swatch {
+		flex: none;
+		width: sz(10px);
+		height: sz(10px);
+		border-radius: var(--rise-radius-xs);
+	}
+
+	&__x-axis {
+		position: relative;
+		grid-column: 2;
+		height: sz(var(--rise-line-height-xs));
+		color: ct(chart, axis-text, var(--rise-text-muted));
+		@include text-size(xs);
+		font-size: sz(ct(chart, axis-font-size, var(--rise-font-size-xs)));
+	}
+
+	&__x-tick {
+		position: absolute;
+		top: 0;
+		max-width: sz(80px);
+		white-space: nowrap;
+		transform: translateX(-50%);
+		@include truncate;
+	}
+
+	&__x-tick--start {
+		transform: none;
+	}
+
+	&__x-tick--end {
+		transform: translateX(-100%);
+	}
+
+	&__legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: ct(chart, legend-gap, space(4px 12px));
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	&__legend-item {
+		@include button-reset;
+		text-align: center;
+		display: inline-flex;
+		align-items: center;
+		gap: sz(6px);
+		padding: space(2px 6px);
+		border-radius: sz(var(--rise-radius-sm));
+		color: ct(chart, legend-text, var(--rise-text));
+		@include transition-colors;
+		@include focus-ring;
+
+		@include hover {
+			background-color: var(--rise-bg-elevated);
+		}
+	}
+
+	&__legend-item--hidden {
+		color: var(--rise-text-muted);
+		text-decoration: line-through;
+
+		.base-chart__swatch {
+			opacity: 0.35;
+		}
+	}
+
+	&__empty {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: sz(var(--rise-radius-md));
+		background-color: var(--rise-bg-muted);
+		color: var(--rise-text-muted);
+	}
+
+	&__hidden {
+		@include visually-hidden;
+	}
+
+	@include motion-safe {
+		&__bar,
+		&__marker,
+		&__tooltip {
+			transition:
+				opacity var(--rise-duration-fast) var(--rise-ease),
+				transform var(--rise-duration-fast) var(--rise-ease);
+		}
+
+		&__line,
+		&__area,
+		&__grid,
+		&__y-tick {
+			transition: opacity var(--rise-duration) var(--rise-ease);
+		}
+
+		&__shapes--grow &__bar,
+		&__shapes--fade &__bar,
+		&__shapes--draw &__bar,
+		&__shapes--fade &__line,
+		&__shapes--fade &__area,
+		&__shapes--draw &__line,
+		&__shapes--draw &__area {
+			animation-duration: var(--rise-duration-xslow);
+			animation-timing-function: var(--rise-ease-emphasized);
+			animation-delay: calc(var(--rise-motion-stagger) * var(--base-chart-order, 0));
+			animation-fill-mode: backwards;
+		}
+
+		&__shapes--grow &__bar,
+		&__shapes--draw &__bar {
+			animation-name: base-chart-grow;
+		}
+
+		&__shapes--fade &__bar,
+		&__shapes--fade &__line,
+		&__shapes--fade &__area,
+		&__shapes--draw &__area {
+			animation-name: base-chart-fade;
+		}
+
+		&__shapes--draw &__line {
+			animation-name: base-chart-draw;
+		}
+	}
+}
+
+@include motion-safe {
+	.base-chart-swap-enter-active,
+	.base-chart-swap-leave-active {
+		transition: opacity var(--rise-duration-slow) var(--rise-ease);
+	}
+
+	.base-chart-swap-enter-from,
+	.base-chart-swap-leave-to {
+		opacity: 0;
+	}
+}
+
+@keyframes base-chart-grow {
+	from {
+		transform: scaleY(0);
+	}
+}
+
+@keyframes base-chart-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+@keyframes base-chart-draw {
+	from {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 1;
+	}
+
+	to {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0;
+	}
+}

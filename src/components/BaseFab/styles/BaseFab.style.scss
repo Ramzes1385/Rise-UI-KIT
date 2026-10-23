@@ -1,0 +1,80 @@
+.base-fab {
+	@include custom-color-scope;
+	--fab-offset: #{sz(24px)};
+	position: fixed;
+	z-index: calc(var(--rise-z-overlay) - 1);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: sz(ct(fab, gap, 8px));
+	width: sz(ct(fab, height, 56px));
+	height: sz(ct(fab, height, 56px));
+	padding: 0;
+	border: 1px solid ct(fab, border, transparent);
+	border-radius: sz(ct(fab, radius, var(--rise-radius-xl)));
+	@include custom-bg(background-color, ct(fab, bg, var(--rise-primary)));
+	@include custom-text(color, ct(fab, text, var(--rise-on-primary)));
+	box-shadow: ct(fab, shadow, var(--rise-shadow-lg));
+	cursor: pointer;
+	text-decoration: none;
+	@include text-size(sm);
+	font-weight: ct(fab, font-weight, var(--rise-font-weight-medium));
+	@include transition-colors;
+	@include focus-ring;
+
+	@include custom-bg-hover(background-color, ct(fab, bg-hover, var(--rise-primary-hover)));
+
+	&--bottom-right {
+		inset-inline-end: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+	}
+
+	&--bottom-left {
+		bottom: calc(var(--fab-offset) + env(safe-area-inset-bottom, 0px));
+		inset-inline-start: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+	}
+
+	&--top-right {
+		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
+		inset-inline-end: calc(var(--fab-offset) + env(safe-area-inset-right, 0px));
+	}
+
+	&--top-left {
+		top: calc(var(--fab-offset) + env(safe-area-inset-top, 0px));
+		inset-inline-start: calc(var(--fab-offset) + env(safe-area-inset-left, 0px));
+	}
+
+	&--contained {
+		--fab-offset: #{sz(16px)};
+		position: absolute;
+	}
+
+	&--extended {
+		width: auto;
+		height: sz(ct(fab, height, 48px));
+		padding: 0 sz(ct(fab, padding-x, 20px));
+	}
+
+	&--disabled {
+		@include disabled-state;
+	}
+
+	&--soft {
+		@include custom-bg(background-color, var(--rise-primary-soft));
+		@include custom-text(color, var(--rise-primary-text));
+
+		@include custom-bg-hover(background-color, var(--rise-primary-soft-hover));
+	}
+
+	&--outline {
+		border-color: ct(fab, border, var(--rise-border-accented));
+		@include custom-bg(background-color, var(--rise-surface-floating));
+		@include custom-text(color, var(--rise-text-highlighted));
+
+		@include custom-bg-hover(background-color, var(--rise-bg-elevated));
+	}
+
+	&__icon {
+		flex-shrink: 0;
+	}
+}

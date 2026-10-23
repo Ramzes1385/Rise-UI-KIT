@@ -1,10 +1,19 @@
 <template>
 	<div
 		v-if="children.length && wasExpanded"
-		class="base-tree__children"
-		:class="[{ 'base-tree__children--open': isExpanded }, treeContext.classes.value.children]">
-		<div class="base-tree__children-inner">
-			<BaseTreeNode v-for="child in children" :key="child.id" :node="child" :depth="depth" :size-scale="sizeScale">
+		:class="[treeContext.ui('children'), { 'base-tree__children--open': isOpen }, treeContext.classes.value.children]"
+		role="group"
+		:aria-hidden="isExpanded ? undefined : true"
+		:inert="isExpanded ? undefined : true">
+		<div :class="treeContext.ui('children-inner')" role="none">
+			<BaseTreeNode
+				v-for="(child, index) in children"
+				:key="child.id"
+				:node="child"
+				:depth="depth"
+				:set-size="children.length"
+				:pos-in-set="index + 1"
+				:size-scale="sizeScale">
 				<template #icon="slotProps">
 					<slot name="icon" :node="slotProps.node" />
 				</template>
@@ -28,18 +37,13 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue'
-import { TREE_CONTEXT_KEY } from '../model/BaseTree.types'
-import BaseTreeNode from './BaseTreeNode.vue'
-import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../model/BaseTreeChildren.types'
 import '../styles/BaseTree.style.scss'
+import BaseTreeNode from './BaseTreeNode.vue'
+import { useBaseTreeChildren } from '../model/useBaseTreeChildren'
+import type { BaseTreeChildrenProps, BaseTreeChildrenSlots } from '../types/BaseTreeChildren.types'
 
 defineProps<BaseTreeChildrenProps>()
 defineSlots<BaseTreeChildrenSlots>()
 
-const treeContext = inject(TREE_CONTEXT_KEY, undefined)
-/* istanbul ignore if -- defensive: BaseTreeChildren всегда рендерится внутри BaseTree, контекст предоставляется родителем */
-if (!treeContext) {
-	throw new Error('BaseTreeChildren: TreeContext not found. Ensure BaseTreeChildren is rendered inside BaseTree.')
-}
+const { treeContext } = useBaseTreeChildren()
 </script>

@@ -1,26 +1,15 @@
-/**
- * Visual regression тесты для BaseRating.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['variants', 'sizes', 'custom-color', 'readonly', 'disabled', 'custom-icons'] as const
 
-const COMPONENT = 'ui-baserating'
-const STORIES = [
-	'default',
-	'variants',
-	'size-scale',
-	'readonly',
-	'custom-icons',
-	'fractional-readonly',
-	'half-step',
-	'smooth-hover',
-	'dark-theme',
-]
-
-for (const story of STORIES) {
-	test(`BaseRating — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		const root = page.locator('#storybook-root')
-		await expect(root).toHaveScreenshot(`base-rating--${story}.png`)
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseRating · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `form-baserating--${story}`, { theme })
+				await expectStoryScreenshot(page, `base-rating-${story}-${theme}.png`)
+			})
+		}
 	})
 }

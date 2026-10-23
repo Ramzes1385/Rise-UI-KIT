@@ -1,8 +1,11 @@
 import '@testing-library/jest-dom/vitest'
-import { fireEvent, render, screen } from '@testing-library/vue'
-import { describe, expect, it, vi } from 'vitest'
+import { createUiKitPlugin } from '@/plugin'
 import BaseSideBar from '../ui/BaseSideBar.vue'
-import { BASE_SIDEBAR_STUBS } from './BaseSideBar.test-utils'
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { BASE_SIDEBAR_STUBS, preventLinkNavigation } from './BaseSideBar.test-utils'
+
+preventLinkNavigation()
 
 describe('BaseSideBar integration', () => {
 	it('эмитит collapse при клике на кнопку сворачивания', async () => {
@@ -20,6 +23,18 @@ describe('BaseSideBar integration', () => {
 		expect(emitted()).toHaveProperty('collapse')
 		expect(emitted()).toHaveProperty('update:isCollapsed')
 		expect(emitted()['update:isCollapsed']).toEqual([[true]])
+	})
+
+	it('isCollapsed из defaults плагина — только начальное состояние: панель остаётся неуправляемой', async () => {
+		const { emitted } = render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS, plugins: [createUiKitPlugin({ defaults: { BaseSideBar: { isCollapsed: true } } })] },
+		})
+
+		await fireEvent.click(screen.getByRole('button', { name: 'Развернуть' }))
+
+		expect(emitted()['update:isCollapsed']).toEqual([[false]])
+		expect(screen.getByRole('button', { name: 'Свернуть' })).toBeInTheDocument()
 	})
 
 	it('эмитит expand при клике на кнопку разворачивания', async () => {
@@ -56,7 +71,7 @@ describe('BaseSideBar integration', () => {
 
 		await fireEvent.click(screen.getByRole('button', { name: 'Свернуть' }))
 
-		expect(sidebar).toHaveClass('base-side-bar--collapsed')
+		await waitFor(() => expect(sidebar).toHaveClass('base-side-bar--collapsed'))
 		expect(screen.getByRole('button', { name: 'Развернуть' })).toBeInTheDocument()
 	})
 
@@ -185,5 +200,44 @@ describe('BaseSideBar integration', () => {
 		expect(screen.getAllByTestId('base-skeleton')).toHaveLength(4)
 		expect(screen.queryByText('Body content')).not.toBeInTheDocument()
 		expect(screen.queryByText('Footer content')).not.toBeInTheDocument()
+	})
+	it('кнопка сворачивания не пересоздаётся: после сворачивания фокус остаётся на ней', async () => {
+		render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+
+		const toggle = screen.getByRole('button', { name: 'Свернуть' })
+		toggle.focus()
+		await fireEvent.click(toggle)
+
+		expect(screen.getByRole('button', { name: 'Развернуть' })).toBe(toggle)
+		expect(toggle).toHaveFocus()
+	})
+
+	it('в свёрнутой панели пункт навигации сохраняет доступное имя', () => {
+		render(BaseSideBar, {
+			props: {
+				title: 'Навигация',
+				isCollapsed: true,
+				items: [{ key: 'home', label: 'Главная', icon: 'home', to: '/' }],
+			},
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+
+		expect(screen.getByRole('link', { name: 'Главная' })).toHaveAttribute('href', '/')
+	})
+
+	it('без пропа padding не пишет inline-переменные отступов, с пропом — пишет', async () => {
+		const { container, rerender } = render(BaseSideBar, {
+			props: { title: 'Навигация' },
+			global: { stubs: BASE_SIDEBAR_STUBS },
+		})
+		const root = container.querySelector('.base-side-bar') as HTMLElement
+		expect(root.style.getPropertyValue('--sidebar-pad-left')).toBe('')
+
+		await rerender({ title: 'Навигация', padding: { x: 20, y: 10 } })
+		expect(root.style.getPropertyValue('--sidebar-pad-left')).toBe('20px')
+		expect(root.style.getPropertyValue('--sidebar-pad-top')).toBe('10px')
 	})
 })

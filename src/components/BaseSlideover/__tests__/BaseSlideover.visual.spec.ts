@@ -1,19 +1,15 @@
-/**
- * Visual regression тесты для BaseSlideover.
- */
+import { test } from '@playwright/test'
+import { expectStoryScreenshot, openStory, VISUAL_THEMES } from '../../../../build/tests/visual'
 
-import { expect, test } from '@playwright/test'
+const STORIES = ['sides', 'widths', 'custom-color', 'long-content'] as const
 
-const COMPONENT = 'ui-baseslideover'
-const STORIES = ['default', 'left-side', 'full-width', 'with-footer']
-
-for (const story of STORIES) {
-	test(`BaseSlideover — ${story}`, async ({ page }) => {
-		await page.goto(`/iframe.html?id=${COMPONENT}--${story}&viewMode=story`)
-		// BaseSlideover использует teleport — рендерится в body, #storybook-root пуст.
-		// Снимаем скриншот всей страницы.
-		await expect(page).toHaveScreenshot(`base-slideover--${story}.png`, {
-			fullPage: true,
-		})
+for (const theme of VISUAL_THEMES) {
+	test.describe(`BaseSlideover · ${theme}`, () => {
+		for (const story of STORIES) {
+			test(story, async ({ page }) => {
+				await openStory(page, `overlay-baseslideover--${story}`, { theme, height: 600 })
+				await expectStoryScreenshot(page, `base-slideover-${story}-${theme}.png`, 'page')
+			})
+		}
 	})
 }

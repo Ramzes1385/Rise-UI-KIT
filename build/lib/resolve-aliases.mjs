@@ -23,9 +23,6 @@ const aliases = [
 	{ prefix: '@composables/', target: 'dist/composables/' },
 	{ prefix: '@utils/', target: 'dist/utils/' },
 	{ prefix: '@icons/', target: 'dist/icons/' },
-	{ prefix: '@plugins/', target: 'dist/plugins/' },
-	{ prefix: '@constants', target: 'dist/constants/index' },
-	{ prefix: '@constants/', target: 'dist/constants/' },
 	{ prefix: '@/', target: 'dist/' },
 ]
 
@@ -60,10 +57,7 @@ for (const filePath of files) {
 			return `${pre}${toRelative(fileDir, absTarget)}${quote}`
 		})
 
-		const typeImportInline = new RegExp(
-			`(import\\s*\\(\\s*['"])${escapeRegex(prefix)}([^'"]+)(['"]\\s*\\))`,
-			'g'
-		)
+		const typeImportInline = new RegExp(`(import\\s*\\(\\s*['"])${escapeRegex(prefix)}([^'"]+)(['"]\\s*\\))`, 'g')
 
 		content = content.replace(typeImportInline, (match, pre, modulePath, post) => {
 			const absTarget = resolve(process.cwd(), target, modulePath)

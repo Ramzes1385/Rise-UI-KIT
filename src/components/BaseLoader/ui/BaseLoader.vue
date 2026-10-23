@@ -1,63 +1,57 @@
 <template>
 	<div
-		class="base-loader"
-		:class="[`base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
+		ref="rootRef"
+		:class="[ui('root'), `base-loader--${variant}`, { 'base-loader--overlay': isOverlay }, classes.root]"
 		:style="[sizeScaleStyle, customColorStyle]"
 		role="status"
-		:aria-label="UI_TEXT.LOADING_ARIA">
-		<div class="base-loader__animation" :class="classes.animation">
-			<!-- Spinner -->
+		:aria-label="accessibleName">
+		<div :class="[ui('animation'), classes.animation]" aria-hidden="true">
 			<template v-if="variant === 'spinner'">
-				<svg class="base-loader__spinner" :class="classes.spinner" viewBox="0 0 50 50">
-					<circle class="base-loader__spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
-					<circle class="base-loader__spinner-fill" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
+				<svg :class="[ui('spinner'), classes.spinner]" viewBox="0 0 50 50">
+					<circle :class="ui('spinner-track')" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
+					<circle :class="ui('spinner-fill')" cx="25" cy="25" r="20" fill="none" stroke-width="4" />
 				</svg>
 			</template>
 
-			<!-- Dots -->
 			<template v-if="variant === 'dots'">
-				<span class="base-loader__dot"></span>
-				<span class="base-loader__dot"></span>
-				<span class="base-loader__dot"></span>
+				<span :class="ui('dot')"></span>
+				<span :class="ui('dot')"></span>
+				<span :class="ui('dot')"></span>
 			</template>
 
-			<!-- Pulse -->
 			<template v-if="variant === 'pulse'">
-				<span class="base-loader__pulse"></span>
+				<span :class="ui('pulse')"></span>
 			</template>
 
-			<!-- Bars -->
 			<template v-if="variant === 'bars'">
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
-				<span class="base-loader__bar"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
+				<span :class="ui('bar')"></span>
 			</template>
 		</div>
 
-		<span v-if="hasLabel" class="base-loader__label" :class="classes.label">{{ label }}</span>
+		<span v-if="hasLabel" :class="[ui('label'), classes.label]" aria-hidden="true">{{ resolvedLabel }}</span>
+		<span :class="ui('announce')">{{ isAnnounced ? accessibleName : '' }}</span>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { useCustomClass } from '@composables/useCustomClass'
-import { useCustomColor } from '@composables/useCustomColor'
-import { useSizeScale } from '@composables/useSizeScale'
-import { UI_TEXT, SIZE_SCALE_DEFAULT} from '@constants'
 import '../styles/BaseLoader.style.scss'
-import type { BaseLoaderProps } from '../model/BaseLoader.types'
+import { useBaseLoader } from '../model/useBaseLoader'
+import { kitDefaults } from '@composables/base/useDefaults'
+import type { BaseLoaderProps } from '../types/BaseLoader.types'
+import { SIZE_SCALE_DEFAULT } from '@composables/base/useBaseComponent'
 
-const props = withDefaults(defineProps<BaseLoaderProps>(), {
-	variant: 'spinner',
-	hasLabel: false,
-	label: UI_TEXT.LOADING,
-	isOverlay: false,
-	sizeScale: SIZE_SCALE_DEFAULT,
-})
-const { classes } = useCustomClass({
-	getClass: () => props.customClass,
-	elementKeys: ['root', 'animation', 'spinner', 'label'],
-})
-const { sizeScaleStyle } = useSizeScale({ getScale: () => props.sizeScale })
-const { customColorStyle } = useCustomColor({ getColor: () => props.color })
+const props = withDefaults(
+	defineProps<BaseLoaderProps>(),
+	kitDefaults('BaseLoader', {
+		variant: 'spinner',
+		hasLabel: false,
+		isOverlay: false,
+		sizeScale: SIZE_SCALE_DEFAULT,
+	}),
+)
+
+const { ui, classes, sizeScaleStyle, customColorStyle, resolvedLabel, accessibleName, isAnnounced, rootRef } = useBaseLoader(props)
 </script>

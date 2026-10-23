@@ -1,0 +1,80 @@
+.base-autocomplete {
+	display: block;
+	width: 100%;
+
+	&__dropdown {
+		display: block;
+		width: 100%;
+	}
+
+	&__panel-content {
+		display: flex;
+		flex-direction: column;
+		@include text-size(sm);
+	}
+
+	&__options {
+		display: flex;
+		flex-direction: column;
+		gap: ct(autocomplete, list-gap, 1px);
+		max-height: sz(240px);
+		margin: 0;
+		padding: space(4px);
+		overflow-y: auto;
+		list-style: none;
+		@include scrollbar-thin;
+
+		&--empty {
+			padding: 0;
+		}
+	}
+
+	&__option {
+		@include menu-item;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0;
+		padding: sz(ct(autocomplete, option-padding-y, 6px)) sz(ct(autocomplete, option-padding-x, 8px));
+		color: ct(autocomplete, option-text, var(--rise-text));
+
+		@include hover {
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-surface-floating-hover));
+		}
+
+		&--selected {
+			background-color: ct(autocomplete, option-bg-selected, transparent);
+			color: var(--rise-text-highlighted);
+		}
+
+		&--active {
+			background-color: ct(autocomplete, option-bg-hover, var(--rise-surface-floating-hover));
+			color: var(--rise-text-highlighted);
+		}
+
+		&--disabled {
+			@include disabled-state;
+		}
+	}
+
+	&__option-description {
+		@include text-size(xs);
+		color: var(--rise-text-muted);
+	}
+
+	&__match {
+		background: none;
+		color: inherit;
+		font-weight: var(--rise-font-weight-semibold);
+	}
+
+	&__empty.base-empty {
+		color: ct(autocomplete, empty-text, var(--rise-text-muted));
+	}
+
+	&__status {
+		@include visually-hidden;
+	}
+}
+
+@include enter-fade(base-autocomplete-state);
+@include enter-fade(base-autocomplete-option);

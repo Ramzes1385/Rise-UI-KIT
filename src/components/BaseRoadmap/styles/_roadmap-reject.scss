@@ -1,0 +1,34 @@
+@use '@styles/mixins' as *;
+@use '@styles/functions' as *;
+
+.base-roadmap {
+	&__edit-reject {
+		display: flex;
+		gap: sz(10px);
+		align-items: flex-start;
+		padding: space(10px 14px);
+		color: var(--rise-text);
+		background-color: var(--rise-error-soft);
+		border-radius: sz(var(--rise-radius-lg));
+	}
+
+	&__edit-reject-text {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		gap: sz(2px);
+		min-width: 0;
+		font-size: sz(13px);
+	}
+
+	&__load-error {
+		display: flex;
+		flex-wrap: wrap;
+		gap: space(8px 12px);
+		align-items: center;
+		padding: space(10px 14px);
+		color: var(--rise-text);
+		background-color: var(--rise-error-soft);
+		border-radius: sz(var(--rise-radius-lg));
+	}
+}

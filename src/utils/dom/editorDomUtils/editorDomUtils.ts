@@ -1,0 +1,125 @@
+/** Утилиты: инспекция DOM для contenteditable-редактора */
+
+import type { TypedInlineTagMatch } from './types/editorDomUtils.types'
+
+const BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'DIV', 'BLOCKQUOTE', 'PRE', 'ADDRESS', 'LI'])
+
+const FORMAT_BLOCK_TAGS = new Set(['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE', 'PRE', 'ADDRESS'])
+
+const INLINE_FORMAT_TAGS = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'DEL', 'FONT', 'SPAN', 'A'])
+
+const FORMAT_CONFIG: Record<string, { primary: string; match: string[] }> = {
+	bold: { primary: 'b', match: ['B', 'STRONG'] },
+	italic: { primary: 'i', match: ['I', 'EM'] },
+	underline: { primary: 'u', match: ['U'] },
+	strikeThrough: { primary: 's', match: ['S', 'STRIKE', 'DEL'] },
+}
+
+const ALIGN_MAP: Record<string, string> = {
+	justifyLeft: 'left',
+	justifyCenter: 'center',
+	justifyRight: 'right',
+	justifyFull: 'justify',
+}
+
+/**
+ * Inline-теги, которые можно «набрать» текстом в визуальном режиме (`<b>жирный</b>`).
+ * Только оформление и без атрибутов: ссылки, медиа и произвольная разметка вставляются
+ * через тулбар или режим кода, а не распознаются из текста.
+ */
+const TYPED_INLINE_TAGS = new Set(['b', 'strong', 'i', 'em', 'u', 's', 'strike', 'del', 'code'])
+
+/** Пара `<тег>текст</тег>` без атрибутов и вложенной разметки, стоящая в самом конце строки */
+const TYPED_INLINE_PAIR_RE = /<([a-z]+)>([^<>]+)<\/\1>$/i
+
+/**
+ * Найти пару разрешённого inline-тега, которую пользователь только что закрыл: пара должна
+ * заканчиваться ровно в конце переданного текста (текста до каретки).
+ * Строка не разбирается как HTML: содержимое пары возвращается как обычный текст, а атрибуты,
+ * `<img …>`, одиночные `</div>` и вложенная разметка совпадением не считаются.
+ */
+function matchTypedInlineTag(textBeforeCaret: string): TypedInlineTagMatch | null {
+	const match = TYPED_INLINE_PAIR_RE.exec(textBeforeCaret)
+	if (!match) return null
+	const tag = match[1].toLowerCase()
+	if (!TYPED_INLINE_TAGS.has(tag)) return null
+	return { tag, content: match[2], start: match.index }
+}
+
+function toHTMLElement(node: Node | null): HTMLElement | null {
+	if (!node) return null
+	if (node instanceof Text) return node.parentElement
+	if (node instanceof HTMLElement) return node
+	return null
+}
+
+function isInsideTags(node: Node | null, tagNames: string[], root: HTMLElement): boolean {
+	let current = toHTMLElement(node)
+	while (current && current !== root) {
+		if (tagNames.includes(current.tagName)) return true
+		current = current.parentElement
+	}
+	return false
+}
+
+function findAncestorByTags(node: Node | null, root: HTMLElement, tagNames: string[]): HTMLElement | null {
+	let current = toHTMLElement(node)
+	while (current && current !== root) {
+		if (tagNames.includes(current.tagName)) return current
+		current = current.parentElement
+	}
+	return null
+}
+
+function getBlockParent(node: Node | null, root: HTMLElement): HTMLElement {
+	let current = toHTMLElement(node)
+	while (current && current !== root) {
+		if (BLOCK_TAGS.has(current.tagName)) return current
+		current = current.parentElement
+	}
+	return root
+}
+
+function getFormatBlock(node: Node | null, root: HTMLElement): string {
+	let current = toHTMLElement(node)
+	while (current && current !== root) {
+		if (FORMAT_BLOCK_TAGS.has(current.tagName)) {
+			return current.tagName.toLowerCase()
+		}
+		current = current.parentElement
+	}
+	return ''
+}
+
+function getBlockAlign(node: Node | null, root: HTMLElement): string {
+	const block = getBlockParent(node, root)
+	if (block === root) return 'left'
+	const align = block.style.textAlign
+	if (!align || align === 'start') return 'left'
+	if (align === 'end') return 'right'
+	return align
+}
+
+function isInsideList(node: Node | null, root: HTMLElement, listTag: string): boolean {
+	const matchTag = listTag.toUpperCase()
+	let current = toHTMLElement(node)
+	while (current && current !== root) {
+		if (current.tagName === matchTag) return true
+		current = current.parentElement
+	}
+	return false
+}
+
+export {
+	ALIGN_MAP,
+	findAncestorByTags,
+	FORMAT_CONFIG,
+	getBlockAlign,
+	getBlockParent,
+	getFormatBlock,
+	INLINE_FORMAT_TAGS,
+	isInsideList,
+	isInsideTags,
+	matchTypedInlineTag,
+	toHTMLElement,
+}

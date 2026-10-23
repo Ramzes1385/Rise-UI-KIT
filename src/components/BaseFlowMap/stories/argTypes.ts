@@ -1,0 +1,47 @@
+import type { Meta } from '@storybook/vue3-vite'
+import type BaseFlowMap from '../ui/BaseFlowMap.vue'
+import { ARG_GROUP, baseArgTypes, hiddenArgTypes, propGroup } from '@/stories/helpers'
+import { FLOW_MAP_PANELS, FLOW_MAP_VARIANTS, FLOW_MAP_WHEEL_MODES } from '../types/BaseFlowMap.types'
+
+export const argTypes = {
+	...baseArgTypes({ variants: FLOW_MAP_VARIANTS }),
+	data: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	notations: { control: false, table: propGroup(ARG_GROUP.content) },
+	plugins: { control: false, table: propGroup(ARG_GROUP.content) },
+	layout: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	scenario: { control: 'text', table: propGroup(ARG_GROUP.content) },
+	choices: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	live: { control: 'object', table: propGroup(ARG_GROUP.content) },
+	mode: { control: 'inline-radio', options: ['view', 'edit', 'review'], table: propGroup(ARG_GROUP.state) },
+	modes: { control: 'check', options: ['view', 'edit', 'review'], table: propGroup(ARG_GROUP.behavior) },
+	panels: { control: 'check', options: [...FLOW_MAP_PANELS], table: propGroup(ARG_GROUP.appearance) },
+	height: { control: 'text', table: propGroup(ARG_GROUP.appearance) },
+	particles: { control: 'object', table: propGroup(ARG_GROUP.appearance) },
+	compactBreakpoint: { control: { type: 'number', min: 240, max: 1200, step: 20 }, table: propGroup(ARG_GROUP.appearance) },
+	isAutoplay: { control: 'boolean', table: propGroup(ARG_GROUP.behavior) },
+	wheelZoom: { control: 'inline-radio', options: [...FLOW_MAP_WHEEL_MODES], table: propGroup(ARG_GROUP.behavior) },
+	minZoom: { control: { type: 'number', min: 0.1, max: 1, step: 0.1 }, table: propGroup(ARG_GROUP.behavior) },
+	maxZoom: { control: { type: 'number', min: 1, max: 8, step: 0.5 }, table: propGroup(ARG_GROUP.behavior) },
+	ariaLabel: { control: 'text', table: propGroup(ARG_GROUP.a11y) },
+	isDisabled: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	isLoading: { control: 'boolean', table: propGroup(ARG_GROUP.state) },
+	error: { control: 'text', table: propGroup(ARG_GROUP.state) },
+	...hiddenArgTypes(
+		'selection',
+		'suggestions',
+		'comments',
+		'versions',
+		'compareWith',
+		'currentUser',
+		'savedAt',
+		'beforeChange',
+		'beforeCreate',
+		'beforeConnect',
+		'beforeDelete',
+		'beforeEditLabel',
+		'beforeImport',
+		'beforeAccept',
+		'resolveChoice',
+		'ui',
+	),
+} satisfies Meta<typeof BaseFlowMap>['argTypes']
