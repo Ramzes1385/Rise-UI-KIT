@@ -13,6 +13,7 @@
  * Чтения с переменной Sass в имени (`ct($component, …)` в миксине, `var(--rise-code-#{$type})`) не разбираются — их нет в отчёте.
  *
  * Таблица — `docs/design/COMPONENT_TOKENS.md`: `--write` записывает её, без флага проверка падает, если таблица устарела.
+ * docs/ хранится только локально, в репозитории его нет: без таблицы сверка с ней пропускается, правила 1–4 проверяются всегда.
  * Флаги: `--write`; `--root=<папка>` — корень репозитория (по умолчанию — родитель scripts/).
  */
 
@@ -244,10 +245,13 @@ function main() {
 	const { tokens, errors } = collect()
 	const doc = renderDoc(tokens)
 	const docPath = join(ROOT, DOC)
+	let note = ''
 	if (args.includes('--write')) {
 		mkdirSync(dirname(docPath), { recursive: true })
 		writeFileSync(docPath, doc)
-	} else if (!existsSync(docPath) || readFileSync(docPath, 'utf8') !== doc) {
+	} else if (!existsSync(docPath)) {
+		note = `; сверка с ${DOC} пропущена — документа нет (docs/ хранится только локально)`
+	} else if (readFileSync(docPath, 'utf8') !== doc) {
 		errors.push(`${DOC} устарел — запустите \`node scripts/check-component-tokens.mjs --write\``)
 	}
 	const count = [...tokens.values()].reduce((sum, list) => sum + list.size, 0)
@@ -255,7 +259,7 @@ function main() {
 		console.error(`✗ Токены компонентов: ${errors.length} ошибок\n${errors.map(error => `  ${error}`).join('\n')}`)
 		process.exit(1)
 	}
-	console.log(`✓ Токены компонентов: ${count} в ${tokens.size} компонентах`)
+	console.log(`✓ Токены компонентов: ${count} в ${tokens.size} компонентах${note}`)
 }
 
 main()

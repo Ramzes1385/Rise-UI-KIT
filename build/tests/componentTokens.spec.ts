@@ -81,12 +81,20 @@ describe('check-component-tokens', () => {
 		expect(run().status).toBe(0)
 	})
 
-	it('без таблицы или с устаревшей — ошибка с подсказкой', () => {
-		expect(run().output).toContain(`${DOC} устарел`)
+	it('без таблицы сверка с ней пропускается (docs/ хранится только локально), правила проверяются', () => {
+		const { status, output } = run()
+		expect(status).toBe(0)
+		expect(output).toContain(`сверка с ${DOC} пропущена`)
+		write('src/components/BaseDropdown/styles/BaseDropdown.style.scss', '.d { gap: ct(button, gap, 4px); }\n')
+		expect(run().status).toBe(1)
+	})
+
+	it('с устаревшей таблицей — ошибка с подсказкой', () => {
 		run('--write')
 		write('src/components/BaseDropdown/styles/BaseDropdown.style.scss', '.d { gap: ct(dropdown, height, 4px); }\n')
 		const { status, output } = run()
 		expect(status).toBe(1)
+		expect(output).toContain(`${DOC} устарел`)
 		expect(output).toContain('--write')
 	})
 

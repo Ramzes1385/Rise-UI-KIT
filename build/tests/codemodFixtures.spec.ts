@@ -1,7 +1,7 @@
 /** Кодмод `rise-ui-kit migrate`: приложение 1.x из build/tests/codemod-fixtures → ожидаемый результат, идемпотентность, предупреждения, CLI. */
 
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -336,12 +336,20 @@ describe('командная строка', () => {
 })
 
 describe('ссылки на MIGRATION', () => {
-	it('каждый раздел из таблицы правил — существующий заголовок docs/v2/MIGRATION.md', () => {
-		const headings = readFileSync(join(ROOT, 'docs/v2/MIGRATION.md'), 'utf8')
-			.split('\n')
-			.filter(line => /^#{1,3} /.test(line))
-			.map(line => line.replace(/^#+ /, '').replaceAll('`', ''))
-		for (const title of Object.values(SECTION) as string[]) expect(headings, title).toContain(title)
+	const MIGRATION_DOC = join(ROOT, 'docs/v2/MIGRATION.md')
+
+	it.skipIf(!existsSync(MIGRATION_DOC))(
+		'каждый раздел из таблицы правил — заголовок docs/v2/MIGRATION.md (docs/ только локально)',
+		() => {
+			const headings = readFileSync(MIGRATION_DOC, 'utf8')
+				.split('\n')
+				.filter(line => /^#{1,3} /.test(line))
+				.map(line => line.replace(/^#+ /, '').replaceAll('`', ''))
+			for (const title of Object.values(SECTION) as string[]) expect(headings, title).toContain(title)
+		},
+	)
+
+	it('якорь раздела — как у GitHub: строчные буквы, дефисы вместо пробелов, без знаков препинания', () => {
 		expect(slugify('Утилиты: объект вместо длинного списка параметров (порция С.5)')).toBe(
 			'утилиты-объект-вместо-длинного-списка-параметров-порция-с5',
 		)

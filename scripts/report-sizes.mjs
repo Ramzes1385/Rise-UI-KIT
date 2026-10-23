@@ -11,6 +11,7 @@
  *   node scripts/report-sizes.mjs          — пишет таблицу в docs/reference/SIZES.md (`npm run report:sizes`);
  *   node scripts/report-sizes.mjs --check  — сверяет таблицу с текущей сборкой (`npm run test:sizes`): код 1, если состав
  *                                            компонентов другой или вес разошёлся больше допуска (TOLERANCE).
+ *                                            Без таблицы (docs/ хранится только локально) сверка пропускается.
  *   --only=BaseButton,BaseSelect           — только эти компоненты, вывод в консоль (файл не пишется и не сверяется).
  */
 
@@ -118,7 +119,6 @@ const parseKb = text => Number(text.replace(',', '.')) * 1024
 
 function compare(rows) {
 	const file = join(ROOT, OUTPUT)
-	if (!existsSync(file)) return [`нет ${OUTPUT} — \`npm run report:sizes\``]
 	const table = new Map(
 		[...readFileSync(file, 'utf8').matchAll(ROW)].map(([, name, js, css]) => [name, { js: parseKb(js), css: parseKb(css) }]),
 	)
@@ -141,6 +141,10 @@ function compare(rows) {
 }
 
 async function main() {
+	if (CHECK && !ONLY && !existsSync(join(ROOT, OUTPUT))) {
+		console.log(`Вес компонентов: сверка пропущена — нет ${OUTPUT} (docs/ хранится только локально).`)
+		return
+	}
 	const started = Date.now()
 	const app = prepareApp()
 	try {
