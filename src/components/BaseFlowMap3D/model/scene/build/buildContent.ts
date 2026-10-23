@@ -75,6 +75,7 @@ export function buildContent(options: FlowMap3DBuildOptions): FlowMap3DContent {
 			edges.setHighlight(ids)
 			arrows.setOpacity(ids !== null)
 		},
+		getPalette: () => palette,
 		recolor: next => {
 			palette = next
 			themed.forEach(part => part.recolor(next))

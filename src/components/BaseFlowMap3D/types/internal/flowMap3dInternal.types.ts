@@ -289,6 +289,8 @@ export interface FlowMap3DContent {
 	bounds: Box3
 	setHighlight: (ids: ReadonlySet<string> | null) => void
 	recolor: (palette: FlowMap3DPalette) => void
+	/** Палитра, которой сейчас окрашена сцена: после смены темы — новая, её цвета закэшированы */
+	getPalette: () => FlowMap3DPalette
 	dispose: () => void
 }
 
