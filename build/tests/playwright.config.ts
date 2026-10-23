@@ -6,6 +6,7 @@
  *   старт мгновенный, страницы не собираются на лету, поэтому тесты не зависят от скорости машины;
  * - `dev` — dev-сервер Storybook (`npm run test:e2e:dev`): для локальной отладки с правкой кода на лету, старт долгий.
  * `PLAYWRIGHT_REUSE_SERVER=true` — сервер уже запущен (CI поднимает его сам, один на e2e и скриншоты).
+ * Наличие `storybook-static` проверяет сам сервер при старте: конфиг грузится и без сборки (его читают knip и редакторы).
  */
 
 import { existsSync, readdirSync } from 'node:fs'
@@ -28,7 +29,6 @@ function getPort(url: string): number {
 }
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const staticDir = join(repoRoot, 'storybook-static')
 const DEV_SERVER_START_TIMEOUT = 300_000
 
 function shouldReuse(): boolean {
@@ -76,10 +76,6 @@ function getWebServers() {
 				timeout: DEV_SERVER_START_TIMEOUT,
 			},
 		]
-	}
-
-	if (!existsSync(join(staticDir, 'index.json'))) {
-		throw new Error('Нет storybook-static: соберите Storybook (`npm run build-storybook`) или запустите `npm run test:e2e:dev`.')
 	}
 
 	return [

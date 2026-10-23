@@ -29,6 +29,16 @@ async function setTime(page: Page, seconds: number): Promise<void> {
 
 const seek = (page: Page) => page.getByRole('slider', { name: 'Перемотка' }).first()
 
+async function settleAnimations(page: Page): Promise<void> {
+	await page.evaluate(async () => {
+		const frames = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+		await frames()
+		const finite = document.getAnimations().filter(animation => Number.isFinite(animation.effect?.getComputedTiming().endTime))
+		await Promise.all(finite.map(animation => animation.finished.catch(() => undefined)))
+		await frames()
+	})
+}
+
 test('жесты: двойной клик по краям перематывает на 10 с, удержание ускоряет до ×2', async ({ page }) => {
 	await openPlayer(page, 'default')
 	await setTime(page, 1)
@@ -245,7 +255,7 @@ test('производительность: панель обновляется 
 	expect(playing.ScriptDuration).toBeLessThan(0.3)
 
 	await page.evaluate(() => (document.querySelector('video') as HTMLVideoElement).pause())
-	await page.waitForTimeout(500)
+	await settleAnimations(page)
 	const paused = await measure(2000)
 	expect(paused.LayoutCount).toBe(0)
 	expect(paused.RecalcStyleCount).toBeLessThanOrEqual(2)

@@ -1,10 +1,10 @@
 /**
  * Статический сервер собранного Storybook для CI. Отдаёт части файлов по Range (206): без них браузер не перематывает видео и аудио.
- * Порт — `PORT` (по умолчанию 6006), папка сборки — `SB_DIR` (по умолчанию `storybook-static`).
+ * Порт — `PORT` (по умолчанию 6006), папка сборки — `SB_DIR` (по умолчанию `storybook-static`). Без сборки — выход с подсказкой.
  */
 
 import { createServer } from 'node:http'
-import { createReadStream } from 'node:fs'
+import { createReadStream, existsSync } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { join, extname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,6 +12,11 @@ import { fileURLToPath } from 'node:url'
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const STATIC_DIR = process.env.SB_DIR ? resolve(process.env.SB_DIR) : join(__dirname, '..', 'storybook-static')
 const PORT = Number(process.env.PORT) || 6006
+
+if (!existsSync(join(STATIC_DIR, 'index.json'))) {
+	console.error('Нет storybook-static: соберите Storybook (`npm run build-storybook`) или запустите `npm run test:e2e:dev`.')
+	process.exit(1)
+}
 
 const MIME_TYPES = {
 	'.html': 'text/html',
